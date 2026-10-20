@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/ILLYRIAN_DEMO_v0.9.html"
+      "destination": "/ILLYRIAN_DEMO_v1.0.html"
     }
   ]
 }
