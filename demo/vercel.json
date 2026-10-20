@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/ILLYRIAN_DEMO_v0.7.html"
+    }
+  ]
+}
