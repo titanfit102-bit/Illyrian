@@ -2,7 +2,7 @@
 
 **Data e nisjes:** 21 tetor 2026  
 **Burimi:** kërkesa eksplicite e përdoruesit për t'i ndërtuar të gjitha funksionet e mbetura të demos, plus ILLYRIAN Shop (produkte, dyqane të vogla, makina, banesa me qira dhe kërkim ndër-dyqanesh), me vazhdim fazë pas faze.  
-**Status:** PAKETAT 1–3 TË IMPLEMENTUARA NË DEGË; paketat 4–8 ende në planifikim. QA e Fazës 3 është vetëm simulim i logjikës JavaScript, jo test real Chromium.  
+**Status:** PAKETAT 1–4 TË IMPLEMENTUARA NË DEGË; paketat 5–8 ende në planifikim. QA e Fazave 3–4 është vetëm simulim i logjikës JavaScript, jo test E2E real Chromium/telefon.  
 **Dega e izoluar:** `demo/v1.7-illyrian-shop`; baza `demo/v1.6-stories-reels`.  
 **Mbrojtja:** Nuk preken `main`, Vercel Production, projekti tjetër ose skedarët ekzistues të v1.6. NUK autorizohen vetvetiu pagesa, komisione reale, investim apo publikim në dyqane.
 
@@ -71,7 +71,7 @@
 - IL-029 më i plotë: interes, disponueshmëri, audiencë dhe skadim të dukshëm.
 - IN9-02 `Dy vendet e mia`: zona aktuale e zgjedhur manualisht + vendlindja pa GPS të detyrueshëm.
 
-## Paketa 4 — Privatësi, lidhje sociale dhe harta [E PLANIFIKUAR]
+## Paketa 4 — Privatësi, lidhje sociale dhe harta [E IMPLEMENTUAR NË DEMO; QA V8]
 - Profile private dhe kërkesa ndjekjeje; komunitete private e role.
 - Harta e bizneseve/eventeve me vendndodhje të përafërt; pa koordinata publike të individëve.
 - Përmirësimi i lidhjes postim/Story/Reel -> plan: i anuluar, privat, i mbushur, i skaduar.
@@ -125,6 +125,32 @@
 **Statusi i produktit real:** pesë IN9 janë propozime të regjistruara në analizën strategjike. Miratimi i përdoruesit për t'i shfaqur në **demo** nuk është miratim i politikave të produktit real, kushteve për të miturit, vendndodhjes, modelit të përputhjes ose pagesave. Asnjë profil real, preferencë private, njoftim, pjesëmarrje ose pagesë nuk shkëmbehet.
 
 **Faza pasuese:** Paketa 4 — profile private, komunitete private, hartë e kontrolluar e aktiviteteve, gjendjet e planit dhe ekran horizontal, pastaj regresion i përbashkët.
+
+
+### Implementimi i Fazës 4 — 21 tetor 2026
+
+**Kod i ri:**
+- `demo/ILLYRIAN_PRIVACY_MAP_v1.7.js`: panel i izoluar për profile, komunitete, hartë skematike dhe gjendje planesh;
+- `demo/ILLYRIAN_PRIVACY_MAP_v1.7.css`: pamja Light/Dark dhe rregull për telefon horizontal (761–1100 px, lartësi ≤520 px, orientation landscape).
+- `demo/ILLYRIAN_DEMO_v1.7.html`: lidhja me CSS dhe JS të rinj pa hequr lidhjet e Shop, Plans dhe Connections.
+
+**Rrjedhat e realizuara:**
+
+1. **Profile private/publike:** personazhe demonstrative; kërkesë ndjekjeje, pritje, pranim/refuzim nga pronari demo, tërheqje, bllokim/zhbllokim. Përshkrimi i personazhit privat nuk shfaqet para pranimit.
+2. **Komunitete private/publike:** anëtarësim i menjëhershëm për grup publik, kërkesë/pranim/refuzim për grup privat, largim dhe heqje e aksesit lokal. Përmbajtja e grupit privat nuk shfaqet para pranimit. Butoni `Si moderator demo` **nuk është rol i siguruar nga serveri**.
+3. **Hartë skematike, jo gjeografike:** pamje orientuese me pika të vendosura ilustrativisht, kërkim sipas fjalës, qytetit dhe tipit aktivitet/biznes; përfshin vende fiktive shembull dhe aktivitete publike të krijuara nga organizatori, si dhe listime demonstrative nga Shop. Nuk përdoret GPS apo koordinatë reale.
+4. **Gjendje aktivitetesh:** i hapur, plot, anuluar, skaduar, privat, i padisponueshëm. Shfaqen shpjegime për aksesin dhe kërkesat e reja; aktiviteti privat nuk ekspozon titullin/vendin në këtë panel, edhe nëse ekziston në ruajtjen lokale. Nuk krijohet regjistrim vetëm duke hapur gjendjen.
+5. **Peizazh telefoni:** CSS vendos aplikacionin në ekran të plotë për telefonat e gjerë e të shkurtër në orientim horizontal, pa hyrë te prezantimi desktop me telefon në kornizë.
+6. **Tastierë:** paneli ka rol dialog, fokus fillestar, qarkullim me Tab/Shift+Tab, mbyllje me Escape, `inert` të sfondit dhe rikthim të fokusit pas mbylljes.
+
+**Verifikimi i kodit në GitHub:** 31/31 kontrolle të gjendjes kaluan në V8 me DOM/localStorage të simuluara: privatësia para/pas miratimit, revokimi i aksesit, kërkesa/refuzimi i grupit, ruajtja e gjendjes, filtrat e hartës, gjendjet e planeve, fokus/inert dhe të dhëna të pasigurta të futura si tekst të escapuar. JavaScript sintaksisht PASS. **Kjo NUK është test real Chromium, vizual, aksesueshmërie WCAG apo provë e publikuar në Vercel.** Kontrolli CSS për orientimin horizontal është bërë statikisht; kërkohet test i renderimit.
+
+**Kufij të detyrueshëm të demos:** profile dhe grupe me të dhëna të sajuara; përdoruesi demonstrues mund të ndërrojë rol në UI dhe kjo nuk përfaqëson autorizim real. Asnjë nga kontrollet e privatësisë nuk është mbrojtje serveri. Pikat e hartës janë skematike, jo gjeografike. Mungojnë API të vërteta, llogari reale, GPS, autorizime ndërmjet llogarive, moderim prodhimi, njoftime push dhe databazë.
+
+**Kufiri i Vercel-it:** në Fazën 3, Vercel ktheu HTTP 402 `api-deployments-free-per-day` për ndërtim të ri. Mos paguaj dhe mos shpall Fazën 4 READY në Preview pa verifikuar commit-in e fundit. Provat e Fazës 4 janë të kodit në GitHub, jo të publikimit.
+
+**Faza pasuese:** Paketa 5, Shop i zgjeruar dhe ekonomia; më parë duhen regresion i përbashkët dhe kontrollet e përmasave reale kur Preview të jetë i disponueshëm.
+
 
 ## Rregulli i vazhdimësisë
 
