@@ -646,6 +646,15 @@ if(action==='reset'){if(!confirm('Të rivendosim të dhënat e demonstrimit? Pos
 });
 document.addEventListener('change',e=>{if(e.target.name==='theme'){state.theme=e.target.value;persist();render({scroll:true})}});
 document.addEventListener('input',e=>{if(e.target.id!=='finder')return;const pos=e.target.selectionStart;state.search=e.target.value;const y=$('#screen').scrollTop;$('#screen').innerHTML=explore();$('#screen').scrollTop=y;const input=$('#finder');input.focus();try{input.setSelectionRange(pos,pos)}catch{}});
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Enter'||e.target?.id!=='group-input'||e.isComposing||e.keyCode===229||e.shiftKey||e.ctrlKey||e.metaKey||e.altKey)return;
+ if(state.modal?.type!=='group-chat')return;
+ const button=document.querySelector('[data-act="group-send"]');
+ if(!button||button.dataset.id!==String(state.modal.id))return;
+ e.preventDefault();
+ button.click();
+ document.querySelector('#group-input')?.focus();
+});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&(state.modal||state.story||state.reelOpen)){close();return}if(e.key==='Enter'&&e.target.id==='msg-input'){e.preventDefault();$('[data-act="send-message"]')?.click()}if(e.key==='Enter'&&e.target.id==='comment-input'){e.preventDefault();$('[data-act="send-comment"]')?.click()}});
 
 // v0.7 | User journeys are design simulation only. No real login, password storage, email delivery or identity verification.
