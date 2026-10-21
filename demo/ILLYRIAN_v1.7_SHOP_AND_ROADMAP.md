@@ -2,7 +2,7 @@
 
 **Data e nisjes:** 21 tetor 2026  
 **Burimi:** kërkesa eksplicite e përdoruesit për t'i ndërtuar të gjitha funksionet e mbetura të demos, plus ILLYRIAN Shop (produkte, dyqane të vogla, makina, banesa me qira dhe kërkim ndër-dyqanesh), me vazhdim fazë pas faze.  
-**Status:** PAKETAT 1–4 TË IMPLEMENTUARA NË DEGË; paketat 5–8 ende në planifikim. QA e Fazave 3–4 është vetëm simulim i logjikës JavaScript, jo test E2E real Chromium/telefon.  
+**Status:** PAKETAT 1–5 TË IMPLEMENTUARA NË KOD NË DEGË (Faza 5: bazë funksionale, disa zgjerime ende të hapura); paketat 6–8 ende të planifikuara. QA e Fazave 3–5 përfshin kontrolle të logjikës në V8, jo test të plotë E2E në Chromium/telefon.  
 **Dega e izoluar:** `demo/v1.7-illyrian-shop`; baza `demo/v1.6-stories-reels`.  
 **Mbrojtja:** Nuk preken `main`, Vercel Production, projekti tjetër ose skedarët ekzistues të v1.6. NUK autorizohen vetvetiu pagesa, komisione reale, investim apo publikim në dyqane.
 
@@ -77,12 +77,36 @@
 - Përmirësimi i lidhjes postim/Story/Reel -> plan: i anuluar, privat, i mbushur, i skaduar.
 - Korrigjim i responsivitetit të përgjithshëm në telefon horizontal.
 
-## Paketa 5 — Shop i zgjeruar dhe ekonomia [E PLANIFIKUAR]
+## Paketa 5 — Shop i zgjeruar dhe ekonomia [BAZA E IMPLEMENTUAR NË DEMO; QA V8]
 - Filtra të avancuar sipas nënkategorisë/intervalit të çmimit/kushteve; krahasim i ofertave të së njëjtës SKU kur ka informacion të besueshëm.
 - Dyqane me profile/katalogë/oferta, inventar dhe fotografi demonstrative; automjete me vit/km; qira me lloj, zonë, sipërfaqe dhe afat.
 - IN9-01 `Kërkoj...`: kërkesë shërbimi/produkti dhe përgjigje nga shitës të përshtatshëm; vetëm simulim.
 - Shënjim reklamash/promovimesh; moderim listimesh; raportime; profil shitësi me transparencë.
 - Flukse shembull për kthim, anulim, reklamim, provë dorëzimi dhe komision; JO transaksione reale.
+
+
+### Zbatimi i Fazës 5 — 21 tetor 2026
+
+**Skedarët e rinj:** `demo/ILLYRIAN_SHOP_PLUS_v1.7.js` dhe `demo/ILLYRIAN_SHOP_PLUS_v1.7.css`; lidhjet me këta skedarë janë shtuar në `demo/ILLYRIAN_DEMO_v1.7.html`. Nuk janë ndryshuar modulet e vjetra Shop, Plans, Connections apo Privacy/Map. Moduli i avancuar hapet nga Shop bazë me butonin `Kërkim i avancuar · Katalogë · Kërkoj…`.
+
+**Funksione të ndërtuara dhe rrjedha demonstrative:**
+- Katalog i zgjeruar me 12 listime **krejt fiktive**, i ndarë nga lista bazë e Shop; grupim i ofertave të të njëjtit shembull SKU `espresso-250g` nga 3 dyqane, krahasim i çmimeve dhe i inventarit demonstrues. SKU është një identifikues shembull, **nuk provohet** që produkte reale janë identike.
+- Kërkim me fjalë kyçe; filtra kategori, qyteti, interval çmimi, vetëm produkte me stok, vit minimal/kilometra maksimalë për makina, sipërfaqe minimale për banesa me qira; renditje dhe pastrim filtrash.
+- Katalog për çdo dyqan, me emrin, qytetin, numrin e listimeve dhe stokun ilustrues; pa reputacion apo identitet të verifikuar.
+- Krijim dhe redaktim i listimeve vetjake me fusha të kategorisë dhe validim: produkte me inventar, makina me vit/km, banesa me m²/lloj/periudhë, shërbime. Ruajtja kryhet **vetëm në localStorage**.
+- **IN9-01 — `Kërkoj…`**: blerësi krijon kërkesë për produkt/shërbim me kategori, qytet, buxhet dhe afat 7/14/30 ditë; një shitës ilustrues jep përgjigje, kërkesa mund të hiqet. **Nuk ka kontakt, përputhje automatike ose njoftim te shitës real**.
+- Promovimet fiktive shënohen `PROMOVUAR · DEMO`; përdoruesi mund të raportojë një listim. Raporti shënohet `në shqyrtim` vetëm në simulim; **nuk ka moderator, vendim ose apel real**.
+- Shembull me normë komisioni **5% thjesht ilustruese, jo të miratuar**; krijim porosie pa pagesë dhe kërkesë anulimi/kthimi, pa dërgesë, faturim, rezervim, refund apo provë dorëzimi real.
+- Modaliteti përdor CSS Light/Dark, kontrolle tastiere `Tab/Shift+Tab/Escape`, `inert` të Shop bazë gjatë hapjes, rikthim të fokusit në mbyllje dhe escape HTML për të dhënat tekstuale.
+
+**QA e verifikuar:** **35/35 prova të logjikës dhe gjendjes** mbi kodin e saktë GitHub në V8 me DOM dhe localStorage të simuluar: krahasim i 3 ofertave, filtra të kombinuara dhe çmime të pavlefshme, stok, makinat, sipërfaqja e qirasë, krijim/redaktim listimi, kërkesë blerësi, përgjigje shitësi, raportim, porosi e anulim demonstrues, fokus dhe rivendosje inert. JavaScript sintaksisht **PASS**. **Këto nuk janë teste vizuale në Chromium real, Playwright, E2E në Vercel ose prova fizike në Android/iOS.**
+
+**Mbeten për t'u zgjeruar/verifikuar:**
+- Fotografitë dhe media e produkteve, variante/madhësi, kategorizim i detajuar i dyqaneve dhe inventar i përbashkët me Shop bazë; aktualisht Shop Plus ka katalog demonstrues të pavarur.
+- Në mënyrë profesionale, identiteti i listimeve të së njëjtës SKU, çmimet, stoku, kohët e qirasë dhe disponueshmëria e makinave **nuk janë verifikuar**.
+- Logjika reale e komisionit, pagesave, ndarjes së të ardhurave, kthimeve, anulimeve, reklamave, moderimit dhe apelimeve kërkon miratim, politikë ligjore dhe backend.
+- Regresion vizual mobil/landscape me të gjithë modulet aktive dhe kontroll i buxhetit të performancës për çdo kategori.
+- Pa pagesa, rezervime, kërkesa të dërguara ose shpenzime reale. Asnjë tarifë 5% nuk është vendosur.
 
 ## Paketa 6 — Besimi dhe menaxhimi [E PLANIFIKUAR]
 - IN9-06 sinjal besueshmërie vetëm me shpjegim, pa badge sigurie të pavërtetuar.
