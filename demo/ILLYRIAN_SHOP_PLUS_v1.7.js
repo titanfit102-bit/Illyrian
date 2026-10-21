@@ -267,11 +267,11 @@
   }
   if(form.id==='isp-create'){
    const kind=v('type'),name=v('name'),store=v('store'),city=v('city'),p=num('price'),q=num('quantity'),year=num('year'),km=num('mileage'),area=num('area');
-   if(!TYPES.slice(1).includes(kind)||!CITIES.slice(1).includes(city)||name.length<4||name.length>90||store.length<2||store.length>70||p===null||p<.5||p>10000000){
+   if(!TYPES.slice(1).includes(kind)||!CITIES.slice(1).includes(city)||name.length<4||name.length>90||store.length<2||store.length>70||p===null||!Number.isFinite(p)||p<.5||p>10000000){
     state.notice='Plotëso saktë emrin, dyqanin, qytetin dhe çmimin.';render();return}
    if(kind==='Produkte'&&(q===null||!Number.isInteger(q)||q<0||q>10000)){state.notice='Inventari duhet të jetë 0–10000 copë.';render();return}
    if(kind==='Makina'&&(year===null||!Number.isInteger(year)||year<1950||year>2030||km===null||!Number.isInteger(km)||km<0||km>2000000)){state.notice='Vendos vitin dhe kilometrat e makinës.';render();return}
-   if(kind==='Banesa me qira'&&(area===null||area<1||area>10000)){state.notice='Vendos sipërfaqen e banesës.';render();return}
+   if(kind==='Banesa me qira'&&(area===null||!Number.isFinite(area)||area<1||area>10000)){state.notice='Vendos sipërfaqen e banesës.';render();return}
    const old=state.items.find(i=>i.id===state.editId&&i.owned);
    if(!old&&state.items.length>=30){state.notice='Kufiri i listimeve lokale u arrit.';render();return}
    const item={id:old?.id||'own'+Date.now().toString(36),owned:true,type:kind,name,store,city,price:p,details:v('details').slice(0,450),quantity:kind==='Produkte'?q:null,
@@ -282,7 +282,7 @@
   }
   if(form.id==='isp-need'){
    const type=v('type'),city=v('city'),title=v('title'),budget=num('budget'),days=num('days');
-   if(!TYPES.slice(1).includes(type)||!CITIES.slice(1).includes(city)||title.length<5||title.length>90||budget===null||budget<1||budget>10000000||![7,14,30].includes(days)){
+   if(!TYPES.slice(1).includes(type)||!CITIES.slice(1).includes(city)||title.length<5||title.length>90||budget===null||!Number.isFinite(budget)||budget<1||budget>10000000||![7,14,30].includes(days)){
     state.notice='Kontrollo kërkesën, qytetin, buxhetin dhe afatin.';render();return}
    if(state.needs.length>=25){state.notice='Kufiri lokal i kërkesave u arrit.';render();return}
    state.needs.push({id:'n'+Date.now().toString(36),owned:true,type,city,title,budget,details:v('details').slice(0,240),expires:new Date(Date.now()+days*86400000).toISOString()});
