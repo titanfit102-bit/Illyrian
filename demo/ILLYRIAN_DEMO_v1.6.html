@@ -1545,7 +1545,7 @@ document.head.appendChild(v15Style);
 // ---- ILLYRIAN v1.6: isolated upgrade (preserves v1.5 sources and storage keys) ----
 (function v16Install(){
   // ILLYRIAN v1.6: Story/Reel viewing upgrades ONLY. All media remains browser-local.
-  const memory={origin:null,eventReturn:null,ownClock:null,ownTimer:null,storyClock:null,storyTimer:null,reelCommentIndex:null,gesture:null,ignoreTapUntil:0};
+  const memory={origin:null,eventReturn:null,ownClock:null,ownTimer:null,storyClock:null,storyTimer:null,reelCommentIndex:null,reelReturn:null,gesture:null,ignoreTapUntil:0};
   const ownList=kind=>kind==='story'?v15Stories:kind==='reel'?v15Reels:[];
   const ownFind=(kind,id)=>ownList(kind).find(x=>x.id===id);
   const captureOrigin=()=>({tab:state.tab,scroll:Number(document.querySelector('#screen')?.scrollTop||0)});
@@ -1588,6 +1588,9 @@ document.head.appendChild(v15Style);
     if(!list.length){closeOwn();return;}
     const idx=list.findIndex(x=>x.id===m.id);
     if(idx<0){closeOwn();return;}
+    // A completed personal Story exits; Reels retain their existing circular browsing.
+    if(m.kind==='story'&&delta>0&&idx===list.length-1){closeOwn();return;}
+    if(m.kind==='story'&&delta<0&&idx===0)return;
     state.modal={type:'v16-view',kind:m.kind,id:list[(idx+delta+list.length)%list.length].id};
     stopOwn();
     render({scroll:true});
@@ -1680,6 +1683,9 @@ document.head.appendChild(v15Style);
     if(state.modal?.type==='event'&&memory.eventReturn?.plan===state.modal.id){
       html=html.replace('<div class="modalhead">','<div class="v16-return"><button data-act="v16-back">← Kthehu te '+(memory.eventReturn.kind==='story'?'Story':'Reel')+' im</button></div><div class="modalhead">');
     }
+    if(memory.reelReturn&&['user-profile','chat'].includes(state.modal?.type)){
+      html=html.replace('<div class="modalhead">','<div class="v16-return"><button type="button" data-act="v16-reel-back">← Kthehu te Reel</button></div><div class="modalhead">');
+    }
     return html;
   };
   const previousReel=reelContent;
@@ -1695,7 +1701,39 @@ document.head.appendChild(v15Style);
     if(!saveValue(commentKey,next))return;
     comments=next;render({scroll:true});toast('Komenti u ruajt vetëm në këtë demo.');
   }
+  function restoreReel(){
+    const from=memory.reelReturn;
+    memory.reelReturn=null;
+    if(!from)return false;
+    state.modal=null;state.story=0;state.reelOpen=true;
+    state.reelIndex=Math.max(0,Math.min(reels.length-1,from.index));
+    state.tab=from.tab;render({scroll:true});
+    const screen=document.querySelector('#screen');
+    if(screen)screen.scrollTop=from.scroll;
+    return true;
+  }
+  // Legacy buttons and overlay dismissal both call close(); preserve Reel origin in either case.
+  const previousClose=close;
+  close=function(){
+    if(memory.reelReturn&&['user-profile','chat'].includes(state.modal?.type)){restoreReel();return;}
+    memory.reelReturn=null;
+    return previousClose();
+  };
+  const previousTab=tab;
+  tab=function(id){memory.reelReturn=null;return previousTab(id);};
+  const previousOpenModal=openModal;
+  openModal=function(type,id){
+    if(memory.reelReturn&&!['user-profile','chat'].includes(type))memory.reelReturn=null;
+    return previousOpenModal(type,id);
+  };
   function handle(action,id,val){
+    if(action==='reel-person'||action==='reel-chat'){
+      if(!state.reelOpen)return false;
+      memory.reelReturn={index:state.reelIndex,tab:state.tab,scroll:Number(document.querySelector('#screen')?.scrollTop||0)};
+      openModal(action==='reel-chat'?'chat':'user-profile',id);return true;
+    }
+    if(action==='v16-reel-back')return restoreReel();
+    if(action==='nextStory'&&state.story===4){state.v6StoryPaused=false;close();return true;}
     if(['story','nextStory','prevStory'].includes(action)){state.v6StoryPaused=false;return false;}
     if(action==='v15-view')return viewOwn(val,id);
     if(action==='v15-publish'){
