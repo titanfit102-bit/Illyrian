@@ -213,3 +213,34 @@ Kontrolli u bë në **Chromium real** me një kandidat lokal, i ndërtuar nga ko
 - Kodi i publikuar në GitHub ka një implementim funksionalisht ekuivalent me kandidatin lokal të testuar; për shkak të kufizimit të aksesit SSO, nuk është testuar me navigim real te URL-ja e Vercel Preview pas commit-it.
 
 **Izolimi:** janë ndryshuar vetëm skedari HTML i v1.6 dhe ky raport në degën `demo/v1.6-stories-reels`. Nuk ka autorizim për merge, ndryshim `vercel.json`, Google Drive apo Vercel Production.
+
+
+## Fokus i sigurt në ekranin fillestar — 21 tetor 2026
+
+**Autorizimi:** Përdoruesi kërkoi “vazhdo” pas propozimit për të korrigjuar vetëm rrjedhën me tastierë të ekranit fillestar të mirëseardhjes.
+
+**Commit HTML:** `a7d3c33568c2a069e809aee0de3ce9179d72827e`. Ndryshimi është i izoluar në fund të skriptit të v1.6 dhe mbështjell vetëm funksionin ekzistues `v7Render`, pa rishkruar logjikën e hyrjes.
+
+### Problemi
+
+Në hapjen e parë, ekranit `#v7-auth` i mungonte menaxhimi modal i fokusit; shtypja e `Tab` e çonte fokusin te butonat e fshehur të Kryefaqes, edhe pse vizualisht ishte i hapur ekrani i mirëseardhjes.
+
+### Korrigjimi
+
+- Kur `#v7-auth` është i dukshëm, i caktohet roli `dialog`, `aria-modal="true"` dhe një emër i aksesueshëm; përmbajtja pas tij vendoset `inert`.
+- Fokusi fillestar shkon te kontrolli i parë i ekranit. `Tab` dhe `Shift+Tab` qarkullojnë vetëm midis kontrolleve të dukshme dhe aktive të hyrjes.
+- Fokusi ruhet te zgjedhja përkatëse gjatë rirenderimit të të njëjtit hap (p.sh. te interesat e onboarding).
+- Pas përfundimit si vizitor ose pas krijimit të profilit demonstrues, `inert` hiqet; fokusi kthehet te kontrolli i origjinës kur ekziston, përndryshe te navigimi i aplikacionit.
+- Funksionet e vjetra të Story/Reel, mesazheve, përmbajtjes dhe ruajtjes lokale nuk ndryshohen.
+
+### Testet para commit-it
+
+Rrjedha fillestare u testua në Chromium përmes `page.set_content` dhe ruajtjes së simuluar në memorie, në **320, 360, 390 dhe 430 CSS px**.
+
+Në secilën gjerësi kaluan **12 kontrolle të fokusuara**: dialogu dhe `aria-modal`, fokusimi fillestar, `Tab` përpara, qarkullimi pas elementit të fundit, `Shift+Tab` prapa, mbrojtja nga fokusimi programatik i sfondit, hapja e regjistrimit demo, kthimi te mirëseardhja, hyrja demo, rikuperimi demonstrues, turneu i vizitorit dhe lirimi i fokusit/`inert` pas përfundimit. **48/48** në total; asnjë gabim JavaScript.
+
+Veçmas, kaloi rruga e plotë e regjistrimit të një profili demonstrues me tri hapa dhe përzgjedhje interesi, përfshirë mbajtjen e fokusit në të njëjtin interes pas klikimit.
+
+**Kufizim:** testimi është bërë në kopjen lokale me këtë shtresë të izoluar të aplikuar në burimin v1.6; është verifikuar edhe sintaksa e plotë JS në GitHub para commit-it. Nuk përbën test në telefon fizik, auditim të plotë WCAG apo testim E2E direkt te domeni i mbrojtur Preview.
+
+**Izolimi:** vetëm `demo/ILLYRIAN_DEMO_v1.6.html` dhe `demo/ILLYRIAN_DEMO_v1.6_NOTES.md` në degën `demo/v1.6-stories-reels`. Nuk ndryshohen `main`, Google Drive ose Vercel Production.
