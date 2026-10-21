@@ -210,8 +210,8 @@
       draft={title,kind,city,place:'',date:'',time:'17:00',capacity:8,price:0,privacy:'public',conditions:String(d.conditions||'').slice(0,240)};
       state.edit=null;
       state.role='organizer';
-      state.notice='Draft demonstrues. Konfirmo vendin, datën, orën, kapacitetin dhe kushtet përpara publikimit.';
       open();
+      state.notice='Draft demonstrues. Konfirmo vendin, datën, orën, kapacitetin dhe kushtet përpara publikimit.';
       state.view='form';
       render();
     });
