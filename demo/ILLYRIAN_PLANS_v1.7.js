@@ -2,7 +2,7 @@
 (function installIllyrianPlans() {
   'use strict';
   const KEY='illyrian_demo_v17_plans';
-  const cities=['Tiranë','Durrës','Shkodër','Vlorë','Prishtinë','Milano','Romë'];
+  const cities=['Tiranë','Durrës','Shkodër','Vlorë','Prishtinë','Elbasan','Milano','Romë','Berlin'];
   const kinds=['Sport','Miqësi dhe komunitet','Kulturë','Alumni','Bashkëpunim'];
   const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const after=n=>{const d=new Date();d.setDate(d.getDate()+n);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
