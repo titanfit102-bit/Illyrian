@@ -1,0 +1,53 @@
+/* ILLYRIAN Shop Plus v1.7 — isolated styles for advanced demo marketplace */
+#phone #isp-root[hidden]{display:none}
+#phone #isp-root{position:absolute;inset:0;z-index:6200;font-size:12px;color:var(--ink)}
+#phone .isp-shade{position:absolute;inset:0;background:#0b050ae7}
+#phone .isp-panel{position:absolute;inset:0;box-sizing:border-box;overflow:auto;overscroll-behavior:contain;padding:18px 14px 30px;background:var(--card);color:var(--ink);scrollbar-width:thin}
+#phone .isp-panel header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+#phone .isp-panel header small{font-size:9px;color:#e50c37;font-weight:850;letter-spacing:.1em}
+#phone .isp-panel h2{font-size:18px;margin:5px 0}
+#phone .isp-panel h3{font-size:15px;margin:12px 0 8px}
+#phone .isp-panel h4{font-size:13px;margin:7px 0}
+#phone .isp-panel p{font-size:11px;line-height:1.5}
+#phone .isp-panel button{border:0;cursor:pointer;min-height:44px;min-width:44px;padding:8px 12px;margin:2px;border-radius:10px;background:#e50c37;color:#fff;font-size:11px;font-weight:750}
+#phone .isp-panel .isp-nav{display:flex;overflow:auto;gap:5px;margin:14px 0;padding-bottom:5px;scrollbar-width:thin}
+#phone .isp-panel .isp-nav button{flex:none;background:var(--card2);color:var(--ink);white-space:nowrap}
+#phone .isp-panel .isp-nav button[aria-current="page"]{background:#e50c37;color:#fff}
+#phone .isp-hero{padding:13px;border-radius:15px;background:linear-gradient(140deg,#e50c371f,var(--card2));border:1px solid var(--border);margin:10px 0}
+#phone .isp-hero b{font-size:10px;color:#e50c37;letter-spacing:.07em}
+#phone .isp-hero h2{font-size:16px}
+#phone .isp-hero p{margin:6px 0}
+#phone .isp-kinds{display:flex;gap:6px;overflow:auto;scrollbar-width:thin;padding-bottom:4px}
+#phone .isp-kinds button{flex:none;background:var(--card2);color:var(--ink);white-space:nowrap}
+#phone .isp-kinds .chosen{background:#e50c37;color:#fff}
+#phone .isp-fields{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+#phone .isp-fields label,#phone #isp-root form>label{display:grid;gap:5px;font-size:11px;font-weight:700;min-width:0}
+#phone .isp-fields input,#phone .isp-fields select,#phone .isp-fields textarea,#phone #isp-root form>label select,#phone #isp-root form>label textarea{width:100%;box-sizing:border-box;min-width:0;min-height:44px;padding:10px;border:1px solid var(--border);border-radius:9px;background:var(--card);color:var(--ink);font-size:12px}
+#phone .isp-fields .isp-span{grid-column:1/-1}
+#phone .isp-check{display:flex!important;flex-direction:row;gap:8px;align-items:center;margin:7px 0}
+#phone .isp-check input{width:20px;height:20px;flex:none}
+#phone .isp-actions{display:flex;flex-wrap:wrap;gap:5px}
+#phone .isp-rowhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
+#phone .isp-rowhead span{font-size:10px;color:var(--muted)}
+#phone .isp-cards{display:grid;grid-template-columns:1fr;gap:10px}
+#phone .isp-card{border:1px solid var(--border);background:var(--card2);border-radius:13px;padding:12px;min-width:0;margin:9px 0}
+#phone .isp-card strong{font-size:14px}
+#phone .isp-card p{margin:6px 0;color:var(--muted);overflow-wrap:anywhere}
+#phone .isp-typeline{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:space-between}
+#phone .isp-typeline span{color:var(--muted);font-size:10px}
+#phone .isp-sponsored{display:inline-block;border:1px solid #e50c3770;padding:5px 7px;border-radius:20px;background:var(--card);color:var(--ink);font-size:9px;font-weight:850}
+#phone .isp-compare{border:1px solid #e50c3755;border-radius:14px;padding:11px;margin:14px 0}
+#phone .isp-compare article{background:var(--card2);padding:10px;border-radius:11px;margin:9px 0}
+#phone .isp-offer{display:flex;justify-content:space-between;align-items:center;gap:7px;border-top:1px solid var(--border);padding:9px 0;font-size:10px}
+#phone .isp-offer span{flex:1;overflow-wrap:anywhere}
+#phone .isp-offer b{white-space:nowrap}
+#phone .isp-offer small{color:var(--muted)}
+#phone .isp-focus{padding:14px;margin-top:13px}
+#phone .isp-active,#phone .isp-notice{border-radius:9px;padding:10px;background:#e50c3720;color:var(--ink);font-size:11px}
+#phone .isp-reply{background:var(--card);padding:9px;border-radius:8px}
+#phone .isp-muted,#phone .isp-empty{color:var(--muted);font-size:11px;line-height:1.55}
+#phone .isp-empty{background:var(--card2);border-radius:10px;padding:18px;text-align:center}
+#phone #isp-root footer{font-size:10px;color:var(--muted);border-top:1px solid var(--border);margin-top:20px;padding-top:12px;line-height:1.5}
+#phone #illyrian-shop-layer [data-isp-open]{background:linear-gradient(120deg,#e50c37,#c90c49);color:#fff;font-weight:800}
+@media(max-width:355px){#phone .isp-fields{grid-template-columns:1fr}#phone .isp-fields .isp-span{grid-column:auto}}
+@media(orientation:landscape) and (max-height:520px){#phone .isp-panel{padding-top:8px}}
