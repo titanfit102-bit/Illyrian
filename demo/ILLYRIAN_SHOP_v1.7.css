@@ -1,0 +1,81 @@
+/* ILLYRIAN Shop v1.7 - demo-specific UI only. */
+#phone .ils-entry{margin:12px 14px;padding:15px;border:1px solid rgba(229,12,55,.22);border-radius:18px;background:linear-gradient(125deg,var(--card,#fff),rgba(229,12,55,.09));display:flex;align-items:center;gap:10px;justify-content:space-between;box-sizing:border-box}
+#phone .ils-entry>div{display:grid;gap:4px;min-width:0}
+#phone .ils-entry span{font-size:9px;letter-spacing:1px;color:var(--muted,#706570);font-weight:800}
+#phone .ils-entry strong{font-size:13px;line-height:1.25;color:var(--ink,#2a0b18)}
+#phone .ils-entry small{font-size:10px;color:var(--muted,#706570);line-height:1.4}
+#phone .ils-entry button{flex:none;min-height:44px;padding:8px 12px;border:0;border-radius:12px;background:#E50C37;color:white;font-weight:800;font-size:11px;cursor:pointer}
+#phone .ils-overlay{position:absolute;inset:0;z-index:950;display:flex;flex-direction:column;background:var(--bg,#F8F5F6);color:var(--ink,#0B050A);overflow:hidden;font-family:inherit;isolation:isolate}
+#phone .ils-overlay *{box-sizing:border-box}
+#phone .ils-top{display:flex;align-items:center;gap:12px;flex:none;min-height:76px;padding:13px 14px 10px;border-bottom:1px solid var(--line,rgba(0,0,0,.08));background:var(--card,#fff)}
+#phone .ils-top>div{flex:1;min-width:0;display:grid;gap:3px}
+#phone .ils-top strong{font-size:17px;letter-spacing:-.4px}
+#phone .ils-top strong span{color:#E50C37}
+#phone .ils-top small{font-size:10px;color:var(--muted,#706570)}
+#phone .ils-top button{border:0;background:var(--bg,#f8f5f6);color:var(--ink,#0B050A);height:44px;min-width:44px;border-radius:12px;font-size:19px;cursor:pointer}
+#phone .ils-top .ils-cart{font-size:15px;display:flex;align-items:center;gap:3px}
+#phone .ils-top .ils-cart b{font-size:10px;color:#E50C37}
+#phone .ils-body{flex:1;min-height:0;overflow:auto;padding:14px 14px 35px;overscroll-behavior:contain}
+#phone .ils-body h2{font-size:19px;letter-spacing:-.5px;line-height:1.25;margin:10px 0 12px}
+#phone .ils-splash{border-radius:19px;background:linear-gradient(130deg,#2A0B18,#811d3c 60%,#E50C37);color:white;padding:20px 17px;margin-bottom:14px}
+#phone .ils-splash span{font-size:9px;font-weight:850;letter-spacing:1px;color:#ffb3c0}
+#phone .ils-splash h2{font-size:21px;color:#fff;margin:8px 0}
+#phone .ils-splash p{font-size:11px;line-height:1.55;opacity:.86}
+#phone .ils-search{display:flex;align-items:center;gap:8px;height:48px;background:var(--card,#fff);border:1px solid var(--line,rgba(0,0,0,.12));border-radius:14px;padding:0 12px;margin-bottom:12px}
+#phone .ils-search span{font-size:25px;color:var(--muted,#706570)}
+#phone .ils-search input{width:100%;min-width:0;height:44px;border:0!important;outline:0;background:transparent;color:var(--ink,#0B050A);font-size:13px}
+#phone .ils-category{display:flex;gap:7px;overflow:auto;scrollbar-width:none;margin:10px -14px 13px;padding:0 14px}
+#phone .ils-category button{white-space:nowrap;min-height:40px;flex:none;border:1px solid var(--line,rgba(0,0,0,.1));border-radius:999px;padding:0 12px;background:var(--card,#fff);color:var(--ink,#0B050A);font-weight:750;font-size:11px;cursor:pointer}
+#phone .ils-category button.selected{color:white;background:#E50C37;border-color:#E50C37}
+#phone .ils-filter{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#phone .ils-filter label,#phone .ils-form label{font-size:11px;color:var(--muted,#706570);font-weight:750;display:grid;gap:6px}
+#phone .ils-filter select,#phone .ils-form input,#phone .ils-form select,#phone .ils-form textarea{height:44px;min-width:0;width:100%;border:1px solid var(--line,rgba(0,0,0,.15));background:var(--card,#fff);color:var(--ink,#0B050A);border-radius:11px;padding:10px;font:inherit;font-size:12px}
+#phone .ils-form textarea{height:auto;min-height:92px;resize:vertical}
+#phone .ils-actions{display:flex;gap:8px;margin:15px 0}
+#phone .ils-btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;text-align:center;border:1px solid #E50C37;border-radius:12px;background:#E50C37;color:white;font-size:11px;font-weight:850;padding:11px 12px;cursor:pointer;flex:1}
+#phone .ils-btn.ils-secondary{background:var(--card,#fff);color:#E50C37}
+#phone .ils-selected-store{margin:12px 0;padding:10px;border-radius:10px;background:var(--card,#fff);font-size:11px;display:flex;align-items:center;justify-content:space-between;gap:7px}
+#phone .ils-selected-store button,#phone .ils-seller button{border:0;background:none;color:#E50C37;font-weight:800;font-size:11px;cursor:pointer}
+#phone .ils-section-head{display:flex;align-items:center;justify-content:space-between;margin:17px 0 12px}
+#phone .ils-section-head h3{font-size:14px;margin:0}
+#phone .ils-section-head small{font-size:10px;color:var(--muted,#706570)}
+#phone .ils-shops{background:var(--card,#fff);padding:12px;border:1px solid var(--line,rgba(0,0,0,.08));border-radius:14px;margin-bottom:13px}
+#phone .ils-shops strong{font-size:11px}
+#phone .ils-shops>div{display:flex;gap:6px;overflow:auto;margin-top:9px}
+#phone .ils-shops button{white-space:nowrap;background:var(--bg,#f8f5f6);border:1px solid var(--line,rgba(0,0,0,.1));border-radius:10px;min-height:40px;padding:7px 11px;color:var(--ink,#0B050A);font-size:10px;cursor:pointer}
+#phone .ils-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#phone .ils-card{min-width:0;overflow:hidden;border-radius:16px;background:var(--card,#fff);border:1px solid var(--line,rgba(0,0,0,.08))}
+#phone .ils-illustration{height:96px;display:flex;align-items:center;justify-content:center;font-size:42px;background:linear-gradient(135deg,rgba(229,12,55,.13),rgba(249,100,79,.2))}
+#phone .ils-card-main{display:flex;flex-direction:column;gap:6px;padding:11px;min-height:172px}
+#phone .ils-kind{font-size:9px;letter-spacing:.5px;color:#E50C37;font-weight:800}
+#phone .ils-card h3{font-size:12px;line-height:1.3;margin:0;min-height:30px;overflow-wrap:anywhere}
+#phone .ils-card strong{font-size:14px}
+#phone .ils-card p{font-size:10px;color:var(--muted,#706570);line-height:1.3;margin:0;overflow-wrap:anywhere}
+#phone .ils-card .ils-btn{flex:none;margin-top:auto;min-height:40px}
+#phone .ils-empty{border:1px dashed var(--line,rgba(0,0,0,.14));padding:30px 16px;margin:12px 0;text-align:center;border-radius:14px;font-size:12px;color:var(--muted,#706570)}
+#phone .ils-demo-note{font-size:10px;line-height:1.5;color:var(--muted,#706570);padding:12px;margin-top:15px;text-align:center}
+#phone .ils-text-link{border:0;background:none;color:#E50C37;font-size:12px;font-weight:850;min-height:40px;margin-bottom:8px;cursor:pointer}
+#phone .ils-product-cover{font-size:90px;display:flex;align-items:center;justify-content:center;height:195px;border-radius:18px;background:linear-gradient(135deg,rgba(229,12,55,.13),rgba(249,100,79,.22));margin-bottom:16px}
+#phone .ils-price{font-size:21px;color:#E50C37;margin:8px 0}
+#phone .ils-description{font-size:12px;line-height:1.6;color:var(--muted,#706570);margin-bottom:17px}
+#phone .ils-seller{border-radius:14px;padding:15px;background:var(--card,#fff);display:grid;gap:8px;margin:15px 0}
+#phone .ils-seller small{color:var(--muted,#706570)}
+#phone .ils-seller strong{font-size:15px}
+#phone .ils-info{border-radius:14px;background:rgba(229,12,55,.07);padding:13px;margin-top:15px;font-size:11px;line-height:1.6}
+#phone .ils-form{display:grid;gap:14px}
+#phone .ils-cart-row{display:flex;gap:11px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line,rgba(0,0,0,.1))}
+#phone .ils-cart-row>span{font-size:31px}
+#phone .ils-cart-row>div{flex:1;min-width:0;display:grid;gap:6px}
+#phone .ils-cart-row strong{font-size:12px}
+#phone .ils-cart-row small{font-size:10px;color:var(--muted,#706570)}
+#phone .ils-cart-row button{background:none;color:#E50C37;border:0;font-size:10px;min-height:40px;cursor:pointer}
+#phone .ils-checkout{background:var(--card,#fff);border-radius:16px;padding:14px;margin-top:18px}
+#phone .ils-checkout>div{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+#phone .ils-checkout p{font-size:11px;line-height:1.65;color:var(--muted,#706570);margin:12px 0}
+#phone .ils-checkout .ils-btn{width:100%}
+#phone .ils-success{text-align:center;display:grid;justify-items:center;gap:10px;padding:32px 8px}
+#phone .ils-success>span{font-size:56px;color:#E50C37}
+#phone .ils-success p{font-size:12px;color:var(--muted,#706570)}
+#phone .ils-toast{position:absolute;bottom:20px;left:15px;right:15px;z-index:100;box-shadow:0 10px 30px #0004;background:#2A0B18;color:white;border-radius:12px;padding:14px;text-align:center;font-size:12px}
+@media(max-width:345px){#phone .ils-results{grid-template-columns:1fr 1fr}#phone .ils-entry{align-items:stretch;flex-direction:column}#phone .ils-entry button{width:100%}#phone .ils-card-main{padding:8px}}
+@media(max-height:450px) and (orientation:landscape){#phone .ils-top{min-height:55px;padding-top:5px;padding-bottom:5px}#phone .ils-body{padding-bottom:14px}#phone .ils-splash{padding:10px 14px}#phone .ils-splash h2{font-size:16px}}
