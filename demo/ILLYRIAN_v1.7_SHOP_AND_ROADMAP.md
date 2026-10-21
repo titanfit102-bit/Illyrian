@@ -2,7 +2,7 @@
 
 **Data e nisjes:** 21 tetor 2026  
 **Burimi:** kërkesa eksplicite e përdoruesit për t'i ndërtuar të gjitha funksionet e mbetura të demos, plus ILLYRIAN Shop (produkte, dyqane të vogla, makina, banesa me qira dhe kërkim ndër-dyqanesh), me vazhdim fazë pas faze.  
-**Status:** PAKETAT 1–5 TË IMPLEMENTUARA NË KOD NË DEGË (Faza 5: bazë funksionale, disa zgjerime ende të hapura); paketat 6–8 ende të planifikuara. QA e Fazave 3–5 përfshin kontrolle të logjikës në V8, jo test të plotë E2E në Chromium/telefon.  
+**Status:** PAKETAT 1–6 KANË IMPLEMENTIM BAZË NË KODIN E DEGËS SË TESTIMIT; paketat 7–8 mbeten për t'u realizuar. Fazat 3–6 kanë prova të logjikës me DOM të simuluar; nuk është përfunduar ende regresioni real në Chromium/telefon ose miratimi i demos.  
 **Dega e izoluar:** `demo/v1.7-illyrian-shop`; baza `demo/v1.6-stories-reels`.  
 **Mbrojtja:** Nuk preken `main`, Vercel Production, projekti tjetër ose skedarët ekzistues të v1.6. NUK autorizohen vetvetiu pagesa, komisione reale, investim apo publikim në dyqane.
 
@@ -108,10 +108,30 @@
 - Regresion vizual mobil/landscape me të gjithë modulet aktive dhe kontroll i buxhetit të performancës për çdo kategori.
 - Pa pagesa, rezervime, kërkesa të dërguara ose shpenzime reale. Asnjë tarifë 5% nuk është vendosur.
 
-## Paketa 6 — Besimi dhe menaxhimi [E PLANIFIKUAR]
+## Paketa 6 — Besimi dhe menaxhimi [BAZA E IMPLEMENTUAR NË DEMO; QA V8]
 - IN9-06 sinjal besueshmërie vetëm me shpjegim, pa badge sigurie të pavërtetuar.
 - Panel moderimi me raporte, arsye, apelime demonstrative dhe privatësi të simulimit.
 - Panel pune për organizatorë, biznes, shitës dhe punëdhënës në nivel UX demonstrues.
+
+
+### Zbatimi i Fazës 6 — 21 tetor 2026
+
+**Skedarët e rinj:** `demo/ILLYRIAN_GOVERNANCE_v1.7.js`, `demo/ILLYRIAN_GOVERNANCE_v1.7.css`. HTML-ja `demo/ILLYRIAN_DEMO_v1.7.html` u përditësua të ngarkojë modulin e gjashtë, pa ndryshuar pesë modulet e mëparshme.
+
+**IN9-06 — besueshmëri me shpjegim.** Tre shpjegime demonstrative: `Të dhëna të deklaruara`, `Rrjedhë demonstrative`, `Në pritje të shqyrtimit`. UI deklaron shprehimisht se asnjë shitës/biznes/përdorues nuk është verifikuar dhe nuk përdor emblemë `i verifikuar` pa prova. Këto etiketa janë status informatash, jo kontrolle identiteti.
+
+**Moderimi dhe apelimi UX.** Paneli importon, vetëm për lexim, raportimet e `ILLYRIAN_SHOP_PLUS_v1.7.js` nga çelësi `illyrian_demo_v17_shop_plus`, bashkë me shembuj fiktivë. Përdoruesi mund të krijojë raport lokal me arsye; roli moderator **vetëm në UI** mund të kërkojë sqarim, të shënojë kufizim, të mbyllë një rast ose të heqë një kufizim, duke shkruar një arsye të detyrueshme. Përdoruesi mund të krijojë apelim dhe roli moderator demo ta pranojë/refuzojë me arsye. Një apelim i pranuar e shënon rastin përkatës `reinstated` vetëm në këtë panel. Ekziston histori e veprimeve **lokale dhe e ndryshueshme**; nuk është audit log sigurie, as moderim real. Veprimet nuk e fshijnë listimin e Shop dhe nuk njoftojnë askënd.
+
+**Panele pune UX demo.** Roli biznes krijon draft oferte lokale; shitësi sheh numrin e listimeve të veta dhe të kërkesave lokale nga Shop Plus; punëdhënësi krijon draft punësimi, provon ndryshimin e statusit të një kandidati shembull; organizatori sheh numrin e aktiviteteve dhe kërkesave nga moduli `Plans`. Asnjë draft nuk publikohet, nuk shpërndahet apo u jep të tjerëve qasje.
+
+**Përmirësime përdorshmërie.** Panel modal `role="dialog"`, `aria-modal`, fokus, `Tab/Shift+Tab/Escape`, `inert` për sfondin dhe rikthim i gjendjes pas mbylljes. Tekstet nga ruajtja lokale kalojnë në `escape HTML`. Kufij për numrin e raporteve, apelve, drafteve dhe gjatësinë e tekstit.
+
+**Verifikimi:** 31/31 kontrolle të logjikës në V8 me DOM/localStorage të simuluar mbi kodin e saktë të GitHub-it, përfshirë rastin e raportuar nga Shop Plus, moderimin me shpjegim, apelimin, pranimin dhe rikthimin e statusit, historikun, panelet e punës, fshirjen e draftit dhe çaktivizimin/rikthimin e sfondit. Kontrolli i sintaksës JavaScript PASS. **Jo** provë reale Chromium/Playwright, **jo** test në telefon fizik, **jo** validim WCAG dhe **jo** verifikim i Preview-it të commit-it përfundimtar.
+
+**Kufizime produkti:** rolet e administrimit nuk kanë autorizim nga serveri; vendimet nuk zbatojnë masa reale; raportet dhe apelimet nuk janë komunikim me një moderator të vërtetë; log-u mund të ndryshohet/fshihet nga përdoruesi i shfletuesit. Verifikimi real i bizneseve, siguria, raportimet ndërmjet llogarive, prova, SLA, apelimi i pavarur dhe mbrojtja e të dhënave kërkojnë backend dhe rregulla të dedikuara. Nuk ka pagesa, komisione apo shpenzime.
+
+**Puna e hapur:** testim i përbashkët i të gjashtë moduleve në Chromium dhe ekran fizik; prova tekstesh të gjata, dialogëve me disa shtresa, temave Light/Dark, performancës dhe aksesueshmërisë; pastaj lista finale e ndryshimeve të v1.7 dhe specifikimi i produktit real. Shih Paketën 7.
+
 
 ## Paketa 7 — Përmirësimi vizual, cilësia dhe regresioni [E PLANIFIKUAR]
 - Auditimi i të gjitha ekraneve: theme Auto/Light/Dark, prekje, tastierë, sjellje offline në demo.
