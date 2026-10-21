@@ -1981,6 +1981,71 @@ document.head.appendChild(v15Style);
   document.head.appendChild(sheet);
 })();
 
+
+// ILLYRIAN v1.6 — keyboard focus for first-run welcome and tour (isolated).
+(function v16FirstRunFocus(){
+ const auth=document.querySelector('#v7-auth');
+ if(!auth)return;
+ const behind=['.head','#screen','#navbar','.statusbar','.homebar','.island','#layer'];
+ const selector='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+ let opener=null;
+ const isVisible=()=>auth.classList.contains('visible')&&!auth.hasAttribute('hidden');
+ const items=()=>Array.from(auth.querySelectorAll(selector)).filter(el=>el.getClientRects().length>0&&!el.closest('[hidden],[inert]'));
+ const focus=el=>{if(!el)return;try{el.focus({preventScroll:true})}catch{el.focus()}};
+ const keyFor=el=>el&&el!==document.body?{node:el,id:el.id||'',act:el.dataset?.act||'',val:el.dataset?.val||'',v7:el.dataset?.v7||'',choice:el.dataset?.value||''}:null;
+ const findKey=(key,root)=>{
+   if(!key)return null;
+   if(key.node?.isConnected&&root.contains(key.node))return key.node;
+   if(key.id){const el=Array.from(root.querySelectorAll('[id]')).find(el=>el.id===key.id);if(el)return el;}
+   if(key.v7)return Array.from(root.querySelectorAll('[data-v7]')).find(el=>el.dataset.v7===key.v7&&(el.dataset.value||'')===key.choice)||null;
+   if(key.act)return Array.from(root.querySelectorAll('[data-act]')).find(el=>el.dataset.act===key.act&&(el.dataset.val||'')===key.val)||null;
+   return null;
+ };
+ const first=()=>items()[0]||auth;
+ const moveInside=el=>{if(el===auth&&!auth.hasAttribute('tabindex'))auth.tabIndex=-1;focus(el)};
+ const previousRender=v7Render;
+ v7Render=function(...args){
+   const wasVisible=isVisible();
+   const focused=document.activeElement;
+   const previouslyInside=wasVisible&&auth.contains(focused)?keyFor(focused):null;
+   if(!wasVisible&&focused&&!auth.contains(focused))opener=keyFor(focused);
+   const result=previousRender(...args);
+   const visible=isVisible();
+   for(const sel of behind){const el=document.querySelector('#phone > '+sel);if(el)el.inert=visible;}
+   if(visible){
+     auth.setAttribute('role','dialog');
+     auth.setAttribute('aria-modal','true');
+     auth.setAttribute('aria-label','Hyrja dhe prezantimi i ILLYRIAN');
+     moveInside(findKey(previouslyInside,auth)||first());
+   }else{
+     auth.removeAttribute('role');
+     auth.removeAttribute('aria-modal');
+     auth.removeAttribute('aria-label');
+     if(wasVisible){
+       const prior=opener;
+       opener=null;
+       queueMicrotask(()=>{
+         if(isVisible())return;
+         const destination=findKey(prior,document)||document.querySelector('#navbar .nav-btn.active,#navbar .nav-btn,.head .icon-button');
+         focus(destination);
+       });
+     }
+   }
+   return result;
+ };
+ document.addEventListener('keydown',event=>{
+   if(event.key!=='Tab'||!isVisible())return;
+   const options=items();
+   if(!options.length){event.preventDefault();moveInside(auth);return;}
+   const current=document.activeElement;
+   if(event.shiftKey&&(current===options[0]||!auth.contains(current))){event.preventDefault();focus(options[options.length-1]);}
+   else if(!event.shiftKey&&(current===options[options.length-1]||!auth.contains(current))){event.preventDefault();focus(options[0]);}
+ },true);
+ document.addEventListener('focusin',event=>{
+   if(isVisible()&&!auth.contains(event.target))moveInside(first());
+ },true);
+})();
+
 render();
 v7Render();
 })();
