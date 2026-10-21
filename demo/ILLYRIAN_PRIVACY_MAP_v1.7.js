@@ -34,7 +34,7 @@
   notice:'',open:false,tab:'profiles',selected:'leon',role:'visitor',
   city:'Të gjitha',mapKind:'all',search:'',selectedPin:'m1',showUnlisted:false
  };
- let root=null,opener=null;
+ let root=null,opener=null,inertSnapshot=[];
  const b=(act,label,extra='')=>'<button type="button" data-il4="'+escaped(act)+'" '+extra+'>'+escaped(label)+'</button>';
  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({follow:state.follow,membership:state.membership}));return true}catch{state.notice='Ndryshimi nuk u ruajt; hapësira lokale është plot.';return false}};
  const statusLabel=x=>({none:'Pa kërkesë',pending:'Në pritje',accepted:'I pranuar',declined:'Refuzuar',blocked:'I bllokuar'})[x||'none'];
@@ -129,8 +129,8 @@
   '<footer>Vetëm demonstrim lokal · Nuk ka përdorues, hartë, mesazhe apo kërkesa reale.</footer></section>';
   root.querySelector('.il4-head button')?.focus();
  };
- const open=which=>{if(!root)return;opener=document.activeElement;state.open=true;state.tab=['profiles','groups','map','states'].includes(which)?which:'profiles';state.notice='';state.role='visitor';state.selected=state.tab==='groups'?'albania-milan':'leon';render()};
- const close=()=>{state.open=false;root.hidden=true;if(opener?.isConnected)opener.focus()};
+ const open=which=>{if(!root)return;opener=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.tab=['profiles','groups','map','states'].includes(which)?which:'profiles';state.notice='';state.role='visitor';state.selected=state.tab==='groups'?'albania-milan':'leon';render()};
+ const close=()=>{state.open=false;root.hidden=true;inertSnapshot.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertSnapshot=[];if(opener?.isConnected)opener.focus()};
  const msg=v=>{state.notice=v;save();render()};
  function act(a){
   if(a==='close')return close();
@@ -196,6 +196,9 @@
    if(!cities.includes(city)||!['all','activity','business'].includes(kind)){state.notice='Filtër i pavlefshëm.';render();return}
    state.city=city;state.mapKind=kind;state.search=String(data.get('q')||'').slice(0,60);state.selectedPin='';render();
   });
+  document.addEventListener('focusin',e=>{
+   if(state.open&&!root.contains(e.target))root.querySelector('.il4-head button')?.focus();
+  },true);
   document.addEventListener('keydown',e=>{
    if(!state.open)return;
    if(e.key==='Escape'){e.preventDefault();close();return}
