@@ -67,4 +67,42 @@ JavaScript-i i ri u **ekzekutua** në një mjedis V8 me `document`, `localStorag
 - v1.6 është i izoluar në degën `demo/v1.6-stories-reels`, kështu që mund të krahasohet pa prekur v1.5.
 - **Pa miratim të mëtejshëm nuk bëhet merge, update i `vercel.json`, ose ndryshim në Drive.**
 
-**Përfundim:** v1.6 është krijuar dhe kalon kontrollin e sintaksës plus 28 teste të simuluara; **nuk është ende e verifikuar në shfletues real dhe nuk është gati të quhet e miratuar për Production**.
+## Korrigjimet e autorizuara — v1.6 (21 tetor 2026)
+
+**Autorizimi:** përdoruesi kërkoi “vazhdo” pas propozimit për korrigjimin e dy problemeve, vetëm në këtë skedar HTML dhe raportin e tij në degën e testimit.
+
+**Commit i korrigjimit:** `6f5402328e58a3c9db2908efe4f4ee9f1632d98d`.
+
+### Korrigjimi A — Reel → profil/mesazh → i njëjti Reel
+
+- Për Reel-in demonstrues ruhet indeksi, tab-i i origjinës dhe pozicioni i ekranit përpara hapjes së profilit të autorit ose bisedës.
+- Paneli i profilit/bisedës ka veprimin «Kthehu te Reel». Edhe mbyllja normale dhe prekja e sfondit të modalit kthejnë te Reel-i nga u nis përdoruesi.
+- Kur përdoruesi lundron në një tab ose modal tjetër të palidhur, konteksti i kthimit pastrohet. Nuk ka navigim të serverit ose llogari reale.
+
+### Korrigjimi B — Fundi i Stories
+
+- Pas Story të fundit **personal**, kalimi me «Tjetra» ose mbarimi i progresit 8s e mbyll viewer-in dhe rikthen origjinën Home/Profile, në vend të kalimit ciklik te Story i parë.
+- Në Story e parë personale, «Më parë» nuk e çon përdoruesin automatikisht në fund.
+- Për katër Stories demonstrative ekzistuese, veprimi manual «Tjetra» te Story i fundit tani e mbyll viewer-in; kalimi automatik e mbyllte tashmë.
+- Kalimi ciklik i Reels është i pandryshuar.
+
+### Testimi pas korrigjimeve
+
+**17/17 kontrolle të reja të simuluara — PASS**, me V8 dhe DOM/localStorage/timers të imituar:
+
+1. Hapja e Story personale; kalimi te Story tjetër.
+2. Story personal i fundit: mbyllje manuale dhe automatike; ruhet pozicioni i origjinës.
+3. Story personal i parë: «Më parë» nuk rrotullohet në fund.
+4. Story demonstrativ i fundit: mbyllje manuale.
+5. Hapja e Reel-it të dytë demonstrues dhe rikthimi te i njëjti Reel nga profili i autorit me «Mbyll», duke ruajtur scroll.
+6. Kthimi nga biseda me butonin e ri; kthimi nga profili me butonin e ri dhe nga mbyllja e overlay-t.
+7. Kalimi te Reel pasues funksionon; Reel personal funksionon.
+8. Komentet demonstrative të Reels dhe kthimi nga paneli i komenteve vazhdojnë të funksionojnë.
+
+**Totali historik i kontrolleve të simuluara të raportuara për v1.6: 57** (28 fillestare + 12 të mëtejshme + 17 për këto korrigjime). Këto janë ekzekutime me simulim, jo 57 teste end-to-end në Chrome ose në telefon.
+
+**Kufizimet:** Nuk është realizuar test me browser grafik real apo telefon fizik. SSO/aksesi në Preview dhe testimi vizual 360/390/430 px mbeten të hapur. Nuk deklarohet readiness për Production.
+
+**Kufiri i ndryshimit:** v1.5 në `main`, `demo/vercel.json`, Google Drive dhe Vercel Production nuk ndryshohen. Preview i degës mund të rifreskohet automatikisht nga Vercel.
+
+**Përfundim:** v1.6 përmban dy korrigjimet dhe ka kaluar kontrollet e sintaksës plus 57 teste të simuluara të raportuara; **ende kërkon verifikim real në shfletues/telefon përpara miratimit për Production**.
