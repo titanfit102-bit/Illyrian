@@ -146,7 +146,7 @@
   '<label>Kilometrat e makinës<input name="mileage" type="number" min="0" max="2000000" value="'+esc(p.mileage||'')+'"></label>'+
   '<label>Sipërfaqe banese (m²)<input name="area" type="number" min="1" max="10000" value="'+esc(p.area||'')+'"></label>'+
   '<label>Lloji i banesës<input name="rooms" maxlength="30" value="'+esc(p.rooms||'')+'" placeholder="2+1"></label>'+
-  '<label>Periudha e qirasë<select name="period"><option value="muaj">Për muaj</option><option value="javë">Për javë</option></select></label>'+
+  '<label>Periudha e qirasë<select name="period"><option value="muaj" '+(p.period==="javë"?'':'selected')+'>Për muaj</option><option value="javë" '+(p.period==="javë"?'selected':'')+'>Për javë</option></select></label>'+
   '<label class="isp-span">Përshkrimi<textarea name="details" maxlength="450" rows="3">'+esc(p.details||'')+'</textarea></label>'+
   '<div class="isp-span"><button type="submit">'+(editing?'Ruaj ndryshimet':'Publiko në demo')+'</button></div></form>'+
   '<p class="isp-muted">Nuk ruhet asnjë dokument identiteti, numër telefoni, pagesë ose adresë e saktë.</p>';
