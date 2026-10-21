@@ -141,3 +141,41 @@ U ngarkua e njëjta HTML në Chromium real përmes `page.set_content`, me `local
 **Kufizimet e mbetura:** Prova përdor ngjarje prekjesh të emuluara në Chromium, jo telefon Android/iOS fizik. `localStorage` ishte i imituar gjatë QA-së, kështu që ky test nuk certifikon sjelljen e ruajtjes reale. Aksesueshmëria e plotë, auditimi i performancës dhe regresioni i plotë ndërshfletues mbeten për t'u kryer. Një Preview READY nuk provon që të gjitha rrjedhat janë verifikuar.
 
 **Izolimi:** vetëm `demo/ILLYRIAN_DEMO_v1.6.html` dhe ky raport në degën `demo/v1.6-stories-reels`. Nuk ka merge në `main`, ndryshim të `demo/vercel.json`, Google Drive ose Vercel Production.
+
+## Korrigjim i autorizuar — Enter dërgon mesazhin në grup (21 tetor 2026)
+
+**Kufiri i ndryshimit:** vetëm `demo/ILLYRIAN_DEMO_v1.6.html` dhe ky raport në degën `demo/v1.6-stories-reels`. Nuk janë ndryshuar skedarë të tjerë, `main`, `demo/vercel.json`, Google Drive apo Vercel Production.
+
+**Commit i HTML-së:** `b71cfb3bec5847062af8f1581cdf59e37f800269`.
+
+### Problemi dhe zgjidhja
+
+- **Problemi:** Në panelin demonstrues `group-chat`, futja e mesazhit me `Enter` në fushën `#group-input` nuk e niste veprimin, megjithëse butoni `data-act="group-send"` funksiononte.
+- **Ndryshimi minimal:** Një event listener `keydown` që ndërhyn **vetëm** kur fusha aktive është `#group-input`, modali është `group-chat`, dhe indeksi i aktivitetit përputhet me butonin `group-send`. `Enter` përdor saktësisht të njëjtin buton ekzistues, pa kopjuar logjikën e dërgimit.
+- Dërgimi me `Enter` nuk aktivizohet nëse përdoruesi mban `Shift`, `Ctrl`, `Alt` ose `Meta`, ose gjatë kompozimit të tekstit (`isComposing` / `keyCode===229`).
+- Pas dërgimit me tastierë rikthehet fokusi te `#group-input`.
+- Nuk është ndryshuar logjika e bisedave private, e komenteve ose e ruajtjes.
+
+### Verifikimi para shkrimit në GitHub
+
+Kodi i GitHub-it para korrigjimit u rikrijua nga skedari origjinal i përdoruesit dhe katër korrigjimet e miratuara të mëparshme. Hash-i Git i tij përputhej me `954081b234e6b07afc7719fc99cf0d93f035d1e2`, hash-i i versionit të fundit para këtij ndryshimi.
+
+**Testi A — Chromium real, versioni fillestar:** Shkrimi i mesazhit në `group-chat` dhe shtypja e `Enter` nuk krijonin mesazh. Problemi u riprodhua pa gabime JavaScript.
+
+**Testi B — Chromium real, versioni i korrigjuar:** **9/9 kontrolle të fokusuara kaluan**:
+
+1. `Enter` dërgon mesazhin në bisedën e grupit.
+2. Mesazhi shfaqet vetëm një herë (pa dyfishim).
+3. Fokusi mbetet te fusha e mesazhit pas dërgimit.
+4. `Enter` në fushë bosh nuk krijon mesazh.
+5. `Shift+Enter` nuk e dërgon mesazhin.
+6. `Ctrl+Enter` nuk e dërgon mesazhin.
+7. `Enter` gjatë kompozimit IME nuk e dërgon mesazhin.
+8. Butoni origjinal `group-send` vazhdon të punojë.
+9. Mesazhet e të dy mekanizmave shfaqen në gjendjen e persistuar të demos.
+
+**Gabime JavaScript gjatë provave:** asnjë. Script-i inline u kontrollua edhe sintaksisht (PASS).
+
+**Kufizimi i verifikimit:** Testimi u ekzekutua në Chromium headless me HTML të ngarkuar në memorie dhe me një implementim të imituar të `localStorage`; nuk është kryer provë me telefon fizik ose navigim në Vercel Production. Rezultatet nuk duhet të paraqiten si test i plotë E2E me backend real.
+
+**Gjendja:** korrigjimi është i verifikuar në Chromium dhe i ruajtur në degën e testimit. Nuk është autorizuar bashkimi në `main` ose publikimi i versionit në Production.
