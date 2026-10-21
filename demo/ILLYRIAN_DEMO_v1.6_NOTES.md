@@ -106,3 +106,38 @@ JavaScript-i i ri u **ekzekutua** në një mjedis V8 me `document`, `localStorag
 **Kufiri i ndryshimit:** v1.5 në `main`, `demo/vercel.json`, Google Drive dhe Vercel Production nuk ndryshohen. Preview i degës mund të rifreskohet automatikisht nga Vercel.
 
 **Përfundim:** v1.6 përmban dy korrigjimet dhe ka kaluar kontrollet e sintaksës plus 57 teste të simuluara të raportuara; **ende kërkon verifikim real në shfletues/telefon përpara miratimit për Production**.
+
+
+## Korrigjimi i gjesteve dhe etiketave — 21 tetor 2026
+
+**Autorizimi:** pas raportit të testimit real të demos, përdoruesi tha “vazhdo”, duke miratuar vetëm dy korrigjimet e propozuara: rrëshqitjen te Stories/Reels demonstrative dhe etiketat e vjetra të versionit.
+
+**Commit HTML:** `94562744b2fd1da70ae4885bb900ef42ff841d45`.
+
+### Ndryshime minimale në v1.6
+
+1. `.story-overlay` merr `touch-action:pan-y`, që lejon lëvizjet normale vertikale të shfletuesit por ia lë aplikacionit gjestin horizontal për Stories demonstrative.
+2. `.v4-reel-overlay` merr `touch-action:pan-x`, që ruan gjestet horizontale të shfletuesit por ia lë aplikacionit gjestin vertikal për Reels demonstrative.
+3. Etiketa prezantuese ndryshon nga `VERSIONI 1.5 · PROTOTIP` në `VERSIONI 1.6 · PROTOTIP`.
+4. Etiketa e ekranit të hyrjes ndryshon nga `DEMO v1.5 · Vetëm simulim` në `DEMO v1.6 · Vetëm simulim`.
+
+Nuk modifikohet përmbajtja, identiteti grafik, logjika e ruajtjes lokale, çelësat e localStorage, komponentët e videove apo programimi i aplikacionit real.
+
+### Prova krahasuese në Chromium — para / pas
+
+U ngarkua e njëjta HTML në Chromium real përmes `page.set_content`, me `localStorage` të imituar në memorie (për shkak të kufizimit të navigimit lokal). Gjesti u simulua nga Chrome DevTools Protocol (`Input.dispatchTouchEvent`, ngjarje `touchStart`/`touchMove`/`touchEnd`), në mënyrën e pajisjes me prekje.
+
+| Gjerësia | Story demonstrative (Arta → Leon) para / pas | Reel demonstrues (1/3 → 2/3) para / pas |
+|---|---|---|
+| 360 px | FAIL / PASS | FAIL / PASS |
+| 390 px | FAIL / PASS | FAIL / PASS |
+| 430 px | FAIL / PASS | FAIL / PASS |
+
+- Në versionin fillestar të dy overlay-t kishin vlerën CSS `touch-action:auto`. Pas korrigjimit shfaqin përkatësisht `pan-y` dhe `pan-x`.
+- Në të gjashta ekzekutimet krahasuese nuk u regjistruan gabime të JavaScript gjatë skenarit.
+- Etiketa `VERSIONI 1.6 · PROTOTIP` u konfirmua në të tre testet e versionit të korrigjuar.
+- JavaScript-i inline u kontrollua sërish për sintaksë: **PASS**.
+
+**Kufizimet e mbetura:** Prova përdor ngjarje prekjesh të emuluara në Chromium, jo telefon Android/iOS fizik. `localStorage` ishte i imituar gjatë QA-së, kështu që ky test nuk certifikon sjelljen e ruajtjes reale. Aksesueshmëria e plotë, auditimi i performancës dhe regresioni i plotë ndërshfletues mbeten për t'u kryer. Një Preview READY nuk provon që të gjitha rrjedhat janë verifikuar.
+
+**Izolimi:** vetëm `demo/ILLYRIAN_DEMO_v1.6.html` dhe ky raport në degën `demo/v1.6-stories-reels`. Nuk ka merge në `main`, ndryshim të `demo/vercel.json`, Google Drive ose Vercel Production.
