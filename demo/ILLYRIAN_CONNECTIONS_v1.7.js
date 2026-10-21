@@ -243,7 +243,6 @@
       if(item){e.preventDefault();handle(item.dataset.ilc);}
     });
     root.addEventListener('change',e=>{
-      if(e.target.id==='')return;
       if(e.target.name==='topic'){
         const topic=TOPICS.find(t=>t.id===e.target.value);
         const select=root.querySelector('#ilc-interest select[name="slot"]');
