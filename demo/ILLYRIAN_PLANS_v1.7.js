@@ -16,7 +16,7 @@
     attendance:Array.isArray(stored.attendance)?stored.attendance.slice(-100):[],
     open:false,view:'list',role:'organizer',id:'demo-football',edit:null,notice:''
   };
-  let root,trigger;
+  let root,trigger,draft=null;
   const event=id=>state.events.find(x=>x.id===id);
   const requests=id=>state.requests.filter(r=>r.eventId===id);
   const accepted=id=>requests(id).filter(r=>r.status==='accepted');
@@ -31,7 +31,7 @@
   const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv'}</div><h3>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · ${escape(e.place)}</p><p>${accepted(e.id).length}/${e.capacity} të pranuar · ${pending(e.id).length} në pritje</p>${button('detail:'+e.id,'Hap aktivitetin →')}</article>`;
   const form=()=>{
     const e=state.edit?event(state.edit):null;
-    const v=e||{title:'',kind:kinds[0],city:cities[0],place:'',date:after(7),time:'17:00',capacity:8,price:0,privacy:'public',conditions:''};
+    const v=e||(draft||{title:'',kind:kinds[0],city:cities[0],place:'',date:after(7),time:'17:00',capacity:8,price:0,privacy:'public',conditions:''});
     return `<h3>${e?'Redakto aktivitetin':'Krijo aktivitetin'}</h3><form id="ilp-form" novalidate>
     <label>Titulli<input name="title" required maxlength="90" value="${escape(v.title)}" placeholder="P.sh. Takim shqiptarësh"></label>
     <label>Lloji<select name="kind">${choose(kinds,v.kind)}</select></label>
@@ -96,10 +96,10 @@
     if(k==='close'){close();return}
     if(k==='list'){state.view='list';state.notice='';render();return}
     if(k.startsWith('role:')){state.role=k.slice(5);state.view='list';state.notice='';render();return}
-    if(k==='new'&&owner){state.edit=null;state.view='form';render();return}
+    if(k==='new'&&owner){state.edit=null;draft=null;state.view='form';render();return}
     if(k.startsWith('detail:')){state.id=k.slice(7);state.view='detail';state.notice='';render();return}
     if(!e)return;
-    if(k==='edit'&&owner&&!closed(e)){state.edit=e.id;state.view='form';render();return}
+    if(k==='edit'&&owner&&!closed(e)){state.edit=e.id;draft=null;state.view='form';render();return}
     if(k==='cancel'&&owner&&!closed(e)){if(!window.confirm('Anulo aktivitetin demonstrues?'))return;e.cancelled=true;notice('Aktiviteti u anulua.');return}
     if(k==='join'&&!owner&&!closed(e)&&e.privacy==='public'&&!self(e.id)){
       if(state.requests.length>=200)return notice('Kufiri i provës u arrit.');
@@ -136,7 +136,7 @@
     let e=state.edit?event(state.edit):null;
     if(e){if(closed(e)||v.capacity<accepted(e.id).length)return error('Kapaciteti nuk mbulon pjesëmarrësit e pranuar.');Object.assign(e,v);}
     else{if(state.events.length>=24)return error('Kufiri i demonstrimit u arrit.');e={id:'p'+Date.now().toString(36),...v,cancelled:false};state.events.unshift(e);}
-    state.id=e.id;state.edit=null;state.view='detail';notice('Aktiviteti u ruajt në demonstrim.');
+    state.id=e.id;state.edit=null;draft=null;state.view='detail';notice('Aktiviteti u ruajt në demonstrim.');
   }
   function sync(){
     const screen=document.querySelector('#screen');if(!screen)return;
@@ -202,6 +202,19 @@
       if(e.shiftKey&&(document.activeElement===items[0]||!root.contains(document.activeElement))){e.preventDefault();items.at(-1).focus()}
       if(!e.shiftKey&&(document.activeElement===items.at(-1)||!root.contains(document.activeElement))){e.preventDefault();items[0].focus()}
     },true);
+    window.addEventListener('illyrian:plans:draft',ev=>{
+      const d=ev.detail||{};
+      const title=String(d.title||'Takim komuniteti').slice(0,90);
+      const kind=kinds.includes(d.kind)?d.kind:kinds[0];
+      const city=cities.includes(d.city)?d.city:cities[0];
+      draft={title,kind,city,place:'',date:'',time:'17:00',capacity:8,price:0,privacy:'public',conditions:String(d.conditions||'').slice(0,240)};
+      state.edit=null;
+      state.role='organizer';
+      state.notice='Draft demonstrues. Konfirmo vendin, datën, orën, kapacitetin dhe kushtet përpara publikimit.';
+      open();
+      state.view='form';
+      render();
+    });
     const observer=new MutationObserver(()=>{if(!state.open)queueMicrotask(sync)});
     observer.observe(screen,{childList:true,subtree:false});
     queueMicrotask(sync);
