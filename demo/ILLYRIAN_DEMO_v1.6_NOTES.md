@@ -179,3 +179,37 @@ Kodi i GitHub-it para korrigjimit u rikrijua nga skedari origjinal i përdoruesi
 **Kufizimi i verifikimit:** Testimi u ekzekutua në Chromium headless me HTML të ngarkuar në memorie dhe me një implementim të imituar të `localStorage`; nuk është kryer provë me telefon fizik ose navigim në Vercel Production. Rezultatet nuk duhet të paraqiten si test i plotë E2E me backend real.
 
 **Gjendja:** korrigjimi është i verifikuar në Chromium dhe i ruajtur në degën e testimit. Nuk është autorizuar bashkimi në `main` ose publikimi i versionit në Production.
+
+
+## Përmirësimet e aksesueshmërisë — 21 tetor 2026
+
+**Autorizimi:** pas raportit të auditimit të aksesueshmërisë, përdoruesi kërkoi “vazhdo”, duke miratuar vetëm menaxhimin e fokusit të dialogëve, zonat e prekjes dhe përmirësimin e kontrastit të tekstit dytësor.
+
+**Commit i HTML-së:** `206a148ff139d0672bbfe0de611c8a0e9a3be5e7`.
+
+### Çfarë u ndryshua
+
+1. **Dialogët (shtresë e izoluar v1.6):** Kur hapet një `[role="dialog"][aria-modal="true"]` në `#layer`, fokusi kalon brenda tij; ndërveprimet pas dialogut vendosen `inert`. `Tab` dhe `Shift+Tab` mbeten brenda dialogut; kur mbyllet, fokusi rikthehet te butoni i origjinës, edhe nëse renderimi ka krijuar një element të ri. Mbulon edhe viewer-in personal të Stories.
+2. **Targetet e prekjes:** shtresë CSS që siguron të paktën `44×44 CSS px` për butonat brenda `#phone`, pa ndryshuar përmasat e ikonave SVG.
+3. **Kontrasti Light:** ndryshojnë vetëm dy vlerat e `--muted` nga `#807680` dhe `#7F747F` në `#706570`. Ngjyrat zyrtare të markës nuk ndryshojnë. Tema Dark ruan `--muted:#B0A3AE`.
+
+### Provat e kryera para shkrimit
+
+Kontrolli u bë në **Chromium real** me një kandidat lokal, i ndërtuar nga kopja identike e commit-it paraprak të GitHub-it (Git blob SHA `20dd44aabd83f8af361fe46a9a9e6b5717fab85a`). Faqja u ngarkua me `set_content` dhe `localStorage` testues në memorie, jo përmes URL-së së mbrojtur të Vercel-it.
+
+- **360 / 390 / 430 px:** hapja e dialogut të krijimit të Story; verifikimi i fokusit fillestar brenda; përmbajtja e Kryefaqes `inert`; `Tab` nga fundi te fillimi; `Shift+Tab` nga fillimi te fundi; `Escape` dhe rikthimi i fokusit te butoni që hapi dialogun. Kaluan në të tria përmasat.
+- **320 / 390 px:** kontroll i veçantë për panelin e njoftimeve — hapje, mbajtje e fokusit, dalje me `Escape`, çaktivizim i `inert` pas mbylljes, fokus i restauruar. Kaloi.
+- **320 / 390 px:** viewer personal i Story — fokus brenda, një `Tab` i sigurt, mbyllje me `Escape` dhe kthim te miniatura e Story. Kaloi.
+- **320 / 390 px:** në Kryefaqe 53 butona të dukshëm u matën me `getBoundingClientRect()`; **53/53** kishin të dy dimensionet të paktën 44 px pas ndryshimit. Këto janë kontrolle të butonave të Kryefaqes, jo çdo kontroll i çdo ekrani.
+- **320 / 360 / 390 / 430 px:** nuk u gjet scroll horizontal i dokumentit gjatë kontrolleve të kryera. Në 320 px formularët modalë kishin scroll vertikal të brendshëm, që është sjellje e pritshme për përmbajtje të gjatë.
+- **Kontrasti matematikor (WCAG):** teksti `#706570` kundrejt `#FFFFFF` jep rreth **5.55:1**, kundrejt `#F8F5F6` rreth **5.12:1**, kundrejt `#F3EDF1` rreth **4.81:1** dhe kundrejt `#F2EBEF` rreth **4.73:1**. Këto raporte vlerësojnë këtë çift ngjyrash, jo çdo tekst të aplikacionit.
+- **Dark:** vlera e `--muted` u verifikua e pandryshuar `#B0A3AE`; nuk u gjetën gabime JavaScript në këta skenarë. Sintaksa e JavaScript-it u verifikua.
+
+### Çfarë ende nuk është verifikuar
+
+- Nuk është kryer auditim i plotë WCAG, test NVDA/VoiceOver, apo provë fizike Android/iOS.
+- Nuk janë matur të gjitha kombinimet tekst/sfond, të gjitha gjestet në çdo ekran, apo të gjitha gjendjet me zoom 200–400%.
+- Nuk është matur performanca e rrjetit celular ose Lighthouse. Ky ndryshim **nuk** e certifikon aplikacionin si të aksesueshëm në mënyrë të plotë.
+- Kodi i publikuar në GitHub ka një implementim funksionalisht ekuivalent me kandidatin lokal të testuar; për shkak të kufizimit të aksesit SSO, nuk është testuar me navigim real te URL-ja e Vercel Preview pas commit-it.
+
+**Izolimi:** janë ndryshuar vetëm skedari HTML i v1.6 dhe ky raport në degën `demo/v1.6-stories-reels`. Nuk ka autorizim për merge, ndryshim `vercel.json`, Google Drive apo Vercel Production.
