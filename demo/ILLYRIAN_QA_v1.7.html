@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ILLYRIAN v1.7 — QA i integrimit</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b050a;--panel:#21121b;--line:#60414e;--ink:#f8f5f6;--muted:#c0b0b8;--accent:#e50c37}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+    header,main,footer{max-width:1400px;margin:auto;padding:18px 22px}
+    h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:0 0 10px}p{margin:6px 0;color:var(--muted)}
+    .head{border-bottom:1px solid var(--line)}small{font-size:12px;color:var(--muted)}
+    button,select,a.ctrl{font:inherit;min-height:44px;padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:#38232c;color:var(--ink)}
+    button{cursor:pointer}button.primary{background:var(--accent);border-color:var(--accent);font-weight:700}a{color:#ffb2c1}
+    button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #ffacbf;outline-offset:2px}
+    .layout{display:grid;grid-template-columns:minmax(300px,530px) minmax(280px,1fr);gap:22px;align-items:start}
+    .box{border:1px solid var(--line);border-radius:18px;padding:14px;background:var(--panel);min-width:0}
+    .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+    .viewport{overflow:auto;max-width:100%;background:#100b10;border:1px solid var(--line);border-radius:14px;padding:9px}
+    iframe{display:block;max-width:none;border:1px solid #725c66;border-radius:8px;background:#fff}
+    .status{font-size:13px;min-height:22px;margin-top:8px;color:#ddd}
+    ol{margin:10px 0;padding-left:24px}li{padding:8px 6px;border-bottom:1px solid #ffffff19}
+    .pass{color:#81d7aa}.fail{color:#ff8a8a}.skip{color:#ffd39d}.info{color:#d3c5cd}
+    code{font-size:12px;overflow-wrap:anywhere}.note{padding:10px;border-left:3px solid var(--accent);background:#321b26;font-size:13px}
+    @media(max-width:920px){.layout{grid-template-columns:1fr}header,main,footer{padding:14px}}
+  </style>
+</head>
+<body>
+<header class="head">
+  <h1>ILLYRIAN — Laboratori QA v1.7</h1>
+  <p>Kontrolle në shfletuesin tënd mbi demon reale. Nuk kërkon llogari ose shërbim të jashtëm testimi.</p>
+  <small>Vetëm Preview · Pa backend, pagesa ose të dhëna reale · Nuk certifikon sigurinë ose aksesueshmërinë WCAG</small>
+</header>
+<main class="layout">
+  <section class="box">
+    <h2>1. Ekrani i provës</h2>
+    <div class="tools">
+      <label for="size">Përmasat</label>
+      <select id="size">
+        <option value="320,568">320 × 568 — telefon i vogël</option>
+        <option value="360,780">360 × 780 — Android</option>
+        <option value="390,844" selected>390 × 844 — telefon</option>
+        <option value="430,932">430 × 932 — telefon i madh</option>
+        <option value="844,390">844 × 390 — landscape</option>
+        <option value="932,430">932 × 430 — landscape</option>
+        <option value="1280,800">1280 × 800 — desktop</option>
+      </select>
+      <button id="reload" type="button">Rifresko demon</button>
+    </div>
+    <div class="viewport"><iframe id="demo" title="ILLYRIAN v1.7 — demo e testimit" src="./ILLYRIAN_DEMO_v1.7.html" width="390" height="844"></iframe></div>
+    <div class="status" id="frame-state" role="status">Duke hapur demon…</div>
+    <p><a href="./ILLYRIAN_DEMO_v1.7.html" target="_blank" rel="noopener">Hape demon në një dritare të veçantë</a></p>
+    <p class="note">Testet përdorin elementet e demos dhe ngjarjet e shfletuesit. Ato hapin dhe mbyllin panele, por nuk krijojnë porosi, raporte ose aktivitete dhe nuk pastrojnë localStorage.</p>
+  </section>
+  <section class="box">
+    <h2>2. Kontrollet e integrimit</h2>
+    <div class="tools">
+      <button class="primary" id="run" type="button">Ekzekuto testet</button>
+      <button id="all-sizes" type="button">Testo të 7 përmasat</button>
+      <button id="copy" type="button" disabled>Kopjo raportin</button>
+    </div>
+    <p id="summary" role="status">Asnjë test nuk është ekzekutuar ende.</p>
+    <ol id="results"></ol>
+    <p id="commit-note"><small>Raporti regjistron çfarë ndodhi në këtë shfletues. Statusi READY i Vercel nuk është provë E2E.</small></p>
+  </section>
+</main>
+<footer><small>ILLYRIAN v1.7 · Kontrollues i izoluar QA në degën demo · Main dhe Production nuk ndryshohen nga kjo faqe</small></footer>
+<script>
+(() => {
+  "use strict";
+  const iframe=document.getElementById('demo'),size=document.getElementById('size');
+  const results=document.getElementById('results'),summary=document.getElementById('summary');
+  const runBtn=document.getElementById('run'),allBtn=document.getElementById('all-sizes'),copyBtn=document.getElementById('copy');
+  const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  const initialSrc='./ILLYRIAN_DEMO_v1.7.html';
+  let lastReport=[],busy=false;
+  function setSize(value){
+    const [w,h]=String(value).split(',').map(Number);
+    if(!Number.isFinite(w)||!Number.isFinite(h))return;
+    iframe.setAttribute('width',String(w));iframe.setAttribute('height',String(h));
+    document.getElementById('frame-state').textContent='Dritarja: '+w+' × '+h+' px';
+  }
+  size.addEventListener('change',()=>setSize(size.value));
+  setSize(size.value);
+  function ready(){
+    try{
+      const d=iframe.contentDocument;
+      return !!d&&d.readyState==='complete'&&!!d.querySelector('#phone')&&!!d.querySelector('#screen');
+    }catch{return false}
+  }
+  async function reload(){
+    const url=new URL(initialSrc,location.href);
+    url.searchParams.set('qa',String(Date.now()));
+    await new Promise((resolve,reject)=>{
+      const deadline=setTimeout(()=>{iframe.removeEventListener('load',done);reject(new Error('Demo nuk u ngarkua brenda 15 sekondash.'))},15000);
+      function done(){clearTimeout(deadline);iframe.removeEventListener('load',done);resolve()}
+      iframe.addEventListener('load',done,{once:true});
+      iframe.src=url.toString();
+    });
+    await sleep(160);
+    if(!ready())throw new Error('Dokumenti nuk u hap ose nuk mund të kontrollohet nga ky origin.');
+    document.getElementById('frame-state').textContent='Demo e ngarkuar në '+size.options[size.selectedIndex].text;
+  }
+  async function nav(d,name){
+    const btn=d.querySelector('#navbar [data-act="tab"][data-val="'+name+'"]');
+    if(!btn)throw new Error('Nuk u gjet navigimi: '+name);
+    btn.click();await sleep(100);
+  }
+  async function tap(d,selector,label){
+    const el=d.querySelector(selector);
+    if(!el)throw new Error('Nuk u gjet '+label+' ('+selector+')');
+    el.click();await sleep(90);
+  }
+  function pressEscape(d){
+    const e=new d.defaultView.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true});
+    (d.activeElement||d.body).dispatchEvent(e);
+  }
+  function check(test,label,condition,detail=''){
+    const ok=!!condition;
+    test.push({label,status:ok?'PASS':'FAIL',detail:String(detail)});
+    return ok;
+  }
+  async function scenario(test) {
+    const d=iframe.contentDocument;
+    const html=d.documentElement;
+    check(test,'Struktura e aplikacionit',!!d.querySelector('#phone,#screen')&&!!d.querySelector('#navbar'), 'phone, screen, navbar');
+    const required=['SHOP','PLANS','CONNECTIONS','PRIVACY_MAP','SHOP_PLUS','GOVERNANCE'];
+    const loaded=[...d.querySelectorAll('script[src]')].map(s=>s.getAttribute('src'));
+    check(test,'Të gjashtë skedarët JS janë referuar',required.every(n=>loaded.some(p=>p?.includes('ILLYRIAN_'+n+'_v1.7.js'))),required.length+'/6');
+    check(test,'Tre panele të përhershme inicializohen',!!d.getElementById('ilp-root')&&!!d.getElementById('ilc-root')&&!!d.getElementById('il4-root'));
+    await nav(d,'home');
+    await tap(d,'[data-ilshop-open]','butoni Shop');
+    check(test,'Shop hapet',!!d.getElementById('illyrian-shop-layer'));
+    check(test,'Shop izolon sfondin',!!d.getElementById('screen')?.inert);
+    await tap(d,'[data-isp-open]','butoni Shop Plus');
+    check(test,'Shop Plus hapet mbi Shop',!!d.getElementById('isp-root')&&!!d.getElementById('illyrian-shop-layer'));
+    pressEscape(d);await sleep(90);
+    check(test,'Escape i parë mbyll vetëm Shop Plus',!d.getElementById('isp-root')&&!!d.getElementById('illyrian-shop-layer'));
+    pressEscape(d);await sleep(90);
+    check(test,'Escape i dytë mbyll Shop',!d.getElementById('illyrian-shop-layer')&&!d.getElementById('screen')?.inert);
+    await nav(d,'events');
+    await tap(d,'[data-ilp-entry]','paneli Plans');
+    check(test,'Plans hapet dhe izolon sfondin',!d.getElementById('ilp-root')?.hidden&&!!d.getElementById('screen')?.inert);
+    await tap(d,'#ilp-root [data-ilp="close"]','mbyllja Plans');
+    check(test,'Plans rikthen ekranin',!!d.getElementById('ilp-root')?.hidden&&!d.getElementById('screen')?.inert);
+    await tap(d,'[data-ilc-entry]','paneli Connections');
+    check(test,'Connections izolon sfondin',!d.getElementById('ilc-root')?.hidden&&!!d.getElementById('screen')?.inert);
+    await tap(d,'#ilc-root [data-ilc="together:language"]','drafti Connections→Plans');
+    check(test,'Connections transferon draftin te Plans',!!d.getElementById('ilc-root')?.hidden&&!d.getElementById('ilp-root')?.hidden&&d.getElementById('ilp-root')?.textContent?.includes('Praktikë gjuhësh dhe njohje'));
+    await tap(d,'#ilp-root [data-ilp="close"]','mbyllja e draftit');
+    check(test,'Rikthim korrekt pas draftit',!d.getElementById('screen')?.inert);
+    await nav(d,'explore');
+    await tap(d,'#il4-entry [data-il4-entry]','paneli Privacy');
+    check(test,'Privacy hapet me sfond inert',!d.getElementById('il4-root')?.hidden&&!!d.getElementById('screen')?.inert);
+    await tap(d,'#il4-root [data-il4="close"]','mbyllja Privacy');
+    check(test,'Privacy rikthen ekranin',!!d.getElementById('il4-root')?.hidden&&!d.getElementById('screen')?.inert);
+    await tap(d,'#ig6-entry [data-ig6="open"]','paneli Governance');
+    check(test,'Governance hapet me sfond inert',!!d.getElementById('ig6-root')&&!!d.getElementById('screen')?.inert);
+    await tap(d,'#ig6-root [data-ig6="close"]','mbyllja Governance');
+    check(test,'Governance rikthen ekranin',!d.getElementById('ig6-root')&&!d.getElementById('screen')?.inert);
+    const vw=html.clientWidth,sw=html.scrollWidth;
+    check(test,'Pa overflow horizontal në dokument',sw<=vw+3,'scrollWidth '+sw+' / clientWidth '+vw);
+  }
+  function render(records){
+    results.replaceChildren();
+    for(const r of records){
+      const li=document.createElement('li'),status=document.createElement('strong'),details=document.createElement('small');
+      status.className=r.status==='PASS'?'pass':r.status==='FAIL'?'fail':'skip';
+      status.textContent=r.status+' — '+r.label;
+      details.textContent=r.detail?(' · '+r.detail):'';
+      li.append(status,details);results.append(li);
+    }
+    const p=records.filter(r=>r.status==='PASS').length,f=records.filter(r=>r.status==='FAIL').length;
+    summary.textContent=p+' kaluan · '+f+' dështuan · '+records.length+' gjithsej. '+(f?'Shiko detajet; nuk certifikohet faza.':'Këto kontrolle kaluan në këtë shfletues, jo auditim i plotë.');
+    copyBtn.disabled=!records.length;
+    lastReport=records.slice();
+  }
+  async function run(multi=false) {
+    if(busy)return;
+    busy=true;runBtn.disabled=true;allBtn.disabled=true;copyBtn.disabled=true;
+    const original=size.value,records=[];
+    const values=multi?[...size.options].map(x=>x.value):[size.value];
+    try{
+      for(const value of values){
+        size.value=value;setSize(value);
+        records.push({label:'Rezolucioni '+value.replace(',',' × '),status:'INFO',detail:''});
+        try{
+          await reload();
+          const test=[];
+          await scenario(test);
+          records.push(...test.map(x=>({...x,label:value.replace(',','×')+' — '+x.label})));
+        }catch(e){records.push({label:value.replace(',','×')+' — Testimi u ndërpre',status:'FAIL',detail:String(e?.message||e)})}
+        render(records);
+      }
+    }finally{
+      if(multi){size.value=original;setSize(original);try{await reload()}catch{}}
+      busy=false;runBtn.disabled=false;allBtn.disabled=false;
+    }
+  }
+  runBtn.addEventListener('click',()=>run(false));
+  allBtn.addEventListener('click',()=>run(true));
+  document.getElementById('reload').addEventListener('click',async()=>{
+    if(busy)return;try{await reload()}catch(e){document.getElementById('frame-state').textContent=String(e.message||e)}
+  });
+  copyBtn.addEventListener('click',async()=>{
+    const txt='ILLYRIAN v1.7 QA — '+new Date().toISOString()+'\n'+
+      lastReport.map(r=>r.status+' | '+r.label+(r.detail?' | '+r.detail:'')).join('\n');
+    try{await navigator.clipboard.writeText(txt);copyBtn.textContent='Raporti u kopjua'}catch{copyBtn.textContent='Kopjimi nuk u lejua'}
+  });
+  iframe.addEventListener('load',()=>{document.getElementById('frame-state').textContent=ready()?'Demo është ngarkuar.':'Ngarkimi nuk u konfirmua.'});
+})();
+</script>
+</body>
+</html>
