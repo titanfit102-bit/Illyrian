@@ -39,7 +39,7 @@ jobs:
         run: npm install --no-save --no-audit --no-fund @playwright/test@1.55.1
       - name: Install Chromium browser only (avoid slow apt dependency update)
         run: npx playwright install chromium
-      - name: Run isolated Reels and landscape browser tests
+      - name: Run ILLYRIAN module, QA Lab, keyboard, and visual evidence tests
         run: npx playwright test
       - name: Preserve failed-case screenshots and traces
         if: failure()
@@ -49,3 +49,11 @@ jobs:
           path: qa-results/
           if-no-files-found: ignore
           retention-days: 7
+      - name: Save preview screenshots for later human review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: illyrian-v17-visual-review
+          path: qa-results/visual/
+          if-no-files-found: ignore
+          retention-days: 14

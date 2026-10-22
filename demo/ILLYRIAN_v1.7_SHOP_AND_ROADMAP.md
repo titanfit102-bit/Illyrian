@@ -542,3 +542,14 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Rregull i punës:** zhvillimi vijon në `demo/v1.7-illyrian-shop`. `main` mbetet `9f91b5c083b4482a70a2149483cc799360e6102c` dhe Production pa merge. GitHub Actions është aktiv për ndryshimet e kodit të demos dhe testit; ndërprerjet/ekzekutimet e vjetra të mbetura nuk zëvendësojnë suksesin e run-it #39833964922.
 
 **Faza 7:** kriteri funksional automatik është i kaluar. End-to-end manual audit i gjithë demos në telefon, kontrollet vizuale, aksesueshmëria reale dhe sign-off mbeten të hapura, sipas kërkesës së pronarit që ta provojë aplikacionin në telefon **në fund të etapës së zhvillimit**. Nuk pretendohet përfundim 100% apo gatishmëri production/backend.
+
+
+## Faza 7 — Cikli 23 / Faza 8 — Blueprint fillestar dhe foto QA (22 tetor 2026)
+
+**Baza:** commit dd80a2b7e9c1b53bb476deb0c03a4ab0a31ae9f5. GitHub Actions run #39833964922: 25/25 Playwright PASS, përfshirë 126/126 dhe 147/147 QA Lab. Nuk zëvendëson testin fizik/visual që përdoruesi ka rezervuar për në fund.
+
+**Evidencë vizuale e automatizuar:** skedari i ri qa/illyrian-v17-visual.spec.cjs planifikon 7 teste (320×568, 360×780, 390×844, 430×932, 844×390, 932×430, 1280×800), me nga 6 screenshot-e reale të Chromium: Home, Shop, Events, Plans, Profile, Reels. Në total 42 JPEG prova për rishikim, jo 42 visual PASS. Workflow i degës demo ngarkon artefaktin illyrian-v17-visual-review me retention 14 ditë. Këto shtojnë mbulimin e pamjeve, por nuk përbëjnë krahasim piksel për piksel, test i prekjeve apo WCAG. Rezultati PASS/FALI kërkon konfirmim nga GitHub Actions i commit-it të ri.
+
+**Faza 8 — artefakt i ri:** architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md, version 0.1 i propozimit, përshkruan aktorët, autorizimet server-side, të dhënat relacionale, privatësinë, moderimin, rolet e shitësve, skenarët e Shop, rrugët alternativë klient/backend, transaksionet dhe portat e kalimit për MVP. Është dokument vendimesh/prove, jo zgjedhje e pakthyeshme teknologjike. Asnjë kod backend, pagesë, database, aplikacion native apo prodhim real nuk u aktivizua.
+
+**Kufijtë:** Main, Production, branch v1.6 dhe projektet e tjera mbeten të paprekura. Faza 7 funksionale e kaluar; miratimi manual vizual/telefonik dhe Faza 8 MVP reale mbeten përpara. 5% komision në demo është vetëm ilustrim, nuk është vendim komercial.

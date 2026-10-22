@@ -2,7 +2,7 @@
 const { defineConfig } = require('@playwright/test');
 module.exports=defineConfig({
   testDir:'./qa',
-  testMatch:['**/illyrian-v17.spec.cjs','**/illyrian-v17-flows.spec.cjs','**/illyrian-v17-lab.spec.cjs','**/illyrian-v17-focus.spec.cjs'],
+  testMatch:['**/illyrian-v17.spec.cjs','**/illyrian-v17-flows.spec.cjs','**/illyrian-v17-lab.spec.cjs','**/illyrian-v17-focus.spec.cjs','**/illyrian-v17-visual.spec.cjs'],
   timeout:30000,
   expect:{timeout:10000},
   workers:1,
