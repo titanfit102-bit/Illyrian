@@ -153,3 +153,32 @@ for(const [lang,tag] of [['sq','sq'],['en','en'],['it','it']]){
   expect(currencySample).toContain('€');
  });
 }
+
+
+for(const [lang,expected] of Object.entries({
+ sq:{shop:'Kërko nga të gjitha dyqanet',plans:'Aktivitetet dhe organizatori',privacy:'Privatësia dhe harta',governance:'Besimi dhe menaxhimi'},
+ en:{shop:'Search across all shops',plans:'Activities and organizer',privacy:'Privacy and map',governance:'Trust and management'},
+ it:{shop:'Cerca in tutti i negozi',plans:'Attività e organizzatore',privacy:'Privacy e mappa',governance:'Fiducia e gestione'}
+})){
+ test('i18n translated modal headings for '+lang,async({page})=>{
+   await ready(page);
+   await languageSettings(page);
+   await page.locator('#layer [data-illyrian-language="'+lang+'"]').click();
+   await page.locator('#layer [data-act="close"]').click();
+   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+   await page.locator('[data-ilshop-open]').first().click();
+   await expect(page.locator('#illyrian-shop-layer .ils-top small')).toHaveText(expected.shop);
+   await page.keyboard.press('Escape');
+   await page.locator('.head [data-act="tab"][data-val="events"]').click();
+   await page.locator('[data-ilp-entry]').first().click();
+   await expect(page.locator('#ilp-root .ilp-panel h2').first()).toHaveText(expected.plans);
+   await page.locator('#ilp-root button[data-ilp="close"]').click();
+   await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+   await page.locator('#il4-entry [data-il4-entry]').click();
+   await expect(page.locator('#il4-root .il4-panel h2').first()).toHaveText(expected.privacy);
+   await page.locator('#il4-root button[data-il4="close"]').click();
+   await page.locator('#ig6-entry [data-ig6="open"]').click();
+   await expect(page.locator('#ig6-root .ig6-panel h2').first()).toHaveText(expected.governance);
+   await page.locator('#ig6-root button[data-ig6="close"]').click();
+ });
+}
