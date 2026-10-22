@@ -29,7 +29,7 @@
     welcome:raw.welcome&&typeof raw.welcome==='object'&&!Array.isArray(raw.welcome)?raw.welcome:{},
     open:false,view:'overview',notice:'',selected:'city-1'
   };
-  let root=null,opener=null;
+  let root=null,opener=null,inertSnapshot=[];
   const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({home:state.home,origin:state.origin,choice:state.choice,welcome:state.welcome}));return true}catch{state.notice='Hapësira lokale është plot; ndryshimi nuk u ruajt.';return false}};
   const eventData=()=>{const doc=read(PLAN_KEY),values=Array.isArray(doc.events)?doc.events:[];return values.filter(e=>e&&e.privacy==='public'&&!e.cancelled&&typeof e.title==='string'&&!Number.isNaN(Date.parse(e.date+'T'+e.time))&&Date.parse(e.date+'T'+e.time)>Date.now()).slice(0,24)};
   const button=(action,label)=>'<button type="button" data-ilc="'+h(action)+'">'+h(label)+'</button>';
@@ -122,8 +122,10 @@
     }
   }
   function open(view){
-    if(!root)return;
+    if(!root||state.open)return;
     opener=document.activeElement;
+    inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));
+    inertSnapshot.forEach(({el})=>{el.inert=true});
     state.open=true;
     state.view=view||'overview';
     state.notice='';
@@ -132,6 +134,7 @@
   function close(){
     state.open=false;
     root.hidden=true;
+    inertSnapshot.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertSnapshot=[];
     if(opener?.isConnected)opener.focus();
   }
   function draft(data){
