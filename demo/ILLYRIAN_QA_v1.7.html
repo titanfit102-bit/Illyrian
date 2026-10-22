@@ -60,6 +60,11 @@
       <button id="all-sizes" type="button">Testo të 7 përmasat</button>
       <button id="copy" type="button" disabled>Kopjo raportin</button>
     </div>
+    <div class="tools">
+      <button id="advanced" type="button">QA e avancuar — kjo përmasë</button>
+      <button id="advanced-all" type="button">QA e avancuar — 7 përmasat</button>
+    </div>
+    <p class="note">Testet e avancuara ndryshojnë përkohësisht vetëm temën e demos në iframe dhe e rikthejnë vlerën origjinale të ruajtur. Testojnë Tab/Shift+Tab sintetik, jo tastierën fizike; nuk publikojnë përmbajtje. Koha e ngarkimit është informuese, pa prag performance të certifikuar.</p>
     <p id="summary" role="status">Asnjë test nuk është ekzekutuar ende.</p>
     <ol id="results"></ol>
     <p id="commit-note"><small>Raporti regjistron çfarë ndodhi në këtë shfletues. Statusi READY i Vercel nuk është provë E2E.</small></p>
@@ -72,6 +77,8 @@
   const iframe=document.getElementById('demo'),size=document.getElementById('size');
   const results=document.getElementById('results'),summary=document.getElementById('summary');
   const runBtn=document.getElementById('run'),allBtn=document.getElementById('all-sizes'),copyBtn=document.getElementById('copy');
+  const advancedBtn=document.getElementById('advanced'),advancedAllBtn=document.getElementById('advanced-all');
+  const allRunButtons=[runBtn,allBtn,advancedBtn,advancedAllBtn];
   const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const initialSrc='./ILLYRIAN_DEMO_v1.7.html';
   let lastReport=[],busy=false;
@@ -193,13 +200,14 @@
       li.append(status,details);results.append(li);
     }
     const p=records.filter(r=>r.status==='PASS').length,f=records.filter(r=>r.status==='FAIL').length;
-    summary.textContent=p+' kaluan · '+f+' dështuan · '+records.length+' gjithsej. '+(f?'Shiko detajet; nuk certifikohet faza.':'Këto kontrolle kaluan në këtë shfletues, jo auditim i plotë.');
+    const skipped=records.filter(r=>r.status==='SKIP').length,info=records.filter(r=>r.status==='INFO').length;
+    summary.textContent=p+' PASS · '+f+' FAIL · '+skipped+' SKIP · '+(p+f+skipped)+' kontrolle'+(info?' · '+info+' shënime INFO':'')+'. '+(f?'Shiko detajet; nuk certifikohet faza.':'Këto kontrolle kaluan në këtë shfletues, jo auditim i plotë.');
     copyBtn.disabled=!records.length;
     lastReport=records.slice();
   }
   async function run(multi=false) {
     if(busy)return;
-    busy=true;runBtn.disabled=true;allBtn.disabled=true;copyBtn.disabled=true;
+    busy=true;allRunButtons.forEach(b=>b.disabled=true);copyBtn.disabled=true;
     const original=size.value,records=[];
     const values=multi?[...size.options].map(x=>x.value):[size.value];
     try{
@@ -216,9 +224,159 @@
       }
     }finally{
       if(multi){size.value=original;setSize(original);try{await reload()}catch{}}
-      busy=false;runBtn.disabled=false;allBtn.disabled=false;
+      busy=false;allRunButtons.forEach(b=>b.disabled=false);
     }
   }
+
+  // Advanced suite is separate from the 126-check baseline, and never submits a real form.
+  // Note: synthetic KeyboardEvents test application handlers but not physical keyboard navigation.
+  function advancedInfo(test,label,detail){
+    test.push({label,status:'INFO',detail:String(detail||'')});
+  }
+  function keyAt(d,node,key,shift){
+    const event=new d.defaultView.KeyboardEvent('keydown',{
+      key,bubbles:true,cancelable:true,shiftKey:!!shift
+    });
+    node.dispatchEvent(event);
+    return event;
+  }
+  async function focusSuite(test){
+    const d=iframe.contentDocument;
+    await nav(d,'events');
+    const opener=d.querySelector('[data-ilp-entry]');
+    if(!opener)throw new Error('Nuk u gjet hyrja e Plans');
+    opener.focus();
+    await tap(d,'[data-ilp-entry]','Plans për fokusin');
+    const root=d.getElementById('ilp-root');
+    check(test,'Fokus: dialogu Plans është aktiv',!!root&&!root.hidden&&root.contains(d.activeElement));
+    const focusables=[...(root?.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')||[])].filter(x=>x.getClientRects().length>0);
+    if(focusables.length<2)throw new Error('Nuk ka dy elemente për testin e fokusit');
+    const first=focusables[0],last=focusables.at(-1);
+    last.focus();
+    const forward=keyAt(d,last,'Tab',false);
+    check(test,'Tab sintetik: nga fundi te fillimi',d.activeElement===first&&forward.defaultPrevented);
+    first.focus();
+    const backward=keyAt(d,first,'Tab',true);
+    check(test,'Shift+Tab sintetik: nga fillimi te fundi',d.activeElement===last&&backward.defaultPrevented);
+    const esc=keyAt(d,d.activeElement||d.body,'Escape',false);
+    await sleep(70);
+    check(test,'Escape sintetik mbyll Plans',!!root.hidden&&esc.defaultPrevented);
+    check(test,'Fokusi rikthehet te hapësi',d.activeElement===opener,'opener i lidhur='+opener.isConnected);
+    check(test,'Sfondi riaktivizohet pas Escape',!d.getElementById('screen')?.inert);
+  }
+  async function themeSuite(test){
+    const d=iframe.contentDocument,w=iframe.contentWindow,storage=w.localStorage;
+    const key='illyrian_demo_v09_state';
+    const previous=storage.getItem(key);
+    let restored=false;
+    try{
+      await nav(d,'profile');
+      await tap(d,'#screen [data-act="modal"][data-val="settings"]','Cilësimet');
+      for(const mode of ['light','dark','auto']){
+        const el=d.querySelector('#layer input[name="theme"][value="'+mode+'"]');
+        if(!el)throw new Error('Nuk u gjet preferenca e temës: '+mode);
+        el.click();await sleep(80);
+        let savedMode=null;
+        try{savedMode=JSON.parse(storage.getItem(key)||'{}').theme}catch{}
+        const systemDark=!!w.matchMedia?.('(prefers-color-scheme: dark)').matches;
+        const expected=mode==='dark'||mode==='auto'&&systemDark;
+        const actual=!!d.getElementById('phone')?.classList.contains('dark');
+        check(test,'Tema '+mode+': paraqitja e saktë',actual===expected,'dark='+actual+'; pritet='+expected);
+        check(test,'Tema '+mode+': preferenca ruhet',savedMode===mode,'ruajtur='+String(savedMode));
+      }
+      await reload();
+      const newDoc=iframe.contentDocument;
+      let persisted=null;
+      try{persisted=JSON.parse(storage.getItem(key)||'{}').theme}catch{}
+      check(test,'Tema Auto mbetet pas rifreskimit',persisted==='auto'&&!!newDoc.getElementById('phone')?.classList.contains('dark')===!!w.matchMedia?.('(prefers-color-scheme: dark)').matches,'modaliteti='+String(persisted));
+    }finally{
+      // Always restore EXACT original localStorage string, even if an assertion fails.
+      if(previous===null)storage.removeItem(key);else storage.setItem(key,previous);
+      restored=storage.getItem(key)===previous;
+      try{await reload()}catch(e){test.push({label:'Ngarkimi pas rivendosjes',status:'FAIL',detail:String(e.message||e)})}
+      check(test,'Preferenca e mëparshme u rivendos',restored,'vlera fillestare ruhet pa ndryshim');
+    }
+  }
+  async function injectionSuite(test){
+    const d=iframe.contentDocument,w=iframe.contentWindow;
+    const storage=w.localStorage,key='illyrian_demo_v17_plans',before=storage.getItem(key);
+    const payload='<img data-illyrian-qa-probe="text-only">';
+    await nav(d,'events');
+    const root=d.getElementById('ilp-root');
+    if(!root)throw new Error('Paneli Plans mungon');
+    w.dispatchEvent(new w.CustomEvent('illyrian:plans:draft',{detail:{
+      title:payload,kind:'Bashkëpunim',city:'Milano',source:'qa-nonpublishing'
+    }}));
+    await sleep(80);
+    const title=d.querySelector('#ilp-root #ilp-form input[name="title"]');
+    check(test,'Teksti me HTML mbetet vlerë e input-it',title?.value===payload,'vlera='+String(title?.value||''));
+    check(test,'Nuk krijohet element HTML nga drafti',!root.querySelector('[data-illyrian-qa-probe]'));
+    check(test,'Drafti nuk publikohet ose ruhet automatikisht',storage.getItem(key)===before);
+    const close=root.querySelector('[data-ilp="close"]');
+    if(close){close.click();await sleep(60)}
+    check(test,'Drafti i provës mbyllet pa bllokim',root.hidden&&!d.getElementById('screen')?.inert);
+  }
+  function performanceInfo(test){
+    const w=iframe.contentWindow,d=iframe.contentDocument;
+    const nav=w.performance.getEntriesByType('navigation')[0];
+    if(nav){
+      const ms=n=>Number.isFinite(n)?Math.round(n)+' ms':'n/a';
+      advancedInfo(test,'Metrika orientuese e ngarkimit',
+        'duration='+ms(nav.duration)+'; DOMContentLoaded='+ms(nav.domContentLoadedEventEnd)+
+        '; transfer='+String(nav.transferSize||0)+' B (cache mund të ndikojë)');
+    }else advancedInfo(test,'Metrika e ngarkimit','Navigation Timing nuk është i disponueshëm');
+    const screen=d.getElementById('screen'),phone=d.getElementById('phone');
+    if(screen&&phone)advancedInfo(test,'Gjerësia e brendshme e pamjes',
+      '#screen '+screen.scrollWidth+'/'+screen.clientWidth+' px; #phone '+phone.scrollWidth+'/'+phone.clientWidth+' px; carousel/scroll brenda paneleve nuk certifikohen nga kjo matje');
+  }
+  async function runAdvanced(multi=false){
+    if(busy)return;
+    busy=true;allRunButtons.forEach(b=>b.disabled=true);copyBtn.disabled=true;
+    const original=size.value,records=[];
+    const values=multi?[...size.options].map(x=>x.value):[size.value];
+    try{
+      for(const value of values){
+        size.value=value;setSize(value);
+        records.push({label:'QA e avancuar — '+value.replace(',',' × '),status:'INFO',detail:''});
+        const tests=[];
+        const suites=[
+          ['Fokus / tastierë sintetik',focusSuite],
+          ['Light / Dark / Auto + storage',themeSuite],
+          ['Draft joaktiv me HTML',injectionSuite]
+        ];
+        for(const [name,fn] of suites){
+          try{
+            await reload();
+            const w=iframe.contentWindow,errors=[];
+            const onError=e=>errors.push(String(e.message||'Gabim JS'));
+            const onReject=e=>errors.push(String(e.reason?.message||e.reason||'Promise e refuzuar'));
+            w.addEventListener('error',onError);
+            w.addEventListener('unhandledrejection',onReject);
+            try{await fn(tests)}
+            finally{
+              w.removeEventListener('error',onError);
+              w.removeEventListener('unhandledrejection',onReject);
+            }
+            check(tests,name+': pa gabime JS gjatë ndërveprimit',errors.length===0,errors.slice(0,3).join(' | '));
+          }catch(e){
+            tests.push({label:name+': ekzekutimi u ndërpre',status:'FAIL',detail:String(e?.message||e)});
+          }
+        }
+        try{await reload();performanceInfo(tests)}catch(e){
+          tests.push({label:'Metrikat informative nuk u morën',status:'FAIL',detail:String(e?.message||e)});
+        }
+        records.push(...tests.map(x=>({...x,label:value.replace(',','×')+' — '+x.label})));
+        render(records);
+      }
+    }finally{
+      size.value=original;setSize(original);
+      try{await reload()}catch(e){records.push({label:'Rikthimi final i iframe',status:'FAIL',detail:String(e.message||e)});render(records)}
+      busy=false;allRunButtons.forEach(b=>b.disabled=false);
+    }
+  }
+  advancedBtn.addEventListener('click',()=>runAdvanced(false));
+  advancedAllBtn.addEventListener('click',()=>runAdvanced(true));
+
   runBtn.addEventListener('click',()=>run(false));
   allBtn.addEventListener('click',()=>run(true));
   document.getElementById('reload').addEventListener('click',async()=>{
