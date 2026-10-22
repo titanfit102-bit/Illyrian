@@ -242,6 +242,12 @@
   }
   async function focusSuite(test){
     const d=iframe.contentDocument;
+    // Browser focus can remain in this QA Lab (parent page) when the iframe
+    // is freshly reloaded. Explicitly activate the test browsing context so
+    // synthetic Tab and focus restoration measure the app, not the host page.
+    iframe.focus();
+    iframe.contentWindow.focus();
+    await sleep(25);
     await nav(d,'events');
     const opener=d.querySelector('[data-ilp-entry]');
     if(!opener)throw new Error('Nuk u gjet hyrja e Plans');
