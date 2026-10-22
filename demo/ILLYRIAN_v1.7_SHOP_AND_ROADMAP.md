@@ -434,3 +434,21 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Kufizimet që mbeten:** Asnjë screenshot, test telefon real, përdorshmëri e butonave, scroll vertikal i modalëve, media/Reels/Stories, tastierë fizike, kontrast apo lexues ekrani. Manuali është 0/12, jo FAIL. Faza 7 mbetet E HAPUR; nuk duhet riekzekutuar i njëjti skanim pa nevojë, por të plotësohen provat manuale, përfshirë landscape.
 
 **Ndryshimet:** vetëm regjistrim i evidencës në roadmap të degës demo/v1.7-illyrian-shop, pa ndryshuar skedarët e demos, Visual QA, main apo Vercel Production.
+
+## Faza 7 — Cikli 15: Raport i përdoruesit për landscape dhe X të Reels (22 tetor 2026)
+
+**Raport real i përdoruesit:** "Landscape nuk është mirë dhe në Reels nuk del fare X që të heqësh Reels-in". Këto janë gjetje nga përdorimi manual (P1 për mbylljen e Reels dhe P1 kandidat për layout landscape), edhe pse suitat automatike bazë/avancuara raportuan 273/273 PASS. Nuk lejohet përfundimi i Fazës 7 vetëm nga PASS e DOM: tests nuk mbulonin këtë ndërveprim specifik.
+
+**Analiza e kodit:** X tashmë ekzistonte te v4ReelContent si [data-act="reel-close"] me handler që e bën state.reelOpen=false dhe render; por header-i kishte edhe veprimin "Krijo Reel" (i shtuar në v1.5), emrin dhe numëruesin, me display:flex/justify-content:space-between dhe pa kontroll specifik ndaj shtyrjes së X jashtë kornizës. Në landscape, pozicionet vertikale të .v4-reel-side/footer/controls linin pak hapësirë. Reels i krijuar vetë përdor [data-act="v16-close"] ekzistues. Këto janë rrugët e korrigjimit; mungesa reale e X u raportua nga përdoruesi, por nuk ka ende screenshot ose E2E real të commit-it të riparuar.
+
+**Implementimi i izoluar:**
+- Skedar i RI demo/ILLYRIAN_V17_RESPONSIVE.css (commit 7423aaca055dd97bc11ea542f878abfcc4425dd6). Ai vendos X të Reel demonstrues absolutisht në cepin lart-djathtas të header-it me dimensione minimale 44×44px, kontrast/outline fokus, mbrojtje nga mbivendosja me krijimin e Reel dhe numëruesin; përmban rregulla që kompaktësojnë header-in, panelin anësor të veprimeve, footer-in dhe navigimin e Reels në landscape (deri në 520px lartësi), si dhe rregullime të v16-viewer për Reels/Stories të krijuara. Pamja desktop me lartësi normale nuk synohet të ndryshojë.
+- U lidh stylesheet i ri në fund të link-eve CSS të demo/ILLYRIAN_DEMO_v1.7.html (commit 476d018a453884cf0b00483aed5339ab2f09ebf4); nuk u ndryshua markup ose JavaScript bazë i produktit, as identiteti i markës.
+- Rregulli i vjetër i fullscreen landscape, i cili ishte vendosur gabimisht në CSS të Privacy/Map, u zhvendos identikisht në stylesheet responsive dhe u hoq vetëm nga demo/ILLYRIAN_PRIVACY_MAP_v1.7.css (commit d52f092f284120d08240eff7e99c2503f66c23fb). U verifikuan 11 deklaratat e mëparshme CSS identike para ndryshimit.
+- QA vizuale e izoluar demo/ILLYRIAN_VISUAL_QA_v1.7.html u zgjerua me provë Reels në çdo viewport: ekzistenca e X, dimensionet dhe hit-test elementFromPoint, klikimi mbyll overlay (commit c25fb32743aec3b81d0f48c54d7882377319d42d). Kontrolli nuk krijon/ndryshon të dhëna reale.
+
+**Verifikim që u realizua realisht:** pas shkrimeve, katër skedarët u lexuan sërish nga GitHub; 10/10 kontrolle statike të integritetit të lidhjes CSS, vetëm një vend të deklarimit të media-rule, prania e handler-it v4, X-it dhe 3 kontrolleve të QA, koordinimi CSS në ekranet e shkurtra, plus balancimi i 30/30 kllapave CSS, u kaluan. Kodi JavaScript i instrumentit QA kaloi kontrollin sintaksor. **Nuk u ekzekutuan këto riparime në shfletues real/telefon gjatë këtij cikli**; rezultatet e mëparshme 273/273 janë para ndryshimeve dhe duhen regresuar nëse finalizohet versioni.
+
+**Hapi i radhës:** hap preview-in e rifreskuar, provo Reels në portrait (390×844) dhe landscape (844×390, 932×430), verifiko X dhe mbylljen me klikim/prekje, skano nga Visual QA një përmasë ose shtatë përmasat për raportin e të tria provave X; dërgo raport + screenshot për çdo defekt tjetër. Pas këtyre bëhet regresioni 126+147 dhe kontrolli manual i ekraneve të tjera para përfundimit të Fazës 7.
+
+**Scope:** vetëm dega demo/v1.7-illyrian-shop; main, production dhe projektet e tjera nuk preken. Statusi P1 është IN PROGRESS derisa të provohet në browser/pajisje.
