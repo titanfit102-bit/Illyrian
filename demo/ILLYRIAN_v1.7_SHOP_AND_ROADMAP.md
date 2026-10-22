@@ -338,3 +338,30 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 - **Draft HTML benign, 5/5:** vargu `<img data-illyrian-qa-probe="text-only">` mbeti vlerë teksti në `input`, nuk krijoi element DOM, nuk u publikua apo ruajt automatikisht, paneli u mbyll pa bllokuar sfondin dhe nuk u raportuan gabime JS në skenar. Kjo nuk certifikon rezistencë të përgjithshme ndaj XSS.
 - **Metrika vetëm INFO:** Navigation Timing `duration=493 ms`, `DOMContentLoaded=492 ms`, `transferSize=374633 B`; `#screen` dhe `#phone` `scrollWidth/clientWidth=388/388 px`. Cache dhe mjedisi i shfletuesit ndikojnë; ky rezultat nuk provon objektiv performance apo mungesë overflow në të gjitha nën-panelet.
 - **Gjendja:** regresioni bazë mbetet 126/126 PASS në shtatë përmasa (raporti i mëparshëm); regresioni **i avancuar tani 21/21 PASS vetëm në 390×844**. Hapi pasues është prova e suite-s së avancuar në të shtatë viewport-et (nëse janë të gjitha PASS pritet 147 kontrolle, vetëm nëse numri mbetet 21 secila), pastaj audit vizual manual, tastierë fizike/aksesueshmëri dhe stabilitet/performancë me kriteret e tyre. Faza 7 vazhdon; Faza 8 nuk fillon automatikisht.
+
+
+## Faza 7 — Cikli 10: Regresioni i avancuar 147/147 PASS (22 tetor 2026)
+
+**Burimi i provës:** raporti i plotë i dërguar nga përdoruesi si `Tekst i ngjitur.txt`, titull `ILLYRIAN v1.7 QA — 2026-10-22T14:31:14.006Z`. U lexuan 169 rreshta dhe u numëruan automatikisht **147 PASS, 0 FAIL, 14 INFO me përmasë**, plus 7 tituj seksionesh INFO (një për përmasë). Secili nga 7 viewport-et përmban 21 kontrolle PASS:
+- 320×568 — 21/21 PASS; duration 441ms.
+- 360×780 — 21/21 PASS; duration 547ms.
+- 390×844 — 21/21 PASS; duration 442ms.
+- 430×932 — 21/21 PASS; duration 425ms.
+- 844×390 — 21/21 PASS; duration 447ms.
+- 932×430 — 21/21 PASS; duration 438ms.
+- 1280×800 — 21/21 PASS; duration 413ms.
+
+**Përmbajtja e çdo grupi me 21 kontrolle:** 7 fokus/tastierë **SINTETIKE** (fokus në Plans, Tab, Shift+Tab, Escape, rikthimi i fokusit, rikthimi i inert dhe zero JS errors), 9 tema `light/dark/auto` dhe localStorage (sjellja e dark class, preferencat, mbijetesa e auto pas refresh, rivendosja e vlerës së mëparshme dhe zero JS errors), 5 draft HTML benign (vlera e input-it, mungesa e krijimit të elementit DOM, mungesa e autopublikimit/ruajtjes, mbyllja pa bllokim, zero JS errors). Në këtë pajisje Auto përdori modalitetin Dark; sjellja Auto në një pajisje me preferencë Light nuk u provua.
+
+**Matjet informative, jo standarde certifikimi:** `DOMContentLoaded` 440/546/441/424/446/437/412ms respektivisht; `transferSize=374633 B` në çdo përmasë (cache mund të ndikojë). Në 320–932 px, `#screen/#phone scrollWidth===clientWidth`, kurse në viewport-in desktop 1280×800 telefoni i demos qëndroi 400×... px. Këto nuk provojnë performancën sipas Core Web Vitals dhe as mungesën e overflow në të gjitha karuselet dhe panelet e brendshme.
+
+**Status QA:** regresioni bazë më parë **126/126 PASS** (18 kontrolle × 7); regresioni i avancuar tani **147/147 PASS** (21 × 7). Gjithsej **273/273 kontrolle PASS për këto dy suita**, jo 273 kontrolle të pavarura të të gjitha funksioneve të produktit. F7-006 (navigimi te cilësimet e temës) konfirmohet i zgjidhur në të gjitha 7 përmasat. Nuk ka në këtë raport gabime funksionale që kërkojnë korrigjim të aplikacionit.
+
+**Kufizimet dhe detyrat e hapura para mbylljes finale të Paketës 7:**
+1. Audit manual vizual në Light/Dark/Auto të Home, Discover, Reels, Messages, Profile, Shop, Plans, Connections, Privacy dhe Governance, edhe në telefona të vegjël/landscape; tekste të gjata, mbivendosje, z-index, scroll i brendshëm, prekje/gesture dhe imazhe.
+2. Tastierë fizike dhe aksesueshmëri: Tab/Shift+Tab/Escape real, fokus i dukshëm, semantika dialog/aria, kontrast/lexues ekrani. Testet sintetike nuk certifikojnë WCAG.
+3. Ruajtje/reload për funksionet e tjera (jo vetëm tema), validim formularësh dhe të dhëna negative më të gjera; evente të përsëritura, Memory/MutationObserver dhe stabilitet gjatë përdorimit.
+4. Performance në pajisje reale (jo vetëm Navigation Timing orientues) dhe test manual Android/iOS sipas disponueshmërisë.
+5. Raporti final i sign-off: çdo defekt P0/P1 të jetë i mbyllur; të dihet statusi i P2 dhe vendimet e pronarit. Faza 8/PRD nuk ka filluar; nuk ndryshohen `main`, Vercel Production, identiteti i miratuar ose ndonjë projekt tjetër.
+
+**Konkluzion:** faza 7 ka kaluar **portën e regresionit funksional të automatizuar**; certifikimi i plotë i Fazës 7 mbetet NË PROCES derisa të përfundohen portat e mësipërme.
