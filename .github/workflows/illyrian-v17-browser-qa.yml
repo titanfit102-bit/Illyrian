@@ -6,7 +6,9 @@ on:
     branches:
       - demo/v1.7-illyrian-shop
     paths:
-      - 'demo/**'
+      - 'demo/**/*.html'
+      - 'demo/**/*.css'
+      - 'demo/**/*.js'
       - 'qa/**'
       - 'playwright.config.cjs'
       - '.github/workflows/illyrian-v17-browser-qa.yml'
@@ -33,8 +35,8 @@ jobs:
           node-version: '22'
       - name: Install pinned test runner (no application dependencies)
         run: npm install --no-save --no-audit --no-fund @playwright/test@1.55.1
-      - name: Install Chromium for browser QA
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium browser only (avoid slow apt dependency update)
+        run: npx playwright install chromium
       - name: Run isolated Reels and landscape browser tests
         run: npx playwright test
       - name: Preserve failed-case screenshots and traces
