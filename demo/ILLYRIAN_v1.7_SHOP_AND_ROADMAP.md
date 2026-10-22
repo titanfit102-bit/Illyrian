@@ -606,3 +606,12 @@ The owner approved the **compatible principles** from Master Architecture Upgrad
 
 ### P0-D progress — Shop select value / UGC fix (23 October 2026)
 Documented accepted architecture in blueprint §10 and handoff. Corrected Shop form/category and city option values to remain stable across translations, and excluded user listing title/seller/description from automatic UI translation. Regression tests extended to 57. **Actions #39865986736: 57/57 passed (Chromium, code SHA `db574224d4849775224fb6ee4df0247aa2f18c46`).** PR #1 stays Draft; no merge, production or main changes. Remaining DEMO gates: localStorage failure rollback, other select values, full semantic localization, mobile/visual/a11y and current Vercel candidate verification.
+
+
+
+### P0-D execution checkpoint — 23 October 2026, verified 65/65
+- Draft PR #1 latest code/test SHA `b0a85f1119149d092328ae912d79299a87b9862f` passed [Chromium Actions #39868919668](https://github.com/titanfit102-bit/Illyrian/actions/runs/39868919668): **65/65 PASS (2.1m)**. Eight tests added after historical 57/57.
+- Corrected Shop base local persistence to rollback failure atomically for create/edit/delete/cart/checkout/inquiry; no false success or discard of prior persisted state.
+- Shop Plus, Connections and Governance now restore last committed in-memory persisted snapshot after storage failure, with corrected Connections success flags. Added explicit values for selected multilingual forms and reason/time selectors, preserving legacy literal data codes.
+- No branch merge, `main` or Production update. Existing demo features remain. Coverage still incomplete for many locale strings, full UGC exclusion, screen reader/mobile/visual review, current Vercel Preview, and consolidated Shop+Shop Plus domain. No claim that 65/65 = finished product.
+- Next P0/P1-D path: audit residual dynamic strings and data-valued controls; preserve unsaved field contents in secondary forms after quota errors; CI PR checks including root i18n path; Vercel candidate verification without plan purchase; manual phone screenshot review after stabilization. Product Phase 8 M0–M5 remains DESIGN/validation, not backend shipped.

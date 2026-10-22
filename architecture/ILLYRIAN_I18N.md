@@ -76,3 +76,11 @@ Inventarizo të gjitha tekstet e dukshme dhe dinamikat, zgjero katalogët, përd
 - U shtuan gjashtë çelësa semantikë në çdo katalog `en/sq/it` (296 total në secilën gjuhë), me pasqyra te `demo/i18n` identike. U shtuan tre skenarë Chromium për mesazhin e shtimit në shportë, validimin e formularit dhe ruajtjen e listimit në `sq/en/it`; totali i parashikuar është 56 teste, por rezultati final duhet marrë nga run i commit-it të ri.
 - Kodi dhe workflow i testimit u vendosën vetëm te `feat/i18n-shop-feedback-20261022` (commit `3e3e651e1bc8a7cb07e1561f9b194bf300c81042`). Asnjë merge në demo/main, asnjë Production. CI e veçuar: https://github.com/titanfit102-bit/Illyrian/actions/runs/39857060705 .
 - **Për vazhdim:** kërko rezultatin final të CI; nëse dështon, rregullo testin/kodin në këtë degë dhe ri-verifiko. Pastaj vazhdo me përkthimin direkt të formave/erroreve në Plans, Connections, Shop Plus, Privacy, Governance dhe UI kryesore. Audit i plotë visual/a11y dhe telefon fizik mbeten OPEN.
+
+
+
+## P0-D regression hardening (23 October 2026; branch-only)
+Cross-language bug class: implicit `<option>` values were translated with UI text, causing mismatches against immutable domain literals. Existing persisted Albanian values were preserved and controls now declare `value` explicitly in Shop, Shop Plus request/reports, Connections timeslots, and Governance report reasons. UI text remains localizable; an actual canonical enum/code migration needs a versioned data contract and separate tests.
+Shop user-authored titles, seller and descriptions are explicitly marked `data-user-content` in tested detail/tile paths so phrase-based DOM replacement does not rewrite their display. Full UI vs UGC inventory is OPEN; adapter is transitional.
+Storage-related i18n paths now return localized Shop error notices and avoid false successful feedback when browser persistence fails. Other modules retain their existing Albanian error strings: complete locale coverage remains OPEN.
+Chromium regression #39868919668 at code SHA `b0a85f1119149d092328ae912d79299a87b9862f`: 65 PASS / 0 FAIL in 2.1m. This test evidence is scoped to browser flows, **not** every text string or real Android/iOS. Draft PR #1 unmerged.
