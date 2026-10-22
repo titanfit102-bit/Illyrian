@@ -452,3 +452,11 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Hapi i radhës:** hap preview-in e rifreskuar, provo Reels në portrait (390×844) dhe landscape (844×390, 932×430), verifiko X dhe mbylljen me klikim/prekje, skano nga Visual QA një përmasë ose shtatë përmasat për raportin e të tria provave X; dërgo raport + screenshot për çdo defekt tjetër. Pas këtyre bëhet regresioni 126+147 dhe kontrolli manual i ekraneve të tjera para përfundimit të Fazës 7.
 
 **Scope:** vetëm dega demo/v1.7-illyrian-shop; main, production dhe projektet e tjera nuk preken. Statusi P1 është IN PROGRESS derisa të provohet në browser/pajisje.
+
+## Faza 7 — Cikli 16: Reels X confirmed by user (22 tetor 2026)
+
+**Konfirmim manual në preview pas korrigjimit:** përdoruesi pohoi se demo hapet dhe, pas pyetjes nëse X në Reels shfaqet dhe mbyll pamjen, u përgjigj: 'po mbyllet ...'. Kjo është evidencë direkte për suksesin e veprimit të mbylljes së Reels në shfletuesin/viewport-in ku përdoruesi e provoi. **Viewport-i, orientimi dhe pajisja nuk janë specifikuar**: nuk duhet të shënohet si 7/7, Android+iOS, ose certifikim i X në landscape.
+
+**Status:** Reels close X: MANUAL PASS (skenari i raportuar, përmasë e papërcaktuar). Reels në 844×390 dhe 932×430: UNKNOWN derisa të provohen. Çështja më e gjerë e paraqitjes landscape: E HAPUR, sepse përdoruesi më parë raportoi pamje të pasaktë dhe nuk ka konfirmuar ende korrigjimin e saj. Faza 7 ende NË PROCES dhe regresioni 126+147 pas ndryshimit CSS nuk është ribërë.
+
+**Veprim:** vetëm regjistrim i feedback-ut në roadmap; nuk u ndryshua asnjë kod. Main/Production të paprekura.
