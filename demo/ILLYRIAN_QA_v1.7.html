@@ -159,7 +159,14 @@
     check(test,'Connections izolon sfondin',!d.getElementById('ilc-root')?.hidden&&!!d.getElementById('screen')?.inert);
     await tap(d,'#ilc-root [data-ilc="view:together"]','nënfaqja Bëjmë diçka bashkë');
     await tap(d,'#ilc-root [data-ilc="together:language"]','drafti Connections→Plans');
-    check(test,'Connections transferon draftin te Plans',!!d.getElementById('ilc-root')?.hidden&&!d.getElementById('ilp-root')?.hidden&&d.getElementById('ilp-root')?.textContent?.includes('Praktikë gjuhësh dhe njohje'));
+    const connectionsClosed=!!d.getElementById('ilc-root')?.hidden;
+    const plansOpen=d.getElementById('ilp-root')?.hidden===false;
+    const draftTitle=d.querySelector('#ilp-root #ilp-form input[name="title"]')?.value||'';
+    const draftNeedsConfirmation=!!d.querySelector('#ilp-root #ilp-form input[name="place"][required]');
+    check(test,'Connections transferon draftin te Plans',
+      connectionsClosed&&plansOpen&&draftTitle==='Praktikë gjuhësh dhe njohje'&&draftNeedsConfirmation,
+      'Connections mbyllur='+connectionsClosed+'; Plans hapur='+plansOpen+
+      '; titulli='+JSON.stringify(draftTitle)+'; vendi kërkon konfirmim='+draftNeedsConfirmation);
     await tap(d,'#ilp-root [data-ilp="close"]','mbyllja e draftit');
     check(test,'Rikthim korrekt pas draftit',!d.getElementById('screen')?.inert);
     await nav(d,'explore');
