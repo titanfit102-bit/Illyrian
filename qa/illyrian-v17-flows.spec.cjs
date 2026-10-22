@@ -49,7 +49,7 @@ for(const [w,h] of sizes){
     await page.locator('[data-ilp-entry]').first().click();
     await expect(page.locator('#ilp-root')).toBeVisible();
     await backgroundInert(page);
-    await page.locator('#ilp-root [data-ilp="close"]').click();
+    await page.locator('#ilp-root button[data-ilp="close"]').click();
     await expect(page.locator('#ilp-root')).toBeHidden();
     await backgroundActive(page);
     await page.locator('[data-ilc-entry]').first().click();
@@ -60,7 +60,7 @@ for(const [w,h] of sizes){
     await expect(page.locator('#ilp-root')).toBeVisible();
     await expect(page.locator('#ilp-root #ilp-form input[name="title"]')).toHaveValue('Praktikë gjuhësh dhe njohje');
     await expect(page.locator('#ilp-root #ilp-form input[name="place"][required]')).toHaveCount(1);
-    await page.locator('#ilp-root [data-ilp="close"]').click();
+    await page.locator('#ilp-root button[data-ilp="close"]').click();
     await backgroundActive(page);
 
     // Privacy must not cause an extra overlay if opened twice; Governance
@@ -71,13 +71,13 @@ for(const [w,h] of sizes){
     await expect(page.locator('#il4-root')).toBeVisible();
     await backgroundInert(page);
     // Background entry is inert while the Privacy panel is active.
-    await page.locator('#il4-root [data-il4="close"]').click();
+    await page.locator('#il4-root button[data-il4="close"]').click();
     await expect(page.locator('#il4-root')).toBeHidden();
     await backgroundActive(page);
     await page.locator('#ig6-entry [data-ig6="open"]').click();
     await expect(page.locator('#ig6-root')).toBeVisible();
     await backgroundInert(page);
-    await page.locator('#ig6-root [data-ig6="close"]').click();
+    await page.locator('#ig6-root button[data-ig6="close"]').click();
     await expect(page.locator('#ig6-root')).toHaveCount(0);
     await backgroundActive(page);
 
