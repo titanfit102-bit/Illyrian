@@ -237,3 +237,130 @@ test('Shop user listing title, seller and description remain unchanged across la
   await expect(page.locator('#illyrian-shop-layer p.ils-description')).toHaveText('Mbyll');
  }
 });
+
+async function denyShopStorage(page){
+ await page.evaluate(()=>{
+  const previous=Storage.prototype.setItem;
+  window.__restoreShopSetItem=()=>{Storage.prototype.setItem=previous};
+  Storage.prototype.setItem=function(key,value){
+   if(key==='illyrian_demo_v17_shop')throw new DOMException('Demo storage quota exceeded','QuotaExceededError');
+   return previous.call(this,key,value);
+  };
+ });
+}
+async function restoreShopStorage(page){
+ await page.evaluate(()=>{window.__restoreShopSetItem?.();delete window.__restoreShopSetItem});
+}
+async function openShopForStorage(page){
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+}
+test('Shop rolls back failed add and listing creation, then recovers after storage is restored',async({page})=>{
+ await openShopForStorage(page);
+ const baseline=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'));
+ await page.locator('#illyrian-shop-layer [data-ils="detail"][data-id="p1"]').click();
+ await denyShopStorage(page);
+ await page.locator('#illyrian-shop-layer [data-ils="add"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText('Could not save: local storage is full.');
+ await expect(page.locator('#illyrian-shop-layer .ils-cart b')).toHaveText('0');
+ await page.locator('#illyrian-shop-layer [data-ils="back"]').click();
+ await page.locator('#illyrian-shop-layer [data-ils="sell"]').click();
+ await page.locator('#ils-sell-form input[name="name"]').fill('Example local item');
+ await page.locator('#ils-sell-form input[name="store"]').fill('Sample seller');
+ await page.locator('#ils-sell-form input[name="price"]').fill('15');
+ await page.locator('#ils-sell-form button[type="submit"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText('Could not save: local storage is full.');
+ await expect(page.locator('#ils-sell-form')).toBeVisible();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(baseline);
+ await restoreShopStorage(page);
+ await page.locator('#ils-sell-form button[type="submit"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText('The listing was saved only in this browser.');
+ await expect(page.locator('#illyrian-shop-layer .ils-card').filter({hasText:'Example local item'})).toHaveCount(1);
+});
+test('Shop failed checkout, remove and contact never show false success',async({page})=>{
+ await openShopForStorage(page);
+ await page.locator('#illyrian-shop-layer [data-ils="detail"][data-id="p1"]').click();
+ await page.locator('#illyrian-shop-layer [data-ils="add"]').click();
+ await page.locator('#illyrian-shop-layer [data-ils="cart"]').click();
+ const baseline=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'));
+ await denyShopStorage(page);
+ await page.locator('#illyrian-shop-layer [data-ils="checkout"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText('Could not save: local storage is full.');
+ await expect(page.locator('#illyrian-shop-layer .ils-cart-row')).toHaveCount(1);
+ await expect(page.locator('#illyrian-shop-layer .ils-success')).toHaveCount(0);
+ await page.locator('#illyrian-shop-layer [data-ils="remove-cart"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-cart-row')).toHaveCount(1);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(baseline);
+ await page.locator('#illyrian-shop-layer [data-ils="browse"]').click();
+ await page.locator('#illyrian-shop-layer [data-ils="detail"][data-id="c1"]').click();
+ await page.locator('#illyrian-shop-layer [data-ils="contact"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText('Could not save: local storage is full.');
+ await expect(page.locator('#illyrian-shop-layer .ils-success')).toHaveCount(0);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(baseline);
+ await restoreShopStorage(page);
+ await page.locator('#illyrian-shop-layer [data-ils="contact"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-success')).toBeVisible();
+});
+test('Shop failed edits and deletes preserve original local listing',async({page})=>{
+ await openShopForStorage(page);
+ await page.locator('#illyrian-shop-layer [data-ils="sell"]').click();
+ await page.locator('#ils-sell-form input[name="name"]').fill('Original listing');
+ await page.locator('#ils-sell-form input[name="store"]').fill('Original seller');
+ await page.locator('#ils-sell-form input[name="price"]').fill('10');
+ await page.locator('#ils-sell-form button[type="submit"]').click();
+ await page.locator('#illyrian-shop-layer .ils-card').filter({hasText:'Original listing'}).locator('[data-ils="detail"]').click();
+ await page.locator('#illyrian-shop-layer [data-ils="edit"]').click();
+ const baseline=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'));
+ await denyShopStorage(page);
+ await page.locator('#ils-sell-form input[name="name"]').fill('Changed listing');
+ await page.locator('#ils-sell-form button[type="submit"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText('Could not save: local storage is full.');
+ await expect(page.locator('#ils-sell-form')).toBeVisible();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(baseline);
+ await page.locator('#illyrian-shop-layer [data-ils="browse"]').click();
+ await page.locator('#illyrian-shop-layer [data-ils="my"]').click();
+ await page.locator('#illyrian-shop-layer .ils-card').filter({hasText:'Original listing'}).locator('[data-ils="detail"]').click();
+ page.on('dialog',dialog=>dialog.accept());
+ await page.locator('#illyrian-shop-layer [data-ils="delete"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText('Could not save: local storage is full.');
+ await expect(page.locator('#illyrian-shop-layer h2[data-user-content]')).toHaveText('Original listing');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(baseline);
+ await restoreShopStorage(page);
+ await page.locator('#illyrian-shop-layer [data-ils="delete"]').click();
+ await expect(page.locator('#illyrian-shop-layer .ils-card').filter({hasText:'Original listing'})).toHaveCount(0);
+});
+
+for(const locale of ['en','it']){
+ test('i18n domain form codes remain unchanged in Shop Plus, Connections and Governance - '+locale,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="tab:needs"]').click();
+  const plus=await page.locator('#isp-need').evaluate(form=>({
+   types:[...form.elements.type.options].map(o=>o.value),
+   cities:[...form.elements.city.options].map(o=>o.value)
+  }));
+  expect(plus.types).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  expect(plus.cities).toEqual(['Tiranë','Durrës','Shkodër','Vlorë','Elbasan','Prishtinë']);
+  await page.locator('#isp-root [data-isp="close"]').first().click();
+  await page.keyboard.press('Escape');
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('#ilc-entry [data-ilc-entry]').click();
+  await page.locator('#ilc-root [data-ilc="view:interest"]').click();
+  const initial=await page.locator('#ilc-interest select[name="slot"]').evaluate(el=>[...el.options].map(o=>[o.value,o.textContent]));
+  expect(initial.length).toBeGreaterThan(0);
+  expect(initial.every(([value])=>Boolean(value))).toBe(true);
+  await page.locator('#ilc-root [data-ilc="overview"]').click();
+  await page.locator('#ilc-root [data-ilc="close"]').click();
+  await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+  await page.locator('#ig6-entry [data-ig6="open"]').click();
+  await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
+  const reasons=await page.locator('#ig6-report select[name="reason"]').evaluate(el=>[...el.options].map(o=>o.value));
+  expect(reasons).toContain('Mashtrim i dyshuar');
+  expect(reasons).toContain('Shkelje privatësie');
+ });
+}
