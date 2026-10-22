@@ -37,6 +37,20 @@
   cursor:pointer;
   touch-action:manipulation;
 }
+/* Legacy v1.5 positioned Krijo Reel 45px from the right, directly
+   underneath the new close X. Reserve separate non-overlapping slots. */
+#phone .v4-reel-overlay .v4-reel-header .v15-reel-create{
+  position:absolute!important;
+  right:calc(64px + env(safe-area-inset-right,0px))!important;
+  top:calc(8px + env(safe-area-inset-top,0px))!important;
+  z-index:7;
+  max-width:calc(100% - 130px);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-height:44px;
+  box-sizing:border-box;
+}
 #phone .v4-reel-overlay .v4-reel-header [data-act="reel-close"]:focus-visible{
   outline:3px solid #fff;
   outline-offset:2px;
@@ -81,6 +95,33 @@
   #phone .v4-reel-overlay .v4-reel-header [data-act="reel-close"]{
     top:calc(3px + env(safe-area-inset-top,0px));
     right:calc(8px + env(safe-area-inset-right,0px));
+  }
+  #phone .v4-reel-overlay .v4-reel-header .v15-reel-create{
+    top:calc(3px + env(safe-area-inset-top,0px))!important;
+    right:calc(64px + env(safe-area-inset-right,0px))!important;
+    padding:6px 9px!important;
+  }
+  #phone .overlay .modal{
+    max-height:calc(100% - 6px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding:9px 12px 18px;
+  }
+  #phone .overlay .modalhead{
+    position:sticky;
+    top:0;
+    z-index:7;
+    min-height:44px;
+    margin-bottom:7px;
+    padding:4px 0;
+    background:var(--card);
+  }
+  #phone .overlay .modalhead [data-act="close"]{
+    flex:none;
+    min-width:44px;
+    min-height:44px;
+    display:inline-grid;
+    place-items:center;
   }
   #phone .v4-reel-overlay .v4-reel-side{
     right:7px;
