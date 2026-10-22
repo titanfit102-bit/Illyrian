@@ -590,3 +590,15 @@ U verifikuan gjashtë katalogët en/sq/it, secili me 290 çelësa në 15 namespa
 - U shtuan gjashtë çelësa semantikë në çdo katalog `en/sq/it` (296 total në secilën gjuhë), me pasqyra te `demo/i18n` identike. U shtuan tre skenarë Chromium për mesazhin e shtimit në shportë, validimin e formularit dhe ruajtjen e listimit në `sq/en/it`; totali i parashikuar është 56 teste, por rezultati final duhet marrë nga run i commit-it të ri.
 - Kodi dhe workflow i testimit u vendosën vetëm te `feat/i18n-shop-feedback-20261022` (commit `3e3e651e1bc8a7cb07e1561f9b194bf300c81042`). Asnjë merge në demo/main, asnjë Production. CI e veçuar: https://github.com/titanfit102-bit/Illyrian/actions/runs/39857060705 .
 - **Për vazhdim:** kërko rezultatin final të CI; nëse dështon, rregullo testin/kodin në këtë degë dhe ri-verifiko. Pastaj vazhdo me përkthimin direkt të formave/erroreve në Plans, Connections, Shop Plus, Privacy, Governance dhe UI kryesore. Audit i plotë visual/a11y dhe telefon fizik mbeten OPEN.
+
+
+
+## Architecture proposal integration / execution gate — 23 October 2026
+The owner approved the **compatible principles** from Master Architecture Upgrade and Shop Addendum 02 after independent GPT Work critique, not wholesale implementation. Full classified decisions/open gates are at `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 and `MASTER_HANDOFF.md` (2026-10-23 addendum); they replace neither this existing timeline nor Phase 8 M0–M5.
+
+- NOW (DEMO P0): fix i18n Shop category/city form values and other affected controls; 54/56 Chromium results are not a PASS; ensure storage failures are not incorrectly reported as saved; isolate user content from legacy phrase translator; strengthen PR CI, only branch PR.
+- THEN (DEMO P1-D): complete sq/en/it with semantic keys across screens, forms, notices; keep illustrative financial/privacy/analytics paths clearly simulated; audit Shop/Shop Plus state consistency, Settings, browser regression, 7 viewports, accessibility and physical phone screenshots.
+- REAL APP DESIGN: unified account with scoped capabilities and authorization; shared analytics, notification, moderation and multilingual architecture; Shop canonical seller/shop/listing model with three transaction flows, social→listing deep references. Prefer modular backend and evaluate RN/Expo versus Web/PWA using evidence, without vendor lock-in.
+- CONDITIONAL: Shop discovery/inquiries as a narrow MVP differentiator must be pilot-validated. Payments/commissions, full video/DM/dashboards and scaling remain later, gated by economics, legality, privacy and performance. Demo 5% is illustrative only.
+- Not decided: first target country/city, public code visibility/licensing, stack/provider, launch scope, operations budget and payments. No irreversible configuration or merge, no projects outside ILLYRIAN.
+- Independent report: `ILLYRIAN_MASTER_ARCHITECTURE_REVIEW_AND_EXECUTION_PLAN` dated 22 Oct 2026 (Work read-only, snapshot `4a951e4...`). Treat its facts as time-bound and its recommendations as proposals, not blanket approvals.

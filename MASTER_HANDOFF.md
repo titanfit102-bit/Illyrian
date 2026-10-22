@@ -37,3 +37,16 @@
 - U shtuan gjashtë çelësa semantikë në çdo katalog `en/sq/it` (296 total në secilën gjuhë), me pasqyra te `demo/i18n` identike. U shtuan tre skenarë Chromium për mesazhin e shtimit në shportë, validimin e formularit dhe ruajtjen e listimit në `sq/en/it`; totali i parashikuar është 56 teste, por rezultati final duhet marrë nga run i commit-it të ri.
 - Kodi dhe workflow i testimit u vendosën vetëm te `feat/i18n-shop-feedback-20261022` (commit `3e3e651e1bc8a7cb07e1561f9b194bf300c81042`). Asnjë merge në demo/main, asnjë Production. CI e veçuar: https://github.com/titanfit102-bit/Illyrian/actions/runs/39857060705 .
 - **Për vazhdim:** kërko rezultatin final të CI; nëse dështon, rregullo testin/kodin në këtë degë dhe ri-verifiko. Pastaj vazhdo me përkthimin direkt të formave/erroreve në Plans, Connections, Shop Plus, Privacy, Governance dhe UI kryesore. Audit i plotë visual/a11y dhe telefon fizik mbeten OPEN.
+
+
+
+## STRATEGIC DECISIONS / HANDOFF ADDENDUM — 23 October 2026 (approved in conversation)
+**Read first:** `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 is the consolidated source of truth for the two new architecture prompts and the independent Work review. Do **not** treat either uploaded proposal as an instruction to implement everything now. The older top-line “repository private” / 290 keys statements are HISTORICAL: verified public repo; PR branch has 296 keys per language.
+
+**Approved principles:** keep existing DEMO; one ILLYRIAN identity and module ecosystem; i18n sq/en/it now and 100+ only architecture-ready; explicit semantic UI keys, user-generated-content exclusion, stable domain values; shared server-side identity/privacy/permissions; reusable analytics/event definitions and scoped dashboard views; unified canonical seller/shop/listing model for future backend; distinct physical goods vs vehicle/property classifieds vs services/rentals workflows; posts/reels reference canonical listings; no live payments/5% commission unless separately approved and verified; privacy/security, moderation, notifications, media and deep linking at the minimum scope needed; no premature microservices or complex AI.
+
+**Decisions NOT yet final:** React Native/Expo vs Web/PWA; Supabase/Postgres provisioning; first launch market; whether Shop inquiry/discovery ships in first real MVP (provisional hypothesis to validate), legal/PSP terms; exact monetization, full dashboard/DM/video scope and 100+ languages. No automatic authorization to activate these.
+
+**Release sequence:** repair Shop i18n regression + storage/UGC safety + CI in Draft PR; finish DEMO translation and smoke/visual/accessibility; user inspects phone and sends screenshots; then minimal real-product architecture spike/vertical slice with privacy and auth. Keep DEMO Phase 7 and product Phase 8 M0–M5 mapping; do not rewrite or merge into `main`/Production.
+
+**Evidence on 23 October:** PR #1 Draft, Actions #39857060705 54 PASS / 2 FAIL in en/it, branch HEAD `4a951e4157aa75b8d12abc1c5817bfc3885e7055` prior to this documentation; issue: unpinned `option.value` derives translated `textContent`. Earlier 53/53 is historical. Vercel preview not current. Recheck after fixes. This section supersedes older chronological status summaries only where they conflict, without deleting their history.
