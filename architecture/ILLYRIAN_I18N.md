@@ -14,7 +14,7 @@ DEMO është HTML + JavaScript statik (pa React, TypeScript ose `tsconfig`). Tek
 
 **Integrimi:** Profile → Settings → Language (Gjuha) ka tre butona që ndryshojnë gjuhën dhe ruajnë zgjedhjen. `document.documentElement.lang` dhe `dir` përditësohen. Kodi ekzistues emeton përkohësisht tekst shqip; adapteri lokalizon etiketat e njohura nga katalogët me tekst origjinal, duke ndjekur renderimet DOM përmes `MutationObserver`.
 
-**Katalogët:** 206 çelësa semantikë **në secilën gjuhë** dhe 14 namespace: `common`, `navigation`, `settings`, `home`, `discover`, `reels`, `messages`, `plans`, `shop`, `shopPlus`, `connections`, `privacy`, `governance`, `onboarding`. Katalogët janë të ndarë nga komponentët/logjika. Identifikuesit, `data-act`, vlerat e filtrave, të dhënat e llogarisë dhe postimet/komentet/mesazhet e përdoruesve **nuk janë çelësa lokalizimi**.
+**Katalogët:** 290 çelësa semantikë **në secilën gjuhë** dhe 15 namespace: `common`, `navigation`, `settings`, `home`, `discover`, `reels`, `messages`, `plans`, `shop`, `shopPlus`, `connections`, `privacy`, `governance`, `onboarding`, `profile`. Katalogët janë të ndarë nga komponentët/logjika. Identifikuesit, `data-act`, vlerat e filtrave, të dhënat e llogarisë dhe postimet/komentet/mesazhet e përdoruesve **nuk janë çelësa lokalizimi**.
 
 ## API për zhvilluesit
 
@@ -40,7 +40,7 @@ IllyrianI18n.date(new Date(), {dateStyle: 'medium'});
 
 ## Testet, kufijtë dhe porta e publikimit
 
-- **Sintaksa:** i18next, adapteri dhe katalogët kaluan analizën JavaScript; 206/206 çelësa të përputhur në secilin lokal. Nuk ekziston pipeline TypeScript në repository.
+- **Sintaksa:** i18next, adapteri dhe katalogët kaluan analizën JavaScript; 290/290 çelësa të përputhur në secilin lokal. Nuk ekziston pipeline TypeScript në repository.
 - **E2E i shtuar:** `qa/illyrian-v17-i18n.spec.cjs`, me teste për locale `sq/en/it`, persistencën, zbulimin e gjuhës, fallback-un, pluralin, formatimin, Settings dhe përmbajtjen e postimeve.
 - **Kufizim real:** teksti i vjetër në template të shumë moduleve është më i gjerë se 206 çelësat. Mungojnë përkthime për disa paragrafë, gabime, gjendje bosh dhe rrugë të avancuara të ndërfaqes. **Asnjë pretendim për përkthim të plotë në sq/en/it nuk është i justifikuar pa testim e inventar të shteruar.**
 - Kërkohet CI jeshil pas commit-it të integrimit, audit i përkthimit të çdo ekrani, kontroll i skedave të gjata dhe audit manual në telefon nga pronari në fund të etapës. Nuk ka backend, përkthim të përmbajtjes së përdoruesve apo funksion pagese të aktivizuar.
@@ -48,3 +48,13 @@ IllyrianI18n.date(new Date(), {dateStyle: 'medium'});
 ## Hapat e radhës
 
 Inventarizo të gjitha tekstet e dukshme dhe dinamikat, zgjero katalogët, përditëso komponentët me `t()` eksplicite, bëj audit kuptimor të përkthimit dhe testo regresionin e të gjitha moduleve në tre gjuhë. Pas kësaj përdoruesi do të bëjë QA e plotë në telefon dhe do të dërgojë screenshot-e. `main` dhe Production mbeten të paprekura.
+
+
+## Cikli i lokalizimit 2 — mbulimi i katalogëve (22 tetor 2026)
+
+- U shtuan **84 çelësa semantikë për secilën gjuhë**, për Shop, Shop Plus, Reels, Plans, Discover, Home, Profile dhe Common. Tani ka **290/290/290 çelësa** në **15 namespace** (`profile` i ri). Leximi me JavaScript konfirmoi paritet 100% të emrave të çelësave; të gjitha 3 kopjet `i18n/locales/` janë **bit-për-bit identike** me `demo/i18n/locales/`. Commit: `fbd04ad37c653a233617a7464ad6a15a550c9b4a`.
+- QA inventory i vërtetë në Chromium (run #39852230406) për 12 pamje të kampionuara: **238 etiketa të vrojtuara**, nga **150 të pambuluara** në raportin e parë, në **81 të pambuluara** pas shtimit të katalogëve. Shumica e 81 janë tituj personash, përshkrime/listime shembull, bashkime të etiketa-ve `select`, emra qytetesh ose përmbajtje e krijuar — nuk do të përkthehen automatikisht pa klasifikim të saktë. **Ky rezultat nuk provon 100% mbulim të UI** sepse nuk përfshin çdo gjendje gabimi, dialog, formular dhe rrugë kushtore.
+- Funksionet e formatimit të çmimeve në `ILLYRIAN_SHOP_v1.7.js` dhe `ILLYRIAN_SHOP_PLUS_v1.7.js` përdorin tani **Intl.NumberFormat për gjuhën aktive** (EUR); shuma dhe çmimi i ruajtur mbeten të pandryshuar. Commit: `9e40d6dd7c2e11b053b6f80ed87bf8af7d842776`. GitHub Actions #39852521431 përfundoi `success`.
+- E2E i ri: 3 teste për EUR formati lokal dhe 3 skenarë për titujt e Shop, Plans, Privacy dhe Governance në `sq/en/it`; testet e fundit janë shtuar te `qa/illyrian-v17-i18n.spec.cjs` në commit `7d7b3dbf3ae7a4744c5dad4e2f75fac548b00dcb`. Resultado final i run #39852708170 duhet regjistruar veçmas pas mbylljes (në çastin e shkrimit ishte ende në ekzekutim).
+- **Borxhi arkitekturor i njohur:** për tekstet historike përdoret një adapter tranzitor `MutationObserver` + fjalor frazash të njohura; gjatë zhvillimit të ri duhet përdorur `IllyrianI18n.t('namespace:key')` direkt në template dhe rregullat semantike. Vlera e filtrave, mesazhet, postimet, emrat e përdoruesve, listimet dhe përmbajtja e shkruar nga përdoruesit duhet të jenë jashtë përkthimit të UI. Për të arritur 100% mbulim duhen etiketuar të gjitha rrugët e trashëguara, jo thjesht shtuar gjuhë.
+- RTL mbetet përgatitje në API `lang/dir`, por kërkon audit të strukturës, CSS logical properties dhe test me arabisht përpara aktivizimit. Nuk ekziston pipeline TypeScript në këtë repo statik; nuk është pretenduar test TS.
