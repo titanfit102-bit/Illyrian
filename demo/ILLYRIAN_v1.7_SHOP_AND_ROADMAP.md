@@ -413,3 +413,24 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Korrigjimi vetëm në instrumentin Visual QA:** commit ed11612f0d0f48022986a9c8e4a82d8eed39a9c7 (vetëm demo/ILLYRIAN_VISUAL_QA_v1.7.html). Laboratori tani ndryshon gjerësinë/lartësinë dhe rifreskon iframe për çdo përmasë, pastaj mat window.innerWidth/innerHeight, matchMedia(max-width:760px), display të .side, rect të #phone dhe .device-shell. Në landscape vendos WARN si nevojë kontrolli real në pajisje. U kalua verifikimi sintaksor JavaScript, rileximi i blob-it GitHub dhe 3/3 kontrolle logjike sintetike (portrait, desktop-shell në landscape, mismatch viewport). **Këto nuk janë prova E2E në browser.**
 
 **Hapi i radhës:** të ekzekutohet sërish skanimi i 7 përmasave me diagnostikën e re, të kontrollohen manualisht në landscape 844×390 dhe 932×430 dhe të rishikohen screenshot-et nëse ka mospërputhje. Pastaj vendoset riparimi CSS i izoluar për mobile-landscape pa prishur desktopin e miratuar. Main dhe Production të paprekura.
+
+## Faza 7 — Cikli 14: Diagnostikë reale landscape dhe korrigjimi i interpretimit (22 tetor 2026)
+
+**Prova e përdoruesit:** skedari Tekst i ngjitur(2).txt, raport ILLYRIAN VISUAL QA — 2026-10-22T15:30:15.583Z. Numërim mbi 205 rreshta: **63 PASS, 119 INFO, 2 WARN, 0 FAIL** në 7 përmasa dhe 4 pamje (Home, Discover, Events, Profile). Të dymbëdhjetë kontrollet manuale janë UNKNOWN (0/12 të kryera); Release gate E HAPUR. 63 PASS = 56 kontrolle overflow/ID + 7 dimensione; INFO = 112 matje të pamjeve + 7 matje gjeometrie. Dy WARN janë kontrolle të orientimit horizontal, jo FAIL.
+
+**Matjet e reja:**
+- 320×568 → viewport 318×566, side=none, phone=shell=318×566, max-width:760=true.
+- 360×780 → viewport 358×778, side=none, phone=shell=358×778, max-width:760=true.
+- 390×844 → viewport 388×842, side=none, phone=shell=388×842, max-width:760=true.
+- 430×932 → viewport 428×930, side=none, phone=shell=428×930, max-width:760=true.
+- 844×390 → viewport 842×388, side=none, phone=shell=842×388, max-width:760=false; mobileFullscreenHeuristic=true (WARN).
+- 932×430 → viewport 930×428, side=none, phone=shell=930×428, max-width:760=false; mobileFullscreenHeuristic=true (WARN).
+- 1280×800 → viewport 1278×798, side=flex, phone=400×724, shell=414×738, max-width:760=false.
+
+**Korrigjim i interpretimit të mëparshëm:** inspeksioni i të GJITHA skedarëve CSS tregoi rregullin EKZISTUES në demo/ILLYRIAN_PRIVACY_MAP_v1.7.css: @media (orientation:landscape) and (min-width:761px) and (max-width:1100px) and (max-height:520px). Rregulli fsheh .desktop>.side, e bën .desktop block, e shtrin .device-shell në 100% dhe i vendos .device height:100dvh;min-height:0. Për rrjedhojë, media query origjinal i HTML-së nuk mund të shqyrtohet i izoluar. **Nuk ka provë se demoja po shfaq desktop-shell në 844×390 dhe 932×430**; matjet në browser konfirmojnë gjeometri fullscreen. Vlerësimi i mëparshëm si bug i sigurt mobile-landscape korrigjohet. Dy WARN kërkojnë vetëm inspektim manual të përdorshmërisë.
+
+**Rrezik arkitekturor, jo bug i konfirmuar:** rregulli global i layout-it landscape ndodhet te CSS-ja e një moduli Privacy/Map, jo te responsive core CSS. Çaktivizimi i modulit mund të ndikojë sjelljen landscape. Të planifikohet konsolidim i CSS-së vetëm pas një vlerësimi/regresioni të dedikuar; nuk ndryshohet kodi i aplikacionit në këtë cikël.
+
+**Kufizimet që mbeten:** Asnjë screenshot, test telefon real, përdorshmëri e butonave, scroll vertikal i modalëve, media/Reels/Stories, tastierë fizike, kontrast apo lexues ekrani. Manuali është 0/12, jo FAIL. Faza 7 mbetet E HAPUR; nuk duhet riekzekutuar i njëjti skanim pa nevojë, por të plotësohen provat manuale, përfshirë landscape.
+
+**Ndryshimet:** vetëm regjistrim i evidencës në roadmap të degës demo/v1.7-illyrian-shop, pa ndryshuar skedarët e demos, Visual QA, main apo Vercel Production.
