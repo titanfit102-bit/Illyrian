@@ -48,18 +48,3 @@
  #phone #il4-mapform{grid-template-columns:1fr}
  #phone #il4-mapform label:nth-child(3){grid-column:auto}
 }
-/* Fix phone landscape: prevent desktop mockup mode on small, wide phone viewports.
-   The desktop presentation remains unchanged at normal desktop heights. */
-@media (orientation:landscape) and (min-width:761px) and (max-width:1100px) and (max-height:520px){
- .desktop{display:block;padding:0;min-height:100dvh}
- .desktop>.side{display:none}
- .device-shell{width:100%;padding:0;border-radius:0;background:transparent;box-shadow:none}
- .device{height:100dvh;min-height:0;border-radius:0}
- .statusbar{height:24px}
- .island{display:none}
- .head{height:47px}
- .bottom{height:52px;min-height:52px}
- .scroll{min-height:0}
- #phone #il4-root .il4-panel{padding-top:7px}
- #phone .il4-map{height:145px}
-}
