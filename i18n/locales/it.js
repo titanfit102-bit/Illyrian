@@ -2,6 +2,7 @@
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.it={
   "common": {
+    "notificationsShort": "Notifiche",
     "close": "Chiudi",
     "closeCross": "✕ Chiudi",
     "back": "Indietro",
@@ -92,6 +93,18 @@ window.ILLYRIAN_LOCALES.it={
     "dark": "Scuro"
   },
   "home": {
+    "activitiesHeader": "Attività ed eventi",
+    "changeLocation": "Cambia ↗",
+    "discoverPlans": "Scopri i piani →",
+    "quickPlans": "⚡ Piani",
+    "quickJobs": "💼 Lavoro",
+    "quickCommunities": "♧ Comunità",
+    "seeAll": "Vedi tutto →",
+    "openShop": "Apri Shop →",
+    "reelFromPhoto": "Reel dalle foto",
+    "addStory": "+ La mia storia",
+    "whySee": "Perché vedo questo?",
+    "seeArrow": "Visualizza →",
     "storyMine": "La mia storia",
     "composer": "Cosa succede oggi?",
     "feedForYou": "Per te",
@@ -106,6 +119,17 @@ window.ILLYRIAN_LOCALES.it={
     "more": "Altro"
   },
   "discover": {
+    "searchIllyrian": "Cerca su ILLYRIAN...",
+    "communities": "Comunità",
+    "market": "Mercato",
+    "alumni": "Alumni",
+    "viewCommunity": "Vedi comunità →",
+    "join": "Unisciti",
+    "cityExplore": "Scopri attività e imprese per città",
+    "searchExample": "Es. bar, calcio, negozio",
+    "filter": "Filtra",
+    "type": "Tipo",
+    "activities": "Attività",
     "title": "Scopri la comunità",
     "subtitle": "Persone, aziende e opportunità in un unico luogo.",
     "searchPlaceholder": "Cerca persone, attività, lavoro...",
@@ -118,6 +142,12 @@ window.ILLYRIAN_LOCALES.it={
     "disclaimer": "La ricerca dimostrativa contiene solo profili e attività di esempio."
   },
   "reels": {
+    "createPlus": "＋ Crea Reel",
+    "comment": "Commenta il Reel",
+    "commentIcon": "♧ Commenta",
+    "messageIcon": "☏ Messaggio",
+    "saveIcon": "▢ Salva",
+    "shareIcon": "➤ Condividi",
     "create": "Crea Reel",
     "close": "Chiudi",
     "demo": "Reels · DEMO",
@@ -136,6 +166,19 @@ window.ILLYRIAN_LOCALES.it={
     "write": "Scrivi un messaggio..."
   },
   "plans": {
+    "togetherTitle": "Piani che ci uniscono",
+    "myRequests": "Le mie richieste",
+    "approvedPlural": "Accettate",
+    "postBecomesPlan": "Un post può diventare un'attività.",
+    "sport": "Sport",
+    "social": "Sociale",
+    "culture": "Cultura",
+    "viewPlan": "Vedi il piano →",
+    "timeBeforePlan": "Interessi e disponibilità prima di creare un'attività.",
+    "hostIntro": "Chi ti accoglie e dove incontrare il gruppo.",
+    "replanDescription": "Prepara una bozza dopo un'attività.",
+    "doTogether": "Facciamo qualcosa insieme",
+    "doTogetherSub": "Laboratori e collaborazioni con risultati concreti.",
     "entry": "Crea e gestisci attività",
     "open": "Apri il pannello →",
     "created": "Attività create nella demo",
@@ -156,6 +199,18 @@ window.ILLYRIAN_LOCALES.it={
     "localStorageError": "Impossibile salvare la modifica sul dispositivo."
   },
   "shop": {
+    "findAcrossStores": "Trova il prodotto in più negozi.",
+    "searchPlaceholder": "Cerca prodotti, negozi, auto, case…",
+    "searchShop": "Cerca su ILLYRIAN Shop",
+    "sortHeading": "Ordina",
+    "relevance": "Pertinenza",
+    "priceLow": "Prezzo: dal più basso",
+    "priceHigh": "Prezzo: dal più alto",
+    "shopName": "Nome del negozio",
+    "publishListing": "+ Pubblica il tuo annuncio",
+    "listingDetails": "Dettagli e venditore",
+    "viewStore": "Vedi negozio",
+    "publishOffer": "+ Pubblica la tua offerta",
     "heading": "ILLYRIAN Shop",
     "intro": "Trova, confronta e scopri offerte",
     "searchAll": "Cerca in tutti i negozi",
@@ -181,6 +236,20 @@ window.ILLYRIAN_LOCALES.it={
     "return": "Torna alla navigazione"
   },
   "shopPlus": {
+    "headline": "Trova il prodotto, non solo una pubblicità.",
+    "searchPlaceholder": "Prodotto, negozio, auto...",
+    "priceMin": "Prezzo min. €",
+    "priceMax": "Prezzo max. €",
+    "cheapest": "Meno caro",
+    "mostExpensive": "Più caro",
+    "name": "Nome",
+    "carYear": "Anno auto da",
+    "maxKm": "Chilometraggio massimo",
+    "minArea": "Min. m² in affitto",
+    "inStock": "Solo prodotti disponibili",
+    "applyFilters": "Applica filtri",
+    "clear": "Cancella",
+    "sameProduct": "Stesso prodotto, più negozi",
     "title": "Shop avanzato",
     "search": "Cerca",
     "stores": "Negozi",
@@ -234,5 +303,22 @@ window.ILLYRIAN_LOCALES.it={
     "continue": "Continua →",
     "open": "Apri ILLYRIAN ✓",
     "return": "Annulla"
+  },
+  "profile": {
+    "editProfile": "Modifica profilo",
+    "storyPlus": "＋ Storia",
+    "reelPlus": "＋ Reel",
+    "postPlus": "＋ Post",
+    "peopleCommunities": "Persone e comunità",
+    "discoverPeople": "Scopri persone →",
+    "discoverArrow": "Scopri →",
+    "posts": "Post",
+    "photos": "Foto",
+    "saved": "Salvati",
+    "profileLabel": "Profilo",
+    "privacyLock": "🔒 Privacy",
+    "myActivity": "◷ La mia attività",
+    "tryScenarios": "Prova scenari realistici · v0.8",
+    "offlineCases": "Offline, errore messaggi, eventi completi / annullati"
   }
 };

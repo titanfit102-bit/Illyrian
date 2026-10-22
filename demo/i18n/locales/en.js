@@ -2,6 +2,7 @@
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.en={
   "common": {
+    "notificationsShort": "Notifications",
     "close": "Close",
     "closeCross": "✕ Close",
     "back": "Back",
@@ -92,6 +93,18 @@ window.ILLYRIAN_LOCALES.en={
     "dark": "Dark"
   },
   "home": {
+    "activitiesHeader": "Activities and events",
+    "changeLocation": "Change ↗",
+    "discoverPlans": "Discover plans →",
+    "quickPlans": "⚡ Plans",
+    "quickJobs": "💼 Jobs",
+    "quickCommunities": "♧ Communities",
+    "seeAll": "See all →",
+    "openShop": "Open Shop →",
+    "reelFromPhoto": "Reel from photos",
+    "addStory": "+ My Story",
+    "whySee": "Why am I seeing this?",
+    "seeArrow": "View →",
     "storyMine": "My story",
     "composer": "What's happening today?",
     "feedForYou": "For you",
@@ -106,6 +119,17 @@ window.ILLYRIAN_LOCALES.en={
     "more": "More"
   },
   "discover": {
+    "searchIllyrian": "Search ILLYRIAN...",
+    "communities": "Communities",
+    "market": "Marketplace",
+    "alumni": "Alumni",
+    "viewCommunity": "View community →",
+    "join": "Join",
+    "cityExplore": "Discover activities and businesses by city",
+    "searchExample": "E.g. café, football, shop",
+    "filter": "Filter",
+    "type": "Type",
+    "activities": "Activities",
     "title": "Discover the community",
     "subtitle": "People, businesses and opportunities in one place.",
     "searchPlaceholder": "Search people, businesses, jobs...",
@@ -118,6 +142,12 @@ window.ILLYRIAN_LOCALES.en={
     "disclaimer": "Demo search contains only sample profiles and businesses."
   },
   "reels": {
+    "createPlus": "＋ Create Reel",
+    "comment": "Comment on Reel",
+    "commentIcon": "♧ Comment",
+    "messageIcon": "☏ Message",
+    "saveIcon": "▢ Save",
+    "shareIcon": "➤ Share",
     "create": "Create Reel",
     "close": "Close",
     "demo": "Reels · DEMO",
@@ -136,6 +166,19 @@ window.ILLYRIAN_LOCALES.en={
     "write": "Write a message..."
   },
   "plans": {
+    "togetherTitle": "Plans that bring us together",
+    "myRequests": "My requests",
+    "approvedPlural": "Accepted",
+    "postBecomesPlan": "A post can become a plan.",
+    "sport": "Sports",
+    "social": "Social",
+    "culture": "Culture",
+    "viewPlan": "View plan →",
+    "timeBeforePlan": "Interest and availability before creating a plan.",
+    "hostIntro": "Who will welcome you and where to meet the group.",
+    "replanDescription": "Prepare a draft after an activity.",
+    "doTogether": "Let's do something together",
+    "doTogetherSub": "Workshops and collaborations with concrete outcomes.",
     "entry": "Create and manage activities",
     "open": "Open panel →",
     "created": "Activities created in demo",
@@ -156,6 +199,18 @@ window.ILLYRIAN_LOCALES.en={
     "localStorageError": "Could not save the change on this device."
   },
   "shop": {
+    "findAcrossStores": "Find the product in multiple shops.",
+    "searchPlaceholder": "Search products, shops, cars, homes…",
+    "searchShop": "Search ILLYRIAN Shop",
+    "sortHeading": "Sort",
+    "relevance": "Relevance",
+    "priceLow": "Price: lowest first",
+    "priceHigh": "Price: highest first",
+    "shopName": "Shop name",
+    "publishListing": "+ Publish your listing",
+    "listingDetails": "Details and seller",
+    "viewStore": "View shop",
+    "publishOffer": "+ Publish your offer",
     "heading": "ILLYRIAN Shop",
     "intro": "Find, compare and discover offers",
     "searchAll": "Search across all shops",
@@ -181,6 +236,20 @@ window.ILLYRIAN_LOCALES.en={
     "return": "Back to browsing"
   },
   "shopPlus": {
+    "headline": "Find the product, not just an ad.",
+    "searchPlaceholder": "Product, shop, car...",
+    "priceMin": "Min. price €",
+    "priceMax": "Max. price €",
+    "cheapest": "Cheapest",
+    "mostExpensive": "Most expensive",
+    "name": "Name",
+    "carYear": "Car year from",
+    "maxKm": "Maximum mileage",
+    "minArea": "Min. m² for rentals",
+    "inStock": "Only in-stock products",
+    "applyFilters": "Apply filters",
+    "clear": "Clear",
+    "sameProduct": "Same product, multiple shops",
     "title": "Advanced Shop",
     "search": "Search",
     "stores": "Shops",
@@ -234,5 +303,22 @@ window.ILLYRIAN_LOCALES.en={
     "continue": "Continue →",
     "open": "Open ILLYRIAN ✓",
     "return": "Cancel"
+  },
+  "profile": {
+    "editProfile": "Edit profile",
+    "storyPlus": "＋ Story",
+    "reelPlus": "＋ Reel",
+    "postPlus": "＋ Post",
+    "peopleCommunities": "People and communities",
+    "discoverPeople": "Discover people →",
+    "discoverArrow": "Discover →",
+    "posts": "Posts",
+    "photos": "Photos",
+    "saved": "Saved",
+    "profileLabel": "Profile",
+    "privacyLock": "🔒 Privacy",
+    "myActivity": "◷ My activity",
+    "tryScenarios": "Try real scenarios · v0.8",
+    "offlineCases": "Offline, message error, full / cancelled events"
   }
 };

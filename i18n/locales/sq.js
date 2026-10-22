@@ -2,6 +2,7 @@
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.sq={
   "common": {
+    "notificationsShort": "Njoftime",
     "close": "Mbyll",
     "closeCross": "✕ Mbyll",
     "back": "Kthehu",
@@ -92,6 +93,18 @@ window.ILLYRIAN_LOCALES.sq={
     "dark": "Dark"
   },
   "home": {
+    "activitiesHeader": "Aktivitete dhe Evente",
+    "changeLocation": "Ndrysho ↗",
+    "discoverPlans": "Zbulo plane →",
+    "quickPlans": "⚡ Plane",
+    "quickJobs": "💼 Punë",
+    "quickCommunities": "♧ Komunitete",
+    "seeAll": "Shiko të gjitha →",
+    "openShop": "Hap Shop →",
+    "reelFromPhoto": "Reel nga foto",
+    "addStory": "+ Story im",
+    "whySee": "Pse po e shoh?",
+    "seeArrow": "Shiko →",
     "storyMine": "Story im",
     "composer": "Çfarë po ndodh sot?",
     "feedForYou": "Për ty",
@@ -106,6 +119,17 @@ window.ILLYRIAN_LOCALES.sq={
     "more": "Më shumë"
   },
   "discover": {
+    "searchIllyrian": "Kërko në ILLYRIAN...",
+    "communities": "Komunitete",
+    "market": "Tregu",
+    "alumni": "Alumni",
+    "viewCommunity": "Shiko komunitetin →",
+    "join": "Bashkohu",
+    "cityExplore": "Zbulo aktivitetet dhe bizneset sipas qytetit",
+    "searchExample": "P.sh. kafe, futboll, dyqan",
+    "filter": "Filtro",
+    "type": "Lloji",
+    "activities": "Aktivitete",
     "title": "Zbulo komunitetin",
     "subtitle": "Njerëz, biznese dhe mundësi në një vend.",
     "searchPlaceholder": "Kërko njerëz, biznese, punë...",
@@ -118,6 +142,12 @@ window.ILLYRIAN_LOCALES.sq={
     "disclaimer": "Kërkimi është demonstrues dhe përmban vetëm profile dhe biznese shembull."
   },
   "reels": {
+    "createPlus": "＋ Krijo Reel",
+    "comment": "Komento Reel",
+    "commentIcon": "♧ Komento",
+    "messageIcon": "☏ Mesazh",
+    "saveIcon": "▢ Ruaj",
+    "shareIcon": "➤ Ndaj",
     "create": "Krijo Reel",
     "close": "Mbyll",
     "demo": "Reels · DEMO",
@@ -136,6 +166,19 @@ window.ILLYRIAN_LOCALES.sq={
     "write": "Shkruaj mesazh..."
   },
   "plans": {
+    "togetherTitle": "Plane që na bashkojnë",
+    "myRequests": "Kërkesat e mia",
+    "approvedPlural": "Të pranuara",
+    "postBecomesPlan": "Një postim mund të bëhet një plan.",
+    "sport": "Sport",
+    "social": "Social",
+    "culture": "Kulturë",
+    "viewPlan": "Shiko planin →",
+    "timeBeforePlan": "Interesi dhe intervalet para krijimit të një plani.",
+    "hostIntro": "Kush të pret dhe ku e gjen grupin.",
+    "replanDescription": "Përgatit draftin pas një aktiviteti.",
+    "doTogether": "Bëjmë diçka bashkë",
+    "doTogetherSub": "Punëtori dhe bashkëpunime me rezultat.",
     "entry": "Krijo dhe menaxho aktivitete",
     "open": "Hap panelin →",
     "created": "Aktivitete të krijuara në demo",
@@ -156,6 +199,18 @@ window.ILLYRIAN_LOCALES.sq={
     "localStorageError": "Nuk mund të ruhej ndryshimi në pajisje."
   },
   "shop": {
+    "findAcrossStores": "Gjej produktin në disa dyqane.",
+    "searchPlaceholder": "Kërko produkt, dyqan, makinë, banesë…",
+    "searchShop": "Kërko në ILLYRIAN Shop",
+    "sortHeading": "Renditja",
+    "relevance": "Relevanca",
+    "priceLow": "Çmimi: më i ulët",
+    "priceHigh": "Çmimi: më i lartë",
+    "shopName": "Emri i dyqanit",
+    "publishListing": "+ Publiko listimin tënd",
+    "listingDetails": "Detajet dhe shitësi",
+    "viewStore": "Shiko dyqanin",
+    "publishOffer": "+ Publiko ofertën tënde",
     "heading": "ILLYRIAN Shop",
     "intro": "Gjej, krahaso dhe zbulo oferta",
     "searchAll": "Kërko nga të gjitha dyqanet",
@@ -181,6 +236,20 @@ window.ILLYRIAN_LOCALES.sq={
     "return": "Kthehu te shfletimi"
   },
   "shopPlus": {
+    "headline": "Gjej produktin, jo vetëm një reklamë.",
+    "searchPlaceholder": "Produkt, dyqan, makinë...",
+    "priceMin": "Çmim min. €",
+    "priceMax": "Çmim max. €",
+    "cheapest": "Më i liri",
+    "mostExpensive": "Më i shtrenjti",
+    "name": "Emri",
+    "carYear": "Viti i makinës nga",
+    "maxKm": "Maks. kilometra",
+    "minArea": "Min. m² për qira",
+    "inStock": "Vetëm produkte me stok",
+    "applyFilters": "Apliko filtrat",
+    "clear": "Pastro",
+    "sameProduct": "I njëjti produkt, disa dyqane",
     "title": "Shop i avancuar",
     "search": "Kërko",
     "stores": "Dyqanet",
@@ -234,5 +303,22 @@ window.ILLYRIAN_LOCALES.sq={
     "continue": "Vazhdo →",
     "open": "Hap ILLYRIAN ✓",
     "return": "Anulo"
+  },
+  "profile": {
+    "editProfile": "Ndrysho profilin",
+    "storyPlus": "＋ Story",
+    "reelPlus": "＋ Reel",
+    "postPlus": "＋ Postim",
+    "peopleCommunities": "Njerëzit dhe komunitetet",
+    "discoverPeople": "Zbulo njerëz →",
+    "discoverArrow": "Zbulo →",
+    "posts": "Postimet",
+    "photos": "Fotot",
+    "saved": "Të ruajtura",
+    "profileLabel": "Profil",
+    "privacyLock": "🔒 Privatësia",
+    "myActivity": "◷ Aktiviteti im",
+    "tryScenarios": "Provo situata reale · v0.8",
+    "offlineCases": "Offline, gabim mesazhi, evente të mbushura / të anuluara"
   }
 };
