@@ -229,7 +229,7 @@ test('Shop user listing title, seller and description remain unchanged across la
  await page.locator('#ils-sell-form textarea[name="description"]').fill('Mbyll');
  await page.locator('#ils-sell-form input[name="price"]').fill('10');
  await page.locator('#ils-sell-form button[type="submit"]').click();
- await page.locator('#illyrian-shop-layer [data-ils="detail"][data-id]').filter({hasText:'Mbyll'}).first().click();
+ await page.locator('#illyrian-shop-layer .ils-card').filter({hasText:'Mbyll'}).first().locator('[data-ils="detail"]').click();
  for(const lang of ['en','it','sq']){
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await expect(page.locator('#illyrian-shop-layer .ils-product-cover + .ils-kind + h2')).toHaveText('Mbyll');
