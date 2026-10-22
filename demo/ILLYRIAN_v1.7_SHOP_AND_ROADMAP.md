@@ -460,3 +460,20 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Status:** Reels close X: MANUAL PASS (skenari i raportuar, përmasë e papërcaktuar). Reels në 844×390 dhe 932×430: UNKNOWN derisa të provohen. Çështja më e gjerë e paraqitjes landscape: E HAPUR, sepse përdoruesi më parë raportoi pamje të pasaktë dhe nuk ka konfirmuar ende korrigjimin e saj. Faza 7 ende NË PROCES dhe regresioni 126+147 pas ndryshimit CSS nuk është ribërë.
 
 **Veprim:** vetëm regjistrim i feedback-ut në roadmap; nuk u ndryshua asnjë kod. Main/Production të paprekura.
+
+## Faza 7 — Cikli 17: Audit me pesë screenshot-e 844×390 dhe korrigjim i mbivendosjes Reels (22 tetor 2026)
+
+**Prova vizuale e përdoruesit:** pesë screenshot-e të Visual QA në përmasën e zgjedhur 844×390, opsioni "Përshtat në ekran" dhe shkallëzim i shfaqjes **59%**. Screenshot-et tregojnë Home, Discover, Reels të hapur, modalin e Mesazheve dhe Profile. Në Reels shihet butoni "Krijo Reel" që mbivendoset pjesërisht me X-in në cepin lart-djathtas, megjithëse përdoruesi më parë konfirmoi që X e mbyll Reels. Te Mesazhet butoni X shfaqet dhe lista ka scrollbar; në lartësi të ulët duhet të mbetet i arritshëm kur paneli lëviz. Teksti i paralajmërimit të laboratorit ("aktivizon pamjen desktop nga 761px") nuk përputhet me CSS-në reale/fullscreen në këtë viewport.
+
+**Shkaqet konkrete nga repo:** te inline style i v1.5 ekziston deklarimi .v15-reel-create me position:absolute!important; right:45px; top:4px. Një rregull më i ri vendoste [data-act="reel-close"] absolutisht në right:8px me zonë 44px. Dy kontrollet rrjedhimisht mbivendoseshin. Sjellja e fullscreen në landscape vjen nga rregulli tashmë i migruar në ILLYRIAN_V17_RESPONSIVE.css (761..1100px, max-height:520px, orientation:landscape). Korniza e QA zvogëlon vetëm paraqitjen e iframe, jo dimensionet e viewport-it të brendshëm.
+
+**Korrigjim i kufizuar në branch-in demo/v1.7-illyrian-shop:**
+- demo/ILLYRIAN_V17_RESPONSIVE.css: rregull specifik për .v15-reel-create që ruan pozicionin absolut, por e vendos **64px nga e djathta** dhe e ndan nga X-i (8px nga e djathta me gjerësi 44px, pra ≥12px hapësirë). Përdor !important vetëm për top/right/position ndaj CSS-së së v1.5; max-width/ellipsis për të mos u shtrirë mbi header. Në landscape top:3px për të dy butonat, me distancë horizontale të ruajtur.
+- Po në landscape, .overlay .modal përdor scroll vertikal dhe .modalhead sticky me z-index, background dhe min-height 44px; kështu X i modaleve, përfshirë Mesazhet, qëndron lart gjatë scroll-it të panelit. Nuk u ndryshuan handler-at e mbylljes ose struktura e mesazheve.
+- demo/ILLYRIAN_VISUAL_QA_v1.7.html: paralajmërimi i vjetër për pamjen desktop zëvendësohet me shpjegimin e saktë të shkallëzimit të pamjes dhe kufizimit të simulimit. Skenari Reels tani mat edhe mbivendosjen gjeometrike (intersection area) të X-it me "Krijo Reel" dhe nëse qendra e butonit Krijo Reel është target i klikueshëm; emërton PASS/FAIL më vete. Nuk ndryshon historikun e QA-s së mëparshme.
+
+**Provat e implementimit:** u rilexuan nga GitHub me përputhje të plotë ndryshimet e CSS (commit e7220e48669bd42fa98bb17fa3ba71595201b98f) dhe Visual QA (commit 772200dee6e8f6f9f2bc3f599c011f766cc5c1e6); CSS ka kllapa të ekuilibruara; JavaScript inline i QA kaloi kontrollet sintaksore. Prova e Chromium në mjedisin e izoluar nuk ktheu output të përdorshëm, kështu **korrigjimi nuk është provuar ende në shfletuesin real** dhe P1 nuk mbyllet nga analiza statike.
+
+**Testi i radhës:** në Visual QA 844×390, hap Reels dhe verifiko që ✕ dhe Krijo Reel nuk mbivendosen, mund të shtypen veçmas dhe X e mbyll overlay; në Mesazhe bëj scroll derisa X të mbetet i dukshëm; përsërit 932×430, pastaj regjistro raportin e QA. Në rast PASS nga shfletuesi, ribëhet regresioni bazë+avancuar për ndryshimet CSS dhe plotësohen kontrollet manuale. Faza 7 mbetet NË PROCES.
+
+**Ruajtja e scope:** nuk u ndryshuan theme, paleta, ikonat, JS bazë e app, branch main ose Vercel Production.
