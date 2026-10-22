@@ -228,6 +228,32 @@ function diagnoseViewport(d,value){
       "mobileFullscreenHeuristic="+mobileLandscape+"; inspekto vizualisht dhe mos e shëno PASS pa provë reale");
   }
 }
+async function checkReelsExit(d,prefix){
+  const open=d.querySelector('#navbar [data-act="open-reels"]');
+  if(!open){
+    note(prefix+" / Reels · hyrja","FAIL","Butoni Reels mungon te navbar");
+    return;
+  }
+  open.click();await sleep(120);
+  const overlay=d.querySelector('#layer .v4-reel-overlay');
+  const close=overlay?.querySelector('[data-act="reel-close"]');
+  note(prefix+" / Reels · butoni X",close?"PASS":"FAIL",close?"Mbyllja është në DOM":"Nuk u gjet veprimi reel-close");
+  if(!close)return;
+  const r=close.getBoundingClientRect(),phone=d.getElementById("phone")?.getBoundingClientRect();
+  const boxOK=r.width>=43&&r.height>=43&&
+    !!phone&&r.left>=phone.left-2&&r.right<=phone.right+2&&
+    r.top>=phone.top-2&&r.bottom<=phone.bottom+2;
+  const x=r.left+r.width/2,y=r.top+r.height/2,hit=d.elementFromPoint(x,y);
+  const targetOK=hit===close||close.contains(hit);
+  note(prefix+" / Reels · X i dukshëm dhe i prekshëm",boxOK&&targetOK?"PASS":"FAIL",
+    "rect="+Math.round(r.width)+"×"+Math.round(r.height)+
+    "; brenda telefonit="+boxOK+"; sipër elementëve të tjerë="+targetOK+
+    "; kërkon ende verifikim me prekje reale");
+  if(!boxOK||!targetOK)return;
+  close.click();await sleep(110);
+  note(prefix+" / Reels · X mbyll pamjen",!d.querySelector('#layer .v4-reel-overlay')?"PASS":"FAIL",
+    "Reels nuk duhet të jetë më aktiv pas klikimit");
+}
 async function scanOne(value){
   const d=doc(),prefix=value.replace(",","×");
   diagnoseViewport(d,value);
@@ -236,6 +262,7 @@ async function scanOne(value){
     if(!ok)continue;
     scan(d,prefix+" / "+tab[0]);
   }
+  await checkReelsExit(d,prefix);
 }
 async function run(allSizes){
   if(busy)return;
