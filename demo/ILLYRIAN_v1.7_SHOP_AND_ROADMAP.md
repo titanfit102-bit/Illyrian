@@ -277,3 +277,19 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Status i rëndësishëm:** 56 PASS të konfirmuara nga përdoruesi në QA-në e parë; QA e korrigjuar kërkon **ekzekutim të ri real** për të testuar rrjedhat e mbetura. As certifikim i Fazës 7, as merge në `main`, as Production.
 
 **QA Lab:** https://illyrian-demo-git-demo-v17-illyrian-shop-un24.vercel.app/ILLYRIAN_QA_v1.7.html
+
+## Faza 7 — Cikli 5: Raporti i dytë real QA dhe F7-005 (22 tetor 2026)
+
+**Prova e përdoruesit:** Raporti real `ILLYRIAN v1.7 QA — 2026-10-22T11:28:48.041Z` për shtatë viewport-e: 320×568, 360×780, 390×844, 430×932, 844×390, 932×430, 1280×800.
+
+**Rezultati:** 18 kontrolle/viewport × 7 = **126 gjithsej; 119 PASS dhe 7 FAIL** (94.44% e kontrolleve të listuara). PASS në të shtatë viewport-et për strukturën, 6 referencat JS, inicializimin e paneleve, Shop/Shop Plus, Escape, Plans modal/inert, Connections modal/inert, rikthimin e sfondit, Privacy me hapje të dyfishtë, Governance dhe **overflow horizontal të dokumentit** (scrollWidth=clientWidth sipas raportit). Këto nuk përfaqësojnë testim të plotë UX/WCAG ose performancë.
+
+**Dështimi i vetëm i përsëritur:** `Connections transferon draftin te Plans`, një FAIL për secilin nga 7 viewport-et. Testi pasues, `Rikthim korrekt pas draftit`, ishte PASS në të shtatë viewport-et. Për pasojë nuk lejohet të nxirret përfundimi që kalimi i draftit në aplikacion real nuk funksionon, pa diagnostikim shtesë.
+
+**F7-005 — defekt i provuar në asercionin e QA, jo defekt i provuar në aplikacion:** kontrolluesi kërkonte titullin e draftit duke përdorur `#ilp-root.textContent.includes('Praktikë gjuhësh dhe njohje')`. Por Plans e shfaq titullin në `<input name="title" value="...">`, dhe vlera e një `input`-i lexohet përmes `element.value`, jo `textContent`. `Connections` emeton ngjarjen `illyrian:plans:draft`; `Plans` e merr dhe krijon formularin me vlerën e titullit. Ky kontroll gabimisht FAIL edhe kur forma është paraplotësuar.
+
+**Korrigjimi në QA Lab:** vetëm `demo/ILLYRIAN_QA_v1.7.html`; tani verifikon katër kushte: `ilc-root.hidden=true`, `ilp-root.hidden=false`, `#ilp-form input[name=title].value === 'Praktikë gjuhësh dhe njohje'` dhe fusha `place` është e detyrueshme. Raporti tani jep detaje për gjendjen e secilit kusht, në rast FAIL. Nuk janë ndryshuar modulet Connections/Plans, kodi i demos, `main` ose Production.
+
+**Verifikim para ruajtjes:** sintaksa e skriptit QA PASS; 6/6 prova sintetike të kushtit (sukses, vlerë bosh, titull i gabuar, mungesë e vendit të kërkuar, Plans mbyllur, Connections hapur) PASS. Kodi i korrigjuar u ruajt/rilexua në GitHub, commit `869588f150f57954db15def05f8eec7aad7b792d`.
+
+**Mbetet e nevojshme:** një ekzekutim i ri real i QA Lab për të verifikuar që 7 rastet FAIL nuk ndodhin më dhe që transferimi ekziston në DOM-in e vërtetë. Nuk e certifikojmë Fazën 7 vetëm nga provat sintetike.
