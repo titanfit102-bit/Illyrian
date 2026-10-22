@@ -228,8 +228,9 @@
  }
  function sync(){
   const screen=document.querySelector('#screen');if(!screen)return;
-  const header=screen.querySelector('.section-header h2,h2')?.textContent||'';
-  const isEligible=/Zbulo|Profil/i.test(header)||!!screen.querySelector('.profile-banner');
+  // Stable route, not a heading that changes with the interface language.
+  const active=document.querySelector('#navbar [data-act="tab"].active')?.dataset.val;
+  const isEligible=active==='explore'||active==='profile';
   const entry=screen.querySelector('#ig6-entry');
   if(!isEligible){entry?.remove();return}
   if(entry)return;
