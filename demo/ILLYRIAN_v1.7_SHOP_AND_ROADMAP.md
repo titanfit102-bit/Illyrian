@@ -365,3 +365,22 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 5. Raporti final i sign-off: çdo defekt P0/P1 të jetë i mbyllur; të dihet statusi i P2 dhe vendimet e pronarit. Faza 8/PRD nuk ka filluar; nuk ndryshohen `main`, Vercel Production, identiteti i miratuar ose ndonjë projekt tjetër.
 
 **Konkluzion:** faza 7 ka kaluar **portën e regresionit funksional të automatizuar**; certifikimi i plotë i Fazës 7 mbetet NË PROCES derisa të përfundohen portat e mësipërme.
+
+## Faza 7 — Cikli 11: Laboratori vizual i izoluar dhe kriteret e sign-off (22 tetor 2026)
+
+**Baza e provuar:** raporti i përdoruesit tregoi 126/126 PASS për skenarin bazë dhe 147/147 PASS për suitën e avancuar, në 7 përmasa; **273/273 PASS gjithsej për testet e përcaktuara**. Kjo portë automatike është e kaluar. Kjo nuk është certifikim i pamjes, WCAG, media, performancës ose gatishmërisë për përdorues realë.
+
+**Mjeti i ri për auditimin e mbetur:** u shtua vetëm skedari i ri `demo/ILLYRIAN_VISUAL_QA_v1.7.html` në degën `demo/v1.7-illyrian-shop`, commit `5209afbd4b53cc0578d75e4eda3186c0352edfd2`. Ai nuk e modifikon HTML-në e demos, skedarët e gjashtë moduleve, skedarin e laboratorit të mëparshëm apo cilësimet vizuale të miratuara. Nuk u prek `main` ose Vercel Production.
+
+**Mundësitë e implementuara, ende jo të ekzekutuara në shfletuesin e përdoruesit:**
+- Skanim same-origin në iframe të demos, në një përmasë ose në të shtata: `320×568`, `360×780`, `390×844`, `430×932`, `844×390`, `932×430`, `1280×800`.
+- Për secilën përmasë viziton Home, Discover, Events dhe Profile duke përdorur navigimin aktual v1.7. Inspekton horizontal overflow të dokumentit, scrollWidth/clientWidth të `#phone` dhe `#screen` (sinqalisim INFO/WARN, jo dështim automatik), ID të dyfishta, fotografi të dukshme të prishura/pa atribut alt/dyshime të ngarkimit dhe elemente me tekst potencialisht të prerë për shkak të overflow hidden/clip.
+- Dymbëdhjetë skenarë manualë, secili me status PASS/ISSUE/UNKNOWN/N/A: Home/Discover/Profile në tri tema; Shop/Shop Plus; Plans/Connections; Privacy/Governance; Stories/Reels; Messages; ekran 320px; landscape; tastierë fizike; telefon me prekje; etiketa/kontrast/lexues ekrani; stabilitet pas përdorimit të përsëritur.
+- Kopjimi i raportit me të dhëna nga skanimi dhe statuset manuale. Shënimet dhe statuset nuk ruhen në localStorage dhe nuk dërgohen në server. Nuk përfshin paketë të jashtme ose API të rrjetit për transmetim raportesh; nuk publikon postime, aktivitete, raportime apo pagesa.
+- Pas skanimit, iframe rifreskohet për të mos lënë një ekran/modal testimi aktiv. Kjo **mund të humbasë input-e të paruajtura në iframe**; përpara skanimit përdoret vetëm demo e testimit.
+
+**Verifikim i implementimit:** skripti inline analizuar sintaksisht me `new Function()` (PASS); 7 përmasa, 12 kontrolle manuale, një iframe, asnjë `localStorage.setItem()`, `fetch()` apo dërgim te serveri. Skedari i plotë u rilexua me blob SHA të njëjtë si teksti i krijuar. **Kjo nuk është provë PASS për skanimin në Chrome real**.
+
+**Kritere për mbylljen e Fazës 7:** (1) raporte nga kontrolli vizual në të tre temat dhe mobile/landscape, (2) tastierë fizike/aksesueshmëri manuale, (3) prova touch dhe media në telefon, (4) çdo problem P0/P1 i zgjidhur, P2 i regjistruar, (5) raport sign-off i aprovuar. Pamjet manuale dhe komentet njerëzore mund të mos zëvendësohen nga inspektimi mekanik i DOM-it. Faza 8 mbetet e mbyllur deri te vendimi përfundimtar mbi demo-n.
+
+**URL e QA vizuale:** https://illyrian-demo-git-demo-v17-illyrian-shop-un24.vercel.app/ILLYRIAN_VISUAL_QA_v1.7.html
