@@ -1,0 +1,45 @@
+name: ILLYRIAN v1.7 Chromium QA
+on:
+  push:
+    branches:
+      - demo/v1.7-illyrian-shop
+    paths:
+      - 'demo/**'
+      - 'qa/**'
+      - 'playwright.config.cjs'
+      - '.github/workflows/illyrian-v17-browser-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: illyrian-v17-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-smoke:
+    if: github.repository == 'titanfit102-bit/Illyrian'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout isolated demo branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned test runner (no application dependencies)
+        run: npm install --no-save --no-audit --no-fund @playwright/test@1.55.1
+      - name: Install Chromium for browser QA
+        run: npx playwright install --with-deps chromium
+      - name: Run isolated Reels and landscape browser tests
+        run: npx playwright test
+      - name: Preserve failed-case screenshots and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: illyrian-v17-qa-failures
+          path: qa-results/
+          if-no-files-found: ignore
+          retention-days: 7
