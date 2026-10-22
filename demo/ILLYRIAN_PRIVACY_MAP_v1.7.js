@@ -166,8 +166,10 @@
  function sync(){
   const screen=document.querySelector('#screen');
   if(!screen)return;
-  const heading=screen.querySelector('.section-header h2,h2')?.textContent||'';
-  let type=/Zbulo/i.test(heading)?'map':/Planet|Plane që/i.test(heading)||!!screen.querySelector('.v10-event-tabs')?'states':/Profil/i.test(heading)||!!screen.querySelector('.profile-banner')?'profiles':null;
+  // Locale-independent route identity: never infer the selected tab from
+  // a translated heading. This remains stable in sq/en/it and future locales.
+  const active=document.querySelector('#navbar [data-act="tab"].active')?.dataset.val;
+  const type=active==='explore'?'map':active==='events'?'states':active==='profile'?'profiles':null;
   const existing=screen.querySelector('#il4-entry');
   if(!type){existing?.remove();return}
   if(existing){existing.dataset.open=type;return}
