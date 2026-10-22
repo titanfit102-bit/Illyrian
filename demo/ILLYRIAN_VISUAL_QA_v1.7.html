@@ -203,9 +203,34 @@ async function nav(d,entry){
   if(!btn){note(entry[0]+" · Navigimi","FAIL","Butoni nuk u gjet");return false}
   btn.click();await sleep(140);return true;
 }
+function diagnoseViewport(d,value){
+  const [expectedWidth,expectedHeight]=value.split(",").map(Number);
+  const w=d.defaultView,actualWidth=w.innerWidth,actualHeight=w.innerHeight;
+  const prefix=value.replace(",","×");
+  const matchesWidth=Math.abs(actualWidth-expectedWidth)<=2;
+  const matchesHeight=Math.abs(actualHeight-expectedHeight)<=2;
+  note(prefix+" · Dimensionet e viewport-it",matchesWidth&&matchesHeight?"PASS":"WARN",
+    "kërkuar="+expectedWidth+"×"+expectedHeight+"; raportuar="+actualWidth+"×"+actualHeight+
+    "; media max-width:760="+w.matchMedia("(max-width:760px)").matches);
+  const phone=d.getElementById("phone"),side=d.querySelector(".side"),shell=d.querySelector(".device-shell");
+  const sideDisplay=side?w.getComputedStyle(side).display:"mungon";
+  const phoneRect=phone?.getBoundingClientRect(),shellRect=shell?.getBoundingClientRect();
+  note(prefix+" · Geometria reale e demos","INFO",
+    "side="+sideDisplay+"; phone="+Math.round(phoneRect?.width||0)+"×"+Math.round(phoneRect?.height||0)+
+    "; shell="+Math.round(shellRect?.width||0)+"×"+Math.round(shellRect?.height||0));
+  if(expectedWidth>760&&expectedHeight<=520){
+    const mobileLandscape=sideDisplay==="none"&&
+      !!phoneRect&&phoneRect.height<=actualHeight+2&&
+      phoneRect.width>=actualWidth-4;
+    note(prefix+" · Përshtatja në landscape","WARN",
+      (mobileLandscape?"Geometria i ngjan mobile-fullscreen, por kërkohet test fizik. ":
+        "Mund të aktivizohet desktop shell ose lartësi e papërshtatshme. ")+
+      "mobileFullscreenHeuristic="+mobileLandscape+"; inspekto vizualisht dhe mos e shëno PASS pa provë reale");
+  }
+}
 async function scanOne(value){
-  setSize(value);await sleep(150);
   const d=doc(),prefix=value.replace(",","×");
+  diagnoseViewport(d,value);
   for(const tab of tabs){
     const ok=await nav(d,tab);
     if(!ok)continue;
@@ -217,9 +242,13 @@ async function run(allSizes){
   busy=true;current.disabled=true;all.disabled=true;
   const original=size.value;records=[];
   try{
-    await reload();
     for(const value of allSizes?sizes:[original]){
-      try{await scanOne(value)}catch(e){note(value.replace(",","×")+" · Skanimi","FAIL",String(e.message||e))}
+      try{
+        size.value=value;setSize(value);
+        // A fresh iframe for each viewport avoids stale CSS/media state from resized frames.
+        await reload();
+        await scanOne(value);
+      }catch(e){note(value.replace(",","×")+" · Skanimi","FAIL",String(e.message||e))}
       render();
     }
   }catch(e){note("Ngarkimi fillestar","FAIL",String(e.message||e));render()}
@@ -252,7 +281,7 @@ function makeReport(){
     "Lloji: skanim DOM orientues + verifikim manual; jo WCAG apo release certification.",
     "Pajisja/shfletuesi: "+(document.getElementById("device").value.trim()||"pa deklaruar"),
     "Viewport i përzgjedhur: "+size.value.replace(","," × "),
-    "Kujdes: viewport-et landscape >760px përdorin media-layout desktop të demos, jo mobile-landscape të verifikuar.",
+    "Kujdes: landscape >760px kërkon kontroll të veçantë; matjet e geometrisë nuk certifikojnë sjelljen në telefon real.",
     "Skanim automatik:",
     ...records.map(r=>r.state+" | "+r.label+" | "+r.detail),
     "Manual: "+checked.length+"/"+vals.length+" statuse të deklaruara; të tjerat UNKNOWN.",
