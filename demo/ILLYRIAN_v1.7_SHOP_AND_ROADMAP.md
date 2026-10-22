@@ -259,3 +259,21 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 
 - Marrja e raportit të QA Lab të ekzekutuar në Chromium/telefon; verifikim vizual i temave Light/Dark/Auto, swipe/story/reels, modal focus/Tab/Escape, performancë, storage/reload, të dhëna armiqësore dhe pajisje fizike.
 - Mos shpall Paketën 7 PASS, 8/8 paketa të përfunduara ose produktin real të gatshëm për publikim pa provat përkatëse.
+
+## Faza 7 — Cikli 4: Raporti i parë real QA dhe korrigjimi i navigimit (22 tetor 2026)
+
+**Burimi i provës:** Përdoruesi ekzekutoi laboratorin `ILLYRIAN_QA_v1.7.html` në shfletues dhe dërgoi raportin `ILLYRIAN v1.7 QA — 2026-10-22T11:00:29.040Z`. Kjo provë është nga shfletuesi i përdoruesit, jo nga simulimi V8 i asistentit.
+
+**Përmasa të raportuara:** 320×568, 360×780, 390×844, 430×932, 844×390, 932×430, 1280×800.
+
+**Rezultatet e raportuara (7 × 8):** gjithsej 56 kontrolle PASS — struktura `#phone/#screen/#navbar`; gjashtë referencat JS; tre panelet bazë të inicializuara; hapja e Shop; `inert` i sfondit; hapja e Shop Plus; Escape i parë mbyll vetëm Shop Plus; Escape i dytë mbyll Shop dhe rikthen sfondin. Këto prova janë për të shtatë madhësitë, përfshirë dy landscape dhe desktop.
+
+**7 ndërprerje të raportuara:** secila menjëherë pas testit të dytë Escape me mesazhin `Nuk u gjet navigimi: events`. Testet për Plans, Connections, Privacy, Governance dhe overflow horizontal **NUK u ekzekutuan** në këtë raport; mos i numëro si dështime të produktit.
+
+**F7-004 — Bug i laboratorit QA, jo i konfirmuar në aplikacion:** funksioni `nav(d,'events')` kërkonte `#navbar [data-act="tab"][data-val="events"]` nga navigimi i hershëm; dizajni i miratuar v1.2+ ndryshoi bottom nav në Home, Explore, Reels, Messages, Profile dhe vendosi Events në `.head [data-act="tab"][data-val="events"]`. Kjo u verifikua drejtpërdrejt në burimin e demos v1.7.
+
+**Korrigjimi F7-004:** u ndryshua **vetëm** `demo/ILLYRIAN_QA_v1.7.html`, jo demo kryesore: për Events përdor butonin e header-it; për Home/Explore përdor tab-et e poshtme; verifikon që faqja Events shfaqet dhe jep diagnostikë të nav/header kur nuk gjendet një buton. Korrigjimi u provua në memorie kundër një DOM-i të kontrolluar me navigimin e miratuar (testi Events/Home PASS), JavaScript PASS, rilexim i commit-it GitHub PASS. Commit `ceb556de7afb54e080829bcdfdc81713a386d2cb`; Vercel Preview READY në këtë commit, status Vercel success.
+
+**Status i rëndësishëm:** 56 PASS të konfirmuara nga përdoruesi në QA-në e parë; QA e korrigjuar kërkon **ekzekutim të ri real** për të testuar rrjedhat e mbetura. As certifikim i Fazës 7, as merge në `main`, as Production.
+
+**QA Lab:** https://illyrian-demo-git-demo-v17-illyrian-shop-un24.vercel.app/ILLYRIAN_QA_v1.7.html
