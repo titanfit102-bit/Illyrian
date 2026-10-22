@@ -22,12 +22,12 @@ for(const lang of ['sq','en','it']){
   await expect(page.locator('html')).toHaveAttribute('lang',lang);
   await expect(page.locator('#layer [data-illyrian-language="'+lang+'"]')).toHaveAttribute('aria-pressed','true');
   const nav={sq:'Kryefaqja',en:'Home',it:'Home'};
-  await expect(page.locator('#navbar [data-act="tab"][data-val="home"] span').first()).toHaveText(nav[lang]);
+  await expect(page.locator('#navbar [data-act="tab"][data-val="home"] .v12-nav-label').first()).toHaveText(nav[lang]);
   expect(await page.evaluate(k=>localStorage.getItem(k),KEY)).toBe(lang);
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(original);
   await page.reload({waitUntil:'load'});
   await expect(page.locator('html')).toHaveAttribute('lang',lang);
-  await expect(page.locator('#navbar [data-act="tab"][data-val="home"] span').first()).toHaveText(nav[lang]);
+  await expect(page.locator('#navbar [data-act="tab"][data-val="home"] .v12-nav-label').first()).toHaveText(nav[lang]);
  });
 }
 for(const [device,expected] of [['sq-AL','sq'],['en-US','en'],['it-IT','it'],['de-DE','en']]){
