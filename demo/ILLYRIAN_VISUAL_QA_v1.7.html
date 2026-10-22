@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ILLYRIAN v1.7 — Visual & Manual QA</title>
+<style>
+:root{color-scheme:dark;--bg:#0b050a;--pane:#25131d;--surface:#351e2a;--ink:#f8f5f6;--muted:#d4c0ca;--line:#6a4452;--red:#e50c37}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header,main,footer{max-width:1500px;margin:auto;padding:16px 20px}header{border-bottom:1px solid var(--line)}
+h1{font-size:23px;margin:0 0 6px}h2{font-size:18px;margin:0 0 10px}h3{font-size:15px;margin:14px 0 8px}p{color:var(--muted);margin:6px 0 10px}
+a{color:#ffb9cb}button,select,input,textarea{font:inherit;color:var(--ink)}
+button,select,input,textarea{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px}
+button{cursor:pointer;min-height:44px}button.primary{background:var(--red);border-color:var(--red);font-weight:750}
+button:disabled{opacity:.65;cursor:progress}button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #ffc1d0;outline-offset:2px}
+.layout{display:grid;grid-template-columns:minmax(280px,550px) minmax(280px,1fr);gap:18px;align-items:start}
+.panel{background:var(--pane);border:1px solid var(--line);border-radius:16px;padding:15px;min-width:0}
+.tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.viewport{max-width:100%;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:11px;background:#130c11}
+iframe{display:block;max-width:none;border:1px solid #7f6874;border-radius:7px;background:#fff}
+.note{border-left:3px solid var(--red);padding:8px 11px;background:#402432;color:#ffeaf1}
+#status,#summary{min-height:22px;font-size:13px;color:#eedde5}
+#results{padding-left:21px;max-height:500px;overflow:auto}#results li{border-bottom:1px solid #ffffff1b;padding:6px 0;overflow-wrap:anywhere}
+.p{color:#8be7b6}.f{color:#ffa3a3}.w{color:#ffd28c}.i{color:#cfc8cd}
+.manual{display:grid;grid-template-columns:minmax(150px,1fr) minmax(120px,180px);gap:7px 10px;align-items:center;margin:14px 0}
+.manual label{font-size:13px}.manual select{width:100%}
+textarea{display:block;width:100%;min-height:95px;resize:vertical}
+small{color:var(--muted);font-size:12px}
+@media(max-width:930px){.layout{grid-template-columns:1fr}header,main,footer{padding:12px}.manual{grid-template-columns:minmax(140px,1fr) 140px}}
+</style>
+</head>
+<body>
+<header>
+<h1>ILLYRIAN v1.7 — Visual & Manual QA</h1>
+<p>Porta finale e Fazës 7. Skanim DOM orientues + kontrolle reale të pamjes, prekjes dhe tastierës. Nuk është certifikim WCAG ose audit sigurie.</p>
+<small>Faqe e veçantë e degës Preview · demo ekzistuese nuk modifikohet · pa llogari, kamera, mikrofon ose dërgim raportesh në server</small>
+</header>
+<main class="layout">
+<section class="panel">
+<h2>1. Shiko aplikacionin</h2>
+<div class="tools">
+<label for="size">Ekrani</label>
+<select id="size">
+<option value="320,568">320 × 568 — telefon i vogël</option>
+<option value="360,780">360 × 780 — Android</option>
+<option value="390,844" selected>390 × 844 — telefon</option>
+<option value="430,932">430 × 932 — telefon i madh</option>
+<option value="844,390">844 × 390 — landscape</option>
+<option value="932,430">932 × 430 — landscape</option>
+<option value="1280,800">1280 × 800 — desktop</option>
+</select>
+<button id="reload" type="button">Rifresko demon</button>
+</div>
+<div class="viewport"><iframe id="demo" title="Pamja e demos ILLYRIAN v1.7" width="390" height="844" src="./ILLYRIAN_DEMO_v1.7.html"></iframe></div>
+<p id="status" role="status">Duke ngarkuar…</p>
+<p><a href="./ILLYRIAN_DEMO_v1.7.html" target="_blank" rel="noopener">Hape aplikacionin veçmas për testimin me tastierë/prekje reale</a></p>
+<p class="note">Për të ndryshuar temën në demo: Profili → Cilësimet → Pamja dhe ngjyrat. Testo Light, Dark dhe Auto në pajisjen tënde. Kjo faqe nuk ndryshon temën automatikisht.</p>
+</section>
+<section class="panel">
+<h2>2. Skanimi teknik orientues</h2>
+<div class="tools">
+<button class="primary" id="current" type="button">Skano këtë përmasë</button>
+<button id="all" type="button">Skano 7 përmasat</button>
+<button id="copy" type="button">Kopjo raportin</button>
+</div>
+<p id="summary" role="status">Skanimi ende nuk është ekzekutuar.</p>
+<p><small>Kontrollon Home, Discover, Events dhe Profile, overflow të dokumentit, elementet me ID të dyfishtë, fotografitë e dukshme dhe sinjale të mundshme prerjeje. Reels, Messages, Shop dhe panelet e tjera verifikohen vizualisht me listën më poshtë. Sinjalet WARN nuk janë defekte të certifikuara.</small></p>
+<ol id="results"></ol>
+<hr style="border:0;border-top:1px solid var(--line);margin:15px 0">
+<h2>3. Verifikimi vizual/manual</h2>
+<p>Zgjidh rezultatin vetëm pasi ta kesh parë realisht. “Jo testuar” mbetet i hapur; raporti nuk mund të shpallë mbylljen e Fazës 7 vetëm prej skanimit automatik.</p>
+<div id="manual" class="manual"></div>
+<label for="device">Pajisja / shfletuesi (opsionale)</label>
+<input id="device" type="text" maxlength="90" placeholder="p.sh. Windows / Brave, Android / Chrome" style="width:100%;margin:6px 0 10px">
+<label for="notes">Probleme konkrete dhe hapat për t'i riprodhuar</label>
+<textarea id="notes" maxlength="2500" placeholder="Moduli, përmasa, tema, çfarë ndodhi, çfarë pritej..."></textarea>
+</section>
+</main>
+<footer><small>ILLYRIAN Visual QA v1.7 · Të dhënat manuale që shkruan këtu nuk ruhen në localStorage dhe nuk dërgohen automatikisht. Kopjo raportin për ta ruajtur.</small></footer>
+<script>
+(()=>{
+"use strict";
+const frame=document.getElementById("demo"),size=document.getElementById("size");
+const results=document.getElementById("results"),status=document.getElementById("status"),summary=document.getElementById("summary");
+const current=document.getElementById("current"),all=document.getElementById("all");
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const sizes=[...size.options].map(o=>o.value);
+let records=[],busy=false;
+const checklist=[
+["home","Home / Discover / Profile në të tre temat, pa elemente të prera"],
+["shop","Shop dhe Shop Plus: lista, filtra, detaje, scroll dhe pamja"],
+["plans","Plans → Connections: formularët, modalët dhe tekstet e gjata"],
+["privacy","Privacy / Governance: scroll i brendshëm, butona, z-index"],
+["media","Stories / Reels: fotografi, video, kalime dhe pamja"],
+["messages","Messages: lista, hapja e bisedës dhe navigimi poshtë"],
+["small","320px: butonat, tekstet dhe tastiera nuk mbulohen"],
+["landscape","Landscape 844×390 dhe 932×430: pa butona të paarritshëm"],
+["keyboard","Tastierë fizike: Tab, Shift+Tab, Escape dhe fokus i dukshëm"],
+["touch","Telefon real: prekje, scroll, back dhe butonat e mbylljes"],
+["a11y","Etiketa/kontrast/lexues ekrani: kontroll manual, jo WCAG automatik"],
+["stability","Përdorim i zgjatur: hap/mbyll module disa herë pa ngecje"]
+];
+const manual=document.getElementById("manual");
+for(const [id,label] of checklist){
+  const l=document.createElement("label");l.htmlFor="m_"+id;l.textContent=label;
+  const select=document.createElement("select");select.id="m_"+id;select.dataset.label=label;
+  for(const [value,text] of [["UNKNOWN","Jo testuar"],["PASS","Kaloi realisht"],["ISSUE","Problem"],["NA","Nuk aplikohet"]]){
+    const opt=document.createElement("option");opt.value=value;opt.textContent=text;select.appendChild(opt);
+  }
+  manual.append(l,select);
+}
+function setSize(value){
+  if(!sizes.includes(value))throw Error("Përmasë e pavlefshme");
+  const [w,h]=value.split(",").map(Number);
+  frame.width=w;frame.height=h;
+  status.textContent="Pamja "+w+" × "+h+" — testimi vizual në iframe nuk simulon çdo veçori të telefonit";
+}
+size.addEventListener("change",()=>setSize(size.value));setSize(size.value);
+function doc(){
+  const d=frame.contentDocument;
+  if(!d||d.readyState!=="complete"||!d.getElementById("phone"))throw Error("Demo nuk është gati ose iframe nuk ka të njëjtin origin");
+  return d;
+}
+async function reload(){
+  const url=new URL("./ILLYRIAN_DEMO_v1.7.html",location.href);
+  url.searchParams.set("visualqa",String(Date.now()));
+  await new Promise((resolve,reject)=>{
+    const timeout=setTimeout(()=>{frame.removeEventListener("load",done);reject(Error("Timeout i ngarkimit pas 15s"))},15000);
+    const done=()=>{clearTimeout(timeout);frame.removeEventListener("load",done);resolve()};
+    frame.addEventListener("load",done,{once:true});frame.src=url.toString();
+  });
+  await sleep(160);doc();
+}
+function note(label,state,detail){records.push({label,state,detail:String(detail||"")});}
+const visible=(d,el)=>{
+  if(el.closest("[hidden],[inert],[aria-hidden='true']"))return false;
+  const cs=d.defaultView.getComputedStyle(el);
+  if(cs.display==="none"||cs.visibility==="hidden")return false;
+  const rect=el.getBoundingClientRect();
+  return rect.width>0&&rect.height>0&&rect.bottom>0&&rect.top<d.documentElement.clientHeight;
+};
+function scan(d,prefix){
+  const phone=d.getElementById("phone"),screen=d.getElementById("screen"),html=d.documentElement;
+  const vw=html.clientWidth,sw=html.scrollWidth;
+  note(prefix+" · Overflow i dokumentit",sw<=vw+3?"PASS":"FAIL","scrollWidth "+sw+" / clientWidth "+vw+"px");
+  for(const [label,el] of [["phone",phone],["screen",screen]]){
+    if(!el){note(prefix+" · "+label,"FAIL","Elementi mungon");continue}
+    const extra=el.scrollWidth-el.clientWidth;
+    note(prefix+" · "+label+" scroll i brendshëm",extra>3?"WARN":"INFO","scrollWidth "+el.scrollWidth+" / clientWidth "+el.clientWidth+"; scroll horizontal mund të jetë i qëllimshëm");
+  }
+  const ids=new Map(),dup=[];
+  d.querySelectorAll("#phone [id]").forEach(el=>{if(!el.id)return;const n=ids.get(el.id)||0;ids.set(el.id,n+1);if(n===1)dup.push(el.id)});
+  note(prefix+" · ID të dyfishta",dup.length?"WARN":"PASS",dup.length?dup.slice(0,5).join(", "):"Asnjë brenda #phone");
+  const imgs=[...d.querySelectorAll("#phone img")].filter(el=>visible(d,el)),broken=imgs.filter(el=>el.complete&&el.naturalWidth===0&&!!el.getAttribute("src"));
+  const missingAlt=imgs.filter(el=>!el.hasAttribute("alt"));
+  const pending=imgs.filter(el=>!el.complete);
+  note(prefix+" · Fotografi të dukshme",broken.length?"WARN":"INFO","të dukshme="+imgs.length+"; të prishura="+broken.length+"; ende duke u ngarkuar="+pending.length+"; pa atribut alt="+missingAlt.length+" (mund të ketë dekorative)");
+  const clips=[];
+  const els=[...d.querySelectorAll("#phone h1,#phone h2,#phone h3,#phone p,#phone button,#phone a")].filter(el=>visible(d,el));
+  for(const el of els){
+    if(clips.length>=4)break;
+    const s=d.defaultView.getComputedStyle(el);
+    if((s.overflowX==="hidden"||s.overflowX==="clip")&&el.scrollWidth>el.clientWidth+4){
+      const text=(el.textContent||"").trim().replace(/\s+/g," ").slice(0,46);
+      clips.push(el.tagName.toLowerCase()+": "+text);
+    }
+  }
+  note(prefix+" · Tekst potencialisht i prerë",clips.length?"WARN":"INFO",clips.length?clips.join(" | "):"Asnjë sinjal sipas këtij heuristiku; duhet kontroll manual");
+}
+const tabs=[["Home",'#navbar [data-act="tab"][data-val="home"]'],["Discover",'#navbar [data-act="tab"][data-val="explore"]'],["Events",'.head [data-act="tab"][data-val="events"]'],["Profile",'#navbar [data-act="tab"][data-val="profile"]']];
+async function nav(d,entry){
+  const btn=d.querySelector(entry[1]);
+  if(!btn){note(entry[0]+" · Navigimi","FAIL","Butoni nuk u gjet");return false}
+  btn.click();await sleep(140);return true;
+}
+async function scanOne(value){
+  setSize(value);await sleep(150);
+  const d=doc(),prefix=value.replace(",","×");
+  for(const tab of tabs){
+    const ok=await nav(d,tab);
+    if(!ok)continue;
+    scan(d,prefix+" / "+tab[0]);
+  }
+}
+async function run(allSizes){
+  if(busy)return;
+  busy=true;current.disabled=true;all.disabled=true;
+  const original=size.value;records=[];
+  try{
+    await reload();
+    for(const value of allSizes?sizes:[original]){
+      try{await scanOne(value)}catch(e){note(value.replace(",","×")+" · Skanimi","FAIL",String(e.message||e))}
+      render();
+    }
+  }catch(e){note("Ngarkimi fillestar","FAIL",String(e.message||e));render()}
+  finally{
+    size.value=original;setSize(original);
+    try{await reload()}catch(e){note("Rikthimi i demos","FAIL",String(e.message||e))}
+    busy=false;current.disabled=false;all.disabled=false;render();
+  }
+}
+function render(){
+  results.replaceChildren();
+  for(const r of records){
+    const li=document.createElement("li"),b=document.createElement("strong"),small=document.createElement("small");
+    b.className=r.state==="PASS"?"p":r.state==="FAIL"?"f":r.state==="WARN"?"w":"i";
+    b.textContent=r.state+" · "+r.label;
+    small.textContent=r.detail?" | "+r.detail:"";
+    li.append(b,small);results.appendChild(li);
+  }
+  const n=state=>records.filter(x=>x.state===state).length;
+  summary.textContent=n("PASS")+" PASS · "+n("FAIL")+" FAIL · "+n("WARN")+" WARN · "+n("INFO")+" INFO; WARN kërkon inspektim, jo dështim të provuar.";
+}
+current.addEventListener("click",()=>run(false));
+all.addEventListener("click",()=>run(true));
+document.getElementById("reload").addEventListener("click",async()=>{if(busy)return;try{await reload()}catch(e){status.textContent=String(e.message||e)}});
+document.getElementById("copy").addEventListener("click",async()=>{
+  const vals=[...manual.querySelectorAll("select")].map(el=>({label:el.dataset.label,value:el.value}));
+  const checked=vals.filter(x=>x.value!=="UNKNOWN");
+  const lines=[
+    "ILLYRIAN VISUAL QA — "+new Date().toISOString(),
+    "Lloji: skanim DOM orientues + verifikim manual; jo WCAG apo release certification.",
+    "Pajisja/shfletuesi: "+(document.getElementById("device").value.trim()||"pa deklaruar"),
+    "Skanim automatik:",
+    ...records.map(r=>r.state+" | "+r.label+" | "+r.detail),
+    "Manual: "+checked.length+"/"+vals.length+" statuse të deklaruara; të tjerat UNKNOWN.",
+    ...vals.map(r=>r.value+" | "+r.label),
+    "Shënime: "+(document.getElementById("notes").value.trim()||"asnjë"),
+    "Release gate: "+(vals.every(r=>r.value==="PASS"||r.value==="NA")&&!records.some(r=>r.state==="FAIL")?"Kandidate për shqyrtim, kërkon aprovim profesional.":"E HAPUR — ka prova manuale të paplota, dështime ose probleme.")
+  ];
+  try{await navigator.clipboard.writeText(lines.join("\n"));status.textContent="Raporti u kopjua."}catch(e){status.textContent="Kopjimi u bllokua nga shfletuesi: "+String(e.message||e)}
+});
+frame.addEventListener("load",()=>{try{doc();status.textContent="Demo u ngarkua. Mund të fillosh skanimin ose kontrollin manual."}catch{}});
+})();
+</script>
+</body>
+</html>
