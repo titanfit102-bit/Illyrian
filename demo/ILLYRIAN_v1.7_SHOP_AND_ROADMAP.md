@@ -511,3 +511,15 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Kufijtë e konkluzionit:** Kodi i aplikacionit (demo HTML/CSS/JS) nuk kishte ndryshuar midis commit-it të suksesit dhe aktivizimit të workflow-it; ndryshimet pas tyre kanë qenë QA visual layout, dokumentacioni dhe workflow. Pavarësisht 10/10 real Chromium, suitat 126/126 + 147/147 të kryera më parë nuk janë ribërë dhe auditi vizual/telefonik i plotë nuk është kryer. Faza 7 vazhdon NË PROCES. Main dhe Vercel Production të paprekura.
 
 **Evidencë:** [Run i suksesshëm](https://github.com/titanfit102-bit/Illyrian/actions/runs/39819477947) · [Run i rikuperimit mbi workflow aktual](https://github.com/titanfit102-bit/Illyrian/actions/runs/39823003129).
+
+## Faza 7 — Cikli 21: Playwright module dhe tema (22 tetor 2026)
+
+**Pika e nisjes:** GitHub Actions run #39823684527 mbi commit `06f796f7dc4f284c6ae5ea9b62cbd4893aee17b5` është konfirmuar **completed/success** dhe log-et tregojnë **10/10 teste reale Chromium PASS (7.5s)**. Testet mbulojnë vetëm Reels X + Krijo Reel, dy landscape për Mesazhet dhe strukturën desktop; nuk provojnë gjithë produktin.
+
+**Zgjerimi i ri i suitës:** skedari i ri `qa/illyrian-v17-flows.spec.cjs` u shtua në commit `eddb35932a883d56273d75ae695dab6f446f666b`. Përmban **10 skenarë të tjerë Playwright**: 7 viewport-e për hapjen/mbylljen e Shop/Shop Plus (Escape në shtresa), Plans, Connections→Plans draft (pa publikim), Privacy dhe Governance me izolim të sfondit, rikthim dhe overflow të dokumentit; si edhe 3 viewport-e për ruajtjen e Light/Dark/Auto dhe rikthimin EXACT të localStorage. Testet nuk krijojnë transaksione apo postime reale. `playwright.config.cjs` u zgjerua që të përfshijë të dy skedarët (`2dbcaa702af87b42a3133c28bed3511a08432cab`), objektiv **20 teste gjithsej**.
+
+**Verifikimi deri tani:** 10 testet e reja u regjistruan me mock-test runner në V8 dhe skripti CommonJS kaloi analizën sintaksore; por **kjo nuk është ekzekutim Chromium**. GitHub Actions nisi run #39827389137 me Playwright, por instalimi `npx playwright install --with-deps chromium` mbeti më gjatë se zakonisht dhe nuk kishte test result në momentin e shënimit.
+
+**Optimizimi i workflow-it në scope QA:** commit `a99a59917761cebbf26b915844b96c639ebce9b0` ndërron hapin në `npx playwright install chromium` për të shmangur update e rëndë të varësive OS në çdo run dhe kufizon `push.paths` në skedarë `.html/.css/.js` të demos, QA scripts, konfigurimin dhe workflow-in — ndryshimet vetëm në roadmap Markdown nuk duhet të nisin CI. Nëse runner-i raporton mungesë të librarive të sistemit, duhet rivendosur preflight/install-deps me diagnostikë, jo të pretendohet sukses. Run i ri mbi këtë commit: #39828144173, ende pa përfundim në momentin e shënimit.
+
+**Kufizimet:** Faza 7 mbetet në progres, 20/20 nuk deklarohen PASS pa log-et dhe ekranet e fizike mbeten për testin final të pronarit. Branch `demo/v1.7-illyrian-shop` vetëm; `main` dhe Production pa ndryshime.
