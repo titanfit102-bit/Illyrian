@@ -124,7 +124,7 @@
   async function scenario(test) {
     const d=iframe.contentDocument;
     const html=d.documentElement;
-    check(test,'Struktura e aplikacionit',!!d.querySelector('#phone,#screen')&&!!d.querySelector('#navbar'), 'phone, screen, navbar');
+    check(test,'Struktura e aplikacionit',!!d.querySelector('#phone')&&!!d.querySelector('#screen')&&!!d.querySelector('#navbar'), 'phone, screen, navbar');
     const required=['SHOP','PLANS','CONNECTIONS','PRIVACY_MAP','SHOP_PLUS','GOVERNANCE'];
     const loaded=[...d.querySelectorAll('script[src]')].map(s=>s.getAttribute('src'));
     check(test,'Të gjashtë skedarët JS janë referuar',required.every(n=>loaded.some(p=>p?.includes('ILLYRIAN_'+n+'_v1.7.js'))),required.length+'/6');
@@ -152,10 +152,12 @@
     await tap(d,'#ilp-root [data-ilp="close"]','mbyllja e draftit');
     check(test,'Rikthim korrekt pas draftit',!d.getElementById('screen')?.inert);
     await nav(d,'explore');
+    const privacyEntry=d.querySelector('#il4-entry [data-il4-entry]');
     await tap(d,'#il4-entry [data-il4-entry]','paneli Privacy');
     check(test,'Privacy hapet me sfond inert',!d.getElementById('il4-root')?.hidden&&!!d.getElementById('screen')?.inert);
+    privacyEntry?.click();await sleep(40);
     await tap(d,'#il4-root [data-il4="close"]','mbyllja Privacy');
-    check(test,'Privacy rikthen ekranin',!!d.getElementById('il4-root')?.hidden&&!d.getElementById('screen')?.inert);
+    check(test,'Privacy rikthen ekranin edhe pas hapjes së dyfishtë',!!d.getElementById('il4-root')?.hidden&&!d.getElementById('screen')?.inert);
     await tap(d,'#ig6-entry [data-ig6="open"]','paneli Governance');
     check(test,'Governance hapet me sfond inert',!!d.getElementById('ig6-root')&&!!d.getElementById('screen')?.inert);
     await tap(d,'#ig6-root [data-ig6="close"]','mbyllja Governance');
@@ -186,12 +188,12 @@
       for(const value of values){
         size.value=value;setSize(value);
         records.push({label:'Rezolucioni '+value.replace(',',' × '),status:'INFO',detail:''});
+        const test=[];
         try{
           await reload();
-          const test=[];
           await scenario(test);
-          records.push(...test.map(x=>({...x,label:value.replace(',','×')+' — '+x.label})));
         }catch(e){records.push({label:value.replace(',','×')+' — Testimi u ndërpre',status:'FAIL',detail:String(e?.message||e)})}
+        records.push(...test.map(x=>({...x,label:value.replace(',','×')+' — '+x.label})));
         render(records);
       }
     }finally{
