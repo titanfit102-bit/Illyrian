@@ -491,3 +491,13 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Puna që mund të vazhdojë pa runner:** analizë dhe korrigjime statike, browser QA Lab ekzistues dhe raport final që kërkon test fizikal nga pronari. Testet e reja janë ruajtur dhe mund të ekzekutohen sapo runner-i të bëhet i disponueshëm. Gabimet e veçanta të raportuara nga screenshots (Reels X/Krijo Reel, landscape dhe Mesazhet) nuk mbyllen përfundimisht vetëm nga statika; kërkojnë regresion real.
 
 **Scope:** vetëm branch demo/v1.7-illyrian-shop. Main, Production dhe projektet e tjera të pandryshuara.
+
+## Faza 7 — Cikli 19: Test harness të ruajtur dhe preview më i gjerë (22 tetor 2026)
+
+**Korrigjim i instrumentit të përdoruesit:** në demo/ILLYRIAN_VISUAL_QA_v1.7.html u rrit gjerësia e kolonës së preview-it duke ndryshuar layout desktop nga `minmax(280px,550px) minmax(280px,1fr)` në `minmax(0,1fr) minmax(300px,440px)`. Në ekrane mjaftueshëm të gjera, iframe landscape 844×390 dhe 932×430 do të ketë më shumë hapësirë dhe mund të afrohet te përmasa native, duke zvogëluar përdorimin e 59% scale nga screenshot-et e mëparshme. Në ekranet nën 930px mbetet layout me një kolonë. Commit c0329de4bae9772c92795ff6b55d28d6f81351af. Ky është përmirësim i pamjes së laboratorit, **jo garanci për layout-in e aplikacionit real në telefon**.
+
+**Workflow QA i pezulluar nga infrastruktura:** Pasi dy përpjekjet e run-it #39818951307 dështuan pa runner dhe pa hapa, ekzekutimet automatike në çdo push krijonin dështime false të përsëritura (p.sh. #39819477947). Workflow `/.github/workflows/illyrian-v17-browser-qa.yml` u ndryshua në `workflow_dispatch` vetëm, commit 5917f1d7ad3b56160fe70d8bbce24fd5c175bd2c; mbetet i ruajtur për riaktivizim pasi të zgjidhet bllokimi real i GitHub runner-it. Shkaku i saktë ende UNKNOWN. Kjo nuk është shenjë se browser testet kanë kaluar.
+
+**Kontrolle statike të integrimit pas ndryshimeve:** 12/12 PASS për regjistrimin e saktë të 10 skenarëve Playwright (7 Reels, 2 landscape, 1 desktop), lidhjen e navigimit të Reels/Mesazheve nga produkti, prani të handler-it Reels close, CSS të lidhur, CSS për X + Krijo Reel, layout-in më të gjerë të QA, workflow manual-only, parse të JavaScript të QA dhe konfigurim local-only për Playwright. Këto janë **kontrolle statike/registrimi, JO ekzekutim të testeve Chromium**.
+
+**Përpara sign-off:** ekzekutim Chromium real kur runner-i të jetë i disponueshëm; regresioni bazë+avancuar i demos pas CSS-së së re; kontroll manual në telefon nga pronari vetëm në fund të etapës së ndërtimit, siç ka kërkuar. Faza 7 mbetet NË PROCES; gatishmëria production/backend nuk matet nga demoja. Main/Production të paprekura.
