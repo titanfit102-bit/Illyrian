@@ -228,3 +228,34 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 8. **Mbeten:** Chromium/Playwright real mbi HTML-në e përbashkët v1.7 (320×568, 360×780, 390×844, 430×932, 844×390, 932×430, desktop), vizual Light/Dark/Auto, fokus/Tab/Escape, modalë të ndërthurur, `MutationObserver`, ruajtje/reload, të dhëna armiqësore, media dhe performancë. F7-001 dhe F7-002 duhen provuar edhe në Chrome/Brave real. Faza 8 nuk ka nisur.
 
 **Interpretimi i progresit:** 6 nga 8 paketat e demos kanë bazën në kod; Paketa 7 është në proces dhe Paketa 8 e hapur. 75% është vetëm numërim paketash, jo përqindje e cilësisë, prodhimit apo aplikacionit profesional.
+
+
+## Faza 7 — Cikli 3: QA Lab, raportimet dhe Privacy (22 tetor 2026)
+
+**Status: NË PROCES, jo i certifikuar E2E.** Ky cikël krijoi instrumentin e testimit në shfletues dhe konfirmoi dy rrjedha shtesë logjike, pa prekur `main` ose Vercel Production.
+
+### Instrumenti i testimit real në browser
+
+- Shtuar `demo/ILLYRIAN_QA_v1.7.html`, një faqe e veçantë **same-origin** me `iframe` që ngarkon `ILLYRIAN_DEMO_v1.7.html`. Nuk ndryshon HTML-në ekzistuese të demos dhe nuk kërkon llogari, backend apo shërbime me pagesë.
+- QA Lab ka 7 përmasa: 320×568, 360×780, 390×844, 430×932, 844×390, 932×430, 1280×800; mundësi testimi të njërës ose të gjitha përmasave.
+- Kontrollon referencat e 6 moduleve JS, inicializimin e paneleve, rrjedhën Shop→Shop Plus→Escape→Escape, hapje/mbyllje Plans/Connections/Privacy/Governance, transferimin e draftit Connections→Plans, `inert` të ekranit dhe overflow horizontal; raporton PASS/FAIL, ruan testet e kaluara edhe kur hapi pasues ngec, dhe kopjon raportin.
+- QA Lab u publikua në Preview pas commit-eve `ee9a132eda7d27b6f7b69c9d7cc2e34244f1aa30`, `67a46e282a8d948079b942d2407c5f18c49aa694` dhe `e9dd50ae9b62dbc039f2d832ba7e05aea1e8c401`.
+- **Dëshmia për QA Lab:** burimi u rilexua nga commit-et e GitHub; skripti inline u kontrollua sintaksisht PASS; Vercel Preview u verifikua READY dhe në commit-in përkatës pas publikimit. **Ende nuk kemi raport PASS/FAIL nga ekzekutimi real i QA Lab në browser të përdoruesit** sepse mjedisi i kësaj analize nuk hyn dot në Preview (DNS/administrative network restriction). Asnjë rezultat i simuluar nuk duhet raportuar si E2E.
+- URL e QA Lab: `https://illyrian-demo-git-demo-v17-illyrian-shop-un24.vercel.app/ILLYRIAN_QA_v1.7.html`.
+
+### F7-003 — Privacy në hapje të dyfishtë
+
+- **Riprodhim:** dy thirrje `open()` të `ILLYRIAN_PRIVACY_MAP_v1.7.js` para mbylljes mbishkruanin `inertSnapshot` kur ekrani ishte tashmë `inert=true`; më pas `close()` e linte ekranin dhe navigimin `inert=true` (bllokim i mundshëm).
+- **Korrigjim minimal:** `open()` del menjëherë nëse `state.open===true`. Commit `17059220eb38154241f14e9c1a11586fccf7c5ad`. Në simulimin V8, hapja e dyfishtë dhe mbyllja rikthejnë `screen.inert=false`, kurse kodi i mëparshëm e linte `true`.
+- QA Lab tani kontrollon rikthimin e ekranit pas një tentative të dytë hapjeje Privacy. Ky kontroll duhet provuar edhe në një shfletues real.
+
+### Regresion shtesë: Shop Plus → Governance
+
+- Kodi origjinal `ILLYRIAN_GOVERNANCE_v1.7.js` u ekzekutua në V8 me DOM/localStorage të simuluar dhe raportim të mëparshëm `illyrian_demo_v17_shop_plus.flags`.
+- **8/8 kontrolle PASS, zero gabime ekzekutimi** në skenarin e izoluar: hapja e Governance, izolimi `inert`, importimi i raportimit, escape i `<img onerror>` dhe `<script>` të futura si tekst, hapja e shqyrtimit si moderator demo, ruajtja `restricted` dhe `audit` në localStorage.
+- Ndërrimi i rolit në UI mbetet SIMULIM: nuk përfaqëson RBAC serveri, autorizim ose vendim real ndaj përdoruesve/produkteve.
+
+### Çfarë mbetet
+
+- Marrja e raportit të QA Lab të ekzekutuar në Chromium/telefon; verifikim vizual i temave Light/Dark/Auto, swipe/story/reels, modal focus/Tab/Escape, performancë, storage/reload, të dhëna armiqësore dhe pajisje fizike.
+- Mos shpall Paketën 7 PASS, 8/8 paketa të përfunduara ose produktin real të gatshëm për publikim pa provat përkatëse.
