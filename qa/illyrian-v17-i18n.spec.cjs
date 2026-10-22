@@ -355,7 +355,7 @@ for(const locale of ['en','it']){
   expect(initial.length).toBeGreaterThan(0);
   expect(initial.every(([value])=>Boolean(value))).toBe(true);
   await page.locator('#ilc-root [data-ilc="overview"]').click();
-  await page.locator('#ilc-root [data-ilc="close"]').click();
+  await page.locator('#ilc-root .ilc-sheet header button[data-ilc="close"]').click();
   await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
   await page.locator('#ig6-entry [data-ig6="open"]').click();
   await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
