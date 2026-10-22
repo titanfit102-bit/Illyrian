@@ -27,7 +27,7 @@
  let opener=null, layer=null, toastTimer=null;
  const all=()=>[...state.listings,...SEED];
  const clean=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:Number(n)%1?2:0,maximumFractionDigits:2})+' €';
+ const money=n=>{const v=Number(n||0),locale=window.IllyrianI18n?.language||'it';return new Intl.NumberFormat(locale,{style:'currency',currency:'EUR',minimumFractionDigits:v%1?2:0,maximumFractionDigits:2}).format(v)};
  const price=p=>money(p.price)+(p.kind==='Banesa me qira'?'/muaj':p.unit==='nga'?' nga':'');
  const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({listings:state.listings,cart:state.cart,orders:state.orders,requests:state.requests}));return true}catch{notify('Nuk u ruajt: hapësira lokale është plot.');return false}};
  const byId=id=>all().find(p=>p.id===id);

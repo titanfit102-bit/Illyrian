@@ -137,3 +137,19 @@ test('i18n locale catalogs remain complete and identical by semantic keys',async
  expect(parity.en).toBeGreaterThanOrEqual(200);
  expect(parity.sameSq).toBe(true);expect(parity.sameIt).toBe(true);
 });
+
+
+for(const [lang,tag] of [['sq','sq'],['en','en'],['it','it']]){
+ test('i18n marketplace EUR formats adapt to '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  const expected=await page.evaluate(l=>new Intl.NumberFormat(l,{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(12.5),lang);
+  const formatted=await page.evaluate(()=>window.IllyrianI18n.currency(12.5,'EUR'));
+  expect(formatted).toBe(expected);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+  const currencySample=await page.locator('#illyrian-shop-layer').innerText();
+  expect(currencySample).toContain('€');
+ });
+}

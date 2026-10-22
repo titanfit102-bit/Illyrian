@@ -33,7 +33,7 @@
  let overlay=null,previous=null,inertBefore=[],trigger=null;
  const all=()=>[...state.items,...SEED];
  const numeric=(v,fallback=0)=>Number.isFinite(+v)?Number(v):fallback;
- const money=v=>numeric(v).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+ const money=v=>new Intl.NumberFormat(window.IllyrianI18n?.language||'it',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(numeric(v));
  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({items:state.items,needs:state.needs,answers:state.answers,flags:state.flags,sampleOrders:state.sampleOrders}));return true}catch{state.notice='Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.';return false}};
  const btn=(act,text,extra='')=>'<button type="button" data-isp="'+esc(act)+'" '+extra+'>'+esc(text)+'</button>';
  const pill=(value,active)=>'<button type="button" data-isp="type:'+esc(value)+'" aria-pressed="'+(active?'true':'false')+'" class="'+(active?'chosen':'')+'">'+esc(value)+'</button>';
