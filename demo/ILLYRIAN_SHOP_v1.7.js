@@ -129,7 +129,7 @@
   persist();state.selected=data.id||state.selected;state.view='my';render();notify('Listimi u ruajt vetëm në këtë shfletues.');
  },true);
  document.addEventListener('keydown',event=>{if(!state.open||!layer)return;
-  if(event.key==='Escape'){event.stopImmediatePropagation();event.preventDefault();close();return}
+  if(event.key==='Escape'){if(document.getElementById('isp-root'))return;event.stopImmediatePropagation();event.preventDefault();close();return}
   if(event.key!=='Tab')return;const focused=[...layer.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')].filter(x=>x.getClientRects().length);if(!focused.length)return;const first=focused[0],last=focused[focused.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
  },true);
 })();
