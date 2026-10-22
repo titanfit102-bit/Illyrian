@@ -265,9 +265,10 @@
     check(test,'Sfondi riaktivizohet pas Escape',!d.getElementById('screen')?.inert);
   }
   async function themeSuite(test){
-    const d=iframe.contentDocument,w=iframe.contentWindow,storage=w.localStorage;
+    const d=iframe.contentDocument,w=iframe.contentWindow;
+    const storage=()=>iframe.contentWindow.localStorage;
     const key='illyrian_demo_v09_state';
-    const previous=storage.getItem(key);
+    const previous=storage().getItem(key);
     let restored=false;
     try{
       await nav(d,'profile');
@@ -277,7 +278,7 @@
         if(!el)throw new Error('Nuk u gjet preferenca e temës: '+mode);
         el.click();await sleep(80);
         let savedMode=null;
-        try{savedMode=JSON.parse(storage.getItem(key)||'{}').theme}catch{}
+        try{savedMode=JSON.parse(storage().getItem(key)||'{}').theme}catch{}
         const systemDark=!!w.matchMedia?.('(prefers-color-scheme: dark)').matches;
         const expected=mode==='dark'||mode==='auto'&&systemDark;
         const actual=!!d.getElementById('phone')?.classList.contains('dark');
@@ -287,12 +288,12 @@
       await reload();
       const newDoc=iframe.contentDocument;
       let persisted=null;
-      try{persisted=JSON.parse(storage.getItem(key)||'{}').theme}catch{}
+      try{persisted=JSON.parse(storage().getItem(key)||'{}').theme}catch{}
       check(test,'Tema Auto mbetet pas rifreskimit',persisted==='auto'&&!!newDoc.getElementById('phone')?.classList.contains('dark')===!!w.matchMedia?.('(prefers-color-scheme: dark)').matches,'modaliteti='+String(persisted));
     }finally{
       // Always restore EXACT original localStorage string, even if an assertion fails.
-      if(previous===null)storage.removeItem(key);else storage.setItem(key,previous);
-      restored=storage.getItem(key)===previous;
+      if(previous===null)storage().removeItem(key);else storage().setItem(key,previous);
+      restored=storage().getItem(key)===previous;
       try{await reload()}catch(e){test.push({label:'Ngarkimi pas rivendosjes',status:'FAIL',detail:String(e.message||e)})}
       check(test,'Preferenca e mëparshme u rivendos',restored,'vlera fillestare ruhet pa ndryshim');
     }
