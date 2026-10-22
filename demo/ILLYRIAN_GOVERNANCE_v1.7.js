@@ -47,7 +47,7 @@
  };
  const reportForm=()=>'<h4>Raporto përmbajtje (demo)</h4><form id="ig6-report" class="ig6-form">'+
   '<label>Çfarë po raporton?<input name="target" maxlength="80" minlength="4" required placeholder="P.sh. ofertë e pasaktë"></label>'+
-  '<label>Arsyeja<select name="reason"><option>Informacion i pasaktë</option><option>Mashtrim i dyshuar</option><option>Spam</option><option>Shkelje privatësie</option><option>Përmbajtje e papërshtatshme</option></select></label>'+
+  '<label>Arsyeja<select name="reason"><option value="Informacion i pasaktë">Informacion i pasaktë</option><option value="Mashtrim i dyshuar">Mashtrim i dyshuar</option><option value="Spam">Spam</option><option value="Shkelje privatësie">Shkelje privatësie</option><option value="Përmbajtje e papërshtatshme">Përmbajtje e papërshtatshme</option></select></label>'+
   '<label>Shpjegim<textarea name="detail" maxlength="240" rows="2" placeholder="Çfarë ndodhi?"></textarea></label>'+
   '<button type="submit">Ruaj raportimin lokal</button></form>';
  const statusName=s=>({pending:'Në pritje',restricted:'Kufizuar (demo)',dismissed:'Mbyllur pa masë',more:'Duhet sqarim',reinstated:'Kufizimi u hoq'})[s]||'Në pritje';

@@ -66,7 +66,7 @@
       '<form id="ilc-interest"><label>Çfarë dëshiron? <select name="topic">'+TOPICS.map(t=>'<option value="'+h(t.id)+'"'+(current?.topic===t.id?' selected':'')+'>'+h(t.icon+' '+t.label)+'</option>').join('')+'</select></label>'+
       '<label>Qyteti<select name="city">'+cities(current?.city||state.home)+'</select></label>'+
       '<label>Koha e preferuar<select name="slot">'+
-      (TOPICS.find(t=>t.id===current?.topic)||TOPICS[0]).slots.map(t=>'<option'+(current?.slot===t?' selected':'')+'>'+h(t)+'</option>').join('')+
+      (TOPICS.find(t=>t.id===current?.topic)||TOPICS[0]).slots.map(t=>'<option value="'+h(t)+'"'+(current?.slot===t?' selected':'')+'>'+h(t)+'</option>').join('')+
       '</select></label><label>Afati<select name="days"><option value="3">3 ditë</option><option value="7">7 ditë</option></select></label>'+
       '<button type="submit">Shpreh interesin (demo)</button></form>'+
       '<div id="ilc-matches">'+interestMatches()+'</div>'+notice()+
@@ -249,7 +249,7 @@
       if(e.target.name==='topic'){
         const topic=TOPICS.find(t=>t.id===e.target.value);
         const select=root.querySelector('#ilc-interest select[name="slot"]');
-        if(select&&topic)select.innerHTML=topic.slots.map(t=>'<option>'+h(t)+'</option>').join('');
+        if(select&&topic)select.innerHTML=topic.slots.map(t=>'<option value="'+h(t)+'">'+h(t)+'</option>').join('');
       }
     });
     root.addEventListener('change',e=>{

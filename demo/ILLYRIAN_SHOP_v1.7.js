@@ -30,7 +30,10 @@
  const shopMessage=(key,fallback)=>window.IllyrianI18n?.t('shop:'+key)||fallback;
  const money=n=>{const v=Number(n||0),locale=window.IllyrianI18n?.language||'it';return new Intl.NumberFormat(locale,{style:'currency',currency:'EUR',minimumFractionDigits:v%1?2:0,maximumFractionDigits:2}).format(v)};
  const price=p=>money(p.price)+(p.kind==='Banesa me qira'?'/muaj':p.unit==='nga'?' nga':'');
- const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({listings:state.listings,cart:state.cart,orders:state.orders,requests:state.requests}));return true}catch{notify(shopMessage('storageFull','Nuk u ruajt: hapësira lokale është plot.'));return false}};
+ const persistentData=()=>({listings:state.listings,cart:state.cart,orders:state.orders,requests:state.requests});
+ const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(persistentData()));return true}catch{notify(shopMessage('storageFull','Nuk u ruajt: hapësira lokale është plot.'));return false}};
+ // Keep the on-screen and stored Shop state consistent if persistence is denied (quota/private mode).
+ const transact=change=>{const before=JSON.stringify(persistentData());change();if(persist())return true;Object.assign(state,JSON.parse(before));return false};
  const byId=id=>all().find(p=>p.id===id);
  const matches=(p)=>{
   const q=state.query.toLocaleLowerCase('sq').trim();
@@ -114,20 +117,23 @@
   if(action==='store'){state.store=button.dataset.value||'';state.view='browse';render();return}
   if(action==='clear-store'){state.store='';render();return}
   if(action==='detail'){state.selected=id;state.view='detail';render();return}
-  if(action==='add'){const p=byId(state.selected);if(!p||p.kind!=='Produkte')return;state.cart[p.id]=Math.min(99,(Number(state.cart[p.id])||0)+1);persist();render();notify(shopMessage('addedCartNotice','Produkti u shtua në shportën demonstrative.'));return}
-  if(action==='remove-cart'){delete state.cart[id];persist();render();return}
-  if(action==='checkout'){if(!cartItems().length)return;state.orders.unshift({created:Date.now(),total:cartTotal(),lines:cartItems().length,status:'DEMO'});state.orders=state.orders.slice(0,20);state.cart={};persist();state.view='confirmation';render();return}
-  if(action==='contact'){const p=byId(state.selected);if(!p)return;state.requests.unshift({id:p.id,at:Date.now()});state.requests=state.requests.slice(0,30);persist();state.view='confirmation';render();return}
+  if(action==='add'){const p=byId(state.selected);if(!p||p.kind!=='Produkte')return;if(!transact(()=>{state.cart[p.id]=Math.min(99,(Number(state.cart[p.id])||0)+1)}))return;render();notify(shopMessage('addedCartNotice','Produkti u shtua në shportën demonstrative.'));return}
+  if(action==='remove-cart'){if(!transact(()=>{delete state.cart[id]}))return;render();return}
+  if(action==='checkout'){if(!cartItems().length)return;if(!transact(()=>{state.orders.unshift({created:Date.now(),total:cartTotal(),lines:cartItems().length,status:'DEMO'});state.orders=state.orders.slice(0,20);state.cart={}}))return;state.view='confirmation';render();return}
+  if(action==='contact'){const p=byId(state.selected);if(!p)return;if(!transact(()=>{state.requests.unshift({id:p.id,at:Date.now()});state.requests=state.requests.slice(0,30)}))return;state.view='confirmation';render();return}
   if(action==='edit'){const p=byId(state.selected);if(!p?.owned)return;state.view='edit';render();return}
-  if(action==='delete'){const p=byId(state.selected);if(!p?.owned||!confirm(shopMessage('confirmDelete','Ta fshijmë këtë listim demonstrues?')))return;state.listings=state.listings.filter(x=>x.id!==p.id);delete state.cart[p.id];state.selected=null;persist();state.view='my';render();return}
+  if(action==='delete'){const p=byId(state.selected);if(!p?.owned||!confirm(shopMessage('confirmDelete','Ta fshijmë këtë listim demonstrues?')))return;if(!transact(()=>{state.listings=state.listings.filter(x=>x.id!==p.id);delete state.cart[p.id]}))return;state.selected=null;state.view='my';render();return}
  },true);
  document.addEventListener('input',event=>{if(!state.open||event.target?.id!=='ils-search')return;const pos=event.target.selectionStart;const value=event.target.value;const scroll=layer.querySelector('.ils-body')?.scrollTop||0;state.query=value;render();const input=layer.querySelector('#ils-search');if(input){input.focus({preventScroll:true});try{input.setSelectionRange(pos,pos)}catch{}}if(layer.querySelector('.ils-body'))layer.querySelector('.ils-body').scrollTop=scroll;},true);
  document.addEventListener('change',event=>{if(!state.open)return;if(event.target?.id==='ils-city'){state.city=event.target.value;render()}else if(event.target?.id==='ils-sort'){state.sort=event.target.value;render()}},true);
  document.addEventListener('submit',event=>{if(!state.open||event.target?.id!=='ils-sell-form')return;event.preventDefault();event.stopPropagation();const f=new FormData(event.target);const kind=String(f.get('kind')||'');const name=String(f.get('name')||'').trim();const store=String(f.get('store')||'').trim();const city=String(f.get('city')||'');const price=Number(f.get('price'));
   if(!CATEGORIES.slice(1).includes(kind)||name.length<4||store.length<2||!CITIES.slice(1).includes(city)||!Number.isFinite(price)||price<0.5||price>1e7){notify(shopMessage('invalidListing','Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.'));return}
   const data={kind,name:name.slice(0,90),store:store.slice(0,70),city,price:Math.round(price*100)/100,description:String(f.get('description')||'').slice(0,450),emoji:kind==='Makina'?'🚗':kind==='Banesa me qira'?'🏠':kind==='Shërbime'?'🛠️':'📦',owned:true,unit:kind==='Banesa me qira'?'muaj':'copë'};
-  if(state.view==='edit'){const p=byId(state.selected);if(!p?.owned)return;Object.assign(p,data)}else{if(state.listings.length>=30){notify(shopMessage('maxListings','Maksimumi 30 listime demonstrative.'));return}data.id='user-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);state.listings.unshift(data)}
-  persist();state.selected=data.id||state.selected;state.view='my';render();notify(shopMessage('listingSaved','Listimi u ruajt vetëm në këtë shfletues.'));
+  const current=state.view==='edit'?byId(state.selected):null;if(state.view==='edit'&&!current?.owned)return;
+  if(!current&&state.listings.length>=30){notify(shopMessage('maxListings','Maksimumi 30 listime demonstrative.'));return}
+  if(!current)data.id='user-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);
+  if(!transact(()=>{if(current)Object.assign(current,data);else state.listings.unshift(data)}))return;
+  state.selected=data.id||state.selected;state.view='my';render();notify(shopMessage('listingSaved','Listimi u ruajt vetëm në këtë shfletues.'));
  },true);
  document.addEventListener('keydown',event=>{if(!state.open||!layer)return;
   if(event.key==='Escape'){if(document.getElementById('isp-root'))return;event.stopImmediatePropagation();event.preventDefault();close();return}

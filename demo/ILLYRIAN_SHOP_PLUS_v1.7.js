@@ -156,8 +156,8 @@
   return '<h3>“Kërkoj…” — kërkesat e komunitetit</h3><p>Përdoruesi përshkruan çfarë kërkon; dyqanet përgjigjen vetëm në këtë simulim. Pa kontakt real.</p>'+
    '<form id="isp-need" class="isp-fields">'+
    '<label>Kërkoj<input name="title" minlength="5" maxlength="90" required placeholder="P.sh. biçikletë për qytet"></label>'+
-   '<label>Lloji<select name="type">'+TYPES.slice(1).map(x=>'<option>'+esc(x)+'</option>').join('')+'</select></label>'+
-   '<label>Qyteti<select name="city">'+CITIES.slice(1).map(x=>'<option>'+esc(x)+'</option>').join('')+'</select></label>'+
+   '<label>Lloji<select name="type">'+TYPES.slice(1).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
+   '<label>Qyteti<select name="city">'+CITIES.slice(1).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
    '<label>Buxheti maksimal €<input name="budget" type="number" min="1" max="10000000" required></label>'+
    '<label>Afati<select name="days"><option value="7">7 ditë</option><option value="14">14 ditë</option><option value="30">30 ditë</option></select></label>'+
    '<label class="isp-span">Detajet<textarea name="details" rows="2" maxlength="240" placeholder="Karakteristikat e kërkuara"></textarea></label>'+
@@ -200,7 +200,7 @@
  const report=()=>{
   const x=all().find(p=>p.id===state.selected);
   return '<h3>Raporto listimin</h3><p>'+esc(x?.name||'Listimi demonstrues')+'</p>'+
-  '<form id="isp-report"><label>Arsyeja<select name="reason"><option>Informacion i pasaktë</option><option>Mashtrim i dyshuar</option><option>Listim i dyfishuar</option><option>Përmbajtje e papërshtatshme</option></select></label>'+
+  '<form id="isp-report"><label>Arsyeja<select name="reason"><option value="Informacion i pasaktë">Informacion i pasaktë</option><option value="Mashtrim i dyshuar">Mashtrim i dyshuar</option><option value="Listim i dyfishuar">Listim i dyfishuar</option><option value="Përmbajtje e papërshtatshme">Përmbajtje e papërshtatshme</option></select></label>'+
   '<label>Përshkrim opsional<textarea name="detail" maxlength="180"></textarea></label>'+
   '<button type="submit">Ruaj raportimin (demo)</button></form>';
  };
