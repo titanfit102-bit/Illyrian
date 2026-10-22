@@ -199,3 +199,17 @@
 ## Rregulli i vazhdimësisë
 
 Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasuese. Shënojmë qartë `E IMPLEMENTUAR`, `E TESTUAR`, `PËR DEMO`, `PROPOZUAR` dhe `PËR PRODUKTIN REAL`. Nuk shpallim përqindje absolute të projektit pa kritere dhe prova të plota. Nuk bëhet merge në `main` ose publikim në Production pa vendim të veçantë.
+
+
+## Faza 7 — Audit integrimi, cikli 1 (22 tetor 2026)
+
+**Status:** NË PROCES; JO e certifikuar në Chromium E2E/telefon fizik.
+
+- Gjendja bazë para korrigjimit: branch `demo/v1.7-illyrian-shop` në `26508fb6d2e65bdac508c87c9199de11127df12a`; `main` në `9f91b5c083b4482a70a2149483cc799360e6102c` (v1.5).
+- Vercel Preview alias i verifikuar: deployment `dpl_5VNzzVoDn1QJkAWYboPe8Nyt6UwE`, READY, por commit `0d0908beddb7f6b18ea28785bb8c87e909a464b0`, pra jo build i integrimit final. GitHub commit status për `26508fb6...` raportonte `failure` me lidhje `upgradeToPro=build-rate-limit`. Pa deploy manual, pa ndryshim billing/Production.
+- Audit statik: të gjashtë skedarët JS referohen nga HTML dhe kalojnë `new Function()` në V8; CSS-të e referuara janë të pranishme. `ILLYRIAN_PLANS_v1.7.js` përmban stile të integruara (nuk ka varësi HTML nga një CSS Plans i veçantë).
+- **F7-001, defekt i riprodhuar në V8 DOM të simuluar:** Escape me Shop bazë dhe Shop Plus njëkohësisht hapur mbyllte Shop bazë i pari, ndërsa Shop Plus mbetej aktiv; pas mbylljes së dytë ekrani mund të mbetej `inert`. Shkaku: listener-i `keydown` i Shop bazë kapte Escape me `stopImmediatePropagation` para listener-it të Shop Plus.
+- **Korrigjim minimal** në `demo/ILLYRIAN_SHOP_v1.7.js`, commit `2fe7cdacb8577e96d63f9aadc6ba210fbe78a799`: Shop bazë ia delegon Escape Shop Plus kur `#isp-root` ekziston. Nuk janë ndryshuar modulet e tjera, logot, `main` ose Production.
+- **Verifikim:** testi i izoluar i të dy JS-ve në DOM të simuluar kaloi rrjedhën Escape (Plus mbyllet i pari, pastaj Shop); kodi i përditësuar u rilexua dhe sintaksa PASS. **NUK ka ende prova Playwright/Chromium në skedarin final**.
+- **Rreziqe të hapura:** testim integrimi në browser real të të gjitha moduleve, ekranet 320–430px/landscape, fokus/Tab/Escape, modalitetet e ndërthurura, CSS z-index, MutationObserver, storage/refresh, XSS negative, foto, performancë dhe Preview i sinkronizuar.
+- **HumHub:** analiza e licencës AGPL-3.0-only u përfundua si kërkim; asnjë kod HumHub nuk u importua. Idetë e arkitekturës janë propozime për Fazën 8, jo vendime të miratuara.
