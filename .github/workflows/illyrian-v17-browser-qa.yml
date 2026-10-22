@@ -1,13 +1,8 @@
 name: ILLYRIAN v1.7 Chromium QA
+# Temporarily opt-in only: the repository currently cannot allocate an
+# Actions runner (two attempts had runner_id=0 and zero executed steps).
+# Restore scoped push triggers after the account/runner issue is resolved.
 on:
-  push:
-    branches:
-      - demo/v1.7-illyrian-shop
-    paths:
-      - 'demo/**'
-      - 'qa/**'
-      - 'playwright.config.cjs'
-      - '.github/workflows/illyrian-v17-browser-qa.yml'
   workflow_dispatch:
 
 permissions:
