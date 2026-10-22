@@ -87,7 +87,7 @@ window.ILLYRIAN_LOCALES.en={
     "activitiesGroups": "Activities and groups",
     "restore": "Reset this demo's data",
     "aboutDemo": "About this demo",
-    "auto": "Automatico",
+    "auto": "Automatic",
     "light": "Light",
     "dark": "Dark"
   },

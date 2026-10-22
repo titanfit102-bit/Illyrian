@@ -562,3 +562,9 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 - Inspektim paraprak i kontakt-sheeteve nga fotot e 320×568, 390×844, 844×390 dhe 932×430: pamjet kryesore dhe X i Reels janë të dukshme; në 320 px butonat e veprimit në Shop kanë shumë tekst dhe kërkojnë inspektim lexueshmërie në telefon. Fotografitë nuk provojnë scroll-in, prekje reale, kontrastin apo aksesueshmëri WCAG; **nuk jepet certifikim vizual**.
 - Vercel Preview për commit-in `610f3c9a...` është **READY**, ID `dpl_738J5o7UUKvN2qgCse4ghsW4Ugri`; `main` mbetet `9f91b5c083b4482a70a2149483cc799360e6102c` dhe Production e paprekur.
 - Hapi pasues është vlerësimi i detajuar i aksesueshmërisë, pastaj validimi i vendimeve të blueprint-it M0/M1. Nuk fillohet backend, pagesë, APK reale apo lansim pa portat e planit dhe autorizimet përkatëse.
+
+## Faza 7 — Cikli 25: Sistemi i18n/l10n sq/en/it (22 tetor 2026)
+
+Auditi verifikoi HTML/vanilla JS dhe gjashtë module, pa `tsconfig` ose sistem i18n paraprak. U ruajt biblioteka i18next v25.7.0 (MIT, vendor lokal), adapteri dhe katalogët semantikë 206 çelësa × 3 gjuhë / 14 namespace me fallback anglisht. `demo/i18n/` është pasqyrë e skedarëve burim në `i18n/` për t'u shërbyer nga Vercel dhe serveri statik. Settings ka zgjedhjen Shqip/English/Italiano me preferencë të ruajtur të ndarë nga account/feed. Gjuhët e pajisjes zbulohen vetëm në mungesë të zgjedhjes manuale; RTL mbetet për fazë të ardhshme.
+
+U shtuan testet `qa/illyrian-v17-i18n.spec.cjs` për ndryshimin dhe ruajtjen e gjuhës, fallback, Intl/plural dhe përkthim të ekraneve kryesore; pritet verifikimi i rezultateve të Actions para çdo deklarimi të PASS. **Mbulimi i plotë i çdo dialogu/gabimi nuk është ende certifikuar**: kërkohet inventar i frazave të trashëguara dhe lokalizim eksplicit nga zhvilluesit. Nuk ndryshohet përmbajtja e përdoruesve, backend, llogaritë, marka, `main` ose Production. Dokumentet: `architecture/ILLYRIAN_I18N.md` dhe `MASTER_HANDOFF.md`.
