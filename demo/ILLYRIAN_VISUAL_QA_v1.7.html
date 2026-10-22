@@ -59,7 +59,7 @@ small{color:var(--muted);font-size:12px}
 <select id="fit"><option value="fit" selected>Përshtat në ekran</option><option value="native">100% · lëviz anash</option></select>
 </div>
 <div class="viewport" id="viewport"><div class="frame-stage" id="frame-stage"><iframe id="demo" title="Pamja e demos ILLYRIAN v1.7" width="390" height="844" src="./ILLYRIAN_DEMO_v1.7.html"></iframe></div></div>
-<p id="landscape-warning" class="landscape-warning" hidden>Ky skenar është telefon horizontal, por demoja aktuale aktivizon pamjen desktop nga gjerësia 761px. Kjo nuk certifikohet si pamje e saktë mobile-landscape; duhet korrigjuar ose miratuar veçmas.</p>
+<p id="landscape-warning" class="landscape-warning" hidden>Ky është një test i telefonit horizontal. Pamja është zvogëluar për t’u futur në kornizën e laboratorit, por madhësia e brendshme e aplikacionit mbetet e pandryshuar. Kontrollo butonin X te Reels, Mesazhet dhe lëvizjen e paneleve; verifiko përdorshmërinë edhe në telefon real.</p>
 <p id="status" role="status">Duke ngarkuar…</p>
 <p><a href="./ILLYRIAN_DEMO_v1.7.html" target="_blank" rel="noopener">Hape aplikacionin veçmas për testimin me tastierë/prekje reale</a></p>
 <p class="note">Për të ndryshuar temën në demo: Profili → Cilësimet → Pamja dhe ngjyrat. Testo Light, Dark dhe Auto në pajisjen tënde. Kjo faqe nuk ndryshon temën automatikisht.</p>
@@ -77,7 +77,7 @@ small{color:var(--muted);font-size:12px}
 <label for="report-preview"><strong>Raporti (edhe kur kopjimi është i bllokuar)</strong></label>
 <textarea id="report-preview" class="report-preview" readonly placeholder="Shtyp ‘Krijo raportin’. Pastaj kopjo tekstin manualisht ose përdor ‘Shkarko .txt’."></textarea>
 <p id="report-status" role="status"><small>Raporti shfaqet këtu edhe pa leje Clipboard.</small></p>
-<p><small>Kontrollon Home, Discover, Events dhe Profile, overflow të dokumentit, elementet me ID të dyfishtë, fotografitë e dukshme dhe sinjale të mundshme prerjeje. Reels, Messages, Shop dhe panelet e tjera verifikohen vizualisht me listën më poshtë. Sinjalet WARN nuk janë defekte të certifikuara.</small></p>
+<p><small>Kontrollon Home, Discover, Events, Profile dhe mbylljen e Reels, overflow të dokumentit, elementet me ID të dyfishtë, fotografitë e dukshme dhe sinjale të mundshme prerjeje. Reels, Messages, Shop dhe panelet e tjera verifikohen vizualisht me listën më poshtë. Sinjalet WARN nuk janë defekte të certifikuara.</small></p>
 <ol id="results"></ol>
 <hr style="border:0;border-top:1px solid var(--line);margin:15px 0">
 <h2>3. Verifikimi vizual/manual</h2>
@@ -249,6 +249,19 @@ async function checkReelsExit(d,prefix){
     "rect="+Math.round(r.width)+"×"+Math.round(r.height)+
     "; brenda telefonit="+boxOK+"; sipër elementëve të tjerë="+targetOK+
     "; kërkon ende verifikim me prekje reale");
+  const create=overlay.querySelector('.v15-reel-create');
+  if(create){
+    const c=create.getBoundingClientRect();
+    const overlapW=Math.max(0,Math.min(r.right,c.right)-Math.max(r.left,c.left));
+    const overlapH=Math.max(0,Math.min(r.bottom,c.bottom)-Math.max(r.top,c.top));
+    const overlap=Math.round(overlapW*overlapH);
+    const cx=c.left+c.width/2,cy=c.top+c.height/2,createHit=d.elementFromPoint(cx,cy);
+    const createClickable=createHit===create||create.contains(createHit);
+    note(prefix+" / Reels · X nuk mbulon Krijo Reel",overlap===0&&createClickable?"PASS":"FAIL",
+      "sipërfaqe mbivendosje="+overlap+"px²; butoni Krijo Reel mund të klikohet="+createClickable);
+  }else{
+    note(prefix+" / Reels · X nuk mbulon Krijo Reel","WARN","Butoni Krijo Reel nuk u gjet në këtë pamje; kontroll manual");
+  }
   if(!boxOK||!targetOK)return;
   close.click();await sleep(110);
   note(prefix+" / Reels · X mbyll pamjen",!d.querySelector('#layer .v4-reel-overlay')?"PASS":"FAIL",
