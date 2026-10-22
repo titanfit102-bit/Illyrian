@@ -39,7 +39,7 @@
  };
  const visible=()=>{const x=all().filter(matches);if(state.sort==='price-low')x.sort((a,b)=>a.price-b.price);if(state.sort==='price-high')x.sort((a,b)=>b.price-a.price);if(state.sort==='store')x.sort((a,b)=>a.store.localeCompare(b.store,'sq'));return x};
  const shops=()=>[...new Set(visible().map(p=>p.store))];
- const tile=p=>`<article class="ils-card"><div class="ils-illustration" aria-hidden="true">${clean(p.emoji||'📦')}</div><div class="ils-card-main"><span class="ils-kind">${clean(p.kind)}</span><h3>${clean(p.name)}</h3><strong>${price(p)}</strong><p>${clean(p.store)} · ${clean(p.city)}</p><button class="ils-btn ils-secondary" data-ils="detail" data-id="${clean(p.id)}">Shiko detajet</button></div></article>`;
+ const tile=p=>`<article class="ils-card"><div class="ils-illustration" aria-hidden="true">${clean(p.emoji||'📦')}</div><div class="ils-card-main"><span class="ils-kind">${clean(p.kind)}</span><h3>${clean(p.name)}</h3><strong>${price(p)}</strong><p data-user-content>${clean(p.store)} · ${clean(p.city)}</p><button class="ils-btn ils-secondary" data-ils="detail" data-id="${clean(p.id)}">Shiko detajet</button></div></article>`;
  const header=(sub)=>`<header class="ils-top"><button data-ils="back" class="ils-back" aria-label="Kthehu te ILLYRIAN">←</button><div><strong>ILLYRIAN <span>Shop</span></strong><small>${clean(sub||'Gjej, krahaso dhe zbulo oferta')}</small></div><button data-ils="cart" class="ils-cart" aria-label="Hap shportën">🛒 <b>${cartCount()}</b></button></header>`;
  const cartCount=()=>Object.values(state.cart).reduce((a,b)=>a+Math.min(99,Math.max(0,Number(b)||0)),0);
  const cartItems=()=>Object.entries(state.cart).map(([id,qty])=>({p:byId(id),qty:Math.min(99,Math.max(0,Number(qty)||0))})).filter(x=>x.p&&x.p.kind==='Produkte'&&x.qty>0);
@@ -51,7 +51,7 @@
   return `<section class="ils-splash"><span>MARKETPLACE SHQIPTAR · PROTOTIP</span><h2>Gjej produktin në disa dyqane.</h2><p>Produkte, biznese lokale, makina, banesa me qira dhe shërbime.</p></section>
    <label class="ils-search"><span aria-hidden="true">⌕</span><input id="ils-search" type="search" placeholder="Kërko produkt, dyqan, makinë, banesë…" value="${clean(state.query)}" autocomplete="off" aria-label="Kërko në ILLYRIAN Shop"></label>
    <div class="ils-category" role="group" aria-label="Kategoritë">${CATEGORIES.map(c=>`<button data-ils="category" data-value="${clean(c)}" class="${state.category===c?'selected':''}" aria-pressed="${state.category===c}">${clean(c)}</button>`).join('')}</div>
-   <div class="ils-filter"><label>Qyteti<select id="ils-city">${CITIES.map(c=>`<option ${state.city===c?'selected':''}>${clean(c)}</option>`).join('')}</select></label><label>Renditja<select id="ils-sort"><option value="relevance" ${state.sort==='relevance'?'selected':''}>Relevanca</option><option value="price-low" ${state.sort==='price-low'?'selected':''}>Çmimi: më i ulët</option><option value="price-high" ${state.sort==='price-high'?'selected':''}>Çmimi: më i lartë</option><option value="store" ${state.sort==='store'?'selected':''}>Emri i dyqanit</option></select></label></div>
+   <div class="ils-filter"><label>Qyteti<select id="ils-city">${CITIES.map(c=>`<option value="${clean(c)}" ${state.city===c?'selected':''}>${clean(c)}</option>`).join('')}</select></label><label>Renditja<select id="ils-sort"><option value="relevance" ${state.sort==='relevance'?'selected':''}>Relevanca</option><option value="price-low" ${state.sort==='price-low'?'selected':''}>Çmimi: më i ulët</option><option value="price-high" ${state.sort==='price-high'?'selected':''}>Çmimi: më i lartë</option><option value="store" ${state.sort==='store'?'selected':''}>Emri i dyqanit</option></select></label></div>
    <div class="ils-actions">${btn('sell','+ Publiko listimin tënd')}${btn('my','Listimet e mia','ils-btn ils-secondary')}</div>
    ${state.store?`<div class="ils-selected-store">Dyqani: <strong>${clean(state.store)}</strong> <button data-ils="clear-store">Hiq filtrin ×</button></div>`:''}
    <div class="ils-section-head"><h3>${data.length} rezultate</h3><small>${foundShops.length} dyqane/ofrues</small></div>
@@ -60,13 +60,13 @@
    ${status()}`;
  }
  function detail(){const p=byId(state.selected);if(!p)return '<div class="ils-empty">Listimi nuk ekziston.</div>';
-  return `<button class="ils-text-link" data-ils="browse">← Kthehu te rezultatet</button><div class="ils-product-cover" aria-hidden="true">${clean(p.emoji)}</div><span class="ils-kind">${clean(p.kind)} · ${clean(p.city)}</span><h2>${clean(p.name)}</h2><h3 class="ils-price">${price(p)}</h3><p class="ils-description">${clean(p.description)}</p><div class="ils-seller"><small>Shitësi / dyqani</small><strong>${clean(p.store)}</strong><button data-ils="store" data-value="${clean(p.store)}">Shiko listimet e këtij dyqani →</button></div>
+  return `<button class="ils-text-link" data-ils="browse">← Kthehu te rezultatet</button><div class="ils-product-cover" aria-hidden="true">${clean(p.emoji)}</div><span class="ils-kind">${clean(p.kind)} · ${clean(p.city)}</span><h2 data-user-content>${clean(p.name)}</h2><h3 class="ils-price">${price(p)}</h3><p class="ils-description" data-user-content>${clean(p.description)}</p><div class="ils-seller"><small>Shitësi / dyqani</small><strong data-user-content>${clean(p.store)}</strong><button data-ils="store" data-value="${clean(p.store)}">Shiko listimet e këtij dyqani →</button></div>
    ${p.kind==='Produkte'?btn('add','+ Shto në shportë'):btn('contact','Kërko informacion (demo)')}
    ${p.owned?btn('edit','Ndrysho listimin','ils-btn ils-secondary')+btn('delete','Fshi listimin','ils-btn ils-secondary'):''}
    <div class="ils-info"><strong>Transaksion demonstrues</strong><p>Nuk ka pagesë reale, shpërndarje të dhënash apo verifikim shitësi. Kontakto vetëm brenda simulimit.</p></div>`;
  }
  function form(){const editing=state.view==='edit',p=editing?byId(state.selected):null;
- const option=(arr,value)=>arr.map(x=>`<option ${x===value?'selected':''}>${clean(x)}</option>`).join('');
+ const option=(arr,value)=>arr.map(x=>`<option value="${clean(x)}" ${x===value?'selected':''}>${clean(x)}</option>`).join('');
  return `<button class="ils-text-link" data-ils="browse">← Kthehu në Shop</button><h2>${editing?'Ndrysho listimin':'Publiko një listim'}</h2><p class="ils-description">Listimet ruhen vetëm në shfletuesin tënd. Nuk shfaqen te përdorues të tjerë.</p>
  <form id="ils-sell-form" class="ils-form">
  <label>Kategoria<select name="kind" required>${option(CATEGORIES.slice(1),p?.kind||'Produkte')}</select></label>

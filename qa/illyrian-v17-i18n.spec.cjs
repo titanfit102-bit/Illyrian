@@ -198,6 +198,15 @@ for(const [language,expected] of Object.entries({
   await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText(expected.added);
   await page.locator('#illyrian-shop-layer [data-ils="back"]').click();
   await page.locator('#illyrian-shop-layer [data-ils="sell"]').click();
+  // UI labels may translate; persisted values must stay stable across languages.
+  const codes=await page.locator('#ils-sell-form').evaluate(form=>({
+   categories:[...form.elements.kind.options].map(o=>o.value),
+   cities:[...form.elements.city.options].map(o=>o.value),
+   visibleCategory:form.elements.kind.options[0].textContent
+  }));
+  expect(codes.categories).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  expect(codes.cities).toEqual(['Tiranë','Durrës','Shkodër','Vlorë','Elbasan','Prishtinë']);
+  expect(codes.visibleCategory).toBe({sq:'Produkte',en:'Products',it:'Prodotti'}[language]);
   await page.locator('#ils-sell-form').evaluate(form=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
   await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText(expected.invalid);
   await page.locator('#ils-sell-form input[name="name"]').fill('Coffee test item');
@@ -208,3 +217,23 @@ for(const [language,expected] of Object.entries({
   await expect(page.locator('#illyrian-shop-layer .ils-card h3')).toContainText('Coffee test item');
  });
 }
+
+test('Shop user listing title, seller and description remain unchanged across languages',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-ils="sell"]').click();
+ await page.locator('#ils-sell-form input[name="name"]').fill('Mbyll');
+ await page.locator('#ils-sell-form input[name="store"]').fill('Mbyll');
+ await page.locator('#ils-sell-form textarea[name="description"]').fill('Mbyll');
+ await page.locator('#ils-sell-form input[name="price"]').fill('10');
+ await page.locator('#ils-sell-form button[type="submit"]').click();
+ await page.locator('#illyrian-shop-layer [data-ils="detail"][data-id]').filter({hasText:'Mbyll'}).first().click();
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#illyrian-shop-layer .ils-product-cover + .ils-kind + h2')).toHaveText('Mbyll');
+  await expect(page.locator('#illyrian-shop-layer .ils-seller strong')).toHaveText('Mbyll');
+  await expect(page.locator('#illyrian-shop-layer p.ils-description')).toHaveText('Mbyll');
+ }
+});
