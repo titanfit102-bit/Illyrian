@@ -6,7 +6,21 @@ const QA='/ILLYRIAN_QA_v1.7.html';
 async function openLab(page){
   await page.goto(QA,{waitUntil:'load'});
   await expect(page.locator('#demo')).toBeVisible();
-  await expect(page.frameLocator('#demo').locator('#phone')).toBeVisible();
+  const inner=page.frameLocator('#demo');
+  await expect(inner.locator('#phone')).toBeVisible();
+  // A fresh browser starts at the v0.7 welcome/tour overlay. Earlier manual
+  // QA was run after onboarding, while CI reached underlying panels through
+  // programmatic .click() with the welcome overlay still active. Close it using
+  // real guest controls BEFORE any synthetic focus assertions.
+  const guest=inner.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+    await guest.click();
+    await inner.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await expect(inner.locator('#v7-auth.visible')).toHaveCount(0);
+  // Subsequent iframe reloads must stay in the entered local-only demo state.
+  const session=await inner.locator('body').evaluate(()=>localStorage.getItem('illyrian_demo_v07_session'));
+  expect(session).toBe('entered');
 }
 async function runSuite(page,buttonId,expectedPass){
   const button=page.locator(buttonId);
