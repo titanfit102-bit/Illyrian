@@ -351,7 +351,7 @@ for(const locale of ['en','it']){
   await page.locator('.head [data-act="tab"][data-val="events"]').click();
   await page.locator('#ilc-entry [data-ilc-entry]').click();
   await page.locator('#ilc-root [data-ilc="view:interest"]').click();
-  const initial=await page.locator('#ilc-interest select[name="slot"]').evaluate(el=>[...el.options].map(o=>[o.value,o.textContent]));
+  const initial=await page.locator('#ilc-interest select[name="slot"]').evaluate(el=>[...el.options].map(o=>[o.getAttribute('value'),o.textContent]));
   expect(initial.length).toBeGreaterThan(0);
   expect(initial.every(([value])=>Boolean(value))).toBe(true);
   await page.locator('#ilc-root [data-ilc="overview"]').click();
