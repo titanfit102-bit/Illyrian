@@ -602,3 +602,7 @@ The owner approved the **compatible principles** from Master Architecture Upgrad
 - CONDITIONAL: Shop discovery/inquiries as a narrow MVP differentiator must be pilot-validated. Payments/commissions, full video/DM/dashboards and scaling remain later, gated by economics, legality, privacy and performance. Demo 5% is illustrative only.
 - Not decided: first target country/city, public code visibility/licensing, stack/provider, launch scope, operations budget and payments. No irreversible configuration or merge, no projects outside ILLYRIAN.
 - Independent report: `ILLYRIAN_MASTER_ARCHITECTURE_REVIEW_AND_EXECUTION_PLAN` dated 22 Oct 2026 (Work read-only, snapshot `4a951e4...`). Treat its facts as time-bound and its recommendations as proposals, not blanket approvals.
+
+
+### P0-D progress — Shop select value / UGC fix (23 October 2026)
+Documented accepted architecture in blueprint §10 and handoff. Corrected Shop form/category and city option values to remain stable across translations, and excluded user listing title/seller/description from automatic UI translation. Regression tests extended to 57. **Actions #39865986736: 57/57 passed (Chromium, code SHA `db574224d4849775224fb6ee4df0247aa2f18c46`).** PR #1 stays Draft; no merge, production or main changes. Remaining DEMO gates: localStorage failure rollback, other select values, full semantic localization, mobile/visual/a11y and current Vercel candidate verification.

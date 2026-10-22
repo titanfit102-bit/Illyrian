@@ -121,3 +121,7 @@ Phase 8 blueprint status: DESIGN DRAFT; no backend, production DB, real transact
 - Historical Chromium run #39852708170: 53/53 PASS. New run #39857060705: **54 PASS, 2 FAIL** (Shop category select `<option>` translated text became form value in en/it, while domain expects stable original codes). Do not claim full i18n release or 56/56 until a new SHA passes.
 - 296 i18n keys / locale across 15 namespaces on PR branch; full UI coverage unverified. Vercel historical READY is older than the PR; preview/candidate URL and root routing require verified release check. GitHub repository is currently PUBLIC.
 - Next action: repair the two failing tests without masking them; enforce invariant that UI labels can change but persisted domain values cannot. Then continue safe i18n migration and phone QA.
+
+
+### 10.1 First post-review verification — P0-D form contract
+A targeted patch preserved the pre-existing Albanian domain values in Shop `<option value>` while allowing sq/en/it translated option labels; listing user-authored detail fields have explicit translation exclusions. GitHub Actions #39865986736 on exact code SHA `db574224d4849775224fb6ee4df0247aa2f18c46` reports **57 passed (2.0m)**. The two previous en/it failures are resolved *within the tested Chromium flows*, not a full localized-release or real-device certification. PR #1 remains draft. Pending gates: failed storage persist semantics, other forms' code/label separation, UGC inventory, canonical i18n keys, preview currency/access, visual/a11y/device verification.

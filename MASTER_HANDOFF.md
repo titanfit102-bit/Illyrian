@@ -50,3 +50,10 @@
 **Release sequence:** repair Shop i18n regression + storage/UGC safety + CI in Draft PR; finish DEMO translation and smoke/visual/accessibility; user inspects phone and sends screenshots; then minimal real-product architecture spike/vertical slice with privacy and auth. Keep DEMO Phase 7 and product Phase 8 M0–M5 mapping; do not rewrite or merge into `main`/Production.
 
 **Evidence on 23 October:** PR #1 Draft, Actions #39857060705 54 PASS / 2 FAIL in en/it, branch HEAD `4a951e4157aa75b8d12abc1c5817bfc3885e7055` prior to this documentation; issue: unpinned `option.value` derives translated `textContent`. Earlier 53/53 is historical. Vercel preview not current. Recheck after fixes. This section supersedes older chronological status summaries only where they conflict, without deleting their history.
+
+
+### P0 Shop i18n — verifikimi i korrigjimit (23 tetor 2026)
+- Korrigjimi në degën `feat/i18n-shop-feedback-20261022` u bë në `demo/ILLYRIAN_SHOP_v1.7.js`: `<option value="...">` eksplicit për kategori/qytete; vlera në `FormData` dhe localStorage nuk varen nga gjuha e shfaqur. U shënuan `data-user-content` për titullin, shitësin dhe përshkrimin e listimeve.
+- Testet shtuan prova për code/value stable në sq/en/it dhe për UGC të pandryshuar në ekran pas ndryshimit të gjuhës.
+- **CI E VERIFIKUAR:** [Actions #39865986736](https://github.com/titanfit102-bit/Illyrian/actions/runs/39865986736), commit kodi `db574224d4849775224fb6ee4df0247aa2f18c46`: **57/57 PASS (2.0m, Chromium)**. Dështimi i mëparshëm 54 PASS/2 FAIL është historik, jo statusi i fundit i testuar.
+- PR #1 është ende DRAFT/unmerged. Kjo suite nuk certifikon 100% i18n, Vercel Preview, a11y, Android ose testin fizik të pronarit. Rruga pasuese: ruajtja e gabimeve localStorage, inventari i formave të Shop Plus/Connections/Governance, direkt keys i18n dhe QA në telefon. Nuk preket `main`/Production.
