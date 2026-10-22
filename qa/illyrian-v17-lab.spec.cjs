@@ -17,7 +17,9 @@ async function runSuite(page,buttonId,expectedPass){
   await expect(button).toBeEnabled({timeout:150000});
   const pass=await page.locator('#results li strong.pass').count();
   const fail=await page.locator('#results li strong.fail').count();
-  const skip=await page.locator('#results li strong.skip').count();
+  // The QA Lab styles INFO rows with class=skip too; count only literal SKIP records.
+  const labels=await page.locator('#results li strong').allTextContents();
+  const skip=labels.filter(t=>t.trim().startsWith('SKIP')).length;
   const summary=await page.locator('#summary').innerText();
   expect(pass,'QA Lab PASS count: '+summary).toBe(expectedPass);
   expect(fail,'QA Lab FAIL count: '+summary).toBe(0);
