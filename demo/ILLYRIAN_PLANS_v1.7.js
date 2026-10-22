@@ -16,7 +16,7 @@
     attendance:Array.isArray(stored.attendance)?stored.attendance.slice(-100):[],
     open:false,view:'list',role:'organizer',id:'demo-football',edit:null,notice:''
   };
-  let root,trigger,draft=null;
+  let root,trigger,draft=null,inertSnapshot=[];
   const event=id=>state.events.find(x=>x.id===id);
   const requests=id=>state.requests.filter(r=>r.eventId===id);
   const accepted=id=>requests(id).filter(r=>r.status==='accepted');
@@ -88,8 +88,8 @@
     ${content()}<p class="ilp-muted ilp-foot">PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.</p></div>`;
     sync();
   }
-  const open=(id)=>{trigger=document.activeElement;state.open=true;state.notice='';state.view=id?'detail':'list';if(id)state.id=id;render();root.querySelector('header button')?.focus()};
-  const close=()=>{state.open=false;render();if(trigger?.isConnected)trigger.focus()};
+  const open=(id)=>{if(state.open)return;trigger=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.notice='';state.view=id?'detail':'list';if(id)state.id=id;render();root.querySelector('header button')?.focus()};
+  const close=()=>{state.open=false;render();inertSnapshot.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertSnapshot=[];if(trigger?.isConnected)trigger.focus()};
   const notice=s=>{state.notice=s;save();render()};
   function click(a){
     const k=a.dataset.ilp||'',e=event(state.id),owner=state.role==='organizer';
