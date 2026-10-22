@@ -146,6 +146,7 @@
     check(test,'Plans rikthen ekranin',!!d.getElementById('ilp-root')?.hidden&&!d.getElementById('screen')?.inert);
     await tap(d,'[data-ilc-entry]','paneli Connections');
     check(test,'Connections izolon sfondin',!d.getElementById('ilc-root')?.hidden&&!!d.getElementById('screen')?.inert);
+    await tap(d,'#ilc-root [data-ilc="view:together"]','nënfaqja Bëjmë diçka bashkë');
     await tap(d,'#ilc-root [data-ilc="together:language"]','drafti Connections→Plans');
     check(test,'Connections transferon draftin te Plans',!!d.getElementById('ilc-root')?.hidden&&!d.getElementById('ilp-root')?.hidden&&d.getElementById('ilp-root')?.textContent?.includes('Praktikë gjuhësh dhe njohje'));
     await tap(d,'#ilp-root [data-ilp="close"]','mbyllja e draftit');
