@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - demo/v1.7-illyrian-shop
+      - 'feat/i18n-*' # Isolated QA before promoting into the demo branch
     paths:
       - 'demo/**/*.html'
       - 'demo/**/*.css'

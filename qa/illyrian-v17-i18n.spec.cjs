@@ -182,3 +182,29 @@ for(const [lang,expected] of Object.entries({
    await page.locator('#ig6-root button[data-ig6="close"]').click();
  });
 }
+
+for(const [language,expected] of Object.entries({
+ sq:{added:'Produkti u shtua në shportën demonstrative.',invalid:'Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.',saved:'Listimi u ruajt vetëm në këtë shfletues.'},
+ en:{added:'The product was added to the demo cart.',invalid:'Check the category, item name, shop, city and price.',saved:'The listing was saved only in this browser.'},
+ it:{added:'Il prodotto è stato aggiunto al carrello dimostrativo.',invalid:"Controlla categoria, nome dell'articolo, negozio, città e prezzo.",saved:"L'annuncio è stato salvato solo in questo browser."}
+})){
+ test('i18n Shop runtime notifications and invalid form in '+language,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-ils="detail"][data-id="p1"]').click();
+  await page.locator('#illyrian-shop-layer [data-ils="add"]').click();
+  await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText(expected.added);
+  await page.locator('#illyrian-shop-layer [data-ils="back"]').click();
+  await page.locator('#illyrian-shop-layer [data-ils="sell"]').click();
+  await page.locator('#ils-sell-form').evaluate(form=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+  await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText(expected.invalid);
+  await page.locator('#ils-sell-form input[name="name"]').fill('Coffee test item');
+  await page.locator('#ils-sell-form input[name="store"]').fill('Test Seller');
+  await page.locator('#ils-sell-form input[name="price"]').fill('12.50');
+  await page.locator('#ils-sell-form button[type="submit"]').click();
+  await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText(expected.saved);
+  await expect(page.locator('#illyrian-shop-layer .ils-card h3')).toContainText('Coffee test item');
+ });
+}

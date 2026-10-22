@@ -199,6 +199,12 @@ window.ILLYRIAN_LOCALES.en={
     "localStorageError": "Could not save the change on this device."
   },
   "shop": {
+    "storageFull": "Could not save: local storage is full.",
+    "addedCartNotice": "The product was added to the demo cart.",
+    "confirmDelete": "Delete this demo listing?",
+    "invalidListing": "Check the category, item name, shop, city and price.",
+    "maxListings": "Maximum of 30 demo listings.",
+    "listingSaved": "The listing was saved only in this browser.",
     "findAcrossStores": "Find the product in multiple shops.",
     "searchPlaceholder": "Search products, shops, cars, homes…",
     "searchShop": "Search ILLYRIAN Shop",

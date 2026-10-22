@@ -199,6 +199,12 @@ window.ILLYRIAN_LOCALES.it={
     "localStorageError": "Impossibile salvare la modifica sul dispositivo."
   },
   "shop": {
+    "storageFull": "Salvataggio non riuscito: lo spazio di archiviazione locale è esaurito.",
+    "addedCartNotice": "Il prodotto è stato aggiunto al carrello dimostrativo.",
+    "confirmDelete": "Eliminare questo annuncio dimostrativo?",
+    "invalidListing": "Controlla categoria, nome dell'articolo, negozio, città e prezzo.",
+    "maxListings": "Massimo 30 annunci dimostrativi.",
+    "listingSaved": "L'annuncio è stato salvato solo in questo browser.",
     "findAcrossStores": "Trova il prodotto in più negozi.",
     "searchPlaceholder": "Cerca prodotti, negozi, auto, case…",
     "searchShop": "Cerca su ILLYRIAN Shop",

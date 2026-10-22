@@ -199,6 +199,12 @@ window.ILLYRIAN_LOCALES.sq={
     "localStorageError": "Nuk mund të ruhej ndryshimi në pajisje."
   },
   "shop": {
+    "storageFull": "Nuk u ruajt: hapësira lokale është plot.",
+    "addedCartNotice": "Produkti u shtua në shportën demonstrative.",
+    "confirmDelete": "Ta fshijmë këtë listim demonstrues?",
+    "invalidListing": "Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.",
+    "maxListings": "Maksimumi 30 listime demonstrative.",
+    "listingSaved": "Listimi u ruajt vetëm në këtë shfletues.",
     "findAcrossStores": "Gjej produktin në disa dyqane.",
     "searchPlaceholder": "Kërko produkt, dyqan, makinë, banesë…",
     "searchShop": "Kërko në ILLYRIAN Shop",
