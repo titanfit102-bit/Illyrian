@@ -17,9 +17,11 @@ on:
 permissions:
   contents: read
 
+# GitHub has delivered duplicate push events for the same commit.
+# Keep one running check per commit alive instead of repeatedly cancelling it.
 concurrency:
-  group: illyrian-v17-qa-${{ github.ref }}
-  cancel-in-progress: true
+  group: illyrian-v17-qa-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   browser-smoke:
