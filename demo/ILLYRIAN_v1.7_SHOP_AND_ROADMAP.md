@@ -402,3 +402,14 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Vendimi për aplikacionin:** Në këtë cikël **nuk u ndryshua `ILLYRIAN_DEMO_v1.7.html`**, CSS apo identiteti i miratuar; `main`/Production të paprekura. Për të zgjidhur P1 në produkt do të duhet dizajn/QA i dedikuar landscape (media query e orientuar sipas lartësisë dhe orientimit, z-index/scroll, pa prishur desktop), pastaj testim fizik në Android/iOS dhe në Preview.
 
 **URL korrigjuar:** https://illyrian-demo-git-demo-v17-illyrian-shop-un24.vercel.app/ILLYRIAN_VISUAL_QA_v1.7.html
+
+## Faza 7 — Cikli 13: Raporti real Visual QA (56 PASS) dhe diagnostika landscape (22 tetor 2026)
+
+**Prova e përdoruesit:** dokumenti "Tekst i ngjitur(1).txt", titull "ILLYRIAN VISUAL QA — 2026-10-22T15:08:40.743Z", 189 rreshta. 7 viewport-e (320×568, 360×780, 390×844, 430×932, 844×390, 932×430, 1280×800), 4 pamje për çdo viewport (Home, Discover, Events, Profile). Numërimi i verifikuar: **56 PASS, 112 INFO, 0 FAIL, 0 WARN**. Çdo përmasë: 8 PASS dhe 16 INFO. PASS matin vetëm mungesën e overflow horizontal në dokument dhe mungesën e ID-ve të dyfishta brenda #phone. INFO matin gjerësi të brendshme, statusin e imazheve të dukshme dhe sinjale potenciale të tekstit të prerë. Raporti nuk certifikon pamjen e çdo paneli.
+**Kontrolle manuale:** 0/12 të vlerësuara; të 12 statuset UNKNOWN dhe porta e publikimit E HAPUR. Kjo mbetet e vërtetë edhe pse dy suitat e mëparshme funksionale dhanë 273/273 PASS.
+
+**Evidenca landscape është ende e paplotë:** raporti vizual i vjetër dha gjerësinë e #phone dhe #screen 842px në 844×390 dhe 930px në 932×430. Kodi statik i CSS ka breakpoint mobile @media(max-width:760px), dhe një rregull desktop për gjerësi mbi 761px/lartësi nën 700px; pritet potencialisht desktop shell ~400px. Kjo kontradiktë kërkon matje të viewport-it të brendshëm dhe të CSS real përpara një ndryshimi dizajni. Nuk mund ta quajmë sjelljen e landscape të saktë ose të gabuar përfundimisht vetëm nga 56 PASS.
+
+**Korrigjimi vetëm në instrumentin Visual QA:** commit ed11612f0d0f48022986a9c8e4a82d8eed39a9c7 (vetëm demo/ILLYRIAN_VISUAL_QA_v1.7.html). Laboratori tani ndryshon gjerësinë/lartësinë dhe rifreskon iframe për çdo përmasë, pastaj mat window.innerWidth/innerHeight, matchMedia(max-width:760px), display të .side, rect të #phone dhe .device-shell. Në landscape vendos WARN si nevojë kontrolli real në pajisje. U kalua verifikimi sintaksor JavaScript, rileximi i blob-it GitHub dhe 3/3 kontrolle logjike sintetike (portrait, desktop-shell në landscape, mismatch viewport). **Këto nuk janë prova E2E në browser.**
+
+**Hapi i radhës:** të ekzekutohet sërish skanimi i 7 përmasave me diagnostikën e re, të kontrollohen manualisht në landscape 844×390 dhe 932×430 dhe të rishikohen screenshot-et nëse ka mospërputhje. Pastaj vendoset riparimi CSS i izoluar për mobile-landscape pa prishur desktopin e miratuar. Main dhe Production të paprekura.
