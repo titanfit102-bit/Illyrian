@@ -346,7 +346,7 @@ for(const locale of ['en','it']){
   }));
   expect(plus.types).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
   expect(plus.cities).toEqual(['Tiranë','Durrës','Shkodër','Vlorë','Elbasan','Prishtinë']);
-  await page.locator('#isp-root [data-isp="close"]').first().click();
+  await page.locator('#isp-root header button[data-isp="close"]').click();
   await page.keyboard.press('Escape');
   await page.locator('.head [data-act="tab"][data-val="events"]').click();
   await page.locator('#ilc-entry [data-ilc-entry]').click();
