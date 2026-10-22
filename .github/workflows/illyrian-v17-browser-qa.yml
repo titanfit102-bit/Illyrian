@@ -57,3 +57,12 @@ jobs:
           path: qa-results/visual/
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Save localization inventory for translation audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: illyrian-v17-i18n-inventory
+          path: qa-results/i18n-inventory/
+          if-no-files-found: ignore
+          retention-days: 14
