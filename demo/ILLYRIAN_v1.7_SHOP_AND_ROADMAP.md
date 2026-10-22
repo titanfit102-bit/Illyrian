@@ -384,3 +384,21 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Kritere për mbylljen e Fazës 7:** (1) raporte nga kontrolli vizual në të tre temat dhe mobile/landscape, (2) tastierë fizike/aksesueshmëri manuale, (3) prova touch dhe media në telefon, (4) çdo problem P0/P1 i zgjidhur, P2 i regjistruar, (5) raport sign-off i aprovuar. Pamjet manuale dhe komentet njerëzore mund të mos zëvendësohen nga inspektimi mekanik i DOM-it. Faza 8 mbetet e mbyllur deri te vendimi përfundimtar mbi demo-n.
 
 **URL e QA vizuale:** https://illyrian-demo-git-demo-v17-illyrian-shop-un24.vercel.app/ILLYRIAN_VISUAL_QA_v1.7.html
+
+## Faza 7 — Cikli 12: Raporti i dukshëm dhe çështja mobile-landscape (22 tetor 2026)
+
+**Feedback real i përdoruesit:** në `ILLYRIAN_VISUAL_QA_v1.7.html` raporti nuk mund të merrej me butonin e raportit, dhe pamja e telefonit në anash (landscape) dukej jo proporcionale/e pasaktë. Këto vërejtje janë të rëndësishme dhe **nuk anulohen** nga 273/273 PASS në dy suitat funksionale, të cilat nuk e certifikonin UI mobile-landscape.
+
+**Analiza nga kodi:**
+1. QA vizuale kishte butonin `Kopjo raportin`, por **nuk kishte `Krijo raportin` dhe as preview të raportit**; kopjimi përdorte vetëm `navigator.clipboard.writeText`, që mund të refuzohet nga lejet/shfletuesi. Kodi nuk garantonte një rrugë të dukshme alternative për përdoruesin.
+2. QA vizuale vendoste gjerësi fikse iframe prej 844/932px brenda panelit të ngushtë (maksimum ~550px). Shfaqja kërkonte zhvendosje horizontale dhe mund të dukej e prerë, megjithëse viewport i brendshëm ishte i vlefshëm.
+3. **Çështje e veçantë e UI të demos:** `ILLYRIAN_DEMO_v1.7.html` përmban `@media(max-width:760px)` për pamje mobile full-screen dhe `@media(min-width:761px) and (max-height:700px)` për një desktop të ulët. Landscape 844×390 dhe 932×430 prandaj aktivizon **desktop shell** (me telefon/dhomë anësore), jo një layout mobile-landscape të projektuar për rrotullimin fizik. `.device` ka `min-height:570px`, kurse në atë media desktop `min-height:500px`, që tejkalon 390/430px të viewport-it. Kjo është një **mangësi e vërtetuar e përshtatjes së synuar**, por intensiteti vizual dhe ndërveprimet duhen provuar në telefon fizik. Regjistrohet si **P1 kandidat për mobile-landscape** përpara sign-off, jo thjesht "normale".
+
+**Korrigjimi i autorizuar brenda scope të QA pa ndryshuar aplikacionin:**
+- Vetëm `demo/ILLYRIAN_VISUAL_QA_v1.7.html` u përditësua: u shtuan `Krijo raportin`, pamja e raportit në `textarea readonly`, kopjimi me fallback selektimi manual dhe `Shkarko .txt` për rastet kur Clipboard refuzohet. Asnjë API raportimi në server.
+- Shfaqja e iframe ka `Përshtat në ekran` (paraqitje e shkallëzuar pa ndryshuar dimensionet e brendshme) ose `100% · lëviz anash`. Kur zgjidhet 844×390 apo 932×430, shfaqet një paralajmërim eksplicit që demo po përdor desktop media-layout dhe nuk është provë e përshtatjes mobile-landscape.
+- Commit `a21dfd5fb0f4db90ec1280b136c46f96fa60a9a5`. Kodi u rilexua nga GitHub me përputhje të plotë, JavaScript sintaksisht PASS. Skenarët logjikë për gjenerimin e tekstit të raportit, ruajtjen e etiketave të manuallit dhe llogaritjen e shkallës së iframe: **9/9 PASS në V8**. Nuk janë E2E browser të përdoruesit, prandaj marrja reale e raportit mbetet të konfirmohet.
+
+**Vendimi për aplikacionin:** Në këtë cikël **nuk u ndryshua `ILLYRIAN_DEMO_v1.7.html`**, CSS apo identiteti i miratuar; `main`/Production të paprekura. Për të zgjidhur P1 në produkt do të duhet dizajn/QA i dedikuar landscape (media query e orientuar sipas lartësisë dhe orientimit, z-index/scroll, pa prishur desktop), pastaj testim fizik në Android/iOS dhe në Preview.
+
+**URL korrigjuar:** https://illyrian-demo-git-demo-v17-illyrian-shop-un24.vercel.app/ILLYRIAN_VISUAL_QA_v1.7.html
