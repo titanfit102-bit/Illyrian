@@ -103,9 +103,20 @@
     document.getElementById('frame-state').textContent='Demo e ngarkuar në '+size.options[size.selectedIndex].text;
   }
   async function nav(d,name){
-    const btn=d.querySelector('#navbar [data-act="tab"][data-val="'+name+'"]');
-    if(!btn)throw new Error('Nuk u gjet navigimi: '+name);
-    btn.click();await sleep(100);
+    // Approved v1.2+ layout: Events is in the top header, not among the five bottom tabs.
+    const selector=name==='events'
+      ? '.head [data-act="tab"][data-val="events"]'
+      : '#navbar [data-act="tab"][data-val="'+name+'"]';
+    const btn=d.querySelector(selector);
+    if(!btn){
+      const bottom=[...d.querySelectorAll('#navbar button')].map(b=>b.dataset.val||b.dataset.act||'?').join(', ');
+      const top=[...d.querySelectorAll('.head [data-act]')].map(b=>b.dataset.val||b.dataset.act||'?').join(', ');
+      throw new Error('Nuk u gjet navigimi '+name+'; bottom=['+bottom+']; header=['+top+']');
+    }
+    btn.click();await sleep(150);
+    if(name==='events'&&!d.querySelector('#screen .v10-event-tabs')&&!/Plane që na bashkojnë|Planet e mia/.test(d.querySelector('#screen h2')?.textContent||'')){
+      throw new Error('Butoni i aktiviteteve u shtyp, por faqja Events nuk u shfaq.');
+    }
   }
   async function tap(d,selector,label){
     const el=d.querySelector(selector);
