@@ -477,3 +477,17 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Testi i radhës:** në Visual QA 844×390, hap Reels dhe verifiko që ✕ dhe Krijo Reel nuk mbivendosen, mund të shtypen veçmas dhe X e mbyll overlay; në Mesazhe bëj scroll derisa X të mbetet i dukshëm; përsërit 932×430, pastaj regjistro raportin e QA. Në rast PASS nga shfletuesi, ribëhet regresioni bazë+avancuar për ndryshimet CSS dhe plotësohen kontrollet manuale. Faza 7 mbetet NË PROCES.
 
 **Ruajtja e scope:** nuk u ndryshuan theme, paleta, ikonat, JS bazë e app, branch main ose Vercel Production.
+
+## Faza 7 — Cikli 18: Chromium browser QA e automatizuar dhe kufizimi i runner-it (22 tetor 2026)
+
+**Vendim i pronarit:** të vazhdohet ndërtimi dhe kontrolli teknik në mënyrë autonome, pa kërkuar prova manuale pas çdo ndryshimi; pronari do të testojë të gjithë aplikacionin në telefon në fund dhe më pas do të japë screenshot-e për korrigjime. Nuk do të pretendohet se kemi kaluar testimin fizik pa prova.
+
+**Shtesa e realizuar:** u krijua `qa/illyrian-v17.spec.cjs` (commit 51e258aeb9b9682c8bdfe0be34653fda169b5a72) me **10 skenarë** Chromium/Playwright për këtë demo: 7 përmasa për Reels X të dukshëm, mbi 43×43px, mosmbivendosje me Krijo Reel dhe mbyllje pas klikimit real; 2 përmasa landscape 844×390/932×430 për shell fullscreen dhe X të Mesazheve që mbetet i arritshëm pas scroll; 1 desktop 1280×800 për sidebar dhe kornizë telefoni. Skenarët përfshijnë hyrjen si vizitor dhe mbylljen e turit të parë në browser të ri; shërbejnë vetëm për QA, nuk prekin shërbime të jashtme ose veprime të përdoruesve realë.
+
+**Konfigurimi:** `playwright.config.cjs` (commit a14fb2ac1b2c1b73dc5bd631a2e6294511632e50) nis `python3 -m http.server` mbi dosjen demo në localhost:4173, përdor Chromium headless, ruan screenshot/trace në dështim dhe nuk ndryshon Vercel Production. Workflow `/.github/workflows/illyrian-v17-browser-qa.yml` (commit 7118c42c82065e4a5023098cadef65298e875a82) përdor ubuntu-latest, permissions contents:read, timeout 18 min, Node 22, version fiks @playwright/test 1.55.1 dhe push trigger vetëm për ndryshime të demos/testeve.
+
+**Verifikimi që kemi REALISHT:** skedarët u shkruan e u rilexuan në GitHub, sintaksa CommonJS e testit dhe konfigurimit u verifikua me V8 new Function, dhe GitHub Actions e krijoi run-in [39818951307](https://github.com/titanfit102-bit/Illyrian/actions/runs/39818951307). **Dy përpjekje** (run_attempt 1 dhe 2) dolën **failure në ~2–3 sekonda pa runner dhe pa hapa të ekzekutuar**: `runner_id=0`, `steps=[]`. GitHub nuk ktheu log-e ose shpjegim të besueshëm (job logs endpoint doli BlobNotFound). Kjo është PENGESË INFRASTRUKTURE/PLANIFIKIMI GITHUB ACTIONS, jo rezultat FAIL i testit të aplikacionit. Të mos thuhet "10/10 PASS" apo "Playwright ekzekutoi testet". Mund të jetë kuota/konfigurim/runners; **shkaku i saktë UNKNOWN** deri në kontrollin e GitHub Actions UI.
+
+**Puna që mund të vazhdojë pa runner:** analizë dhe korrigjime statike, browser QA Lab ekzistues dhe raport final që kërkon test fizikal nga pronari. Testet e reja janë ruajtur dhe mund të ekzekutohen sapo runner-i të bëhet i disponueshëm. Gabimet e veçanta të raportuara nga screenshots (Reels X/Krijo Reel, landscape dhe Mesazhet) nuk mbyllen përfundimisht vetëm nga statika; kërkojnë regresion real.
+
+**Scope:** vetëm branch demo/v1.7-illyrian-shop. Main, Production dhe projektet e tjera të pandryshuara.
