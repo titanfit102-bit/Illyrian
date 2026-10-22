@@ -34,7 +34,10 @@
  const all=()=>[...state.items,...SEED];
  const numeric=(v,fallback=0)=>Number.isFinite(+v)?Number(v):fallback;
  const money=v=>new Intl.NumberFormat(window.IllyrianI18n?.language||'it',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(numeric(v));
- const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({items:state.items,needs:state.needs,answers:state.answers,flags:state.flags,sampleOrders:state.sampleOrders}));return true}catch{state.notice='Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.';return false}};
+ const persisted=()=>({items:state.items,needs:state.needs,answers:state.answers,flags:state.flags,sampleOrders:state.sampleOrders});
+ let lastSaved=JSON.stringify(persisted());
+ const save=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
+  Object.assign(state,JSON.parse(lastSaved));state.notice='Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.';return false}};
  const btn=(act,text,extra='')=>'<button type="button" data-isp="'+esc(act)+'" '+extra+'>'+esc(text)+'</button>';
  const pill=(value,active)=>'<button type="button" data-isp="type:'+esc(value)+'" aria-pressed="'+(active?'true':'false')+'" class="'+(active?'chosen':'')+'">'+esc(value)+'</button>';
  const period=p=>p.type==='Banesa me qira'?'/'+esc(p.period||'muaj'):'';
@@ -234,7 +237,7 @@
   inertBefore.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertBefore=[];
   if(previous?.isConnected)previous.focus();
  };
- const message=m=>{state.notice=m;save();render()};
+ const message=m=>{state.notice=m;if(!save()&&state.tab==='item'&&!all().some(p=>p.id===state.selected))state.tab='create';render()};
  const action=act=>{
   if(act==='close')return close();
   if(act.startsWith('tab:')){state.tab=act.slice(4);state.shop='';state.notice='';render();return}

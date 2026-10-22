@@ -30,7 +30,10 @@
     open:false,view:'overview',notice:'',selected:'city-1'
   };
   let root=null,opener=null,inertSnapshot=[];
-  const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({home:state.home,origin:state.origin,choice:state.choice,welcome:state.welcome}));return true}catch{state.notice='Hapësira lokale është plot; ndryshimi nuk u ruajt.';return false}};
+  const persisted=()=>({home:state.home,origin:state.origin,choice:state.choice,welcome:state.welcome});
+  let lastSaved=JSON.stringify(persisted());
+  const persist=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
+   Object.assign(state,JSON.parse(lastSaved));state.notice='Hapësira lokale është plot; ndryshimi nuk u ruajt.';return false}};
   const eventData=()=>{const doc=read(PLAN_KEY),values=Array.isArray(doc.events)?doc.events:[];return values.filter(e=>e&&e.privacy==='public'&&!e.cancelled&&typeof e.title==='string'&&!Number.isNaN(Date.parse(e.date+'T'+e.time))&&Date.parse(e.date+'T'+e.time)>Date.now()).slice(0,24)};
   const button=(action,label)=>'<button type="button" data-ilc="'+h(action)+'">'+h(label)+'</button>';
   const cities=(current)=>CITIES.map(c=>'<option value="'+h(c)+'"'+(c===current?' selected':'')+'>'+h(c)+'</option>').join('');
@@ -149,7 +152,7 @@
     if(action==='close')return close();
     if(action==='overview')state.view='overview';
     else if(action.startsWith('view:'))state.view=action.slice(5);
-    else if(action==='clear-interest'){state.choice=null;persist();state.view='interest';state.notice='Interesi dhe disponueshmëria u hoqën.';}
+    else if(action==='clear-interest'){state.choice=null;const saved=persist();state.view='interest';if(saved)state.notice='Interesi dhe disponueshmëria u hoqën.';}
     else if(action.startsWith('welcome:')){state.view='welcome';}
     else if(action.startsWith('repeat:')){
       const id=action.slice(7);
@@ -256,8 +259,8 @@
       const item=e.target.closest('[data-ilc-first]');
       if(!item)return;
       state.welcome[item.dataset.ilcFirst]=!!item.checked;
-      persist();
-      state.notice=item.checked?'Shënimi privat u ruajt në pajisje. Organizatori nuk u njoftua.':'Shënimi privat u hoq.';
+      if(persist())state.notice=item.checked?'Shënimi privat u ruajt në pajisje. Organizatori nuk u njoftua.':'Shënimi privat u hoq.';
+      else item.checked=Boolean(state.welcome[item.dataset.ilcFirst]);
       const status=root.querySelector('.ilc-note[role="status"]');
       if(status)status.textContent=state.notice;
     });

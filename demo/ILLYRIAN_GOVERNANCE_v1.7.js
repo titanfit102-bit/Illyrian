@@ -14,7 +14,10 @@
    applicant:'Në shqyrtim',storeOffer:'Draft',shopTab:'trust'};
  const bounded=(str,limit=160)=>String(str??'').trim().slice(0,limit);
  const unique=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
- const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({cases:state.cases,appeals:state.appeals,audits:state.audits,drafts:state.drafts}));return true}catch{state.notice='Kufiri i të dhënave lokale u arrit.';return false}};
+ const persisted=()=>({cases:state.cases,appeals:state.appeals,audits:state.audits,drafts:state.drafts});
+ let lastSaved=JSON.stringify(persisted());
+ const save=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
+  Object.assign(state,JSON.parse(lastSaved));state.notice='Kufiri i të dhënave lokale u arrit.';return false}};
  const stamp=()=>new Date().toISOString().slice(0,16).replace('T',' ');
  const log=(action,id)=>{state.audits.unshift({action:bounded(action,65),id:bounded(id,35),at:stamp()});state.audits=state.audits.slice(0,60)};
  const b=(act,t,extra='')=>'<button type="button" data-ig6="'+clean(act)+'" '+extra+'>'+clean(t)+'</button>';
