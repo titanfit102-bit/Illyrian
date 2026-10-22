@@ -213,3 +213,18 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 - **Verifikim:** testi i izoluar i të dy JS-ve në DOM të simuluar kaloi rrjedhën Escape (Plus mbyllet i pari, pastaj Shop); kodi i përditësuar u rilexua dhe sintaksa PASS. **NUK ka ende prova Playwright/Chromium në skedarin final**.
 - **Rreziqe të hapura:** testim integrimi në browser real të të gjitha moduleve, ekranet 320–430px/landscape, fokus/Tab/Escape, modalitetet e ndërthurura, CSS z-index, MutationObserver, storage/refresh, XSS negative, foto, performancë dhe Preview i sinkronizuar.
 - **HumHub:** analiza e licencës AGPL-3.0-only u përfundua si kërkim; asnjë kod HumHub nuk u importua. Idetë e arkitekturës janë propozime për Fazën 8, jo vendime të miratuara.
+
+## Faza 7 — Cikli 2: Modalet Plans/Connections dhe integrimi (22 tetor 2026)
+
+**Status:** QA e pjesshme; korrigjimet e mëposhtme janë në branch-in Preview. Nuk është certifikuar E2E në browser, ekran fizik apo WCAG.
+
+1. **Vercel:** më 22 tetor 2026, alias-i i Preview ishte READY për commit-in `b389fdf23e7e517c75a9aa288666c7d26a047237` dhe GitHub Vercel status = success. Ky është kontroll metadata për deployment, jo test UI. Statusi duhet rilexuar pas commit-eve të reja.
+2. **Pengesa e E2E:** Chromium v144 u nis lokalisht me Playwright, por `page.goto('https://illyrian-demo-git-demo-v17-illyrian-shop-un24.vercel.app/ILLYRIAN_DEMO_v1.7.html')` u bllokua me `net::ERR_BLOCKED_BY_ADMINISTRATOR`. Edhe leximi publik nga mjeti web nuk arriti të hynte te URL-ja. Nuk duhet interpretuar si dështim i aplikacionit.
+3. **Gjendja e inicializimit:** gjashtë skriptet JS u ekzekutuan në një DOM minimal të simuluar dhe regjistruan ndërveprimet/observer-at e tyre; pjesë të sinkronizimit DOM kërkojnë simulim më të plotë. Nuk është provë reale rendering.
+4. **Connections → Plans:** testim V8 i kodit aktual të dy moduleve: inicializim, hapje Connections, `Bëjmë diçka bashkë`, dërgim i `illyrian:plans:draft`, hapje e Plans me titull të paraplotësuar dhe pa publikim automatik. PASS, pa gabime në simulimin e izoluar.
+5. **F7-002 — sfondi i modalëve nuk izolohej:** si `ILLYRIAN_PLANS_v1.7.js`, ashtu edhe `ILLYRIAN_CONNECTIONS_v1.7.js` shfaqnin dialog `aria-modal=true`, por nuk aktivizonin `inert` te pjesët pas tij. U verifikua në V8 se `screen.inert` mbetej false gjatë hapjes. U shtua `inertSnapshot` për `#screen`, `#navbar`, `.head`, `.statusbar`, `.homebar`, `.island`, me rivendosje të gjendjes origjinale gjatë mbylljes.
+6. **Commit-et e F7-002:** Plans `c03edf19edd953d5caf83f92b531688dde044f4b`; Connections `394db4f96992958c70c54e966ddc11f32ffc8750`. Zbatimi ndryshon vetëm dy skedarët e branch-it v1.7, jo `main`, v1.6 apo Production.
+7. **Ritestimi mbi commit-in e ruajtur `394db4...`:** 12/12 kontrolle V8 në DOM të simuluar: ruajtja e `inert` ekzistues te nav, izolimi i sfondit, draft Connections→Plans, mbyllja e Plans dhe restaurimi i sfondit. 0 gabime ekzekutimi në atë skenar. Kontrolli i sintaksës JavaScript: PASS.
+8. **Mbeten:** Chromium/Playwright real mbi HTML-në e përbashkët v1.7 (320×568, 360×780, 390×844, 430×932, 844×390, 932×430, desktop), vizual Light/Dark/Auto, fokus/Tab/Escape, modalë të ndërthurur, `MutationObserver`, ruajtje/reload, të dhëna armiqësore, media dhe performancë. F7-001 dhe F7-002 duhen provuar edhe në Chrome/Brave real. Faza 8 nuk ka nisur.
+
+**Interpretimi i progresit:** 6 nga 8 paketat e demos kanë bazën në kod; Paketa 7 është në proces dhe Paketa 8 e hapur. 75% është vetëm numërim paketash, jo përqindje e cilësisë, prodhimit apo aplikacionit profesional.
