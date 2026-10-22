@@ -129,7 +129,7 @@
   '<footer>Vetëm demonstrim lokal · Nuk ka përdorues, hartë, mesazhe apo kërkesa reale.</footer></section>';
   root.querySelector('.il4-head button')?.focus();
  };
- const open=which=>{if(!root)return;opener=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.tab=['profiles','groups','map','states'].includes(which)?which:'profiles';state.notice='';state.role='visitor';state.selected=state.tab==='groups'?'albania-milan':'leon';render()};
+ const open=which=>{if(!root||state.open)return;opener=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.tab=['profiles','groups','map','states'].includes(which)?which:'profiles';state.notice='';state.role='visitor';state.selected=state.tab==='groups'?'albania-milan':'leon';render()};
  const close=()=>{state.open=false;root.hidden=true;inertSnapshot.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertSnapshot=[];if(opener?.isConnected)opener.focus()};
  const msg=v=>{state.notice=v;save();render()};
  function act(a){
