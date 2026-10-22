@@ -19,3 +19,10 @@
 ## Cikli i18n 2 — vazhdimësia (22 tetor 2026)
 
 84 çelësa semantikë të tjerë u shtuan në sq/en/it: tani **290 çelësa secila, 15 namespace**, me kopje identike te demo/i18n. Inventari vizual i etiketave për 12 pamje arriti **238 të vrojtuara / 81 të pambuluara** (më parë 150; 81 përfshin data/content dhe elemente composite). Numri 81 nuk është numër i pastër i gabimeve të UI. Formatimi EUR në Shop/Shop Plus tani përdor locale aktive; run #39852521431 SUCCESS. Tre skenarë të tjerë të titujve të moduleve sipas gjuhës kanë mbetur për verifikim CI te run #39852708170. Dega kryesore mbetet e mbrojtur. Faza e plotë e përkthimit **nuk certifikohet ende** pa inventar dhe audit të çdo modal/formulari/gabimi.
+
+
+## CIKLI i18n 2 — rezultati final i verifikuar në GitHub Actions (22 tetor 2026)
+
+- GitHub Actions run [#39852708170](https://github.com/titanfit102-bit/Illyrian/actions/runs/39852708170), commit `7d7b3dbf3ae7a4744c5dad4e2f75fac548b00dcb`, **completed/success: 53/53 teste Playwright PASS (1.9m)**. Kjo suitë përfshin teste të reja për formatimin EUR në sq/en/it, titujt e Shop/Plans/Privacy/Governance në secilën gjuhë, ruajtjen e preferencës, fallback, pluralizimin dhe regresionet e mëparshme. Nuk është certifikim i 100% të çdo teksti historik në DEMO.
+- **Vercel Preview nuk është sinkronizuar me kodin më të ri:** statusi i Vercel për commit-in dokumentues `bb2794e67c1f8cf68ea5eeb4325f38813645682b` është `failure` me destinacion `upgradeToPro=build-rate-limit`. Preview-i i verifikuar READY ishte ende mbi commit-in `fbd04ad37c653a233617a7464ad6a15a550c9b4a`; kështu ndryshimet e formatimit EUR dhe testet shtesë mund të mos jenë publikuar atje. Ky është **kufizim deploy/plan**, jo dështim i suite-s Chromium. Nuk u ndryshuan pagesa, plan, domain apo Production për ta anashkaluar kufirin.
+- **Kufiri i mbulimit gjuhësor:** 290 çelësa secila nga 3 gjuhët dhe 15 namespace janë të verifikuar, por nuk është mbyllur lokalizimi i çdo dialogu, formulari, gjendjeje bosh ose gabimi. Ka nevojë për inspektim më të thellë të përmbajtjes UI në gjuhët en/it, migrim nga lookup trashëgimie në çelësa direkt dhe testim final në telefon.
