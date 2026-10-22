@@ -2,7 +2,7 @@
 
 **Data e nisjes:** 21 tetor 2026  
 **Burimi:** kërkesa eksplicite e përdoruesit për t'i ndërtuar të gjitha funksionet e mbetura të demos, plus ILLYRIAN Shop (produkte, dyqane të vogla, makina, banesa me qira dhe kërkim ndër-dyqanesh), me vazhdim fazë pas faze.  
-**Status:** PAKETAT 1–6 KANË IMPLEMENTIM BAZË NË KODIN E DEGËS SË TESTIMIT; paketat 7–8 mbeten për t'u realizuar. Fazat 3–6 kanë prova të logjikës me DOM të simuluar; nuk është përfunduar ende regresioni real në Chromium/telefon ose miratimi i demos.  
+**Status i përditësuar më 22 tetor 2026:** Paketat 1–6 janë implementuar si DEMO; Paketa 7 ka kaluar kriterin funksional automatik në Chromium (32/32 skenarë Playwright, ku 2 suita përmbajnë 126/126 + 147/147 kontrolle QA). Janë prodhuar 42 pamje për evidencë vizuale, por kontrolli fizik/manual në telefon dhe miratimi i dizajnit mbeten HAPUR. Për Paketën 8 ekziston blueprint arkitekturor v0.1, jo backend apo produkt real i implementuar. Historiku i fazave më poshtë mbetet i pandryshuar.  
 **Dega e izoluar:** `demo/v1.7-illyrian-shop`; baza `demo/v1.6-stories-reels`.  
 **Mbrojtja:** Nuk preken `main`, Vercel Production, projekti tjetër ose skedarët ekzistues të v1.6. NUK autorizohen vetvetiu pagesa, komisione reale, investim apo publikim në dyqane.
 
@@ -553,3 +553,12 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Faza 8 — artefakt i ri:** architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md, version 0.1 i propozimit, përshkruan aktorët, autorizimet server-side, të dhënat relacionale, privatësinë, moderimin, rolet e shitësve, skenarët e Shop, rrugët alternativë klient/backend, transaksionet dhe portat e kalimit për MVP. Është dokument vendimesh/prove, jo zgjedhje e pakthyeshme teknologjike. Asnjë kod backend, pagesë, database, aplikacion native apo prodhim real nuk u aktivizua.
 
 **Kufijtë:** Main, Production, branch v1.6 dhe projektet e tjera mbeten të paprekura. Faza 7 funksionale e kaluar; miratimi manual vizual/telefonik dhe Faza 8 MVP reale mbeten përpara. 5% komision në demo është vetëm ilustrim, nuk është vendim komercial.
+
+
+### Cikli 23 — konfirmimi i Chromium 32/32 dhe 42 screenshot-e (22 tetor 2026)
+
+- GitHub Actions [#39839958152](https://github.com/titanfit102-bit/Illyrian/actions/runs/39839958152), commit `610f3c9a2fffec84b4dc4475f9ff208b6c7113d8`, përfundoi **completed/success**. Log-et tregojnë shprehimisht **32 passed (1.4m)** në Chromium headless, përfshirë 25 skenarët ekzistues (me 126/126 QA Lab bazë dhe 147/147 QA Lab advanced brenda tyre) + **7 testet e reja të evidencës vizuale**.
+- GitHub Actions publikoi artefaktin [illyrian-v17-visual-review](https://github.com/titanfit102-bit/Illyrian/actions/runs/39839958152/artifacts/12452028214), me **42 JPEG** të 6 pamjeve (Home, Shop, Events, Plans, Profile, Reels) × 7 viewport-e. Arkivi verifikohet të përmbajë 42 fotografi dhe është i ruajtur deri më **5 nëntor 2026**, sipas metadata-s së artefaktit.
+- Inspektim paraprak i kontakt-sheeteve nga fotot e 320×568, 390×844, 844×390 dhe 932×430: pamjet kryesore dhe X i Reels janë të dukshme; në 320 px butonat e veprimit në Shop kanë shumë tekst dhe kërkojnë inspektim lexueshmërie në telefon. Fotografitë nuk provojnë scroll-in, prekje reale, kontrastin apo aksesueshmëri WCAG; **nuk jepet certifikim vizual**.
+- Vercel Preview për commit-in `610f3c9a...` është **READY**, ID `dpl_738J5o7UUKvN2qgCse4ghsW4Ugri`; `main` mbetet `9f91b5c083b4482a70a2149483cc799360e6102c` dhe Production e paprekur.
+- Hapi pasues është vlerësimi i detajuar i aksesueshmërisë, pastaj validimi i vendimeve të blueprint-it M0/M1. Nuk fillohet backend, pagesë, APK reale apo lansim pa portat e planit dhe autorizimet përkatëse.
