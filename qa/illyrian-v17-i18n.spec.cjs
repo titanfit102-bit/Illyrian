@@ -364,3 +364,72 @@ for(const locale of ['en','it']){
   expect(reasons).toContain('Shkelje privatësie');
  });
 }
+
+async function rejectModuleWrites(page,key){
+ await page.evaluate(key=>{
+  const previous=Storage.prototype.setItem;
+  window.__restoreModuleWrites=()=>{Storage.prototype.setItem=previous};
+  Storage.prototype.setItem=function(k,value){
+   if(k===key)throw new DOMException('No local space','QuotaExceededError');
+   return previous.call(this,k,value);
+  };
+ },key);
+}
+async function allowModuleWrites(page){
+ await page.evaluate(()=>{window.__restoreModuleWrites?.();delete window.__restoreModuleWrites});
+}
+test('Shop Plus reverts failed buyer request instead of displaying unsaved request',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').click();
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ const key='illyrian_demo_v17_shop_plus';
+ const before=await page.evaluate(key=>localStorage.getItem(key),key);
+ await rejectModuleWrites(page,key);
+ await page.locator('#isp-need input[name="title"]').fill('Electric bicycle request');
+ await page.locator('#isp-need input[name="budget"]').fill('450');
+ await page.locator('#isp-need button[type="submit"]').click();
+ await expect(page.locator('#isp-root .isp-notice')).toContainText('Nuk u ruajt në këtë pajisje');
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:'Electric bicycle request'})).toHaveCount(0);
+ expect(await page.evaluate(key=>localStorage.getItem(key),key)).toBe(before);
+ await allowModuleWrites(page);
+ await page.locator('#isp-need input[name="title"]').fill('Electric bicycle request');
+ await page.locator('#isp-need input[name="budget"]').fill('450');
+ await page.locator('#isp-need button[type="submit"]').click();
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:'Electric bicycle request'})).toHaveCount(1);
+});
+test('Connections reverts an unsaved interest and does not announce success',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('#ilc-entry [data-ilc-entry]').click();
+ await page.locator('#ilc-root [data-ilc="view:interest"]').click();
+ const key='illyrian_demo_v17_connections';
+ const before=await page.evaluate(key=>localStorage.getItem(key),key);
+ await rejectModuleWrites(page,key);
+ await page.locator('#ilc-interest button[type="submit"]').click();
+ await expect(page.locator('#ilc-root .ilc-note[role="status"]')).toContainText('ndryshimi nuk u ruajt');
+ await expect(page.locator('#ilc-root .ilc-chosen')).toHaveCount(0);
+ expect(await page.evaluate(key=>localStorage.getItem(key),key)).toBe(before);
+ await allowModuleWrites(page);
+ await page.locator('#ilc-interest button[type="submit"]').click();
+ await expect(page.locator('#ilc-root .ilc-chosen')).toHaveCount(1);
+});
+test('Governance does not retain an unsaved report in simulated moderation',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#ig6-entry [data-ig6="open"]').click();
+ await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
+ const key='illyrian_demo_v17_governance';
+ const before=await page.evaluate(key=>localStorage.getItem(key),key);
+ await rejectModuleWrites(page,key);
+ await page.locator('#ig6-report input[name="target"]').fill('Unsaved example report');
+ await page.locator('#ig6-report button[type="submit"]').click();
+ await expect(page.locator('#ig6-root .ig6-note[role="status"]')).toContainText('Kufiri i të dhënave lokale');
+ await expect(page.locator('#ig6-root .ig6-card').filter({hasText:'Unsaved example report'})).toHaveCount(0);
+ expect(await page.evaluate(key=>localStorage.getItem(key),key)).toBe(before);
+ await allowModuleWrites(page);
+ await page.locator('#ig6-report input[name="target"]').fill('Unsaved example report');
+ await page.locator('#ig6-report button[type="submit"]').click();
+ await expect(page.locator('#ig6-root .ig6-card').filter({hasText:'Unsaved example report'})).toHaveCount(1);
+});
