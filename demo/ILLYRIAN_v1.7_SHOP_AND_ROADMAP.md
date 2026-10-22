@@ -293,3 +293,11 @@ Përdoruesi mund të shkruajë **“vazhdo”** për të kaluar te paketa pasues
 **Verifikim para ruajtjes:** sintaksa e skriptit QA PASS; 6/6 prova sintetike të kushtit (sukses, vlerë bosh, titull i gabuar, mungesë e vendit të kërkuar, Plans mbyllur, Connections hapur) PASS. Kodi i korrigjuar u ruajt/rilexua në GitHub, commit `869588f150f57954db15def05f8eec7aad7b792d`.
 
 **Mbetet e nevojshme:** një ekzekutim i ri real i QA Lab për të verifikuar që 7 rastet FAIL nuk ndodhin më dhe që transferimi ekziston në DOM-in e vërtetë. Nuk e certifikojmë Fazën 7 vetëm nga provat sintetike.
+
+## Faza 7 — Cikli 6: Raporti 126/126 dhe hyrja te QA e avancuar (22 tetor 2026)
+
+**Dëshmi nga shfletuesi i përdoruesit, jo simulim:** raporti i tretë `ILLYRIAN v1.7 QA — 2026-10-22T11:38:41.977Z` jep **126 PASS / 126 kontrolle, 0 FAIL**, në të 7 përmasat: `320×568`, `360×780`, `390×844`, `430×932`, `844×390`, `932×430`, `1280×800` (18 skenarë × 7). Në çdo përmasë u konfirmuan strukturat, referencat e 6 moduleve, inicializimi i 3 paneleve, Shop/Shop Plus, Escape i saktë, sfondi inert, hapja/mbyllja e Plans, Connections, Privacy, Governance dhe pa overflow horizontal të dokumentit. Rrjedha Connections→Plans PASS, me diagnozë `Connections mbyllur=true; Plans hapur=true; titulli="Praktikë gjuhësh dhe njohje"; vendi kërkon konfirmim=true` në çdo përmasë.
+
+**Status i saktë:** F7-005 **u mbyll për asercionin bazë dhe skenarin e raportuar**; regresioni funksional **i përcaktuar nga QA Lab v1.7** është PASS. Kjo nuk është certifikatë WCAG, krahasim vizual i të gjitha ekraneve, test në telefon fizik, test sigurie serveri, test performance ose miratim për Production. Raporti është për demo-n lokale me të dhëna fiktive.
+
+**Hapi i radhës në Fazën 7:** zgjerimi i QA Lab me një suitë të veçantë për Light/Dark/Auto, fokusin në modal dhe Tab/Shift+Tab/Escape (synthetic key events të dalluara nga testet me tastierë reale), ruajtjen dhe rikthimin e preferencës së temas pa humbur të dhënat e mëparshme, XSS negative pa publikim, dhe matje informative të performancës; plus audit manual për pamjen mobile/landscape, media dhe WCAG. Testi bazë 126/126 duhet të mbetet i pandryshuar. Asnjë shkallë PASS e suitës së avancuar nuk pretendohet përpara ekzekutimit në shfletues.
