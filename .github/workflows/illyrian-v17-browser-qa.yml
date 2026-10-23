@@ -10,6 +10,7 @@ on:
       - 'demo/**/*.html'
       - 'demo/**/*.css'
       - 'demo/**/*.js'
+      - 'i18n/**' # Root locale edits must trigger the browser localization tests
       - 'qa/**'
       - 'playwright.config.cjs'
       - '.github/workflows/illyrian-v17-browser-qa.yml'

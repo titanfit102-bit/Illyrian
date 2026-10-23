@@ -84,3 +84,11 @@ Cross-language bug class: implicit `<option>` values were translated with UI tex
 Shop user-authored titles, seller and descriptions are explicitly marked `data-user-content` in tested detail/tile paths so phrase-based DOM replacement does not rewrite their display. Full UI vs UGC inventory is OPEN; adapter is transitional.
 Storage-related i18n paths now return localized Shop error notices and avoid false successful feedback when browser persistence fails. Other modules retain their existing Albanian error strings: complete locale coverage remains OPEN.
 Chromium regression #39868919668 at code SHA `b0a85f1119149d092328ae912d79299a87b9862f`: 65 PASS / 0 FAIL in 2.1m. This test evidence is scoped to browser flows, **not** every text string or real Android/iOS. Draft PR #1 unmerged.
+
+
+
+### Phase 7 i18n migration checkpoint — 23 October 2026
+Added explicit `IllyrianI18n.t('connections:*')` and `IllyrianI18n.t('governance:*')` for 23 runtime feedback keys in sq/en/it, with UTF-8 catalog parity **319 keys per locale / 15 namespaces** and exact `i18n/locales` and `demo/i18n/locales` mirrors. This protects storage-error and form-validation language without mutating domain codes (`home`, `origin`, report `reason`).
+Scoped UGC exclusions in Governance mark user report targets/details, moderator explanation, and local draft text with `data-user-content`; this does not prove all user text in other modules is excluded.
+Chromium run #39930979544 at `f5478b1716289bec575dfd5e23cd4294132dfcad` = **71 PASS / 0 FAIL**. Six locale-specific tests check Connections, Governance, unchanged persisted values and language-agnostic user report text. Two historical storage tests now explicitly select sq as part of the test setup rather than assume browser language.
+Browser-only scope: does not certify every UI phrase, accessibility, native phone browsers or translated operational flows. The workflow must include `i18n/**` in path filters to catch root catalog-only changes; that isolated CI configuration change is tracked in the same documentation update.
