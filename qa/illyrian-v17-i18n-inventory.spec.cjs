@@ -86,7 +86,7 @@ test('List untranslated visible UI labels across main views',async({page})=>{
  const requiredShopPlusViews=['shopPlus','shopPlus-item','shopPlus-report','shopPlus-moderation','shopPlus-needs','shopPlus-checkout','shopPlus-stores','shopPlus-create'];
  const shopPlusByView=snapshots.filter(s=>s.route.startsWith('shopPlus')).map(s=>({
   route:s.route,observed:s.strings.length,
-  exactCatalogUnmatched:s.strings.filter(label=>!covered.has(label)&&!/^(\\d+|ILLYRIAN)/i.test(label))
+  exactCatalogUnmatched:s.strings.filter(label=>!covered.has(label)&&!/^(?:[0-9]+|ILLYRIAN)/i.test(label))
  }));
  const report={date:new Date().toISOString().slice(0,10),
   scope:'Sampled Albanian UI only. Exact-match misses include user content, data/city names, and concatenated label+option text; not proof of untranslated UI.',
@@ -96,6 +96,7 @@ test('List untranslated visible UI labels across main views',async({page})=>{
  fs.mkdirSync('qa-results/i18n-inventory',{recursive:true});
  fs.writeFileSync('qa-results/i18n-inventory/visible-ui-sq.json',JSON.stringify(report,null,2));
  console.log('I18N_INVENTORY '+JSON.stringify({catalog:lookup.length,observed:unique.length,unmatched:missing.length,samples:missing.slice(0,85)}));
+ console.log('I18N_SHOP_PLUS_BY_VIEW '+JSON.stringify(shopPlusByView.map(v=>({route:v.route,observed:v.observed,exactUnmatched:v.exactCatalogUnmatched.length,examples:v.exactCatalogUnmatched.slice(0,12)}))));
  expect(snapshots.length).toBeGreaterThanOrEqual(9);
  expect(shopPlusByView.map(s=>s.route)).toEqual(requiredShopPlusViews);
 });
