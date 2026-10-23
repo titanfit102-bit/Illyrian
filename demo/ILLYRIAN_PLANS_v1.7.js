@@ -189,9 +189,12 @@
     }
     const nextChat=root.querySelector('#ilp-chat-form');
     if(nextChat&&chatText!==undefined)nextChat.elements.message.value=chatText;
-    if(field&&(next?.elements.namedItem(field)||nextChat?.elements.namedItem(field)))
-      (next?.elements.namedItem(field)||nextChat?.elements.namedItem(field)).focus();
-    else if(action)root.querySelector('[data-ilp="'+action+'"]')?.focus();
+    // Rebuilding the active dialog can detach the focused control. Restore its
+    // semantic target, falling back to the close button so focus never escapes.
+    const fieldTarget=field&&(next?.elements.namedItem(field)||nextChat?.elements.namedItem(field));
+    const actionTarget=action&&root.querySelector('[data-ilp="'+action+'"]');
+    const focusTarget=fieldTarget||actionTarget||root.querySelector('.ilp-panel header button');
+    focusTarget?.focus();
   }
   function init(){
     const phone=document.querySelector('#phone'),screen=document.querySelector('#screen');if(!phone||!screen)return;
