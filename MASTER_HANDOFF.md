@@ -28,7 +28,7 @@
 
 ### B. Preferencat, rregullat e pronarit [VENDIM]
 - Vepro si arkitekt kritik dhe bazohu në kod/PR/teste reale; **mos hamendëso çfarë është implementuar**. Ruaj funksionet ekzistuese; punë inkrementale, testim në commit-in e saktë dhe raporte me kufijtë e mbulimit.
-- Përdor degë të izoluar dhe Draft PR; **asnjë merge** në `demo/v1.7-illyrian-shop` apo `main`, asnjë ndryshim Vercel Production, deploy, licencë/pagesë, infrastrukturë apo veprim destruktiv pa autorizim të veçantë. Mos prek projektet e tjera.
+- Përdor degë të izoluar dhe Draft PR; **asnjë merge** në degën integruese apo `main`, asnjë deployment/ndryshim në **Production**, licencë me pagesë, infrastrukturë madhore apo veprim destruktiv pa miratim. **Deploy dhe QA vetëm në Vercel Preview janë të autorizuara** brenda degës së zhvillimit. Mos prek projektet e tjera.
 - Pronari e teston **DEMO-n e plotë në telefon pas stabilizimit** dhe dërgon screenshot-e; ky është gate i domosdoshëm para miratimit final.
 - **Autorizimi aktiv (2026-10-23):** zhvillim, korrigjim, QA, UX incremental, CI dhe përdorim i Vercel Preview për **të gjithë DEMO-n v1.7** në degën `feat/i18n-shop-feedback-20261022`, pa miratim për çdo patch të zakonshëm. Gate e vetme për miratim: merge, Production, shpenzime, ndryshime madhore ose veprime të rrezikshme. §AUTORIZIMI KANONIK dhe CURRENT_STATE §0 kanë përparësi ndaj përjashtimeve historike.
 - Dokumentet janë memoria e qëndrueshme; pas një ndërprerjeje përdorimi i tyre kërkon **ri-verifikim të gjendjes live**, jo besim mekanik te një SHA i shkruar më parë. Përditësime bëhen në sesione aktive; nuk ka proces në sfond.
@@ -66,8 +66,8 @@
 - **P3/M5:** security/a11y/device testing, ops/observability/backup-restore, staged release dhe sign-off; zgjerim gjeografik/gjuhësor vetëm mbi metrika.
 
 ### G. Pika e saktë e rifillimit dhe kriteret [PLAN]
-**Checkpoint aktiv:** `a2faad660575c4242603e2521e539fdfeac86bcd` = **161/161 Chromium PASS**, [Actions #40022100396](https://github.com/titanfit102-bit/Illyrian/actions/runs/40022100396). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
-**Detyra pasuese:** vazhdo në mënyrë autonome QA/bugfix/UX-P2 për të gjithë DEMO-n dhe testet/CI në degën e autorizuar. F05 Preview v1.7 është READY dhe 161/161 PASS por HTTP root/telefon fizik mbeten OPEN për shkak të Vercel team connection 403. F06 PR checks mund të përmirësohen në degë; branch protection administrative ose ndryshime të rrezikshme kërkojnë miratim. Asnjë merge/main/Production.
+**Checkpoint aktiv:** `af20db8c80dfdb401e0933909140ff0b4dbe249f` = **165/165 Chromium PASS**, [Actions #40024982839](https://github.com/titanfit102-bit/Illyrian/actions/runs/40024982839). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
+**Detyra pasuese:** UX-P2 category fields në Shop Plus u korrigjua/testua (**165/165 PASS**). Vercel Preview alias mbetet në deployment docs-only `03a156cc...`; source SHA `af20db8` nuk u publikua për shkak të `build-rate-limit`, dhe HTTP root/team SSO 403/telefon fizik mbeten OPEN. F06 PR-checks në degë mund të përmirësohen, branch rulesets me pasoja administrative duan vlerësim/lejë. Pa merge/main/Production.
 **Definition of Done:** testi për rastin e dështimit, regresionet e vjetra, exact-SHA GitHub Actions PASS, diff i kufizuar, dokumentim i provës dhe i gates të hapura. Testet e kaluara nuk janë automatikisht miratim release.
 
 ### G.1 — AUDIT HISTORIK I SHOP PLUS (para korrigjimeve të 23 tetorit; jo gjendje aktive)
@@ -191,6 +191,12 @@
 - `get_access_to_vercel_url` returned **403 forbidden** at `read_protection_bypass`, reporting that the ChatGPT Vercel connection needs project/team `un24` authorization. `web_fetch_vercel_url` returned the same 403; **no share URL, auth cookie or bypass secret was generated** and real HTTP content/root/desktop/phone was not verified.
 - **F05 remains PARTIAL/OPEN**; verified branch-local rewrite + exact deployment metadata + 161/161 Chromium tests are not end-to-end live HTTP proof. Owner must authorize the Vercel connection for project `illyrian-demo` / team `un24` using Vercel/ChatGPT connection UI; do not request pasted credentials. Retry the limited Preview test only after permission is available.
 - F06 / UX-P2 / real mobile / VoiceOver/TalkBack / final approval remain OPEN. No code, Vercel protection, admin, Production, merge, paid-plan or roadmap changes here.
+
+### UX-P2 Shop Plus category fields — tested 165/165, Vercel rate limited [2026-10-23]
+- Under new standing authorization for development and Preview of **all** ILLYRIAN DEMO modules, a bounded UX fix was completed in `demo/ILLYRIAN_SHOP_PLUS_v1.7.js` (code commit `0ba74227ac3217ca956e3dcec198e4f3d1e4cd28`). Listing create/edit now shows category-relevant metadata only: Products inventory; Cars year/km; Rentals area/rooms/period; Services shared fields only. Hidden inputs stay mounted to preserve unsent drafts across category/locale switches, and persisted items discard irrelevant category metadata.
+- Test commit `af20db8c80dfdb401e0933909140ff0b4dbe249f` added 4 Chromium Playwright cases (sq/en/it toggle and unsent data, edit and canonical persistence); [Actions #40024982839](https://github.com/titanfit102-bit/Illyrian/actions/runs/40024982839): **165/165 PASS (3.2m)** on exact QA/code SHA. Existing 161 regressions also passed.
+- **Latest Vercel is NOT deployed at this tested SHA:** GitHub commit status is `failure/build-rate-limit` ("retry in 24 hours"), listing by SHA found no deployment. Preview alias is still `dpl_CLSRkS5exjFd1hdNiz6t4iHT6Y23`, `READY` for older docs-only SHA `03a156cc...`, not `af20db8c80dfdb401e0933909140ff0b4dbe249f`. Production alias remains its own main deployment. No upgrade, access change, secrets, merge, deploy Production or roadmap edits.
+- Remaining: F05 build-rate-limit, Vercel team SSO 403 / live HTTP root and physical mobile; F06 PR protection, safe workflow plan; manual VoiceOver/TalkBack + release signoff. Do not treat screenshot/browser suite as real device QA.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
