@@ -86,3 +86,13 @@ test('Desktop keeps side panel and phone frame',async ({page})=>{
   expect(geometry.width).toBeGreaterThan(300);
   expect(geometry.width).toBeLessThan(430);
 });
+
+
+test('F05 branch-local Preview entrypoint resolves to DEMO v1.7 in Vercel config',async()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const cfg=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../demo/vercel.json'),'utf8'));
+ const roots=cfg.rewrites?.filter(x=>x.source==='/')||[];
+ expect(roots).toHaveLength(1);
+ expect(roots[0].destination).toBe('/ILLYRIAN_DEMO_v1.7.html');
+ expect(fs.existsSync(path.resolve(__dirname,'../demo/ILLYRIAN_DEMO_v1.7.html'))).toBe(true);
+});
