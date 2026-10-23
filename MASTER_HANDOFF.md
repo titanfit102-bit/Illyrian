@@ -15,7 +15,7 @@
 - Vepro si arkitekt kritik dhe bazohu në kod/PR/teste reale; **mos hamendëso çfarë është implementuar**. Ruaj funksionet ekzistuese; punë inkrementale, testim në commit-in e saktë dhe raporte me kufijtë e mbulimit.
 - Përdor degë të izoluar dhe Draft PR; **asnjë merge** në `demo/v1.7-illyrian-shop` apo `main`, asnjë ndryshim Vercel Production, deploy, licencë/pagesë, infrastrukturë apo veprim destruktiv pa autorizim të veçantë. Mos prek projektet e tjera.
 - Pronari e teston **DEMO-n e plotë në telefon pas stabilizimit** dhe dërgon screenshot-e; ky është gate i domosdoshëm para miratimit final.
-- **Autorizimet e vlefshme (2026-10-23):** mirëmbajtje e vazhdueshme e `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` dhe ndryshime inkrementale Shop Plus/i18n sipas kufirit të mëparshëm. Përmes `vazhdojm athere` pas planit të paraqitur, pronari autorizoi **vetëm** korrigjimet specifike F04 feed persistence, F03 malformed local records në creator/Plans dhe F02 Reel/Story UGC, të përfunduara në këtë checkpoint. **Jo leje e përgjithshme për core/Plans**, as merge/main/Production/deploy/routing/workflow/admin, shpenzime apo sekrete.
+- **Autorizimet e vlefshme (2026-10-23):** mirëmbajtje e vazhdueshme e `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md`, plus ndryshime të fazës Shop Plus/i18n në degën e autorizuar. Pronari miratoi më parë F02/F03/F04 në mënyrë specifike dhe tani **F08 vetëm si reject-if-stale për Shop Plus** përmes “vazhdojm”. Këto nuk përbëjnë autorizim të përgjithshëm për core/Plans/Shop bazë, F05/F06 workflow/admin/routing/deploy, merge, main, Production, shpenzime apo sekrete.
 - Dokumentet janë memoria e qëndrueshme; pas një ndërprerjeje përdorimi i tyre kërkon **ri-verifikim të gjendjes live**, jo besim mekanik te një SHA i shkruar më parë. Përditësime bëhen në sesione aktive; nuk ka proces në sfond.
 
 ### C. Teknologjia dhe arkitektura [FAKT / DREJTIM I MIRATUAR]
@@ -34,7 +34,7 @@
 - Audit i pavarur Work (2026-10-23): F01 draft-validation, F07 zero mileage, F09 active handoff dhe F10 parity gate të mbështetur drejtpërdrejt nga kodi; F02/F03/F04/F08 mekanizma të besueshëm dhe prova të auditit, por ndryshimet core/Plans janë jashtë scope-it të kësaj faze; F05/F06 janë gates konfigurimi dhe jo prova e një incidenti Production.
 
 ### E. Problemet, rreziqet, pasiguritë [OPEN / E PAVERIFIKUAR]
-1. F01/F02/F03/F04/F07/F09/F10 janë korrigjuar në rastet e testuara; **151/151 PASS**. OPEN nga auditi: F05 served root/entrypoint Vercel, F06 workflow+branch protection dhe F08 multi-tab concurrency. Mbeten QA visual/a11y/mobile dhe audit më i gjerë i të dhënave të keqformuara.
+1. F01/F02/F03/F04/F07/F09/F10 janë korrigjuar në rastet e testuara; F08 ka **mitigim të verifikuar për Shop Plus (153/153 PASS)** por jo garanci atomike ose mbulim të moduleve të tjera. OPEN nga auditi: F05 Vercel entrypoint/served SHA dhe F06 workflow/branch protection, plus rreziku i mbetur i F08. QA visual/a11y/mobile mbetet OPEN.
 2. Audit global i UGC në DOM, escape/HTML injection, bllokimi nga adapteri legacy, formatet locale/currency, tekstet e gjata, live-switch pa humbje të formave.
 3. A11y e plotë me tastierë, screenreader, ARIA, navigim fokus, pamje responsive portrait/landscape dhe verifikim vizual/performance në pajisje reale.
 4. Vercel Preview i SHA-së aktuale i paverifikuar për mungesë autorizimi; mos bëj deploy/upgrade pa leje.
@@ -51,8 +51,8 @@
 - **P3/M5:** security/a11y/device testing, ops/observability/backup-restore, staged release dhe sign-off; zgjerim gjeografik/gjuhësor vetëm mbi metrika.
 
 ### G. Pika e saktë e rifillimit dhe kriteret [PLAN]
-**Checkpoint aktiv:** `881faaeb05ceddfdd3d9a21cccf3286fc71101d4` = **151/151 Chromium PASS**, [Actions #40005987342](https://github.com/titanfit102-bit/Illyrian/actions/runs/40005987342). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
-**Detyra pasuese:** F01/F02/F03/F04/F07/F09/F10 të mbyllura për rastet e testuara; F08 kërkon vendim specifik për konflikt mes dy skedave; F05/F06 kërkojnë autorizim të veçantë për routing/PR checks/branch protections ose akses të Vercel. QA vizual/ekranlexues/telefon dhe sign-off mbeten OPEN. Asnjë merge/main/Production.
+**Checkpoint aktiv:** `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166` = **153/153 Chromium PASS**, [Actions #40009859286](https://github.com/titanfit102-bit/Illyrian/actions/runs/40009859286). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
+**Detyra pasuese:** F08 reject-if-stale për Shop Plus është implementuar/testuar por **nuk është atomic CAS**; F05/F06 mbeten gates. Vetëm audit read-only për F05/F06 lejohet pa ndryshime të reja administrimi/deploy. Kontroll visual/a11y/telefon dhe sign-off mbeten OPEN. Asnjë merge/main/Production.
 **Definition of Done:** testi për rastin e dështimit, regresionet e vjetra, exact-SHA GitHub Actions PASS, diff i kufizuar, dokumentim i provës dhe i gates të hapura. Testet e kaluara nuk janë automatikisht miratim release.
 
 ### G.1 — AUDIT HISTORIK I SHOP PLUS (para korrigjimeve të 23 tetorit; jo gjendje aktive)
@@ -104,6 +104,15 @@
 - Audit summary: **7 of 10 findings remediated in tested paths**: F01, F02, F03, F04, F07, F09, F10. Remaining F05 Vercel routing/served SHA, F06 PR gating/branch protection (need separate permission), F08 multi-tab lost-update (needs behavioral contract before code). 151 browser tests do not imply all possible corrupt localStorage forms, real device/a11y or product release sign-off.
 - No manual deployment, merge, changes to `main`/Production, workflow, rulesets or Vercel configuration. Git integration can issue automatic previews, not proven target/URL/content because Vercel scope returned 403.
 - **Next decision:** define F08 single-writer vs conflict-reject; separately authorize F05/F06 if desired, then phone + screenreader + visual QA. Preserve historical record below.
+
+### F08 Shop Plus optimistic tab protection — verified 153/153 (2026-10-23) [FAKT / KUFIZIM]
+- Owner continued after explicit recommendation for Shop Plus `reject-if-stale`; authorization is narrowly for this feature in `feat/i18n-shop-feedback-20261022`, not blanket permission for all demo modules or F05/F06.
+- Commits `6e6363c0894e38a4249276c8a4b380bc94ec6568` (guard, storage event, two tabs tests, locale), `73e2fbaaade3074b46de49998015030b4e0a6b07` (test locale deterministic), `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166` (correct `shopPlus` namespace placement).
+- **Exact-SHA [Actions #40009859286](https://github.com/titanfit102-bit/Illyrian/actions/runs/40009859286) = 153/153 PASS (3.3m)**, including 2 same-origin two-tab cases: stale changes rejected, user draft preserved, retry after refresh and sq/en/it notices. Earlier CI runs failed due to mistakenly nesting the translation under `shop` rather than `shopPlus`; final run closes that tested error.
+- Catalog keys: **550 per sq/en/it, 15 namespaces, Shop Plus 166**; all root/demo locale mirrors identical at tested SHA.
+- **Scope of proof:** localStorage raw snapshot comparison is **not atomic compare-and-swap**. It guards against *observed* concurrent edits but not perfectly simultaneous writes, ABA changes, or other DEMO modules. Real platform needs server transactional version checks. Do not claim F08 globally closed, Production readiness, or share-state safety.
+- Audit gates remaining **F05** Vercel entrypoint/source SHA (last Vercel GET denied 403), **F06** PR trigger/branch rulesets (requires separate permission), and manual visual/a11y/physical phone review and owner sign-off. No main/Production/merge or manual deploy.
+- **Next within current scope:** read-only F05/F06 evidence and preparing QA checklist; request authorization before changes to Vercel/workflows/admin.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.

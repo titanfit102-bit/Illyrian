@@ -5,13 +5,13 @@
 ## 1. Referencat e verifikuara [FAKT]
 - Repository: [`titanfit102-bit/Illyrian`](https://github.com/titanfit102-bit/Illyrian), **PUBLIC** sipas GitHub API; jo private. Mos vendos sekrete në repo.
 - Dega e vetme e autorizuar për përditësimet e vazhdimësisë: `feat/i18n-shop-feedback-20261022`.
-- **HEAD para krijimit të këtij checkpoint-i:** `534098b6b5194175e78193614debe1bb0ea773cb` (**dokumentacion-only** nga krahasimi me kodin e testuar). Pas commit-it të dokumenteve, lexo HEAD-in LIVE; ky numër është referencë historike, jo premtim se është HEAD i përhershëm.
+- **HEAD i kodit/testeve para këtij checkpoint-i të dokumenteve:** `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166`; pas commit-it docs-only lexo HEAD-in LIVE, jo një SHA historike.
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): **OPEN / DRAFT / UNMERGED**; head = dega sipër; target `demo/v1.7-illyrian-shop`.
 - Dega integruese DEMO: `015ce439e7c6d736149c6c300391586517664f62` (e pandryshuar gjatë verifikimit).
 - `main`: `9f91b5c083b4482a70a2149483cc799360e6102c` (e pandryshuar gjatë verifikimit).
-- **SHA i fundit i kodit + testeve të verifikuara:** `881faaeb05ceddfdd3d9a21cccf3286fc71101d4`.
-- [GitHub Actions #40005987342](https://github.com/titanfit102-bit/Illyrian/actions/runs/40005987342): **completed / success, 151/151 Playwright Chromium PASS (3.6m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
-- i18n: **sq/en/it**, **549 çelësa/gjuhë**, **15 namespace**, `shopPlus` **165 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
+- **SHA i fundit i kodit + testeve të verifikuara:** `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166`.
+- [GitHub Actions #40009859286](https://github.com/titanfit102-bit/Illyrian/actions/runs/40009859286): **completed / success, 153/153 Playwright Chromium PASS (3.3m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
+- i18n: **sq/en/it**, **550 çelësa/gjuhë**, **15 namespace**, `shopPlus` **166 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
 - Vercel: projekti `illyrian-demo` ekziston; **statusi dhe SHA-ja e Preview aktual NUK u verifikuan** sepse leximi i deployments ktheu **403 / team authorization**. Dokumentacioni i vjetër për READY `fbd04ad...` dhe build-rate-limit është historik; mos e paraqit si Preview të kodit të sotëm.
 
 ## 2. Ku kemi mbetur [IMPLEMENTIM + KUFIZIME]
@@ -88,7 +88,16 @@
 - **Nga 10 gjetjet e auditit: 7 të korrigjuara në rrugët e testuara** (F01, F02, F03, F04, F07, F09, F10). **OPEN:** F05 (entrypoint/served SHA, Vercel 403), F06 (PR trigger/branch protections), F08 (multi-tab stale state, kërkon vendim single-writer vs conflict). Jo certifikim release, jo mbulim total i korruptimit të të dhënave.
 - **Scope dhe siguria:** ndryshuan vetëm `demo/ILLYRIAN_DEMO_v1.7.html`, `demo/ILLYRIAN_PLANS_v1.7.js` dhe `qa/illyrian-v17-i18n.spec.cjs` në fazën F02–F04. Pa merge/main/Production ose deploy manual; Git integration mund të gjenerojë automatikisht Preview dhe nuk provon live route.
 
-**Veprimi i saktë pasues:** për F08 përcakto rregullin e konfliktit mes skedave (single-writer ose reject-if-stale) përpara patch-it; F06 kërkon leje workflow/branch protection dhe F05 kërkon leje routing/deploy ose akses vetëm-lexim në scope Vercel. Pastaj QA visual, keyboard/screenreader dhe test në telefon me screenshot-e, plus sign-off. Pa merge/deploy/main/Production.
+### F08 — Checkpoint i mbrojtjes së Shop Plus mes dy skedave (2026-10-23) [FAKT / VENDIM / KUFIZIM]
+- Pronari tha **“vazhdojm”** pas rekomandimit specifik `reject-if-stale`; ky autorizim zbatohet **vetëm për F08 Shop Plus** në degën aktuale, jo për rewrite të core/Plans/Shop bazë, workflow, routing, deploy apo main.
+- `demo/ILLYRIAN_SHOP_PLUS_v1.7.js`: lexon një snapshot fillestar të `illyrian_demo_v17_shop_plus`, përpara çdo ruajtjeje krahason tekstin aktual raw të `localStorage` me snapshot-in e fundit të vet; në konflikt refuzon shkrimin, rikthen gjendjen e brendshme të fundit të ruajtur, **nuk rindërton/zhduk draftin e hapur** dhe jep paralajmërim; `storage` event paralajmëron skedën tjetër pa fshirë tekstin.
+- Përkthimi semantik `shopPlus:storageConflict` u shtua në **sq/en/it**, me pasqyra **root/demo identike**. Katalogët: **550 çelësa/gjuhë, 15 namespace, shopPlus 166** (numërim i kontrolluar në të 6 skedarët).
+- **CI exact-SHA `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166`**, [Actions #40009859286](https://github.com/titanfit102-bit/Illyrian/actions/runs/40009859286): **153/153 PASS (3.3m)**, përfshin dy teste Playwright që hapin **dy skeda të të njëjtit origin**, matin shkrimin e dytë të refuzuar, ruajtjen e draftit, rikuperimin pas reload dhe etiketat sq/en/it. Logu CI u rilexua.
+- **Dështimet ndërmjetëse u zgjidhën**: në #40009028622 / #40009364671 çelësi ishte vendosur gabimisht te namespace `shop`, ndaj UI shfaqte `storageConflict`; commit `a5b93fe...` e zhvendosi te `shopPlus`. Mos i konsidero run-et e dështuar si release evidence.
+- **F08 = i zbutur për ndryshime të vërejtura, jo transaksion atomik**. `localStorage` nuk ka compare-and-swap/lock; shkrimet *vërtet njëkohësisht*, ABA dhe module të tjera të DEMO-s mbeten jashtë provës. Produkti real duhet të ketë kontroll versionesh/transaksionesh server-side. **Mos deklaro mbulim global të F08.**
+- Nga 10 gjetjet e auditit: **7 të korrigjuara dhe të testuara më parë; F08 mitigim i testuar vetëm për Shop Plus; F05 dhe F06 ende OPEN**. Demo release HOLD për F05/F06, QA visual/a11y/telefon, dhe miratim.
+
+**Veprimi i saktë pasues:** për F05 kërko verifikimin read-only të root URL/entrypoint/served SHA, pa ndryshim routing/deploy; për F06 përgatit planin e kontrollit PR/rulesets dhe kërko lejen e domosdoshme para ndryshimit të workflow/administrimit. QA vizuale, screenreader dhe telefon fizik mbeten OPEN; pa merge/main/Production.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
 - Autorizim **i vazhdueshëm** vetëm për krijim/përditësim të `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` në `feat/i18n-shop-feedback-20261022`, pas çdo ndryshimi material e të **verifikuar**. Mos pyet çdo herë për këta dy dokumente, për sa kohë dega dhe kufijtë nuk ndryshojnë.
@@ -101,4 +110,4 @@
 ## 5. Bootstrap për një bisedë të re
 Kur përdoruesi shkruan **“Vazhdo projektin”**, lexo me radhë: `CURRENT_STATE.md` → pjesën **ACTIVE SNAPSHOT** të `MASTER_HANDOFF.md` → `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 → `architecture/ILLYRIAN_I18N.md` → `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Pastaj verifiko **HEAD, PR #1, diff pas checkpoint-it, CI mbi SHA e saktë dhe deployment**. Përcakto veprimin e parë të pambyllur dhe kufijtë e autorizimit. Mos nis nga zero dhe mos shpik informacionin që nuk mund të rikuperosh.
 
-**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `881faaeb05ceddfdd3d9a21cccf3286fc71101d4` (CI **151/151**). Commit-i vijues i dokumenteve është docs-only; kontrollo HEAD live. Nuk ekziston sinkronizim në sfond.
+**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166` (CI **153/153**). Commit-i vijues i dokumenteve është docs-only; kontrollo HEAD live. Nuk ekziston sinkronizim në sfond.
