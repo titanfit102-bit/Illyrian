@@ -250,8 +250,13 @@ for(const config of [
     await expect(dialog.locator('nav').first()).toHaveAttribute('aria-label',roleLabel);
    }
    await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
-   const focusInside=await dialog.evaluate(node=>node.contains(document.activeElement));
-   expect(focusInside,config.name+' dialog focus must remain inside on '+lang).toBe(true);
+   // Focus repair is scheduled before the next paint, not during input events.
+   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>resolve())));
+   const focus=await dialog.evaluate(node=>{
+    const active=document.activeElement;
+    return {inside:node.contains(active),tag:active?.tagName||'none',id:active?.id||'',action:active?.getAttribute('data-ilp')||''};
+   });
+   expect(focus.inside,config.name+' dialog focus must remain inside on '+lang+': '+JSON.stringify(focus)).toBe(true);
    expect(await page.evaluate(key=>localStorage.getItem(key),config.storage)).toBe(before);
   }
   await page.keyboard.press('Escape');
