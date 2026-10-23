@@ -116,3 +116,50 @@ for(const [width,height] of [[320,568],[844,390]]){
   await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
  });
 }
+
+
+// Shop Plus category-specific fields follow accessible keyboard order; fields
+// from other categories stay in the DOM to preserve drafts but must not enter
+// the tab sequence. Actual browser Tab events (no synthetic focus movement).
+for(const [width,height] of [[320,568],[844,390]]){
+ test('Shop Plus category-specific fields follow accessible keyboard order - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  const root=page.locator('#isp-root');
+  await root.locator('[data-isp="create"]').click();
+  const form=root.locator('#isp-create');
+  await expect(form).toBeVisible();
+  const options=[
+   {type:'Produkte',next:'quantity'},
+   {type:'Makina',next:'year'},
+   {type:'Banesa me qira',next:'area'},
+   {type:'Shërbime',next:'details'}
+  ];
+  const specific=['quantity','year','mileage','area','rooms','period'];
+  for(const {type,next} of options){
+   await form.locator('select[name="type"]').selectOption(type);
+   await expect(form.locator('[name="'+next+'"]')).toBeVisible();
+   for(const name of specific.filter(n=>n!==next)){
+    const visible=type==='Makina'&&name==='mileage'
+      ||type==='Banesa me qira'&&(name==='rooms'||name==='period');
+    if(!visible)await expect(form.locator('[name="'+name+'"]')).toBeHidden();
+   }
+   await form.locator('[name="price"]').focus();
+   await expect(form.locator('[name="price"]')).toBeFocused();
+   await page.keyboard.press('Tab');
+   await expect(form.locator('[name="'+next+'"]')).toBeFocused();
+  }
+  // Opening and closing this modal must restore the underlying Shop layer.
+  await page.keyboard.press('Escape');
+  await expect(root).toHaveCount(0);
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+ });
+}
