@@ -198,6 +198,12 @@
 - **Latest Vercel is NOT deployed at this tested SHA:** GitHub commit status is `failure/build-rate-limit` ("retry in 24 hours"), listing by SHA found no deployment. Preview alias is still `dpl_CLSRkS5exjFd1hdNiz6t4iHT6Y23`, `READY` for older docs-only SHA `03a156cc...`, not `af20db8c80dfdb401e0933909140ff0b4dbe249f`. Production alias remains its own main deployment. No upgrade, access change, secrets, merge, deploy Production or roadmap edits.
 - Remaining: F05 build-rate-limit, Vercel team SSO 403 / live HTTP root and physical mobile; F06 PR protection, safe workflow plan; manual VoiceOver/TalkBack + release signoff. Do not treat screenshot/browser suite as real device QA.
 
+
+### Shop Plus keyboard category-order — 2026-10-23 [COMMITTED / CI PENDING]
+- Test-only change in `qa/illyrian-v17-focus.spec.cjs`, commit [`853f698e`](https://github.com/titanfit102-bit/Illyrian/commit/853f698e9a8e21865eb98503dc95db8874ce2218) (2 new real-keyboard Chromium cases: 320×568, 844×390). Checks type-specific first Tab target after price for Products/Car/Rental/Services; hidden unrelated controls not keyboard-focused, modal closes into Shop. No app runtime, roadmap, main, Production or merge changes.
+- [Actions #40027081226](https://github.com/titanfit102-bit/Illyrian/actions/runs/40027081226), exact source/test SHA `853f698e9a8e21865eb98503dc95db8874ce2218`: status in_progress, conclusion not yet available. Do not call this patch PASS or release-ready until run finishes and logs/results are inspected. Prior 165/165 at `af20db8c` is the last confirmed passing QA baseline unless this run is confirmed.
+- NEXT: inspect current CI exact SHA, fix any failing regression on the authorized branch, then assess other DEMO-wide a11y gaps; F05 Vercel Preview HTTP for new SHA (rate-limit/SSO), F06 branch protection, physical phone/screenreader and final owner sign-off remain OPEN. O1–O8 remain research, not approved features.
+
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
 - `MASTER_HANDOFF.md` = vizioni, vendimet, arkitektura, evidenca dhe kufijtë; seksioni ACTIVE SNAPSHOT përditësohet inkrementalisht; **HISTORICAL RECORD poshtë ruhet pa fshirë ose falsifikuar eventet**.
