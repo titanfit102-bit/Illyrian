@@ -1103,3 +1103,70 @@ test('Shop Plus report form keeps unsent reason and text on locale switch',async
   expect(await page.evaluate(()=>document.activeElement?.getAttribute('name'))).toBe('detail');
  }
 });
+
+for(const [lang,labels] of Object.entries({
+ sq:{tag:'ILLYRIAN SHOP · KËRKIM I AVANCUAR',intro:'Krahaso dyqanet dhe shiko karakteristikat e ofertave. Çdo listim është demonstrues.',stock:'Inventari:',sold:'Pa stok (demo)',promoted:'PROMOVUAR · DEMO',compare:'I njëjti produkt, disa dyqane',shops:'Dyqanet e vogla',demoListings:'listime demonstrative',open:'Hap katalogun',fee:'Komision ilustrues 5%:',flow:'Rrjedhë ilustruese',simulate:'Simulo porosinë (pa pagesë)',created:'E krijuar në demo',return:'Kërkesë anulimi/kthimi (demo)'},
+ en:{tag:'ILLYRIAN SHOP · ADVANCED SEARCH',intro:'Compare shops and inspect offer details. Every listing is fictional.',stock:'Stock:',sold:'Out of stock (demo)',promoted:'SPONSORED · DEMO',compare:'Same product, multiple shops',shops:'Small shops',demoListings:'demo listings',open:'Open catalog',fee:'Illustrative 5% fee:',flow:'Illustrative flow',simulate:'Simulate order (no payment)',created:'Created in demo',return:'Cancellation/return requested (demo)'},
+ it:{tag:'ILLYRIAN SHOP · RICERCA AVANZATA',intro:'Confronta i negozi e consulta i dettagli delle offerte. Ogni annuncio è dimostrativo.',stock:'Disponibilità:',sold:'Esaurito (demo)',promoted:'SPONSORIZZATO · DEMO',compare:'Lo stesso prodotto, più negozi',shops:'Piccoli negozi',demoListings:'annunci demo',open:'Apri catalogo',fee:'Commissione illustrativa del 5%:',flow:'Flusso illustrativo',simulate:'Simula ordine (nessun pagamento)',created:'Creato nella demo',return:'Annullamento/reso richiesto (demo)'}
+})){
+ test('Shop Plus catalog cards, comparison and sponsored disclaimers in '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await expect(page.locator('#isp-root .isp-hero b[data-i18n-direct]')).toHaveText(labels.tag);
+  await expect(page.locator('#isp-root .isp-hero p[data-i18n-direct]')).toHaveText(labels.intro);
+  await expect(page.locator('#isp-root .isp-compare h3[data-i18n-direct]')).toHaveText(labels.compare);
+  await expect(page.locator('#isp-root .isp-sponsored').first()).toHaveText(labels.promoted);
+  const sold=page.locator('#isp-root .isp-card').filter({hasText:'Market Bora'});
+  await expect(sold.locator('p').last()).toContainText(labels.sold);
+  const seeded=page.locator('#isp-root .isp-card').filter({hasText:'Market Arbër'});
+  await expect(seeded.locator('p').last()).toContainText(labels.stock);
+  await expect(seeded.locator('h4[data-user-content]')).toHaveText('Kafe espresso 250 g');
+  await expect(seeded.locator('span[data-user-content]')).toHaveText('Market Arbër');
+  const codes=await page.locator('#isp-root .isp-kinds [data-isp^="type:"]').evaluateAll(nodes=>nodes.map(x=>x.dataset.isp));
+  expect(codes).toEqual(['type:Të gjitha','type:Produkte','type:Makina','type:Banesa me qira','type:Shërbime']);
+ });
+ test('Shop Plus seller directory and simulated fee labels translate in '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="tab:stores"]').click();
+  await expect(page.locator('#isp-root h3[data-i18n-direct]')).toHaveText(labels.shops);
+  const row=page.locator('#isp-root .isp-card').filter({hasText:'Market Arbër'});
+  await expect(row.locator('h4[data-user-content]')).toHaveText('Market Arbër');
+  await expect(row).toContainText(labels.demoListings);
+  await expect(row.locator('[data-isp^="store:"]')).toHaveText(labels.open);
+  await page.locator('#isp-root [data-isp="tab:checkout"]').click();
+  await expect(page.locator('#isp-root h4[data-i18n-direct]')).toHaveText(labels.flow);
+  await expect(page.locator('#isp-root b[data-i18n-direct]').filter({hasText:'5%'})).toHaveText(labels.fee);
+  await expect(page.locator('#isp-root [data-isp="sample-order"]')).toHaveText(labels.simulate);
+  await expect(page.locator('#isp-root .isp-muted')).toContainText('5%');
+  await expect(page.locator('#isp-root .isp-muted')).toContainText(lang==='en'?'not an approved fee':lang==='it'?'non è una commissione approvata':'nuk është tarifë e miratuar');
+ });
+}
+test('Shop Plus order state retains original persisted enum while display localizes',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:checkout"]').click();
+ await page.locator('#isp-root [data-isp="sample-order"]').click();
+ const key='illyrian_demo_v17_shop_plus';
+ let rows=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).sampleOrders,key);
+ expect(rows.length).toBe(1);
+ expect(rows[0].status).toBe('E krijuar në demo');
+ const id=rows[0].id;
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText('Created in demo');
+ await page.locator('#isp-root [data-isp="sample-cancel:'+id+'"]').click();
+ rows=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).sampleOrders,key);
+ expect(rows[0].status).toBe('Kërkesë anulimi/kthimi (demo)');
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText('Cancellation/return requested (demo)');
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText('Annullamento/reso richiesto (demo)');
+});
