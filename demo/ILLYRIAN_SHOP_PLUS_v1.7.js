@@ -85,16 +85,16 @@
   (p.owned?btn('edit:'+p.id,'Redakto listimin'):'')+
   '</article>';
  const filters=()=>'<form id="isp-filters"><div class="isp-fields">'+
-   '<label>Kërko<input name="q" maxlength="90" type="search" placeholder="Produkt, dyqan, makinë..." value="'+esc(state.query)+'"></label>'+
-   '<label data-i18n-direct>'+esc(window.IllyrianI18n?.t('shop:city')||'Qyteti')+'<select name="city">'+CITIES.map(x=>'<option '+(x===state.city?'selected ':'')+'value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
-   '<label>Çmim min. €<input name="min" inputmode="decimal" type="number" min="0" max="10000000" value="'+esc(state.min)+'"></label>'+
-   '<label>Çmim max. €<input name="max" inputmode="decimal" type="number" min="0" max="10000000" value="'+esc(state.max)+'"></label>'+
-   '<label>Renditja<select name="sort">'+[['relevance','Relevanca'],['lowest','Më i liri'],['highest','Më i shtrenjti'],['name','Emri']].map(([a,b])=>'<option '+(a===state.sort?'selected ':'')+'value="'+a+'">'+b+'</option>').join('')+'</select></label>'+
-   '<label>Viti i makinës nga<input name="year" type="number" min="1950" max="2030" value="'+esc(state.yearMin)+'" placeholder="2017"></label>'+
-   '<label>Maks. kilometra<input name="km" type="number" min="0" max="2000000" value="'+esc(state.maxKm)+'" placeholder="100000"></label>'+
-   '<label>Min. m² për qira<input name="area" type="number" min="0" max="10000" value="'+esc(state.areaMin)+'" placeholder="50"></label>'+
-   '</div><label class="isp-check"><input name="stock" type="checkbox" '+(state.stockOnly?'checked':'')+'> Vetëm produkte me stok</label>'+
-   '<div class="isp-actions"><button type="submit">Apliko filtrat</button>'+btn('clear-filters','Pastro')+'</div></form>';
+   '<label data-i18n-direct>'+ui('search','Kërko')+'<input name="q" maxlength="90" type="search" placeholder="'+ui('searchPlaceholder','Produkt, dyqan, makinë...')+'" value="'+esc(state.query)+'"></label>'+
+   '<label data-i18n-direct>'+esc(window.IllyrianI18n?.t('shop:city')||'Qyteti')+'<select name="city">'+CITIES.map(x=>'<option data-i18n-direct '+(x===state.city?'selected ':'')+'value="'+esc(x)+'">'+(x==='Të gjitha'?esc(window.IllyrianI18n?.t('shop:all')||x):esc(x))+'</option>').join('')+'</select></label>'+
+   '<label data-i18n-direct>'+ui('priceMin','Çmim min. €')+'<input name="min" inputmode="decimal" type="number" min="0" max="10000000" value="'+esc(state.min)+'"></label>'+
+   '<label data-i18n-direct>'+ui('priceMax','Çmim max. €')+'<input name="max" inputmode="decimal" type="number" min="0" max="10000000" value="'+esc(state.max)+'"></label>'+
+   '<label data-i18n-direct>'+esc(window.IllyrianI18n?.t('shop:sortHeading')||'Renditja')+'<select name="sort">'+[['relevance',window.IllyrianI18n?.t('shop:relevance')||'Relevanca'],['lowest',feedback('cheapest','Më i liri')],['highest',feedback('mostExpensive','Më i shtrenjti')],['name',feedback('name','Emri')]].map(([a,b])=>'<option data-i18n-direct '+(a===state.sort?'selected ':'')+'value="'+a+'">'+esc(b)+'</option>').join('')+'</select></label>'+
+   '<label data-i18n-direct>'+ui('carYear','Viti i makinës nga')+'<input name="year" type="number" min="1950" max="2030" value="'+esc(state.yearMin)+'" placeholder="2017"></label>'+
+   '<label data-i18n-direct>'+ui('maxKm','Maks. kilometra')+'<input name="km" type="number" min="0" max="2000000" value="'+esc(state.maxKm)+'" placeholder="100000"></label>'+
+   '<label data-i18n-direct>'+ui('minArea','Min. m² për qira')+'<input name="area" type="number" min="0" max="10000" value="'+esc(state.areaMin)+'" placeholder="50"></label>'+
+   '</div><label class="isp-check" data-i18n-direct><input name="stock" type="checkbox" '+(state.stockOnly?'checked':'')+'> '+ui('inStock','Vetëm produkte me stok')+'</label>'+
+   '<div class="isp-actions"><button type="submit" data-i18n-direct>'+ui('applyFilters','Apliko filtrat')+'</button>'+btn('clear-filters',feedback('clear','Pastro'),'data-i18n-direct')+'</div></form>';
  const catalog=()=>{
   const result=safeItems(),sets=productSets();
   return '<div class="isp-hero"><b>ILLYRIAN SHOP · KËRKIM I AVANCUAR</b><h2>Gjej produktin, jo vetëm një reklamë.</h2><p>Krahaso dyqanet dhe shiko karakteristikat e ofertave. Çdo listim është demonstrues.</p></div>'+
@@ -325,9 +325,23 @@
   newBtn.type='button';newBtn.className='ils-btn';newBtn.dataset.ispOpen='1';newBtn.textContent='Kërkim i avancuar · Katalogë · Kërkoj…';
   actions.appendChild(newBtn);
  }
+ function onLocaleChange(){
+  if(!state.open||!overlay)return;
+  const form=overlay.querySelector('form');
+  const fields=form?[...form.elements].filter(e=>e.name).map(e=>({name:e.name,value:e.value,checked:e.type==='checkbox'?e.checked:null})):null;
+  const active=document.activeElement,focusedName=active?.name,action=active?.dataset?.isp;
+  render();
+  const target=overlay.querySelector('form');
+  if(fields&&target){
+   for(const item of fields){const el=target.elements.namedItem(item.name);if(!el)continue;el.value=item.value;if(item.checked!==null)el.checked=item.checked}
+  }
+  if(focusedName&&target?.elements.namedItem(focusedName))target.elements.namedItem(focusedName).focus();
+  else if(action)overlay.querySelector('[data-isp="'+CSS.escape(action)+'"]')?.focus();
+ }
  function init(){
   const phone=document.querySelector('#phone');if(!phone)return;
   document.addEventListener('click',e=>{const el=e.target.closest('[data-isp-open]');if(el){e.preventDefault();e.stopPropagation();open()}},true);
+  window.addEventListener('illyrian:language-changed',onLocaleChange);
   document.addEventListener('keydown',e=>{
    if(!state.open)return;
    if(e.key==='Escape'){e.preventDefault();close();return}
