@@ -621,3 +621,13 @@ Documented accepted architecture in blueprint §10 and handoff. Corrected Shop f
 ### P1-D localization progress — Connections/Governance (23 Oct 2026)
 Following P0 Shop storage hardening (65/65), updated two additional modules with semantic sq/en/it runtime feedback (23 new keys total), catalog mirrors at **319 keys per locale**, and scoped protection for user-written reports/drafts. Six new Chromium tests cover all three locales, validation, persisted stable values and unchanged user text. **GitHub Actions #39930979544 on code+test SHA `f5478b1716289bec575dfd5e23cd4294132dfcad`: 71/71 PASS (2.1m).** No code copied across other projects, no merges or deployment.
 The scoped CI workflow now includes root `i18n/**` changes in push path filters. Follow-up: Shop Plus dynamic forms/errors, Plans/Privacy, UGC exclusions, locale switching while dialogs are open, PR gating, visual/accessibility QA, Vercel Preview refresh, and the owner's full phone screenshot review. This is not full multilingual certification or production readiness.
+
+
+
+### P1-D Shop Plus localization checkpoint — 23 October 2026
+- Localized 18 Shop Plus dynamic feedback strings for sq/en/it, reaching **337 keys/locale** with 15 namespaces and identical root/demo bundles.
+- Hardened failure UX: failed browser storage writes preserve unsaved form input and prevent false success navigation for Shop Plus listing, request, answer and report flows.
+- Scoped UGC exclusions now cover Shop Plus listing identities/descriptions, buyer requests/answers, reports and shop identifiers. Existing `type/city/reason` values remain stable.
+- Added nine Chromium browser tests since 71 baseline: multilingual feedback and data contract, failed-save retry, UGC unchanged on language switch. **Actions #39935174398 (commit `893538c33dd7cdecf9aa77e359a999d649a7a247`): 80/80 PASS (2.4m).**
+- Branch `feat/i18n-shop-feedback-20261022` / Draft PR #1 only; no merge into DEMO, main or Production. Not a deployment or native-phone acceptance.
+- Next: Plans, Privacy, static Shop Plus UI strings, semantic option labels, remaining forms/dynamic messages, full screen/a11y/visual QA, current Vercel Preview identity and physical device screenshot review. Real backend and live commerce remain gated separately.
