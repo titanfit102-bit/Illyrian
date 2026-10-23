@@ -73,3 +73,46 @@ for(const [width,height] of [[320,568],[390,844],[844,390],[1280,800]]){
   await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
  });
 }
+
+
+// Screen review follow-up: actionable controls below the fold and outside the
+// initial horizontal-nav viewport must remain reachable in narrow screens.
+for(const [width,height] of [[320,568],[844,390]]){
+ test('Shop Plus offscreen submit and Reports remain reachable - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  const root=page.locator('#isp-root');
+  await expect(root).toBeVisible();
+
+  // Horizontal tabs should be accessible even when the final tab is clipped.
+  const reportTab=root.locator('[data-isp="tab:moderation"]');
+  await reportTab.scrollIntoViewIfNeeded();
+  await expect(reportTab).toBeInViewport();
+  await reportTab.click();
+  await expect(root.locator('[data-isp="tab:moderation"]')).toHaveAttribute('aria-current','page');
+
+  // Returning to the catalog allows navigating to the listing form.
+  await root.locator('[data-isp="tab:catalog"]').click();
+  await root.locator('[data-isp="create"]').click();
+  const form=root.locator('#isp-create');
+  await expect(form).toBeVisible();
+  const submit=form.locator('button[type="submit"]');
+  await submit.scrollIntoViewIfNeeded();
+  await expect(submit).toBeInViewport();
+  await submit.focus();
+  await expect(submit).toBeFocused();
+  const panel=root.locator('.isp-panel');
+  expect(await panel.evaluate(el=>el.scrollTop)).toBeGreaterThan(0);
+  await page.keyboard.press('Escape');
+  await expect(root).toHaveCount(0);
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+ });
+}
