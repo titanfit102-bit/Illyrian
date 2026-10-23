@@ -653,3 +653,10 @@ The scoped CI workflow now includes root `i18n/**` changes in push path filters.
 - Targeted UGC protection for selected map names/descriptions and public activity titles; removed duplicated status announcement.
 - Added six browser scenarios since 95 baseline. **CI #39939993711**, code+tests SHA `2048ca78c9d062cb2afa8028251a6f600456c36a`: **101/101 PASS (2.7m)**. Prior 98/101 run led to legitimate duplicate-notice fix.
 - Draft PR #1 remains unmerged. Next: residual static UI strings and direct-key consistency for Privacy/Plans/Shop Plus, full UGC audit, visual/a11y/device QA, Vercel candidate identity, owner's phone screenshots, then app-real M0–M5 decisions.
+
+
+### P1-D Privacy static UI / direct-key compatibility (23 Oct 2026)
+- Added 17 new sq/en/it `privacy:*` keys (435/locale; 15 namespaces), converted scoped Privacy & Map navigation/warnings/header/group/map/state UI to direct semantic translations and preserved unsubmitted map input/focus through live locale changes. Maintained canonical city/filter/status IDs and user-owned text.
+- Critical bug discovered by expanded tests: old DOM phrase adapter retranslated direct Italian `Profili` to `Profilo`. Fixed with explicit `[data-i18n-direct]` boundary in root and demo adapters, distinct from the `[data-user-content]` content exclusion.
+- Nine new Playwright cases since 101 baseline; current **Actions #39944600826 at `d803758ee14cfaa26bc5cab4eee8e27571d5a535` = 110/110 PASS, 2.9m**. Prior failures prompted a real source fix, no test deletion. **PR #1 stays DRAFT/unmerged; no main/Production changes.**
+- Next: direct binding/static copy in Plans/Shop Plus and remaining Privacy blocks; global UGC audit; Android/phone, responsive/keyboard/screenreader, Vercel candidate checks, owner screenshot review. Simulated UI roles are not security backend controls.
