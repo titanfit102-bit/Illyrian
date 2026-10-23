@@ -690,7 +690,7 @@ test('Plans failed cancel restores stored event and never claims success',async(
 
 for(const [locale,messages] of Object.entries({
  en:{bad:'Title or location is too short.',saved:'Activity saved in the demo.',quota:'Could not save the change on this device.'},
- it:{bad:'Il titolo o il luogo è troppo breve.',saved:'Attività salvata nella demo.',quota:'Impossibile salvare la modifica su questo dispositivo.'}
+ it:{bad:'Il titolo o il luogo è troppo breve.',saved:'Attività salvata nella demo.',quota:'Impossibile salvare la modifica sul dispositivo.'}
 })){
  test('Plans semantic validation and success feedback in '+locale,async({page})=>{
   await ready(page);
