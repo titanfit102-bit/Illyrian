@@ -1453,3 +1453,80 @@ test('i18n audit F10 root and demo mirror files stay byte-identical',()=>{
   expect(canonical.equals(altered),'negative parity check '+file).toBe(false);
  }
 });
+
+
+
+test('audit F04 failed feed save preserves draft and never reports success',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="modal"][data-val="compose"]').click();
+ const field=page.locator('#layer #v5-text');
+ const draft='Mbyll personal post survives rejection';
+ await field.fill(draft);
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await rejectModuleWrites(page,'illyrian_demo_v09_state');
+ await page.locator('#layer [data-act="v5-publish"]').click();
+ await expect(field).toHaveValue(draft);
+ await expect(page.locator('#toast-area')).toContainText('nuk u ruajt');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await allowModuleWrites(page);
+ await page.locator('#layer [data-act="v5-publish"]').click();
+ await expect(page.locator('#layer [data-act="v5-publish"]')).toHaveCount(0);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts);
+ expect(saved.filter(p=>p.text===draft)).toHaveLength(1);
+});
+
+test('audit F03 corrupted local creator and Plans records do not crash on reopen',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  localStorage.setItem('illyrian_demo_v15_creator',JSON.stringify({
+    stories:[null,42,{id:'s1',caption:'Mbyll',sample:'arta'}],
+    reels:[{},false,{id:'r1',caption:'Mbyll',sample:'cafe'}]
+  }));
+  localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({
+    events:[null,{},[],{id:'valid',title:'Mbyll demo plan',kind:'Sport',city:'Tiranë',place:'Park',date:'2027-10-23',time:'17:30',capacity:6,price:0,privacy:'public'}],
+    requests:[null,{id:'r1',eventId:'valid',name:'Visitor',status:'pending'}],
+    messages:[null,42,{eventId:'valid',name:'Visitor',text:'Mbyll'}],
+    attendance:[null,42,'r1']
+  }));
+ });
+ const before=await page.evaluate(()=>({
+  media:localStorage.getItem('illyrian_demo_v15_creator'),
+  plans:localStorage.getItem('illyrian_demo_v17_plans')
+ }));
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await expect(page.locator('#screen [data-act="v15-view"][data-val="reel"]')).toHaveCount(1);
+ await expect(page.locator('#screen [data-act="v15-view"][data-val="story"]')).toHaveCount(1);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('[data-ilp-entry]').first().click();
+ await expect(page.locator('#ilp-root h3[data-user-content]')).toContainText('Mbyll demo plan');
+ expect(errors).toEqual([]);
+ const after=await page.evaluate(()=>({
+  media:localStorage.getItem('illyrian_demo_v15_creator'),
+  plans:localStorage.getItem('illyrian_demo_v17_plans')
+ }));
+ expect(after).toEqual(before);
+});
+
+test('audit F02 Reel and Story author caption remains unchanged on locale switch',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>localStorage.setItem('illyrian_demo_v15_creator',JSON.stringify({
+  stories:[{id:'s1',caption:'Mbyll',sample:'arta'}],
+  reels:[{id:'r1',caption:'Mbyll',sample:'cafe'}]
+ })));
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#screen [data-act="v15-view"][data-val="reel"]').first().click();
+ for(const lang of ['sq','en','it']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#layer .v16-viewer .v16-content > p[data-user-content]')).toHaveText('Mbyll');
+ }
+ await page.keyboard.press('Escape');
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#screen [data-act="v15-view"][data-val="story"]').first().click();
+ for(const lang of ['it','en','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#layer .v16-viewer .v16-content > p[data-user-content]')).toHaveText('Mbyll');
+ }
+});
