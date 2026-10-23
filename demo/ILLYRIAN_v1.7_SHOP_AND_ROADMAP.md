@@ -638,3 +638,10 @@ The scoped CI workflow now includes root `i18n/**` changes in push path filters.
 - Nine new Playwright cases across sq/en/it validate listing creation fields, rental periods, buyer deadline options, report reasons and switching the active language while forms retain user input.
 - **CI #39937253596: 89/89 Chromium PASS (2.6m)**, code/test SHA `429927296870ea6b6d6ca1e90ab3cb4726cb307d`; this is not physical-phone or full i18n coverage.
 - Note: Static fields are currently localized through the existing DOM phrase adapter backed by keys, not direct semantic bindings. Full Shop Plus prose remains under review. Next implementation phases: Plans and Privacy runtime strings/persistence regressions; broader UI/UGC, accessibility/visual, Preview and owner's phone screenshots. No merge/Production.
+
+
+### P1-D Plans verification checkpoint — 23 October 2026
+- 18 new direct localized runtime keys for Plans in sq/en/it, reaching **392 keys/locale**, root/demo synchronized; existing `plans:localStorageError` reused.
+- P0 Plans: failed local writes no longer retain mutated events, join requests, attendance or group messages; failed create/edit keeps form values and shows a storage error without claiming completion. Event titles excluded from transient DOM i18n phrase changes in selected views.
+- Six added QA cases (89→95), including quota failure, cancel rollback, en/it success/validation and storage error messages; [Actions #39938445963](https://github.com/titanfit102-bit/Illyrian/actions/runs/39938445963), tested SHA `8c2ebfd57227f6f4f22ffa377a2067f83022c072`: **95/95 PASS (2.7m)**.
+- Next: Privacy module, remaining static Plans/Shop Plus copy, full UGC/screen reader/mobile/visual QA; verify Vercel Preview and owner phone screenshots. No merge, production, payments, provisioning or branch integration.
