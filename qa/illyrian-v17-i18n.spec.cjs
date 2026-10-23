@@ -1016,6 +1016,7 @@ for(const [lang,label] of Object.entries({
   expect(types.map(x=>x.value)).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
   const period=await form.locator('select[name="period"] option').evaluateAll(a=>a.map(e=>({value:e.value,text:e.textContent.trim()})));
   expect(period).toEqual([{value:'muaj',text:label.month},{value:'javë',text:label.week}]);
+  await expect(form.locator('button[type="submit"]')).toHaveText({sq:'Publiko në demo',en:'Publish in demo',it:'Pubblica nella demo'}[lang]);
  });
  test('Shop Plus direct buyer request and report preserve canonical codes: '+lang,async({page})=>{
   await ready(page);
