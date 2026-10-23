@@ -676,3 +676,11 @@ The scoped CI workflow now includes root `i18n/**` changes in push path filters.
 - Switching language while Shop Plus is open retains unsaved form text, numeric inputs, dropdown values, checkboxes and focus without submitting a draft. Existing localStorage quota rollback and scoped UGC protections were preserved.
 - Eight new browser tests (115 to 123). Verified [Actions #39948438751](https://github.com/titanfit102-bit/Illyrian/actions/runs/39948438751) on tested code/test SHA `82b62fd06b724e5436a5ed7bbc51b2aa32e1de0f`: **123/123 Playwright Chromium PASS, 2.8m**. Root/demo catalog parity and JS syntax passed.
 - OPEN: further Shop Plus static copy (catalog, shops, product cards, simulation checkout), additional Plans and Privacy fragments, complete UGC inventory, visual/a11y/mobile QA, Vercel Preview SHA, owner review via phone screenshots. Draft PR #1 must remain unmerged; no main/Production modification.
+
+
+### P1-D Shop Plus catalog, merchants and simulated orders — 23 October 2026
+- Added 39 direct sq/en/it catalog/stock/offer/shop/checkout display keys without changing canonical domain data; total **499 keys/locale, 15 namespaces** and identical root/demo bundles.
+- Product and seller names in updated cards/compare listings remain user-originated; promoted badges and inventory labels translate, but no stock verification or real selling exists. Sellers show demonstrative listings only.
+- Simulated checkout continues using illustrative 5% fee, no real payment/delivery/refund. Stored order statuses are unchanged historical codes; translated display labels are applied only at render, with unknown statuses preserved rather than mislabeled.
+- Eight extra Playwright scenarios (123→131), [Actions #39968158271](https://github.com/titanfit102-bit/Illyrian/actions/runs/39968158271), tested SHA `5fe384f89c5ad958825b52c81c6599dd055e1ad2`, **131/131 PASS (3.3m)**. A prior selector-only test regression was fixed without deleting tests.
+- Still OPEN: further static strings in item detail, buyer-request board and replies, moderation/reporting, rental time labels, plus remaining Plans/Privacy UI, accessibility/responsiveness/global UGC and real Preview/physical-phone acceptance. Draft PR #1 remains unmerged. Do not touch main/DEMO integration/Production without explicit approval.
