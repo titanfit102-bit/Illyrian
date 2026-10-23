@@ -9,8 +9,8 @@
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): **OPEN / DRAFT / UNMERGED**; head = dega sipër; target `demo/v1.7-illyrian-shop`.
 - Dega integruese DEMO: `015ce439e7c6d736149c6c300391586517664f62` (e pandryshuar gjatë verifikimit).
 - `main`: `9f91b5c083b4482a70a2149483cc799360e6102c` (e pandryshuar gjatë verifikimit).
-- **SHA i fundit i kodit + testeve të verifikuara:** `596eb43e258591810f2dfc49fa70e8435bd5748e`.
-- [GitHub Actions #39984314812](https://github.com/titanfit102-bit/Illyrian/actions/runs/39984314812): **completed / success, 139/139 Playwright Chromium PASS (3.4m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
+- **SHA i fundit i kodit + testeve të verifikuara:** `0d7dea774ea9a8dfd3996f8a808e873bd66277a5`.
+- [GitHub Actions #39989658495](https://github.com/titanfit102-bit/Illyrian/actions/runs/39989658495): **completed / success, 140/140 Playwright Chromium PASS (3.1m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
 - i18n: **sq/en/it**, **549 çelësa/gjuhë**, **15 namespace**, `shopPlus` **165 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
 - Vercel: projekti `illyrian-demo` ekziston; **statusi dhe SHA-ja e Preview aktual NUK u verifikuan** sepse leximi i deployments ktheu **403 / team authorization**. Dokumentacioni i vjetër për READY `fbd04ad...` dhe build-rate-limit është historik; mos e paraqit si Preview të kodit të sotëm.
 
@@ -55,7 +55,15 @@
 - Katalogët vazhdojnë: **549 keys/gjuhë, 15 namespaces, 165 `shopPlus`**, root/demo mirrors identike sipas kontrollit të fundit të kodit. Pa ndryshim `main`/Production/merge/deploy.
 - **Hapi pasues i autorizuar [PLAN]:** rishiko false-positive e 98 vlerave në inventar, shto audit të klasifikuar për Shop Plus ose teste të munguara për language switch të përgjigjeve dhe fokus; pastaj Playwright exact-SHA dhe dokumentacion. Gate përfundimtar DEMO (vizual/a11y/screenreader, Vercel SHA, telefon fizik + screenshot-e, approval i pronarit) mbetet i hapur.
 
-**Veprimi i saktë pasues:** analizo inventarin e zgjeruar dhe siguro auditin e mungesave reale Shop Plus (jo emra/listime), testet language switch/focus të path-eve të mbetura, pastaj CI exact-SHA dhe checkpoint; mos prek main, Production, deploy, merge.
+### Faza 7 / Shop Plus — checkpoint pas ndërprerjes, CI 140/140 [VERIFIKUAR, 2026-10-23]
+- [Run #39988218398](https://github.com/titanfit102-bit/Illyrian/actions/runs/39988218398), SHA `45a4e5f18e4e5d30725ee26e11f49173d5cb085f`: **140/140 PASS (3.4m)**; test i ri për përgjigje të papublikuar të shitësit që ruan input, fokusin dhe storage gjatë ndërrimit sq/en/it; inventar fillestar sipas 8 pamjeve Shop Plus.
+- [Run #39988922101](https://github.com/titanfit102-bit/Illyrian/actions/runs/39988922101), SHA `fe5c497e00ff873a80cea37c3420f8ec5c5f1348`: **140/140 PASS (3.5m)**; korrigjim i filtrit të numrave dhe raportim i mospërputhjeve sipas pamjes. Raporti i mëparshëm numëronte tekste prapa modalit Shop Plus, prandaj **nuk ishte audit i izoluar i Shop Plus**.
+- [Run #39989658495](https://github.com/titanfit102-bit/Illyrian/actions/runs/39989658495), SHA `0d7dea774ea9a8dfd3996f8a808e873bd66277a5`: **140/140 PASS (3.1m)**; inventari i saktësuar lexon vetëm `#isp-root` dhe përjashton `data-user-content`; te `label` llogarit etiketën statike, jo përmbajtjen e `select`. Në 8 pamje: catalog 32, item 10, report 11, moderation 8, needs 17, checkout 10, stores 9, create 22, secila **0 mospërputhje me vlerat sq të katalogut** në kampionin e matur. Kjo është përputhje *exact-match* e etiketave të vrojtuara, **jo provë që çdo gjendje apo anglishtja/italishtja janë 100% pa probleme**.
+- Inventari app-wide (sq, i kampionuar): **269 etiketa unike / 74 mospërputhje të sakta**; shumica janë përmbajtje shembull, emra, etiketa kompozite ose UI jashtë Shop Plus. Mos i trajto 74 si 74 gabime të provuara i18n.
+- Katalogë **549 keys/locale (sq/en/it), 15 namespace, shopPlus 165**, mirror root/demo identik në verifikimin e fundit. **Asnjë merge, deploy apo ndryshim main/Production**.
+- **GATE TANI [OPEN]:** Shop Plus locale paths janë mbuluar fort nga Chromium, por mbeten testi vizual portrait/landscape, ekranlexuesi, vizita në telefon fizik dhe screenshot-et e pronarit; Vercel Preview SHA pa akses të verifikuar (403 historik). Lokalizimi i pjesëve të tjera të aplikacionit është jashtë autorizimit aktual për kodin. `main`, PR merge dhe deploy kërkojnë leje veçmas.
+
+**Veprimi i saktë pasues:** QA vizual dhe a11y për Shop Plus në telefon/screenreader, audit të gjendjeve të rralla sipas provave reale, verifikim read-only i Preview SHA kur Vercel lejon akses; kërko sign-off për DEMO vetëm pasi të mbyllen këto gates. Mos bëj merge/deploy/ndryshime të moduleve të tjera pa autorizim.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
 - Autorizim **i vazhdueshëm** vetëm për krijim/përditësim të `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` në `feat/i18n-shop-feedback-20261022`, pas çdo ndryshimi material e të **verifikuar**. Mos pyet çdo herë për këta dy dokumente, për sa kohë dega dhe kufijtë nuk ndryshojnë.
@@ -68,4 +76,4 @@
 ## 5. Bootstrap për një bisedë të re
 Kur përdoruesi shkruan **“Vazhdo projektin”**, lexo me radhë: `CURRENT_STATE.md` → pjesën **ACTIVE SNAPSHOT** të `MASTER_HANDOFF.md` → `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 → `architecture/ILLYRIAN_I18N.md` → `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Pastaj verifiko **HEAD, PR #1, diff pas checkpoint-it, CI mbi SHA e saktë dhe deployment**. Përcakto veprimin e parë të pambyllur dhe kufijtë e autorizimit. Mos nis nga zero dhe mos shpik informacionin që nuk mund të rikuperosh.
 
-**Checkpoint status:** këto të dhëna ishin të verifikuara **para commit-it të krijimit të dokumenteve**. SHA i commit-it të vazhdimësisë është commit-i Git që shton/ndryshon dy skedarët; lexo versionin live për SHA-në aktuale.
+**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `0d7dea774ea9a8dfd3996f8a808e873bd66277a5` (CI 140/140). Commit-i i këtij përditësimi është **docs-only** dhe duhet lexuar nga HEAD live. Dokumentet nuk ekzekutohen në sfond.
