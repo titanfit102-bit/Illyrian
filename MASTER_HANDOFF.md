@@ -51,8 +51,8 @@
 - **P3/M5:** security/a11y/device testing, ops/observability/backup-restore, staged release dhe sign-off; zgjerim gjeografik/gjuhësor vetëm mbi metrika.
 
 ### G. Pika e saktë e rifillimit dhe kriteret [PLAN]
-**Checkpoint aktiv:** `5940e1d9130a928d0b917c7022db945f849c8412` = **157/157 Chromium PASS**, [Actions #40012871234](https://github.com/titanfit102-bit/Illyrian/actions/runs/40012871234). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
-**Detyra pasuese:** 157/157 PASS përfshin katër teste të reja Shop Plus keyboard/focus, dhe 21 pamje shtesë në artifact vizual; **screenshot-et dhe telefoni nuk janë shqyrtuar manualisht**. F05/F06 mbeten release gates; audit read-only lejohet, ndryshimet Vercel/CI/admin kërkojnë leje të veçantë. F08 nuk është atomic CAS. Asnjë merge/main/Production.
+**Checkpoint aktiv:** `6fb4bd696e0b9f1115691c03eb171e5a8ca3e445` = **159/159 Chromium PASS**, [Actions #40014770846](https://github.com/titanfit102-bit/Illyrian/actions/runs/40014770846). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
+**Detyra pasuese:** artifact-i vizual prej 63 screenshot-esh është shqyrtuar nga contact sheet/pamje individuale; problem UX-P2 i identifikuar me fusha të panevojshme sipas kategorisë. Dy teste të reja të aksesit te kontrollet jashtë viewport-it kaluan në 320×568/844×390; QA fizike në telefon dhe screenreader mbetet OPEN. F05/F06 ende release gates; ndryshimet admin/Vercel kërkojnë leje. Asnjë merge/main/Production.
 **Definition of Done:** testi për rastin e dështimit, regresionet e vjetra, exact-SHA GitHub Actions PASS, diff i kufizuar, dokumentim i provës dhe i gates të hapura. Testet e kaluara nuk janë automatikisht miratim release.
 
 ### G.1 — AUDIT HISTORIK I SHOP PLUS (para korrigjimeve të 23 tetorit; jo gjendje aktive)
@@ -127,6 +127,13 @@
 - The existing seven-viewport visual test was extended by Shop Plus catalog/needs/create screenshots: 3 additions per viewport, 21 extra images, 63 generated images across all nine states. `illyrian-v17-visual-review` artifact listed for the run. **No human comparison, mobile physical-device, screenreader or WCAG certification yet.**
 - F05/F06 remain unresolved: root route points to v1.5, Vercel team `un24` API 403 and previously build-rate-limited status; no branch ruleset protection/PR-trigger. No workflows, Vercel, admin, merge, main or Production changes in this slice.
 - Next: visual screenshot/manual device review and owner sign-off. Operational fixes F05/F06 require separate permission. Keep F08 residual non-atomic limitation explicit.
+
+### Visual artifact review and compact-screen reachability — 2026-10-23 [FAKT / UX P2]
+- Downloaded [GitHub Actions visual artifact from #40012871234](https://github.com/titanfit102-bit/Illyrian/actions/runs/40012871234) ID `12528010017`: 63 JPEGs = 9 states × 7 viewport sizes. Reviewed montage for all 63 and individual full-size Shop Plus shots (320×568, 390×844, 844×390). No obvious blank render or catastrophic overlap in *captured first-view regions*; **not** a full visual-pass certification or physical-device test.
+- **Confirmed UX P2** with image and `demo/ILLYRIAN_SHOP_PLUS_v1.7.js` `create()`: `Produkte` listing form still shows car year/km and property/rental inputs. These are not relevant to the selected type and lengthen the form at 320×568. No runtime change made; implementing conditional visibility must preserve edit values, drafts, validation, domain codes and sq/en/it switching, and needs deliberate scope approval.
+- 320 px horizontal tabs show only an initial subset; scrollable nav is intentional; submit often below viewport height in portrait/landscape. Added 2 browser tests in `qa/illyrian-v17-focus.spec.cjs` for Reports tab horizontal access and submit vertical scroll-to-focus/close at 320×568 and 844×390. [CI #40014770846](https://github.com/titanfit102-bit/Illyrian/actions/runs/40014770846) **159/159 Chromium PASS (3.5m)** on code/test SHA `6fb4bd696e0b9f1115691c03eb171e5a8ca3e445`.
+- **Remaining release gates:** F05 Vercel entrypoint/source SHA + build-rate-limit/403, F06 required PR checks/protection, phone touch portrait+landscape review including below-fold states, VoiceOver/TalkBack, human screenshots final acceptance and owner's sign-off. Do not claim production readiness. No merge/deploy/main/Production touched.
+- **Next decision:** UX P2 category-conditional fields (not yet authorized as feature redesign). F05/F06 admin/routing require explicit permission; meanwhile phone QA materials can be reviewed read-only.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
