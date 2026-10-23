@@ -195,6 +195,15 @@
     const actionTarget=action&&root.querySelector('[data-ilp="'+action+'"]');
     const focusTarget=fieldTarget||actionTarget||root.querySelector('.ilp-panel header button');
     focusTarget?.focus();
+    // Other locale listeners and the legacy DOM translator may still update
+    // the interface in this event turn. Recheck after their DOM work settles.
+    queueMicrotask(()=>{
+      if(!state.open||!root?.isConnected||root.hidden||root.contains(document.activeElement))return;
+      const liveForm=root.querySelector('#ilp-form'),liveChat=root.querySelector('#ilp-chat-form');
+      const liveField=field&&(liveForm?.elements.namedItem(field)||liveChat?.elements.namedItem(field));
+      const liveAction=action&&root.querySelector('[data-ilp="'+action+'"]');
+      (liveField||liveAction||root.querySelector('.ilp-panel header button'))?.focus();
+    });
   }
   function init(){
     const phone=document.querySelector('#phone'),screen=document.querySelector('#screen');if(!phone||!screen)return;
