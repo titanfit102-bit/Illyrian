@@ -54,7 +54,7 @@
 - **P3/M5:** security/a11y/device testing, ops/observability/backup-restore, staged release dhe sign-off; zgjerim gjeografik/gjuhësor vetëm mbi metrika.
 
 ### G. Pika e saktë e rifillimit dhe kriteret [PLAN]
-**Checkpoint aktiv:** `6fb4bd696e0b9f1115691c03eb171e5a8ca3e445` = **159/159 Chromium PASS**, [Actions #40014770846](https://github.com/titanfit102-bit/Illyrian/actions/runs/40014770846). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
+**Checkpoint aktiv:** `4c52a1df5b7464dfc4ea6be6f9917212cd514374` = **160/160 Chromium PASS**, [Actions #40020229099](https://github.com/titanfit102-bit/Illyrian/actions/runs/40020229099). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
 **Detyra pasuese:** artifact-i vizual prej 63 screenshot-esh është shqyrtuar nga contact sheet/pamje individuale; problem UX-P2 i identifikuar me fusha të panevojshme sipas kategorisë. Dy teste të reja të aksesit te kontrollet jashtë viewport-it kaluan në 320×568/844×390; QA fizike në telefon dhe screenreader mbetet OPEN. F05/F06 ende release gates; ndryshimet admin/Vercel kërkojnë leje. Asnjë merge/main/Production.
 **Definition of Done:** testi për rastin e dështimit, regresionet e vjetra, exact-SHA GitHub Actions PASS, diff i kufizuar, dokumentim i provës dhe i gates të hapura. Testet e kaluara nuk janë automatikisht miratim release.
 
@@ -158,6 +158,12 @@
 - **M0 recommendation for future approval only:** compare one small accessible area × one recent need × one time window; interview real recent users plus a minimal number of suppliers/hosts, run a carefully permissioned manual test, measure finished outcomes and operator minutes, then select **one** primary loop. Do not contact anyone, promise service or spend money from this report. Any changes to market scope, roadmap, architecture or monetization require owner's explicit decision.
 - **Live F05 update:** latest code SHA `6fb4bd6...` GitHub Vercel status = `success`, but the root rewrite still points at v1.5 and Vercel team `un24` requests still return 403. Served SHA/target/Preview not certified. F06 remains no PR trigger or branch rulesets; phone/VoiceOver/TalkBack QA not complete; Shop Plus conditional-fields UX issue remains pending explicit authorization.
 - **Current priority:** close existing DEMO quality/release gates **before** any strategic new feature. Keep a strict separation of done DEMO, open defects/gates, accepted real-product architecture and unapproved proposal portfolio. This review made **docs-only** changes to continuity, not roadmap/decision log, code, main, merge, Vercel or Production.
+
+### Shop Plus expired reply draft regression — verified 160/160 (2026-10-23) [FAKT]
+- After archiving the complete GPT Work report as non-binding research, only `qa/illyrian-v17-i18n.spec.cjs` changed in commit `4c52a1df5b7464dfc4ea6be6f9917212cd514374`. New Playwright case exercises a request that expires while its seller reply draft is open: validation warns and keeps the draft, focus and localStorage unchanged; retry under valid test time writes one answer.
+- [GitHub Actions #40020229099](https://github.com/titanfit102-bit/Illyrian/actions/runs/40020229099), exact code/test SHA `4c52a1df5b7464dfc4ea6be6f9917212cd514374`: **160/160 PASS (3.8m)**, including the added case (job log inspected).
+- **All previous gates still OPEN:** F05 root route/served SHA, F06 PR protection/workflow, real phone/VoiceOver/TalkBack, UX-P2 form fields conditional by category requiring separate approval, final DEMO sign-off. No runtime UX change, architecture, roadmap, main/Production, merge or manual deploy.
+- Strategic O1–O8 are in the full report under `docs/research/` and are not approved features or build tasks.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.

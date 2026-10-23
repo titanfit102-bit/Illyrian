@@ -6,12 +6,12 @@
 - **Research / Propozime strategjike (JO të miratuara):** [Raporti origjinal i plotë i inovacionit GPT Work — 2026-10-23](docs/research/ILLYRIAN_PRODUCT_INNOVATION_STRATEGIC_REVIEW_2026-10-23.md), ruajtur pa përmbledhje ose ndryshim në `docs/research/`. Përmban **O1–O8**, analiza e tregut, alternativa O2/O3, riskun, metrikat, sugjerimet M0–M5 dhe burimet. **Kjo është arkivë kërkimi, jo ndryshim roadmap-i, autorizim ose backlog implementimi.** Referencë integriteti: SHA-256 `7f19e302920a8b69d6dd453400d9f9e2247c5d9f28db962e2f5ebbf913d2c845` (54,265 bytes). Propozimet lexohen vetëm për shqyrtim dhe miratim të veçantë; hapat aktualë të DEMO-s, F05/F06 dhe QA telefon/screenreader mbeten të hapura.
 - Repository: [`titanfit102-bit/Illyrian`](https://github.com/titanfit102-bit/Illyrian), **PUBLIC** sipas GitHub API; jo private. Mos vendos sekrete në repo.
 - Dega e vetme e autorizuar për përditësimet e vazhdimësisë: `feat/i18n-shop-feedback-20261022`.
-- **HEAD i kodit/testeve para këtij checkpoint-i të dokumenteve:** `6fb4bd696e0b9f1115691c03eb171e5a8ca3e445`; pas commit-it docs-only lexo HEAD-in LIVE, jo një SHA historike.
+- **HEAD i kodit/testeve para këtij checkpoint-i të dokumenteve:** `4c52a1df5b7464dfc4ea6be6f9917212cd514374`; pas commit-it docs-only lexo HEAD-in LIVE, jo një SHA historike.
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): **OPEN / DRAFT / UNMERGED**; head = dega sipër; target `demo/v1.7-illyrian-shop`.
 - Dega integruese DEMO: `015ce439e7c6d736149c6c300391586517664f62` (e pandryshuar gjatë verifikimit).
 - `main`: `9f91b5c083b4482a70a2149483cc799360e6102c` (e pandryshuar gjatë verifikimit).
-- **SHA i fundit i kodit + testeve të verifikuara:** `6fb4bd696e0b9f1115691c03eb171e5a8ca3e445`.
-- [GitHub Actions #40014770846](https://github.com/titanfit102-bit/Illyrian/actions/runs/40014770846): **completed / success, 159/159 Playwright Chromium PASS (3.5m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
+- **SHA i fundit i kodit + testeve të verifikuara:** `4c52a1df5b7464dfc4ea6be6f9917212cd514374`.
+- [GitHub Actions #40020229099](https://github.com/titanfit102-bit/Illyrian/actions/runs/40020229099): **completed / success, 160/160 Playwright Chromium PASS (3.8m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
 - i18n: **sq/en/it**, **550 çelësa/gjuhë**, **15 namespace**, `shopPlus` **166 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
 - Vercel: projekti `illyrian-demo` ekziston; **statusi dhe SHA-ja e Preview aktual NUK u verifikuan** sepse leximi i deployments ktheu **403 / team authorization**. Dokumentacioni i vjetër për READY `fbd04ad...` dhe build-rate-limit është historik; mos e paraqit si Preview të kodit të sotëm.
 
@@ -133,6 +133,12 @@
 - **F05 status i rifreskuar read-only:** GitHub commit status për source SHA `6fb4bd6...` raporton `Vercel: success, Deployment has completed`, por `demo/vercel.json` ende ka `/` → `ILLYRIAN_DEMO_v1.5.html`; GET project/deployment nën scope `un24` përsëri 403. Pra nuk është konfirmuar mjedisi, URL-ja e saktë apo served SHA i v1.7; incidentet historike `build-rate-limit` nuk shpjegojnë statusin e këtij SHA.
 - **QA fizik [OPEN] — protokoll i propozuar, jo test i kryer:** pronari hap vetëm preview e verifikuar në telefon; teston portrait/landscape, scroll horizontal deri te `Reports`, scroll vertikal te submit, ndryshimin e kategorisë pa humbje drafti, ndërrimin sq/en/it në modal, kthimin e fokusit/Escape, njoftimin pas konfliktesh me dy skeda, ekranet me tekst të gjatë/200% zoom dhe TalkBack/VoiceOver, pastaj sjell screenshot-e + modelin e pajisjes + browser/version + rezultatin për çdo rast. Mos përdor rezultate të sajuara.
 
+### QA Shop Plus — skadimi i kërkesës gjatë përgatitjes së përgjigjes [VERIFIKUAR, 2026-10-23]
+- Vetëm skedari `qa/illyrian-v17-i18n.spec.cjs` u ndryshua, pas arkivimit të raportit origjinal në `docs/research/ILLYRIAN_PRODUCT_INNOVATION_STRATEGIC_REVIEW_2026-10-23.md`; asnjë runtime/UX/architecture/roadmap/workflow/config nuk u ndryshua në fazën e testit.
+- Test i ri: një kërkesë fillimisht e vlefshme skadon ndërsa forma e përgjigjes së shitësit është e hapur. Verifikohet se para skadimit shfaqet forma, pas skadimit dërgimi refuzohet **pa humbur draftin, fokusin ose raw localStorage**, dhe pas restaurimit të kohës së testit provohet vetëm një përgjigje e ruajtur.
+- **Exact-SHA `4c52a1df5b7464dfc4ea6be6f9917212cd514374` → [Actions #40020229099](https://github.com/titanfit102-bit/Illyrian/actions/runs/40020229099): 160/160 Chromium Playwright PASS (3.8m)**, duke përfshirë testin e ri në log. Ky është mbulim i demonstrimit lokal, **jo** provë për autorizim serveri, njoftime reale, pagesa ose ndonjë propozim O1–O8.
+- Strategjia e GPT Work mbetet **research non-binding** në raportin e plotë; asnjë plan M0–M5, roadmap, scope, buxhet ose feature nuk u miratua automatikisht.
+
 **Veprimi i saktë pasues:** përfundo gates ekzistuese P0-D në këtë rend: (1) QA reale në telefon/ekranlexues kur të ekzistojë Preview i verifikuar, (2) F05 verifikim i rrugës dhe served SHA (read-only mund të vazhdojë, ndryshimi kërkon leje), (3) F06 PR-required checks/rulesets vetëm pas miratimit, (4) përmirësimi UX-P2 i fushave sipas kategorisë vetëm me autorizim të qartë, testet dhe ruajtjen e draftit. O1–O8 mbeten propozime M0/real-product dhe **nuk** futen në Phase 7 pa vendim.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
@@ -146,4 +152,4 @@
 ## 5. Bootstrap për një bisedë të re
 Kur përdoruesi shkruan **“Vazhdo projektin”**, lexo me radhë: `CURRENT_STATE.md` → pjesën **ACTIVE SNAPSHOT** të `MASTER_HANDOFF.md` → `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 → `architecture/ILLYRIAN_I18N.md` → `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Pastaj verifiko **HEAD, PR #1, diff pas checkpoint-it, CI mbi SHA e saktë dhe deployment**. Përcakto veprimin e parë të pambyllur dhe kufijtë e autorizimit. Mos nis nga zero dhe mos shpik informacionin që nuk mund të rikuperosh.
 
-**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `6fb4bd696e0b9f1115691c03eb171e5a8ca3e445` (CI **159/159**). Commit-i vijues i dokumenteve është docs-only; kontrollo HEAD live. Nuk ekziston sinkronizim në sfond.
+**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `4c52a1df5b7464dfc4ea6be6f9917212cd514374` (CI **160/160**). Commit-i vijues i dokumenteve është docs-only; kontrollo HEAD live. Nuk ekziston sinkronizim në sfond.
