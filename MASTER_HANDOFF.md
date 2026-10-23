@@ -1,6 +1,9 @@
 # ILLYRIAN — MASTER HANDOFF
 ## CONTINUITY PROTOCOL — ACTIVE SNAPSHOT (2026-10-23)
 
+**Research archive — JO VENDIM PRODUKTI / JO BACKLOG:** [Raporti i plotë origjinal i GPT Work, 23 tetor 2026](docs/research/ILLYRIAN_PRODUCT_INNOVATION_STRATEGIC_REVIEW_2026-10-23.md) është ruajtur në `docs/research/` pa ndryshime në përmbajtje (burimi `ILLYRIAN_PRODUCT_INNOVATION_STRATEGIC_REVIEW_2026-10-23(1).md`; emri kanonik pa sufiksin e ngarkimit). Përmban propozimet **O1** hyrje me lidhje, **O2** grupe të vogla, **O3** kërkesa të krahasueshme, **O4** besim me prova, **O5** rikonfirmim disponueshmërie, **O6** kontekst i përkohshëm i diasporës, **O7** kërkim shumëgjuhësh sipas detyrës dhe **O8** rikthim përmes veprimeve të dobishme; përfshin edhe ekonominë, krahasimet, metrikat, eksperimentet dhe burimet. **Asnjë O1–O8 nuk është aprovuar automatikisht, as si veçori, detyrë apo ndryshim i roadmap-it/arkitekturës.** Shih seksionin e shqyrtimit kritik më poshtë. SHA-256 burimi: `7f19e302920a8b69d6dd453400d9f9e2247c5d9f28db962e2f5ebbf913d2c845` (54,265 bytes). F05/F06/QA mobile/UX P2 vazhdojnë sipas prioritetit dhe autorizimeve të vjetra.
+
+
 **Ky seksion është përmbledhja autoritative aktuale për rikuperim.** Për statusin e shpejtë lexo së pari [CURRENT_STATE.md](CURRENT_STATE.md). Seksionet pas ndarësit “HISTORICAL RECORD” janë ruajtur **pa humbje** nga dokumenti i mëparshëm dhe përmbajnë checkpoint-e kronologjike, përfshirë konstatime të vjetruara. Në konflikt, verifiko GitHub LIVE. Këto dokumente **nuk** dëshmojnë se janë lexuar të gjitha bisedat historike; bazohen te historia e disponueshme, dokumentet e repository-t dhe evidenca GitHub.
 
 ### A. Identiteti, vizioni dhe kufijtë [VENDIM / FAKT]

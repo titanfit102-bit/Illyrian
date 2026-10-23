@@ -3,6 +3,7 @@
 > **Autoriteti:** gjendja LIVE e GitHub > ky checkpoint > pjesët më të vjetra historike. Lexo edhe [MASTER_HANDOFF.md](MASTER_HANDOFF.md) dhe [blueprint-in](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md).
 
 ## 1. Referencat e verifikuara [FAKT]
+- **Research / Propozime strategjike (JO të miratuara):** [Raporti origjinal i plotë i inovacionit GPT Work — 2026-10-23](docs/research/ILLYRIAN_PRODUCT_INNOVATION_STRATEGIC_REVIEW_2026-10-23.md), ruajtur pa përmbledhje ose ndryshim në `docs/research/`. Përmban **O1–O8**, analiza e tregut, alternativa O2/O3, riskun, metrikat, sugjerimet M0–M5 dhe burimet. **Kjo është arkivë kërkimi, jo ndryshim roadmap-i, autorizim ose backlog implementimi.** Referencë integriteti: SHA-256 `7f19e302920a8b69d6dd453400d9f9e2247c5d9f28db962e2f5ebbf913d2c845` (54,265 bytes). Propozimet lexohen vetëm për shqyrtim dhe miratim të veçantë; hapat aktualë të DEMO-s, F05/F06 dhe QA telefon/screenreader mbeten të hapura.
 - Repository: [`titanfit102-bit/Illyrian`](https://github.com/titanfit102-bit/Illyrian), **PUBLIC** sipas GitHub API; jo private. Mos vendos sekrete në repo.
 - Dega e vetme e autorizuar për përditësimet e vazhdimësisë: `feat/i18n-shop-feedback-20261022`.
 - **HEAD i kodit/testeve para këtij checkpoint-i të dokumenteve:** `6fb4bd696e0b9f1115691c03eb171e5a8ca3e445`; pas commit-it docs-only lexo HEAD-in LIVE, jo një SHA historike.
