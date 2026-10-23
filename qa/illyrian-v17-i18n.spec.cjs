@@ -1543,6 +1543,7 @@ test('audit F08 rejects stale request in second tab and succeeds after reload',a
   await page.locator('#isp-root [data-isp="tab:needs"]').click();
  }
  await prepare(first);await prepare(second);
+ await second.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await second.locator('#isp-need input[name="title"]').fill('Second tab draft Mbyll');
  await second.locator('#isp-need input[name="budget"]').fill('750');
  await second.locator('#isp-need textarea[name="details"]').fill('Mbyll unsaved description');
