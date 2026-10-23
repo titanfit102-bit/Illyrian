@@ -9,9 +9,9 @@
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): **OPEN / DRAFT / UNMERGED**; head = dega sipër; target `demo/v1.7-illyrian-shop`.
 - Dega integruese DEMO: `015ce439e7c6d736149c6c300391586517664f62` (e pandryshuar gjatë verifikimit).
 - `main`: `9f91b5c083b4482a70a2149483cc799360e6102c` (e pandryshuar gjatë verifikimit).
-- **SHA i fundit i kodit + testeve të verifikuara:** `5fe384f89c5ad958825b52c81c6599dd055e1ad2`.
+- **SHA i fundit i kodit + testeve të verifikuara:** `29eb70996f89d46a5e855f5bf42271adca7dfb7a`.
 - [GitHub Actions #39968158271](https://github.com/titanfit102-bit/Illyrian/actions/runs/39968158271): **completed / success, 131/131 Playwright Chromium PASS (3.3m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
-- i18n: **sq/en/it**, **499 çelësa/gjuhë**, **15 namespace**, `shopPlus` **115 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
+- i18n: **sq/en/it**, **549 çelësa/gjuhë**, **15 namespace**, `shopPlus` **165 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
 - Vercel: projekti `illyrian-demo` ekziston; **statusi dhe SHA-ja e Preview aktual NUK u verifikuan** sepse leximi i deployments ktheu **403 / team authorization**. Dokumentacioni i vjetër për READY `fbd04ad...` dhe build-rate-limit është historik; mos e paraqit si Preview të kodit të sotëm.
 
 ## 2. Ku kemi mbetur [IMPLEMENTIM + KUFIZIME]
@@ -41,12 +41,19 @@
 - `itemView()`: etiketa produkti/makine/qiraje/stoku/veprimesh direkt sq/en/it; `period()/card()` tregojnë etiketa gjuhësore `muaj/javë`, pa ndryshuar vlerat persistente. Karburanti i njohur shfaqet i lokalizuar, i panjohuri mbetet origjinal. U shtuan 22 keys për gjuhë: **521/locale, 15 namespace**; pasqyra root/demo identike. +3 E2E testet e detajeve.
 - **OPEN pas këtij checkpoint-i:** `board()`, `respond()`, `moderation()`, dialog a11y dhe entry-button, audit UI/UGC global, Vercel SHA, testimi fizik/visual/a11y.
 
-**Veprimi i saktë pasues:** inventar i kodit aktual të Shop Plus / pjesëve të mbetura, ndryshim i izoluar vetëm nëse ekziston autorizim për kod, teste për çdo SHA, pastaj checkpoint-i i dokumenteve. Kjo detyrë **vetëm dokumentacion** nuk autorizon ndryshime kodi.
+### Checkpoint i verifikuar: Shop Plus remaining dynamic views — 2026-10-23 [FAKT]
+- Kodi/locale commit `99885a6b4739f62768f8c89ab6cc218f80f5175b`; korrigjimi i testit `29eb70996f89d46a5e855f5bf42271adca7dfb7a`. [GitHub Actions #39983307279](https://github.com/titanfit102-bit/Illyrian/actions/runs/39983307279) = **137/137 Chromium Playwright PASS (3.0m)** në SHA `29eb70996f89d46a5e855f5bf42271adca7dfb7a`; u verifikua logu. Dështimi i mëparshëm #39982722382 ishte **vetëm në testin e ri** (`page.evaluate` me `language` jashtë browser scope); 134 testet ekzistuese kaluan, dhe testi u korrigjua, jo u hoq.
+- `board()`, `respond()`, `moderation()`, `render()` dialog-label/close dhe `inject()` entry-button tani përdorin direct semantic sq/en/it dhe mbrojtje të UGC. Statuset/arsyet e njohura të raportimit përkthehen vetëm për shfaqje; të panjohurat mbeten origjinale/escaped. Afatet shfaqen me formatin e gjuhës pa ndryshuar ISO të ruajtur.
+- +28 keys/locale mbi 521: **549 çelësa për gjuhë, 15 namespace; `shopPlus` 165**. Mirror root/demo identik (rilexim LIVE). +3 teste end-to-end për buyer request/reply/report/aria/UGC dhe persistencë.
+- **Autorizimi aktual [VENDIM NGA PËRDORUESI]:** ndryshime inkrementale në kod/përkthime/teste të Shop Plus në këtë degë **janë të autorizuara vazhdimisht brenda Fazës 7**, pa leje për çdo patch; dokumentet `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` përditësohen pas evidencës. Asnjë autorizim për merge, deploy, `main`, Production apo shpenzime.
+- **OPEN (mos shpall release):** inventari i zgjeruar i të gjitha nën-pamjeve Shop Plus dhe kontrolli i state-eve të rralla, QA vizual/a11y/keyboard/screenreader, UGC app-wide, Vercel Preview SHA, testimi final fizik me screenshot-e nga pronari. Lokalizimi kryesor i Shop Plus është i implementuar/testuar në Chromium, jo certifikuar plotësisht si produkt.
+
+**Veprimi i saktë pasues:** zgjero inventarin e nën-pamjeve Shop Plus (detaj/raportim/kërkesa/dyqane/checkout/formular) dhe audit edge states + keyboard pa ndryshuar domain codes; ekzekuto suite në SHA e saktë, dokumento; më pas QA mobile/screenreader dhe screenshot review nga pronari para release.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
 - Autorizim **i vazhdueshëm** vetëm për krijim/përditësim të `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` në `feat/i18n-shop-feedback-20261022`, pas çdo ndryshimi material e të **verifikuar**. Mos pyet çdo herë për këta dy dokumente, për sa kohë dega dhe kufijtë nuk ndryshojnë.
 - Mos fshi historikun; përditëso gjendjen kanonike dhe shto vetëm delta të nevojshme. Dallo **FAKT / VENDIM / PLAN / HIPOTEZË / E PAVERIFIKUAR**. Refuzimi i ruajtjes duhet raportuar, jo pretenduar si sukses.
-- Ky autorizim **nuk** përfshin ndryshime në kod, testet, workflows, skedarë të tjerë, PR merge, main, Production, deploy, shpenzime, kredenciale apo migrime të rrezikshme. Për ato veprime duhen autorizimet përkatëse.
+- **Përditësim autorizimi, 2026-10-23:** pronari ka autorizuar shprehimisht edhe ndryshime inkrementale të kodit, përkthimeve dhe testeve **vetëm për përfundimin e i18n Shop Plus** në këtë degë. Kjo nuk përfshin PR merge, main, Production, deploy, pagesa, sekrete, ndryshime në projekte të tjera apo migrime të rrezikshme.
 - Përditësimi i dokumenteve bëhet gjatë sesioneve aktive të punës, **jo automatikisht në sfond**. Nuk ka cron/task që e sinkronizon repository-n pa një ekzekutim të autorizuar.
 - Para shkrimit: lexo HEAD-in, konfirmo PR/statusin/testet; pastaj shkruaj dy dokumentet në **një commit dokumentacioni**, me kusht që HEAD të mos ketë ndryshuar. Rilexo përmbajtjet dhe kontrollo diff-in pas commit-it.
 - Nëse ky dokument dhe GitHub nuk përputhen, **GitHub live fiton**; përcakto çfarë ndryshoi dhe rregullo checkpoint-in, mos përsërit automatikisht punë të kryer.
