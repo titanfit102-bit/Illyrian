@@ -35,12 +35,14 @@
  const numeric=(v,fallback=0)=>Number.isFinite(+v)?Number(v):fallback;
  const money=v=>new Intl.NumberFormat(window.IllyrianI18n?.language||'it',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(numeric(v));
  const feedback=(key,fallback)=>window.IllyrianI18n?.t('shopPlus:'+key)||fallback;
+ const ui=(key,fallback)=>esc(feedback(key,fallback));
+ const typeLabel=code=>esc(window.IllyrianI18n?.t('shop:'+({'Të gjitha':'all','Produkte':'products','Makina':'cars','Banesa me qira':'rentals','Shërbime':'services'}[code]))||code);
  const persisted=()=>({items:state.items,needs:state.needs,answers:state.answers,flags:state.flags,sampleOrders:state.sampleOrders});
  let lastSaved=JSON.stringify(persisted());
  const save=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
   Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.');return false}};
  const btn=(act,text,extra='')=>'<button type="button" data-isp="'+esc(act)+'" '+extra+'>'+esc(text)+'</button>';
- const pill=(value,active)=>'<button type="button" data-isp="type:'+esc(value)+'" aria-pressed="'+(active?'true':'false')+'" class="'+(active?'chosen':'')+'">'+esc(value)+'</button>';
+ const pill=(value,active)=>'<button type="button" data-i18n-direct data-isp="type:'+esc(value)+'" aria-pressed="'+(active?'true':'false')+'" class="'+(active?'chosen':'')+'">'+typeLabel(value)+'</button>';
  const period=p=>p.type==='Banesa me qira'?'/'+esc(p.period||'muaj'):'';
  const price=p=>money(p.price)+period(p);
  const safeItems=()=>{
@@ -84,7 +86,7 @@
   '</article>';
  const filters=()=>'<form id="isp-filters"><div class="isp-fields">'+
    '<label>Kërko<input name="q" maxlength="90" type="search" placeholder="Produkt, dyqan, makinë..." value="'+esc(state.query)+'"></label>'+
-   '<label>Qyteti<select name="city">'+CITIES.map(x=>'<option '+(x===state.city?'selected ':'')+'value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
+   '<label data-i18n-direct>'+esc(window.IllyrianI18n?.t('shop:city')||'Qyteti')+'<select name="city">'+CITIES.map(x=>'<option '+(x===state.city?'selected ':'')+'value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
    '<label>Çmim min. €<input name="min" inputmode="decimal" type="number" min="0" max="10000000" value="'+esc(state.min)+'"></label>'+
    '<label>Çmim max. €<input name="max" inputmode="decimal" type="number" min="0" max="10000000" value="'+esc(state.max)+'"></label>'+
    '<label>Renditja<select name="sort">'+[['relevance','Relevanca'],['lowest','Më i liri'],['highest','Më i shtrenjti'],['name','Emri']].map(([a,b])=>'<option '+(a===state.sort?'selected ':'')+'value="'+a+'">'+b+'</option>').join('')+'</select></label>'+
@@ -138,22 +140,22 @@
  const create=()=>{
   const editing=state.editId&&state.items.find(p=>p.id===state.editId);
   const p=editing||{type:'Produkte',name:'',store:'',city:'Tiranë',price:'',quantity:1,year:'',mileage:'',area:'',rooms:'',period:'muaj',details:''};
-  return '<h3>'+(editing?'Redakto ofertën':'Publiko ofertë në demo')+'</h3><p>Produkte, makina, banesa dhe shërbime. Listimet ruhen vetëm në pajisjen tënde.</p>'+
+  return '<h3 data-i18n-direct>'+(editing?ui('formEditOffer','Redakto ofertën'):ui('formPublishOffer','Publiko ofertë në demo'))+'</h3><p data-i18n-direct>'+ui('formListingIntro','Produkte, makina, banesa dhe shërbime. Listimet ruhen vetëm në pajisjen tënde.')+'</p>'+
   '<form id="isp-create" class="isp-fields">'+
-  '<label>Kategoria<select name="type">'+TYPES.slice(1).map(x=>'<option value="'+esc(x)+'" '+(p.type===x?'selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'+
-  '<label>Emri<input name="name" minlength="4" maxlength="90" required value="'+esc(p.name)+'"></label>'+
-  '<label>Dyqani / shitësi<input name="store" minlength="2" maxlength="70" required value="'+esc(p.store)+'"></label>'+
-  '<label>Qyteti<select name="city">'+CITIES.slice(1).map(x=>'<option value="'+esc(x)+'" '+(p.city===x?'selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'+
-  '<label>Çmimi €<input name="price" type="number" min=".5" max="10000000" step=".01" value="'+esc(p.price)+'" required></label>'+
-  '<label>Inventari produkt (copë)<input name="quantity" type="number" min="0" max="10000" value="'+esc(p.quantity??1)+'"></label>'+
-  '<label>Viti i makinës<input name="year" type="number" min="1950" max="2030" value="'+esc(p.year||'')+'"></label>'+
-  '<label>Kilometrat e makinës<input name="mileage" type="number" min="0" max="2000000" value="'+esc(p.mileage||'')+'"></label>'+
-  '<label>Sipërfaqe banese (m²)<input name="area" type="number" min="1" max="10000" value="'+esc(p.area||'')+'"></label>'+
-  '<label>Lloji i banesës<input name="rooms" maxlength="30" value="'+esc(p.rooms||'')+'" placeholder="2+1"></label>'+
-  '<label>Periudha e qirasë<select name="period"><option value="muaj" '+(p.period==="javë"?'':'selected')+'>Për muaj</option><option value="javë" '+(p.period==="javë"?'selected':'')+'>Për javë</option></select></label>'+
-  '<label class="isp-span">Përshkrimi<textarea name="details" maxlength="450" rows="3">'+esc(p.details||'')+'</textarea></label>'+
-  '<div class="isp-span"><button type="submit">'+(editing?'Ruaj ndryshimet':'Publiko në demo')+'</button></div></form>'+
-  '<p class="isp-muted">Nuk ruhet asnjë dokument identiteti, numër telefoni, pagesë ose adresë e saktë.</p>';
+  '<label data-i18n-direct>'+ui('formCategory','Kategoria')+'<select name="type">'+TYPES.slice(1).map(x=>'<option data-i18n-direct value="'+esc(x)+'" '+(p.type===x?'selected':'')+'>'+typeLabel(x)+'</option>').join('')+'</select></label>'+
+  '<label data-i18n-direct>'+ui('name','Emri')+'<input name="name" minlength="4" maxlength="90" required value="'+esc(p.name)+'"></label>'+
+  '<label data-i18n-direct>'+ui('formSeller','Dyqani / shitësi')+'<input name="store" minlength="2" maxlength="70" required value="'+esc(p.store)+'"></label>'+
+  '<label data-i18n-direct>'+esc(window.IllyrianI18n?.t('shop:city')||'Qyteti')+'<select name="city">'+CITIES.slice(1).map(x=>'<option value="'+esc(x)+'" '+(p.city===x?'selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>'+
+  '<label data-i18n-direct>'+ui('formPrice','Çmimi €')+'<input name="price" type="number" min=".5" max="10000000" step=".01" value="'+esc(p.price)+'" required></label>'+
+  '<label data-i18n-direct>'+ui('formInventory','Inventari produkt (copë)')+'<input name="quantity" type="number" min="0" max="10000" value="'+esc(p.quantity??1)+'"></label>'+
+  '<label data-i18n-direct>'+ui('formCarYear','Viti i makinës')+'<input name="year" type="number" min="1950" max="2030" value="'+esc(p.year||'')+'"></label>'+
+  '<label data-i18n-direct>'+ui('formMileage','Kilometrat e makinës')+'<input name="mileage" type="number" min="0" max="2000000" value="'+esc(p.mileage||'')+'"></label>'+
+  '<label data-i18n-direct>'+ui('formPropertyArea','Sipërfaqe banese (m²)')+'<input name="area" type="number" min="1" max="10000" value="'+esc(p.area||'')+'"></label>'+
+  '<label data-i18n-direct>'+ui('formPropertyType','Lloji i banesës')+'<input name="rooms" maxlength="30" value="'+esc(p.rooms||'')+'" placeholder="2+1"></label>'+
+  '<label data-i18n-direct>'+ui('formPeriod','Periudha e qirasë')+'<select name="period"><option value="muaj" '+(p.period==="javë"?'':'selected')+'>'+ui('formPerMonth','Për muaj')+'</option><option value="javë" '+(p.period==="javë"?'selected':'')+'>'+ui('formPerWeek','Për javë')+'</option></select></label>'+
+  '<label class="isp-span" data-i18n-direct>'+ui('formDescription','Përshkrimi')+'<textarea name="details" maxlength="450" rows="3">'+esc(p.details||'')+'</textarea></label>'+
+  '<div class="isp-span"><button type="submit">'+(editing?ui('formSaveChanges','Ruaj ndryshimet'):ui('formPublish','Publiko në demo'))+'</button></div></form>'+
+  '<p class="isp-muted" data-i18n-direct>'+ui('formIdentityNote','Nuk ruhet asnjë dokument identiteti, numër telefoni, pagesë ose adresë e saktë.')+'</p>';
  };
  const board=()=>{
   const active=state.needs.filter(n=>Date.parse(n.expires)>Date.now()).slice().reverse();
@@ -161,7 +163,7 @@
    '<form id="isp-need" class="isp-fields">'+
    '<label>Kërkoj<input name="title" minlength="5" maxlength="90" required placeholder="P.sh. biçikletë për qytet"></label>'+
    '<label>Lloji<select name="type">'+TYPES.slice(1).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
-   '<label>Qyteti<select name="city">'+CITIES.slice(1).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
+   '<label data-i18n-direct>'+esc(window.IllyrianI18n?.t('shop:city')||'Qyteti')+'<select name="city">'+CITIES.slice(1).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
    '<label>Buxheti maksimal €<input name="budget" type="number" min="1" max="10000000" required></label>'+
    '<label>Afati<select name="days"><option value="7">7 ditë</option><option value="14">14 ditë</option><option value="30">30 ditë</option></select></label>'+
    '<label class="isp-span">Detajet<textarea name="details" rows="2" maxlength="240" placeholder="Karakteristikat e kërkuara"></textarea></label>'+
