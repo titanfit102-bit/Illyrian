@@ -631,3 +631,10 @@ The scoped CI workflow now includes root `i18n/**` changes in push path filters.
 - Added nine Chromium browser tests since 71 baseline: multilingual feedback and data contract, failed-save retry, UGC unchanged on language switch. **Actions #39935174398 (commit `893538c33dd7cdecf9aa77e359a999d649a7a247`): 80/80 PASS (2.4m).**
 - Branch `feat/i18n-shop-feedback-20261022` / Draft PR #1 only; no merge into DEMO, main or Production. Not a deployment or native-phone acceptance.
 - Next: Plans, Privacy, static Shop Plus UI strings, semantic option labels, remaining forms/dynamic messages, full screen/a11y/visual QA, current Vercel Preview identity and physical device screenshot review. Real backend and live commerce remain gated separately.
+
+
+### P1-D static Shop Plus form localization — 23 October 2026
+- Added **37 sq/en/it form-label and select-display translations** while preserving technical `option.value` and local browser state. Root/demo catalog mirrors have **374 keys per language**, 15 namespaces.
+- Nine new Playwright cases across sq/en/it validate listing creation fields, rental periods, buyer deadline options, report reasons and switching the active language while forms retain user input.
+- **CI #39937253596: 89/89 Chromium PASS (2.6m)**, code/test SHA `429927296870ea6b6d6ca1e90ab3cb4726cb307d`; this is not physical-phone or full i18n coverage.
+- Note: Static fields are currently localized through the existing DOM phrase adapter backed by keys, not direct semantic bindings. Full Shop Plus prose remains under review. Next implementation phases: Plans and Privacy runtime strings/persistence regressions; broader UI/UGC, accessibility/visual, Preview and owner's phone screenshots. No merge/Production.
