@@ -645,3 +645,11 @@ The scoped CI workflow now includes root `i18n/**` changes in push path filters.
 - P0 Plans: failed local writes no longer retain mutated events, join requests, attendance or group messages; failed create/edit keeps form values and shows a storage error without claiming completion. Event titles excluded from transient DOM i18n phrase changes in selected views.
 - Six added QA cases (89→95), including quota failure, cancel rollback, en/it success/validation and storage error messages; [Actions #39938445963](https://github.com/titanfit102-bit/Illyrian/actions/runs/39938445963), tested SHA `8c2ebfd57227f6f4f22ffa377a2067f83022c072`: **95/95 PASS (2.7m)**.
 - Next: Privacy module, remaining static Plans/Shop Plus copy, full UGC/screen reader/mobile/visual QA; verify Vercel Preview and owner phone screenshots. No merge, production, payments, provisioning or branch integration.
+
+
+### P1-D Privacy localization and persistence checkpoint — 23 October 2026
+- Added 26 privacy-map direct semantic sq/en/it keys, synchronized root and demo catalogs at **418 keys/locale**, 15 namespaces. Statuses, follow/group actions, map kinds, state feedback and storage errors now localized in tested paths.
+- Refused browser writes roll back simulated follow/membership state and do not report false success; important **not** to treat client roles as production permission enforcement. Stable `select.value` codes preserved.
+- Targeted UGC protection for selected map names/descriptions and public activity titles; removed duplicated status announcement.
+- Added six browser scenarios since 95 baseline. **CI #39939993711**, code+tests SHA `2048ca78c9d062cb2afa8028251a6f600456c36a`: **101/101 PASS (2.7m)**. Prior 98/101 run led to legitimate duplicate-notice fix.
+- Draft PR #1 remains unmerged. Next: residual static UI strings and direct-key consistency for Privacy/Plans/Shop Plus, full UGC audit, visual/a11y/device QA, Vercel candidate identity, owner's phone screenshots, then app-real M0–M5 decisions.
