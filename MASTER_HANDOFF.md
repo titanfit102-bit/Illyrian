@@ -78,6 +78,12 @@
 - **Current owner authorization:** incremental edits of Shop Plus code, locales and tests in branch `feat/i18n-shop-feedback-20261022` are authorized for this localization phase without per-patch confirmation. Continuous write permission for `CURRENT_STATE.md` and `MASTER_HANDOFF.md` remains. Not authorized: merging PR, changing main/Production, deployment, payments, credentials, external spending, other projects.
 - **Next within approved phase:** extended Shop Plus UI inventory including subviews; check unknown state/UGC and keyboard/a11y flow; exact-SHA Chromium CI and continuity checkpoint. Wider app-wide a11y/visual/phone and Vercel SHA review remain release gates, not validated by these counts.
 
+### P1-D — Shop Plus verified inventory 139/139 — 2026-10-23 [FAKT]
+- [CI #39984314812](https://github.com/titanfit102-bit/Illyrian/actions/runs/39984314812) for exact source/test commit `596eb43e258591810f2dfc49fa70e8435bd5748e`: **139/139 PASS, 3.4m**, completed success; job log confirmed. QA expansion adds internal view snapshots (item, report, moderation, needs, checkout, stores, create), unknown report reason / escaped HTML user target regression, and entry-language/focus restoration.
+- Localization baseline remains **549 keys per sq/en/it, 15 namespaces; Shop Plus = 165 keys** and root/demo mirrored. `main`/Production/DEMO integration untouched, PR #1 remains Draft.
+- `I18N_INVENTORY`: 286 unique labels observed across sampled UI; 98 unmatched *exact* catalog strings, primarily sample names/content, city labels and combined label/option text. **Not 98 proven untranslated UI strings**. Scoped to Albanian snapshots; conditional flows are not exhaustive. Some non-Shop Plus UI remains outside current authorization.
+- **Next:** classify inventory noise vs actual Shop Plus localization gaps; add high-signal assertions for remaining language switch/focus and unknown/saved states; run exact-SHA tests before asserting coverage. Physical-device, screen-reader, visual and actual Vercel preview remain OPEN.
+
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
 - `MASTER_HANDOFF.md` = vizioni, vendimet, arkitektura, evidenca dhe kufijtë; seksioni ACTIVE SNAPSHOT përditësohet inkrementalisht; **HISTORICAL RECORD poshtë ruhet pa fshirë ose falsifikuar eventet**.
