@@ -647,6 +647,7 @@ for(const [lang,labels] of Object.entries({
 
 test('Plans rejects unsaved event creation without losing form input or stored data',async({page})=>{
  await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('.head [data-act="tab"][data-val="events"]').click();
  await page.locator('[data-ilp-entry]').first().click();
  await page.locator('#ilp-root [data-ilp="new"]').click();
@@ -670,6 +671,7 @@ test('Plans rejects unsaved event creation without losing form input or stored d
 });
 test('Plans failed cancel restores stored event and never claims success',async({page})=>{
  await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('.head [data-act="tab"][data-val="events"]').click();
  await page.locator('[data-ilp-entry]').first().click();
  await page.locator('#ilp-root [data-ilp="detail:demo-football"]').click();
@@ -685,3 +687,47 @@ test('Plans failed cancel restores stored event and never claims success',async(
  await page.locator('#ilp-root [data-ilp="cancel"]').click();
  await expect(page.locator('#ilp-root .ilp-notice')).toHaveText('Aktiviteti u anulua.');
 });
+
+for(const [locale,messages] of Object.entries({
+ en:{bad:'Title or location is too short.',saved:'Activity saved in the demo.',quota:'Could not save the change on this device.'},
+ it:{bad:'Il titolo o il luogo è troppo breve.',saved:'Attività salvata nella demo.',quota:'Impossibile salvare la modifica su questo dispositivo.'}
+})){
+ test('Plans semantic validation and success feedback in '+locale,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('[data-ilp-entry]').first().click();
+  await page.locator('#ilp-root [data-ilp="new"]').click();
+  const form=page.locator('#ilp-form');
+  await form.evaluate(el=>el.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+  await expect(form.locator('#ilp-error')).toHaveText(messages.bad);
+  await form.locator('input[name="title"]').fill('Mbyll plan');
+  await form.locator('input[name="place"]').fill('Public meeting square');
+  await form.locator('button[type="submit"]').click();
+  await expect(page.locator('#ilp-root .ilp-notice')).toHaveText(messages.saved);
+  await expect(page.locator('#ilp-root h3[data-user-content]')).toHaveText('Mbyll plan');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_plans')).events[0]);
+  expect(saved.title).toBe('Mbyll plan');
+  expect(saved.kind).toBe('Sport');
+  expect(saved.city).toBe('Tiranë');
+ });
+ test('Plans localized storage rejection in '+locale+' preserves editable input',async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('[data-ilp-entry]').first().click();
+  await page.locator('#ilp-root [data-ilp="new"]').click();
+  const form=page.locator('#ilp-form');
+  await form.locator('input[name="title"]').fill('Original Mbyll activity');
+  await form.locator('input[name="place"]').fill('Public location');
+  const key='illyrian_demo_v17_plans',before=await page.evaluate(k=>localStorage.getItem(k),key);
+  await rejectModuleWrites(page,key);
+  await form.locator('button[type="submit"]').click();
+  await expect(form.locator('#ilp-error')).toHaveText(messages.quota);
+  await expect(form.locator('input[name="title"]')).toHaveValue('Original Mbyll activity');
+  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+  await allowModuleWrites(page);
+  await form.locator('button[type="submit"]').click();
+  await expect(page.locator('#ilp-root .ilp-notice')).toHaveText(messages.saved);
+ });
+}
