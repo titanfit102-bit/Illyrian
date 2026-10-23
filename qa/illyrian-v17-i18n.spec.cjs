@@ -541,3 +541,44 @@ test('Shop Plus preserves unsaved request input on storage rejection, then succe
  expect(need.title).toBe('Mbyll');
  expect(need.details).toBe('Custom description Mbyll');
 });
+
+test('Shop Plus preserves user listing title, seller and description across locale changes',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="create"]').click();
+ await page.locator('#isp-create input[name="name"]').fill('Mbyll');
+ await page.locator('#isp-create input[name="store"]').fill('Mbyll');
+ await page.locator('#isp-create input[name="price"]').fill('10');
+ await page.locator('#isp-create textarea[name="details"]').fill('Mbyll');
+ await page.locator('#isp-create button[type="submit"]').click();
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#isp-root .isp-focus h3[data-user-content]')).toHaveText('Mbyll');
+  await expect(page.locator('#isp-root .isp-focus p[data-user-content]')).toHaveText('Mbyll');
+  await expect(page.locator('#isp-root .isp-focus p span[data-user-content]')).toHaveText('Mbyll');
+ }
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+ expect(saved.name).toBe('Mbyll');
+ expect(saved.store).toBe('Mbyll');
+ expect(saved.details).toBe('Mbyll');
+});
+test('Shop Plus protects user request name and details on language switch',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ await page.locator('#isp-need input[name="title"]').fill('Mbyll');
+ await page.locator('#isp-need input[name="budget"]').fill('550');
+ await page.locator('#isp-need textarea[name="details"]').fill('Mbyll');
+ await page.locator('#isp-need button[type="submit"]').click();
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#isp-root .isp-card h4[data-user-content]').filter({hasText:'Mbyll'})).toHaveText('Mbyll');
+  await expect(page.locator('#isp-root .isp-card p[data-user-content]').filter({hasText:'Mbyll'})).toHaveText('Mbyll');
+ }
+});
