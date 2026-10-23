@@ -122,7 +122,7 @@
  const stateLabel=s=>({available:'I hapur',full:'Plot',canceled:'Anuluar',expired:'I skaduar',private:'Privat',removed:'Nuk gjendet'})[s]||'I panjohur';
  const statuses=()=>'<h3>Gjendjet e aktiviteteve dhe kthimi i sigurt</h3><p>Kur hap një aktivitet nga Postimi/Story/Reel, gjendja duhet kontrolluar sërish. Klikimi nuk regjistron automatikisht pjesëmarrje.</p>'+
  getPlanStatuses().map(p=>'<article class="il4-card"><div class="il4-cardtop"><strong data-user-content>'+escaped(p.public?p.title:'Aktivitet privat ose i padisponueshëm')+'</strong><span>'+escaped(stateLabel(p.state))+'</span></div>'+
- '<p>'+escaped(p.note)+'</p>'+b('state:'+p.state,'Çfarë mund të bëj?')+'</article>').join('')+note()+
+ '<p>'+escaped(p.note)+'</p>'+b('state:'+p.state,'Çfarë mund të bëj?')+'</article>').join('')+
  '<p class="il4-muted">Shembujt e gjendjeve nuk janë rezervime, njoftime ose leje nga serveri.</p>';
  const render=()=>{
   if(!root)return;
