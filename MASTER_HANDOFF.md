@@ -173,6 +173,13 @@
 - **F05 not fully closed:** site has Vercel Authentication protection (`all_except_custom_domains`). Open unauthenticated URL not readable from available web/browser, and team-scoped `un24` API requests give 403 absent additional team authorization. No shareable SSO bypass was generated: changes to access or costs require user approval. A mobile physical-device test cannot be claimed from remote browser. Need owner or explicitly approved access to verify HTTP root, responsive behavior on physical device, and screenshots before sign-off.
 - F06 PR trigger/branch rulesets and UX-P2 category-conditional fields remain separate permission gates; no authorization from F05 preview to modify them. Strategic Work report remains preserved as non-binding research at `docs/research/ILLYRIAN_PRODUCT_INNOVATION_STRATEGIC_REVIEW_2026-10-23.md`.
 
+### Preview authentication: authorized share-link attempt blocked — 2026-10-23 [FACT]
+- User explicitly authorized a **temporary shareable access link** for the isolated Preview only, after the previous F05 checkpoint; this does not authorize changing SSO settings/team permissions, Production, subscriptions, workflows or secrets.
+- At GitHub HEAD `661fb38e45fccad06211f96eed284a536ff82dd9` (docs-only, tested source SHA `a2faad660575c4242603e2521e539fdfeac86bcd`) PR #1 remained Draft; Vercel `dpl_EC8v4gjggeDXxmtrXnYYmzhEzjYJ` still Preview/READY, branch/source SHA matched, Production aliases remained `dpl_a9wJ8nGy8SQ54mzDRmcLnQ1qD31U` on main.
+- `get_access_to_vercel_url` returned **403 forbidden** at `read_protection_bypass`, reporting that the ChatGPT Vercel connection needs project/team `un24` authorization. `web_fetch_vercel_url` returned the same 403; **no share URL, auth cookie or bypass secret was generated** and real HTTP content/root/desktop/phone was not verified.
+- **F05 remains PARTIAL/OPEN**; verified branch-local rewrite + exact deployment metadata + 161/161 Chromium tests are not end-to-end live HTTP proof. Owner must authorize the Vercel connection for project `illyrian-demo` / team `un24` using Vercel/ChatGPT connection UI; do not request pasted credentials. Retry the limited Preview test only after permission is available.
+- F06 / UX-P2 / real mobile / VoiceOver/TalkBack / final approval remain OPEN. No code, Vercel protection, admin, Production, merge, paid-plan or roadmap changes here.
+
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
 - `MASTER_HANDOFF.md` = vizioni, vendimet, arkitektura, evidenca dhe kufijtë; seksioni ACTIVE SNAPSHOT përditësohet inkrementalisht; **HISTORICAL RECORD poshtë ruhet pa fshirë ose falsifikuar eventet**.
