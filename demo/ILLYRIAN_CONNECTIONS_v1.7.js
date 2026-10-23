@@ -30,10 +30,11 @@
     open:false,view:'overview',notice:'',selected:'city-1'
   };
   let root=null,opener=null,inertSnapshot=[];
+  const feedback=(key,fallback)=>window.IllyrianI18n?.t('connections:'+key)||fallback;
   const persisted=()=>({home:state.home,origin:state.origin,choice:state.choice,welcome:state.welcome});
   let lastSaved=JSON.stringify(persisted());
   const persist=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
-   Object.assign(state,JSON.parse(lastSaved));state.notice='Hapësira lokale është plot; ndryshimi nuk u ruajt.';return false}};
+   Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Hapësira lokale është plot; ndryshimi nuk u ruajt.');return false}};
   const eventData=()=>{const doc=read(PLAN_KEY),values=Array.isArray(doc.events)?doc.events:[];return values.filter(e=>e&&e.privacy==='public'&&!e.cancelled&&typeof e.title==='string'&&!Number.isNaN(Date.parse(e.date+'T'+e.time))&&Date.parse(e.date+'T'+e.time)>Date.now()).slice(0,24)};
   const button=(action,label)=>'<button type="button" data-ilc="'+h(action)+'">'+h(label)+'</button>';
   const cities=(current)=>CITIES.map(c=>'<option value="'+h(c)+'"'+(c===current?' selected':'')+'>'+h(c)+'</option>').join('');
@@ -152,7 +153,7 @@
     if(action==='close')return close();
     if(action==='overview')state.view='overview';
     else if(action.startsWith('view:'))state.view=action.slice(5);
-    else if(action==='clear-interest'){state.choice=null;const saved=persist();state.view='interest';if(saved)state.notice='Interesi dhe disponueshmëria u hoqën.';}
+    else if(action==='clear-interest'){state.choice=null;const saved=persist();state.view='interest';if(saved)state.notice=feedback('interestRemoved','Interesi dhe disponueshmëria u hoqën.');}
     else if(action.startsWith('welcome:')){state.view='welcome';}
     else if(action.startsWith('repeat:')){
       const id=action.slice(7);
@@ -174,17 +175,17 @@
     const data=new FormData(form);
     if(form.id==='ilc-cities'){
       const a=String(data.get('home')),b=String(data.get('origin'));
-      if(!CITIES.includes(a)||!CITIES.includes(b)){state.notice='Qytetet nuk njihen.';render();return}
-      if(a===b){state.notice='Zgjidh dy qytete të ndryshme për këtë shembull.';render();return}
-      state.home=a;state.origin=b;state.notice='Dy qytetet u ruajtën në pajisje.';persist();render();return;
+      if(!CITIES.includes(a)||!CITIES.includes(b)){state.notice=feedback('citiesUnknown','Qytetet nuk njihen.');render();return}
+      if(a===b){state.notice=feedback('citiesDistinct','Zgjidh dy qytete të ndryshme për këtë shembull.');render();return}
+      state.home=a;state.origin=b;state.notice=feedback('citiesSaved','Dy qytetet u ruajtën në pajisje.');persist();render();return;
     }
     if(form.id==='ilc-interest'){
       const id=String(data.get('topic')),topic=TOPICS.find(t=>t.id===id);
       const city=String(data.get('city')),slot=String(data.get('slot')),days=Number(data.get('days'));
-      if(!topic||!CITIES.includes(city)||!topic.slots.includes(slot)||![3,7].includes(days)){state.notice='Zgjedhje të pavlefshme.';render();return}
+      if(!topic||!CITIES.includes(city)||!topic.slots.includes(slot)||![3,7].includes(days)){state.notice=feedback('interestInvalid','Zgjedhje të pavlefshme.');render();return}
       const expires=new Date(Date.now()+days*86400000).toISOString();
       state.choice={topic:id,city,slot,expires};
-      state.notice='Interesi u ruajt vetëm në pajisje, me skadim.';
+      state.notice=feedback('interestSaved','Interesi u ruajt vetëm në pajisje, me skadim.');
       persist();render();
     }
   }
@@ -259,7 +260,7 @@
       const item=e.target.closest('[data-ilc-first]');
       if(!item)return;
       state.welcome[item.dataset.ilcFirst]=!!item.checked;
-      if(persist())state.notice=item.checked?'Shënimi privat u ruajt në pajisje. Organizatori nuk u njoftua.':'Shënimi privat u hoq.';
+      if(persist())state.notice=item.checked?feedback('privateNoteSaved','Shënimi privat u ruajt në pajisje. Organizatori nuk u njoftua.'):feedback('privateNoteRemoved','Shënimi privat u hoq.');
       else item.checked=Boolean(state.welcome[item.dataset.ilcFirst]);
       const status=root.querySelector('.ilc-note[role="status"]');
       if(status)status.textContent=state.notice;
