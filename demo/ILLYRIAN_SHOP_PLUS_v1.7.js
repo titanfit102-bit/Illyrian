@@ -80,7 +80,7 @@
  const card=p=>'<article class="isp-card"><div class="isp-typeline"><span data-i18n-direct>'+typeLabel(p.type)+'</span>'+chip(p)+'</div><h4 data-user-content>'+esc(p.name)+'</h4>'+
   '<strong>'+price(p)+'</strong><p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+
   (p.type==='Produkte'?'<p><span data-i18n-direct>'+ui('inventory','Inventari:')+'</span> '+(numeric(p.quantity)>0?numeric(p.quantity)+' <span data-i18n-direct>'+ui('units','copë (demo)')+'</span>':'<span data-i18n-direct>'+ui('outOfStockDemo','Pa stok (demo)')+'</span>')+'</p>':
-   p.type==='Makina'?'<p><span data-i18n-direct>'+ui('yearShort','Viti')+'</span> '+esc(p.year||'–')+' · '+esc(p.mileage||'–')+' km · <span data-i18n-direct>'+fuelLabel(p.fuel)+'</span>'+'</p>':
+   p.type==='Makina'?'<p><span data-i18n-direct>'+ui('yearShort','Viti')+'</span> '+esc(p.year||'–')+' · '+esc(p.mileage??'–')+' km · <span data-i18n-direct>'+fuelLabel(p.fuel)+'</span>'+'</p>':
    p.type==='Banesa me qira'?'<p>'+esc(p.rooms||'–')+' · '+esc(p.area||'–')+' m² · <span data-i18n-direct>'+periodLabel(p.period)+'</span>'+'</p>':'')+
   btn('item:'+p.id,feedback('detailsSeller','Detajet dhe shitësi'),'data-i18n-direct')+
   '<button type="button" data-i18n-direct data-isp="store:'+esc(p.store)+'">'+ui('viewShop','Shiko dyqanin')+'</button>'+
@@ -116,7 +116,7 @@
   if(!p)return '<p data-i18n-direct>'+ui('itemMissing','Listimi nuk ekziston.')+'</p>'+btn('catalog',feedback('itemBack','Kthehu'),'data-i18n-direct');
   const detail=p.details?'<p data-user-content>'+esc(p.details)+'</p>':'<p data-i18n-direct>'+ui('itemDemoDescription','Oferta është demonstrative.')+'</p>';
   const attributes=p.type==='Makina'?
-   '<p><span data-i18n-direct>'+ui('itemYear','Viti:')+'</span> '+esc(p.year||'–')+' · <span data-i18n-direct>'+ui('itemMileage','Kilometra:')+'</span> '+esc(p.mileage||'–')+' · <span data-i18n-direct>'+ui('itemFuel','Karburanti:')+'</span> <span data-i18n-direct>'+fuelLabel(p.fuel)+'</span></p>':
+   '<p><span data-i18n-direct>'+ui('itemYear','Viti:')+'</span> '+esc(p.year||'–')+' · <span data-i18n-direct>'+ui('itemMileage','Kilometra:')+'</span> '+esc(p.mileage??'–')+' · <span data-i18n-direct>'+ui('itemFuel','Karburanti:')+'</span> <span data-i18n-direct>'+fuelLabel(p.fuel)+'</span></p>':
    p.type==='Banesa me qira'?
    '<p><span data-i18n-direct>'+ui('itemArea','Sipërfaqe:')+'</span> '+esc(p.area||'–')+' m² · <span data-user-content>'+esc(p.rooms||'–')+'</span> · <span data-i18n-direct>'+ui('itemRentalFor','Qira për')+' '+periodLabel(p.period)+'</span></p>':
    p.type==='Produkte'?
@@ -156,7 +156,7 @@
   '<label data-i18n-direct>'+ui('formPrice','Çmimi €')+'<input name="price" type="number" min=".5" max="10000000" step=".01" value="'+esc(p.price)+'" required></label>'+
   '<label data-i18n-direct>'+ui('formInventory','Inventari produkt (copë)')+'<input name="quantity" type="number" min="0" max="10000" value="'+esc(p.quantity??1)+'"></label>'+
   '<label data-i18n-direct>'+ui('formCarYear','Viti i makinës')+'<input name="year" type="number" min="1950" max="2030" value="'+esc(p.year||'')+'"></label>'+
-  '<label data-i18n-direct>'+ui('formMileage','Kilometrat e makinës')+'<input name="mileage" type="number" min="0" max="2000000" value="'+esc(p.mileage||'')+'"></label>'+
+  '<label data-i18n-direct>'+ui('formMileage','Kilometrat e makinës')+'<input name="mileage" type="number" min="0" max="2000000" value="'+esc(p.mileage??'')+'"></label>'+
   '<label data-i18n-direct>'+ui('formPropertyArea','Sipërfaqe banese (m²)')+'<input name="area" type="number" min="1" max="10000" value="'+esc(p.area||'')+'"></label>'+
   '<label data-i18n-direct>'+ui('formPropertyType','Lloji i banesës')+'<input name="rooms" maxlength="30" value="'+esc(p.rooms||'')+'" placeholder="2+1"></label>'+
   '<label data-i18n-direct>'+ui('formPeriod','Periudha e qirasë')+'<select name="period"><option value="muaj" '+(p.period==="javë"?'':'selected')+'>'+ui('formPerMonth','Për muaj')+'</option><option value="javë" '+(p.period==="javë"?'selected':'')+'>'+ui('formPerWeek','Për javë')+'</option></select></label>'+
@@ -255,6 +255,13 @@
   if(!note){note=document.createElement('p');note.className='isp-notice';overlay.querySelector('.isp-nav')?.insertAdjacentElement('afterend',note)}
   note.setAttribute('role','status');note.textContent=state.notice;
  };
+ // Keep draft fields mounted when a validation rule rejects a submission.
+ const validationError=(form,key,fallback,field)=>{
+  state.notice=feedback(key,fallback);
+  showStorageError();
+  const control=field?form.elements.namedItem(field):null;
+  if(control?.focus)control.focus();
+ };
  const message=(m,onSaved)=>{
   if(!save()){showStorageError();return false}
   onSaved?.();state.notice=m;render();return true
@@ -283,7 +290,7 @@
   if(form.id==='isp-filters'){
    const min=num('min'),max=num('max'),year=num('year'),km=num('km'),area=num('area');
    if([min,max,year,km,area].some(x=>x!==null&&(!Number.isFinite(x)||x<0))||(min!==null&&max!==null&&min>max)){
-    state.notice=feedback('filtersInvalid','Kontrollo kufijtë e çmimit dhe filtrat numerikë.');render();return}
+    validationError(form,'filtersInvalid','Kontrollo kufijtë e çmimit dhe filtrat numerikë.','min');return}
    if(!CITIES.includes(v('city'))||!['relevance','lowest','highest','name'].includes(v('sort')))return;
    state.query=v('q').slice(0,90);state.city=v('city');state.min=min===null?'':String(min);state.max=max===null?'':String(max);
    state.sort=v('sort');state.yearMin=year===null?'':String(year);state.maxKm=km===null?'':String(km);state.areaMin=area===null?'':String(area);
@@ -292,12 +299,12 @@
   if(form.id==='isp-create'){
    const kind=v('type'),name=v('name'),store=v('store'),city=v('city'),p=num('price'),q=num('quantity'),year=num('year'),km=num('mileage'),area=num('area');
    if(!TYPES.slice(1).includes(kind)||!CITIES.slice(1).includes(city)||name.length<4||name.length>90||store.length<2||store.length>70||p===null||!Number.isFinite(p)||p<.5||p>10000000){
-    state.notice=feedback('listingInvalid','Plotëso saktë emrin, dyqanin, qytetin dhe çmimin.');render();return}
-   if(kind==='Produkte'&&(q===null||!Number.isInteger(q)||q<0||q>10000)){state.notice=feedback('stockInvalid','Inventari duhet të jetë 0–10000 copë.');render();return}
-   if(kind==='Makina'&&(year===null||!Number.isInteger(year)||year<1950||year>2030||km===null||!Number.isInteger(km)||km<0||km>2000000)){state.notice=feedback('vehicleInvalid','Vendos vitin dhe kilometrat e makinës.');render();return}
-   if(kind==='Banesa me qira'&&(area===null||!Number.isFinite(area)||area<1||area>10000)){state.notice=feedback('rentalInvalid','Vendos sipërfaqen e banesës.');render();return}
+    validationError(form,'listingInvalid','Plotëso saktë emrin, dyqanin, qytetin dhe çmimin.','name');return}
+   if(kind==='Produkte'&&(q===null||!Number.isInteger(q)||q<0||q>10000)){validationError(form,'stockInvalid','Inventari duhet të jetë 0–10000 copë.','quantity');return}
+   if(kind==='Makina'&&(year===null||!Number.isInteger(year)||year<1950||year>2030||km===null||!Number.isInteger(km)||km<0||km>2000000)){validationError(form,'vehicleInvalid','Vendos vitin dhe kilometrat e makinës.',(year===null||!Number.isInteger(year)||year<1950||year>2030)?'year':'mileage');return}
+   if(kind==='Banesa me qira'&&(area===null||!Number.isFinite(area)||area<1||area>10000)){validationError(form,'rentalInvalid','Vendos sipërfaqen e banesës.','area');return}
    const old=state.items.find(i=>i.id===state.editId&&i.owned);
-   if(!old&&state.items.length>=30){state.notice=feedback('listingsLimit','Kufiri i listimeve lokale u arrit.');render();return}
+   if(!old&&state.items.length>=30){validationError(form,'listingsLimit','Kufiri i listimeve lokale u arrit.');return}
    const item={id:old?.id||'own'+Date.now().toString(36),owned:true,type:kind,name,store,city,price:p,details:v('details').slice(0,450),quantity:kind==='Produkte'?q:null,
     year:kind==='Makina'?year:null,mileage:kind==='Makina'?km:null,area:kind==='Banesa me qira'?area:null,rooms:v('rooms').slice(0,30),
     period:['muaj','javë'].includes(v('period'))?v('period'):'muaj',sku:'',promoted:false};
@@ -307,19 +314,19 @@
   if(form.id==='isp-need'){
    const type=v('type'),city=v('city'),title=v('title'),budget=num('budget'),days=num('days');
    if(!TYPES.slice(1).includes(type)||!CITIES.slice(1).includes(city)||title.length<5||title.length>90||budget===null||!Number.isFinite(budget)||budget<1||budget>10000000||![7,14,30].includes(days)){
-    state.notice=feedback('requestInvalid','Kontrollo kërkesën, qytetin, buxhetin dhe afatin.');render();return}
-   if(state.needs.length>=25){state.notice=feedback('requestsLimit','Kufiri lokal i kërkesave u arrit.');render();return}
+    validationError(form,'requestInvalid','Kontrollo kërkesën, qytetin, buxhetin dhe afatin.','title');return}
+   if(state.needs.length>=25){validationError(form,'requestsLimit','Kufiri lokal i kërkesave u arrit.');return}
    state.needs.push({id:'n'+Date.now().toString(36),owned:true,type,city,title,budget,details:v('details').slice(0,240),expires:new Date(Date.now()+days*86400000).toISOString()});
    message(feedback('requestSaved','Kërkesa u regjistrua vetëm në këtë pajisje.'),()=>{state.tab='needs'});return;
   }
   if(form.id==='isp-answer'){
    const need=state.needs.find(n=>n.id===state.needIndex),txt=v('text').slice(0,180);
-   if(!need||Date.parse(need.expires)<Date.now()||txt.length<5||state.answers.length>=50){state.notice=feedback('answerInvalid','Kërkesa ose mesazhi nuk është i vlefshëm.');render();return}
+   if(!need||Date.parse(need.expires)<Date.now()||txt.length<5||state.answers.length>=50){validationError(form,'answerInvalid','Kërkesa ose mesazhi nuk është i vlefshëm.','text');return}
    state.answers.push({needId:need.id,text:txt});message(feedback('answerSaved','Përgjigjja u ruajt vetëm në demo.'),()=>{state.tab='needs'});return;
   }
   if(form.id==='isp-report'){
    const allowed=['Informacion i pasaktë','Mashtrim i dyshuar','Listim i dyfishuar','Përmbajtje e papërshtatshme'],reason=v('reason');
-   if(!allowed.includes(reason)||state.flags.length>=40){state.notice=feedback('reportInvalid','Arsyeja e raportimit nuk është e vlefshme ose u arrit kufiri.');render();return;}
+   if(!allowed.includes(reason)||state.flags.length>=40){validationError(form,'reportInvalid','Arsyeja e raportimit nuk është e vlefshme ose u arrit kufiri.','reason');return;}
    state.flags.push({target:all().find(p=>p.id===state.selected)?.name||'Listim',reason,detail:v('detail').slice(0,180)});
    message(feedback('reportSaved','Raportimi është provë lokale; asnjë moderator nuk u njoftua.'),()=>{state.tab='moderation'});return;
   }

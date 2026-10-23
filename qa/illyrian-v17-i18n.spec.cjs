@@ -1351,3 +1351,105 @@ test('Shop Plus draft seller response survives sq/en/it locale changes with focu
  expect(final.answers).toEqual([{needId:'audit-need',text:draft}]);
  await expect(page.locator('#isp-root .isp-reply [data-user-content]')).toHaveText(draft);
 });
+
+
+for(const lang of ['sq','en','it']){
+ test('Shop Plus audit F01 F07 preserve vehicle draft and zero mileage in '+lang,async({page})=>{
+  await ready(page);await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="create"]').click();
+  const f=page.locator('#isp-create');
+  await f.locator('select[name="type"]').selectOption('Makina');
+  await f.locator('input[name="name"]').fill('Mbyll vehicle draft');
+  await f.locator('input[name="store"]').fill('Mbyll seller');
+  await f.locator('input[name="price"]').fill('9999');
+  await f.locator('textarea[name="details"]').fill('Mbyll retained text');
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+  await f.locator('button[type="submit"]').click();
+  await expect(page.locator('#isp-root .isp-notice[role="status"]')).toBeVisible();
+  await expect(f.locator('select[name="type"]')).toHaveValue('Makina');
+  await expect(f.locator('input[name="name"]')).toHaveValue('Mbyll vehicle draft');
+  await expect(f.locator('textarea[name="details"]')).toHaveValue('Mbyll retained text');
+  await expect(f.locator('input[name="year"]')).toBeFocused();
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(before);
+  await f.locator('input[name="year"]').fill('2026');
+  await f.locator('button[type="submit"]').click();
+  await expect(f.locator('input[name="mileage"]')).toBeFocused();
+  await f.locator('input[name="mileage"]').fill('0');
+  await f.locator('button[type="submit"]').click();
+  await expect(page.locator('#isp-root .isp-focus')).toContainText('Mbyll vehicle draft');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+  expect(saved).toMatchObject({type:'Makina',year:2026,mileage:0,details:'Mbyll retained text'});
+  await page.locator('#isp-root [data-isp^="edit:"]').click();
+  await expect(page.locator('#isp-create input[name="mileage"]')).toHaveValue('0');
+  await page.locator('#isp-create button[type="submit"]').click();
+  await expect(page.locator('#isp-root .isp-focus')).not.toContainText('Mileage: –');
+  await expect(page.locator('#isp-root .isp-focus')).not.toContainText('Kilometra: –');
+  await page.reload({waitUntil:'load'});
+  const latest=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+  expect(latest.mileage).toBe(0);
+ });
+ test('Shop Plus audit F01 preserves rental form after invalid area in '+lang,async({page})=>{
+  await ready(page);await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="create"]').click();
+  const f=page.locator('#isp-create');
+  await f.locator('select[name="type"]').selectOption('Banesa me qira');
+  await f.locator('input[name="name"]').fill('Mbyll rental draft');
+  await f.locator('input[name="store"]').fill('Mbyll seller');
+  await f.locator('input[name="price"]').fill('440');
+  await f.locator('select[name="period"]').selectOption('javë');
+  await f.locator('textarea[name="details"]').fill('Mbyll rental details');
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+  await f.locator('button[type="submit"]').click();
+  await expect(f.locator('input[name="area"]')).toBeFocused();
+  await expect(f.locator('select[name="type"]')).toHaveValue('Banesa me qira');
+  await expect(f.locator('select[name="period"]')).toHaveValue('javë');
+  await expect(f.locator('textarea[name="details"]')).toHaveValue('Mbyll rental details');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(before);
+  await f.locator('input[name="area"]').fill('82');
+  await f.locator('button[type="submit"]').click();
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+  expect(saved).toMatchObject({type:'Banesa me qira',area:82,period:'javë',details:'Mbyll rental details'});
+ });
+}
+test('Shop Plus audit F01 edit retry leaves original saved until valid',async({page})=>{
+ await ready(page);await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="create"]').click();
+ let f=page.locator('#isp-create');
+ await f.locator('input[name="name"]').fill('Mbyll original');
+ await f.locator('input[name="store"]').fill('Demo seller');
+ await f.locator('input[name="price"]').fill('30');
+ await f.locator('button[type="submit"]').click();
+ await page.locator('#isp-root [data-isp^="edit:"]').click();f=page.locator('#isp-create');
+ await f.locator('select[name="type"]').selectOption('Makina');
+ await f.locator('input[name="name"]').fill('Mbyll edited vehicle');
+ await f.locator('input[name="price"]').fill('5000');
+ await f.locator('textarea[name="details"]').fill('Mbyll pending change');
+ const old=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ await f.locator('button[type="submit"]').click();
+ await expect(f.locator('input[name="year"]')).toBeFocused();
+ await expect(f.locator('input[name="name"]')).toHaveValue('Mbyll edited vehicle');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(old);
+ await f.locator('input[name="year"]').fill('2025');
+ await f.locator('input[name="mileage"]').fill('0');
+ await f.locator('button[type="submit"]').click();
+ const updated=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+ expect(updated).toMatchObject({type:'Makina',name:'Mbyll edited vehicle',mileage:0,details:'Mbyll pending change'});
+});
+test('i18n audit F10 root and demo mirror files stay byte-identical',()=>{
+ const fs=require('node:fs'),path=require('node:path'),root=path.resolve(__dirname,'..');
+ for(const file of ['illyrian-i18n.js','locales/sq.js','locales/en.js','locales/it.js']){
+  const canonical=fs.readFileSync(path.join(root,'i18n',file));
+  const served=fs.readFileSync(path.join(root,'demo','i18n',file));
+  expect(canonical.equals(served),file+' mirror drift').toBe(true);
+  const altered=Buffer.from(served);altered[0]^=1;
+  expect(canonical.equals(altered),'negative parity check '+file).toBe(false);
+ }
+});
