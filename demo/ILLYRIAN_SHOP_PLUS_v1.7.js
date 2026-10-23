@@ -73,8 +73,8 @@
   return [...groups.entries()].filter(([_,items])=>items.length>1).map(([sku,items])=>({sku,items:items.sort((a,b)=>a.price-b.price)}));
  };
  const chip=p=>(p.promoted?'<span class="isp-sponsored">PROMOVUAR · DEMO</span>':'');
- const card=p=>'<article class="isp-card"><div class="isp-typeline"><span>'+esc(p.type)+'</span>'+chip(p)+'</div><h4>'+esc(p.name)+'</h4>'+
-  '<strong>'+price(p)+'</strong><p>'+esc(p.store)+' · '+esc(p.city)+'</p>'+
+ const card=p=>'<article class="isp-card"><div class="isp-typeline"><span>'+esc(p.type)+'</span>'+chip(p)+'</div><h4 data-user-content>'+esc(p.name)+'</h4>'+
+  '<strong>'+price(p)+'</strong><p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+
   (p.type==='Produkte'?'<p>Inventari: '+(numeric(p.quantity)>0?numeric(p.quantity)+' copë (demo)':'Pa stok (demo)')+'</p>':
    p.type==='Makina'?'<p>Viti '+esc(p.year||'–')+' · '+esc(p.mileage||'–')+' km · '+esc(p.fuel||'')+'</p>':
    p.type==='Banesa me qira'?'<p>'+esc(p.rooms||'–')+' · '+esc(p.area||'–')+' m² · '+esc(p.period||'muaj')+'</p>':'')+
@@ -110,8 +110,8 @@
  const itemView=()=>{
   const p=all().find(x=>x.id===state.selected);
   if(!p)return '<p>Listimi nuk ekziston.</p>'+btn('catalog','Kthehu');
-  return btn('catalog','← Kthehu te rezultatet')+'<article class="isp-card isp-focus">'+chip(p)+'<h3>'+esc(p.name)+'</h3><strong>'+price(p)+'</strong>'+
-   '<p>'+esc(p.details||'Oferta është demonstrative.')+'</p><p>'+esc(p.store)+' · '+esc(p.city)+'</p>'+
+  return btn('catalog','← Kthehu te rezultatet')+'<article class="isp-card isp-focus">'+chip(p)+'<h3 data-user-content>'+esc(p.name)+'</h3><strong>'+price(p)+'</strong>'+
+   '<p data-user-content>'+esc(p.details||'Oferta është demonstrative.')+'</p><p>'+esc(p.store)+' · '+esc(p.city)+'</p>'+
    (p.type==='Makina'?'<p>Viti: '+esc(p.year)+' · Kilometra: '+esc(p.mileage)+' · Karburanti: '+esc(p.fuel)+'</p>':
    p.type==='Banesa me qira'?'<p>Sipërfaqe: '+esc(p.area)+' m² · '+esc(p.rooms)+' · Qira për '+esc(p.period||'muaj')+'</p>':
    p.type==='Produkte'?'<p>Gjendja: '+(numeric(p.quantity)>0?'Në stok, '+numeric(p.quantity)+' copë':'Pa stok')+'</p>':'')+
@@ -125,13 +125,13 @@
   return '<h3>Dyqanet e vogla</h3><p>Çdo dyqan ka katalogun e ofertave të veta. Inventari këtu është vetëm provë.</p>'+
   sellers.map(x=>{
     const rows=all().filter(p=>p.store===x),cities=[...new Set(rows.map(p=>p.city))].join(', ');
-    return '<article class="isp-card"><h4>'+esc(x)+'</h4><p>'+esc(cities)+' · '+rows.length+' listime demonstrative</p>'+
+    return '<article class="isp-card"><h4 data-user-content>'+esc(x)+'</h4><p>'+esc(cities)+' · '+rows.length+' listime demonstrative</p>'+
      '<p>'+rows.filter(p=>p.type==='Produkte'&&numeric(p.quantity)>0).length+' produkte në stok (shembull)</p>'+btn('store:'+x,'Hap katalogun')+'</article>'
   }).join('');
  };
  const storeView=()=>{
   const rows=all().filter(p=>p.store===state.shop);
-  return btn('stores','← Të gjitha dyqanet')+'<h3>'+esc(state.shop)+'</h3><p>'+rows.length+' oferta demonstrative; identiteti tregtar nuk është verifikuar.</p>'+
+  return btn('stores','← Të gjitha dyqanet')+'<h3 data-user-content>'+esc(state.shop)+'</h3><p>'+rows.length+' oferta demonstrative; identiteti tregtar nuk është verifikuar.</p>'+
     rows.map(card).join('')+
     '<p class="isp-muted">Ofertat e sponsorizuara janë të etiketuara. Nuk kemi vlerësim të besueshmërisë së shitësit.</p>';
  };
@@ -166,9 +166,9 @@
    '<label>Afati<select name="days"><option value="7">7 ditë</option><option value="14">14 ditë</option><option value="30">30 ditë</option></select></label>'+
    '<label class="isp-span">Detajet<textarea name="details" rows="2" maxlength="240" placeholder="Karakteristikat e kërkuara"></textarea></label>'+
    '<div class="isp-span"><button type="submit">Publiko kërkesën në demo</button></div></form>'+
-   (active.length?active.map(n=>'<article class="isp-card"><h4>'+esc(n.title)+'</h4><p>'+esc(n.type)+' · '+esc(n.city)+' · buxheti '+money(n.budget)+'</p>'+
-    '<p>'+esc(n.details||'')+'</p><small>Skadon: '+esc(n.expires.slice(0,10))+'</small>'+
-    btn('respond:'+n.id,'Përgjigju si dyqan (demo)')+(state.answers.filter(a=>a.needId===n.id).slice(-2).map(a=>'<p class="isp-reply">Përgjigje demo: '+esc(a.text)+'</p>').join(''))+
+   (active.length?active.map(n=>'<article class="isp-card"><h4 data-user-content>'+esc(n.title)+'</h4><p>'+esc(n.type)+' · '+esc(n.city)+' · buxheti '+money(n.budget)+'</p>'+
+    '<p data-user-content>'+esc(n.details||'')+'</p><small>Skadon: '+esc(n.expires.slice(0,10))+'</small>'+
+    btn('respond:'+n.id,'Përgjigju si dyqan (demo)')+(state.answers.filter(a=>a.needId===n.id).slice(-2).map(a=>'<p class="isp-reply">Përgjigje demo: <span data-user-content>'+esc(a.text)+'</span></p>').join(''))+
     (n.owned?btn('remove-need:'+n.id,'Fshi kërkesën'):'')+'</article>').join(''):'<p class="isp-empty">Ende pa kërkesa lokale. Publiko një shembull.</p>')+
    '<p class="isp-muted">Kërkesat nuk dërgohen te shitësit e vërtetë dhe skadojnë automatikisht.</p>';
  };
@@ -176,7 +176,7 @@
   return '<h3>Raportime dhe etiketa të promovimit</h3><p>Përmbajtja e reklamuar duhet të shënohet; raportimet janë prova lokale.</p>'+
    '<div class="isp-hero"><b>TRANSPARENCË</b><p>“PROMOVUAR · DEMO” shënon listimet e sponsorizuara fiktive. Në produktin real do të kërkohet politikë reklamash, raportime, shqyrtim dhe apelim.</p></div>'+
    '<p>Raportime lokale: '+state.flags.length+'</p>'+
-   (state.flags.length?state.flags.slice(-15).reverse().map(f=>'<article class="isp-card"><p><b>'+esc(f.target)+'</b> · '+esc(f.reason)+'</p><small>Në shqyrtim (simulim, jo moderator real)</small></article>').join(''):'<p class="isp-empty">Asnjë raportim demonstrues.</p>');
+   (state.flags.length?state.flags.slice(-15).reverse().map(f=>'<article class="isp-card"><p><b data-user-content>'+esc(f.target)+'</b> · '+esc(f.reason)+'</p><small>Në shqyrtim (simulim, jo moderator real)</small></article>').join(''):'<p class="isp-empty">Asnjë raportim demonstrues.</p>');
  };
  const checkout=()=>{
   const product=all().find(p=>p.type==='Produkte'&&numeric(p.quantity)>0);
@@ -197,13 +197,13 @@
  const respond=()=>{
   const n=state.needs.find(x=>x.id===state.needIndex);
   if(!n)return '<p>Kërkesa nuk u gjet.</p>'+btn('needs','Kthehu');
-  return '<h3>Përgjigje për: '+esc(n.title)+'</h3><p>Buxheti: '+money(n.budget)+' · '+esc(n.city)+'</p>'+
+  return '<h3>Përgjigje për: <span data-user-content>'+esc(n.title)+'</span></h3><p>Buxheti: '+money(n.budget)+' · '+esc(n.city)+'</p>'+
    '<form id="isp-answer"><label>Mesazhi demonstrues<textarea name="text" maxlength="180" minlength="5" required placeholder="P.sh. Dyqani ka një alternativë."></textarea></label><button type="submit">Ruaj përgjigjen në demo</button></form>'+
    '<p>Ky mesazh nuk u dërgohet blerësve ose dyqaneve reale.</p>';
  };
  const report=()=>{
   const x=all().find(p=>p.id===state.selected);
-  return '<h3>Raporto listimin</h3><p>'+esc(x?.name||'Listimi demonstrues')+'</p>'+
+  return '<h3>Raporto listimin</h3><p data-user-content>'+esc(x?.name||'Listimi demonstrues')+'</p>'+
   '<form id="isp-report"><label>Arsyeja<select name="reason"><option value="Informacion i pasaktë">Informacion i pasaktë</option><option value="Mashtrim i dyshuar">Mashtrim i dyshuar</option><option value="Listim i dyfishuar">Listim i dyfishuar</option><option value="Përmbajtje e papërshtatshme">Përmbajtje e papërshtatshme</option></select></label>'+
   '<label>Përshkrim opsional<textarea name="detail" maxlength="180"></textarea></label>'+
   '<button type="submit">Ruaj raportimin (demo)</button></form>';
