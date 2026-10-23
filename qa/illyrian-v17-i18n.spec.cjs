@@ -804,3 +804,59 @@ test('Privacy does not translate user-entered activity title on map',async({page
   await expect(page.locator('#il4-root .il4-card h4[data-user-content]')).toHaveText('Mbyll');
  }
 });
+
+for(const [lang,expected] of Object.entries({
+ sq:{title:'Privatësia dhe harta',profiles:'Profilet',groups:'Komunitetet',visitor:'Shiko si vizitor',footer:'Vetëm demonstrim lokal · Nuk ka përdorues, hartë, mesazhe apo kërkesa reale.'},
+ en:{title:'Privacy and map',profiles:'Profiles',groups:'Communities',visitor:'View as visitor',footer:'Local demo only · No real users, map, messages or requests.'},
+ it:{title:'Privacy e mappa',profiles:'Profili',groups:'Comunità',visitor:'Visualizza come visitatore',footer:'Solo demo locale · Nessun utente, mappa, messaggio o richiesta reale.'}
+})){
+ test('Privacy direct semantic labels render in '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+  await page.locator('#il4-entry [data-il4-entry]').click();
+  await expect(page.locator('#il4-root .il4-head h2')).toHaveText(expected.title);
+  await expect(page.locator('#il4-root [data-il4="tab:profiles"]')).toHaveText(expected.profiles);
+  await expect(page.locator('#il4-root [data-il4="tab:groups"]')).toHaveText(expected.groups);
+  await expect(page.locator('#il4-root [data-il4="role:visitor"]')).toHaveText(expected.visitor);
+  await expect(page.locator('#il4-root footer')).toHaveText(expected.footer);
+ });
+}
+test('Privacy open map keeps unsubmitted filters and focus on live language switch',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ await page.locator('#il4-root [data-il4="tab:map"]').click();
+ const form=page.locator('#il4-mapform');
+ await form.locator('select[name="city"]').selectOption('Milano');
+ await form.locator('select[name="kind"]').selectOption('business');
+ await form.locator('input[name="q"]').fill('Mbyll kërkim');
+ await form.locator('input[name="q"]').focus();
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await expect(page.locator('#il4-root .il4-head h2')).toHaveText('Privacy and map');
+ await expect(page.locator('#il4-mapform select[name="city"]')).toHaveValue('Milano');
+ await expect(page.locator('#il4-mapform select[name="kind"]')).toHaveValue('business');
+ await expect(page.locator('#il4-mapform input[name="q"]')).toHaveValue('Mbyll kërkim');
+ expect(await page.evaluate(()=>document.activeElement?.getAttribute('name'))).toBe('q');
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(page.locator('#il4-root .il4-head h2')).toHaveText('Privacy e mappa');
+ await expect(page.locator('#il4-mapform input[name="q"]')).toHaveValue('Mbyll kërkim');
+});
+test('Privacy profile and group user-origin fields remain unchanged through locale switches',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ await page.locator('#il4-root [data-il4="role:owner"]').click();
+ const profile=page.locator('#il4-root .il4-card h4[data-user-content]');
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(profile).toHaveText('Leon M.');
+  await expect(page.locator('#il4-root .il4-card p[data-user-content]')).toHaveText('Përshkrim privat që nuk duhet shfaqur pa miratim.');
+ }
+ await page.locator('#il4-root [data-il4="tab:groups"]').click();
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#il4-root .il4-card h4[data-user-content]')).toHaveText('Shqiptarët në Milano');
+ }
+});
