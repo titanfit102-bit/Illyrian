@@ -1,3 +1,79 @@
+# ILLYRIAN — MASTER HANDOFF
+## CONTINUITY PROTOCOL — ACTIVE SNAPSHOT (2026-10-23)
+
+**Ky seksion është përmbledhja autoritative aktuale për rikuperim.** Për statusin e shpejtë lexo së pari [CURRENT_STATE.md](CURRENT_STATE.md). Seksionet pas ndarësit “HISTORICAL RECORD” janë ruajtur **pa humbje** nga dokumenti i mëparshëm dhe përmbajnë checkpoint-e kronologjike, përfshirë konstatime të vjetruara. Në konflikt, verifiko GitHub LIVE. Këto dokumente **nuk** dëshmojnë se janë lexuar të gjitha bisedat historike; bazohen te historia e disponueshme, dokumentet e repository-t dhe evidenca GitHub.
+
+### A. Identiteti, vizioni dhe kufijtë [VENDIM / FAKT]
+- Projekti: [`titanfit102-bit/Illyrian`](https://github.com/titanfit102-bit/Illyrian) — **PUBLIC i verifikuar**, jo private siç thuhej në hyrjen e vjetër. Projekti është i ndarë nga PRESSA SMART, Builder System, Protesto, ShqipShop dhe çdo repository tjetër; mos huazo kode/kredenciale pa leje.
+- Vizioni: ILLYRIAN si një ekosistem i vetëm komunitar/social për përdoruesit shqiptarë dhe diasporën: profile, postime, Stories/Reels, komunitete, plane/aktivitete dhe komunikim; brenda platformës **IllyrianShop** për produkte, dyqane, makina, banesa, qira dhe shërbime. Vlera duhet të provohet nga përdorimi real, jo numri i funksioneve.
+- Fillimi i orientuar drejt tregut shqiptar, me arkitekturë për treg ndërkombëtar; **tregu i parë dhe vendi i pilotimit real nuk janë firmosur përfundimisht**. i18n sq/en/it tani, 100+ gjuhë si aftësi e arkitekturës, jo si rezultat i përfunduar.
+- Shop nuk është Play Store/APK store. Produktet fizike, klasifikimet (makina/prona) dhe shërbime/qira kanë rrjedha të ndryshme; marketplace real duhet të përdorë katalog dhe identitet kanonik, jo dy inventare të pavarura.
+- Norma **5%** është vetëm shembull në DEMO; pagesat, komisionet, faturimi, refunderat, verifikimi i shitësve dhe compliance nuk janë miratuar ose implementuar.
+- DEMO = provë browser me përdorues e listime sintetike/localStorage. Nuk ka garanci server-side privatësie, kontroll rolesh, moderimi, pagesash, backend, DB apo aplikacion native të certifikuar.
+
+### B. Preferencat, rregullat e pronarit [VENDIM]
+- Vepro si arkitekt kritik dhe bazohu në kod/PR/teste reale; **mos hamendëso çfarë është implementuar**. Ruaj funksionet ekzistuese; punë inkrementale, testim në commit-in e saktë dhe raporte me kufijtë e mbulimit.
+- Përdor degë të izoluar dhe Draft PR; **asnjë merge** në `demo/v1.7-illyrian-shop` apo `main`, asnjë ndryshim Vercel Production, deploy, licencë/pagesë, infrastrukturë apo veprim destruktiv pa autorizim të veçantë. Mos prek projektet e tjera.
+- Pronari e teston **DEMO-n e plotë në telefon pas stabilizimit** dhe dërgon screenshot-e; ky është gate i domosdoshëm para miratimit final.
+- **Autorizim i vazhdueshëm i dokumentacionit (2026-10-23):** krijo/përditëso vetëm `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` në degën `feat/i18n-shop-feedback-20261022` pas çdo ndryshimi domethënës të verifikuar, pa kërkuar përsëri leje. Nuk shtrihet te kodi, skedarë të tjerë, merge, deployments, shpenzime, sekrete ose ndryshim dege. Me humbjen e aksesit/ndryshimin e degës, ndalo dhe shpjego.
+- Dokumentet janë memoria e qëndrueshme; pas një ndërprerjeje përdorimi i tyre kërkon **ri-verifikim të gjendjes live**, jo besim mekanik te një SHA i shkruar më parë. Përditësime bëhen në sesione aktive; nuk ka proces në sfond.
+
+### C. Teknologjia dhe arkitektura [FAKT / DREJTIM I MIRATUAR]
+- DEMO aktuale: `demo/ILLYRIAN_DEMO_v1.7.html`, HTML statik, vanilla JS/CSS, module Shop, Shop Plus, Plans, Connections, Privacy/Map, Governance, social UI bazë; ruajtja e shumë gjendjeve në `localStorage`. Testet `qa/*.spec.cjs` në Chromium/Playwright, [GitHub Actions workflow](.github/workflows/illyrian-v17-browser-qa.yml).
+- i18next **v25.7.0**, vendor lokal, locale `sq/en/it`, fallback `en`, preferenca e ruajtur në pajisje para zbulimit të gjuhës, formatim numër/EUR/date. Katalogët root/demo të pasqyruar: **499 keys/locale, 15 namespace**, `shopPlus` 115; verifikuar si çelësa identikë midis gjuhëve dhe pasqyrave.
+- Kërko **`t('namespace:key')` / semantic binding**; përdor `data-i18n-direct` për elemente të përkthyera drejtpërdrejt, `data-user-content` për tekste të shkruara nga përdoruesi. Adapteri `MutationObserver` sipas frazave ekziston ende për UI legacy dhe nuk duhet të shkelë këta kufij.
+- Ruaj `option.value`, kode statusi, city/type IDs dhe përmbajtjen e UGC të pandryshuar nga gjuha; të dhënat lokale të ruajtura nuk përkthehen. Përdor rollback të gjendjes pas refuzimit të ruajtjes në modulet e testuara.
+- Produkti **real**: drejtimi i miratuar në [Blueprint §10](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md): identitet i përbashkët dhe autorizim në server, privatësi, social/community/plans/messaging/Shop, modele domain të përbashkëta, event taxonomy/analytics, role dashboards vetëm kur mbështeten nga funksionet, moderim/reportim, media, notifications, deep links, lifecycle, observability dhe siguri. Fillim me module të qarta, **jo microservices premature**.
+- **Ende të hapura (JO vendime të miratuara):** React Native/Expo vs Web/PWA, Postgres/Supabase/hosted backend, tregu i parë real, auth, PSP, monetizimi, kushtet ligjore, prioriteti exact i Shop në MVP, videot/messaging/dashboards në shkallë. Nuk krijohen shërbime në bazë të këtij handoff-i.
+
+### D. Çfarë është implementuar dhe çfarë është verifikuar [FAKT]
+- DEMO ka module funksionale UI të social/Shop/Plans/Connections/Privacy/Governance; funksionet e simuluara janë dokumentuar në roadmap, pa pretendim për funksione reale multi-user.
+- Deri te SHA i testuar `5fe384f89c5ad958825b52c81c6599dd055e1ad2`: i18n sq/en/it dhe përmirësime të formave, mesazheve dinamike, ruajtjes/failure-retry, katalogut të Shop Plus, dyqaneve dhe porosive simuluese.
+- Shop Plus: UI direkt me çelësa semantikë për formularët, filtrat, kategoritë, stoku, etiketat sponsored, krahasimet, katalogët e shitësve dhe komisionin ilustrues. Shfaqje e lokalizuar e statuseve të njohura të porosive **pa ndryshim të kodeve të ruajtura**; kodet e panjohura shfaqen siç janë.
+- Plans/Privacy: etiketa dhe feedback shumëgjuhësh, ruajtja e inputit/fokusit në ndërrim gjuhe në rrugët e trajtuara; dështimet localStorage nuk duhet të pretendohen sukses në testet e mbuluara. Connections/Governance kanë status/mesazhe dhe mbrojtje UGC në rrugët e trajtuara.
+- **CI i fundit i verifikuar:** [Actions #39968158271](https://github.com/titanfit102-bit/Illyrian/actions/runs/39968158271), `5fe384f89c5ad958825b52c81c6599dd055e1ad2`, **131/131 Chromium Playwright PASS (3.3m)**; logu u rilexua. Testet historike (53/53, 57/57, 65/65, 71/71, 80/80, 89/89, 95/95, 101/101, 110/110, 115/115, 123/123, 130/130) janë kronologji, jo statusi final. Kjo nuk është QA mobile, a11y totale, audit sigurie apo certifikim publikimi.
+- HEAD live para checkpoint-it: `534098b6b5194175e78193614debe1bb0ea773cb`, një commit **vetëm dokumentacioni** mbi SHA-në e testuar (diff e verifikuar: `MASTER_HANDOFF.md`, `architecture/ILLYRIAN_I18N.md`, `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`). HEAD ndryshon pas këtij commit-i dokumentacioni, prandaj bisedat e reja duhet ta lexojnë LIVE.
+- Branch `feat/i18n-shop-feedback-20261022` → Draft PR [#1](https://github.com/titanfit102-bit/Illyrian/pull/1), target `demo/v1.7-illyrian-shop` `015ce439e7c6d736149c6c300391586517664f62`; `main` `9f91b5c083b4482a70a2149483cc799360e6102c`; pa merge sipas statusit të verifikuar.
+- Vercel `illyrian-demo`: ekzistenca e projektit u gjet; statusi aktual Preview **NUK u lexua** (403 team scope). Preview READY i vjetër në dokumentet historike nuk provon deploy të SHA-së aktuale.
+
+### E. Problemet, rreziqet, pasiguritë [OPEN / E PAVERIFIKUAR]
+1. i18n e plotë në Shop Plus detail / buyer requests & replies / moderation dhe rental, plus tekste statike të mbetura të Plans/Privacy/Settings, dhe inventar për të gjitha module/ekrane/empty-error states.
+2. Audit global i UGC në DOM, escape/HTML injection, bllokimi nga adapteri legacy, formatet locale/currency, tekstet e gjata, live-switch pa humbje të formave.
+3. A11y e plotë me tastierë, screenreader, ARIA, navigim fokus, pamje responsive portrait/landscape dhe verifikim vizual/performance në pajisje reale.
+4. Vercel Preview i SHA-së aktuale i paverifikuar për mungesë autorizimi; mos bëj deploy/upgrade pa leje.
+5. Repository PUBLIC: ekspozimi/licencimi përpara prurjes së secrets dhe backend-it; nuk është kryer audit publik i sekretit apo review ligjor gjithëpërfshirës.
+6. Arkitektura reale, drejtimi platformë, backend, tregu, shpenzimet dhe lejet ligjore nuk janë firmosur; Shop bazë dhe Shop Plus kanë modele demo të ndara deri te unifikimi real.
+7. Disa vendime nga biseda të mëparshme dhe dokumentet origjinale Work mund të mos jenë të ripërsëritshme nga kjo përmbledhje: [Blueprint §10](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md) regjistron parimet e miratuara; burimet origjinale të propozimeve/Work nuk u rihapën në këtë sesion. Mos shpik përmbajtje të tyre.
+
+### F. Roadmap i konsoliduar [PLAN, JO PUNË E KRYER]
+- **P0-D / Faza 7:** mbaj suite Chromium jeshile mbi SHA e saktë; zgjidh regression reale; ruaj domain codes dhe UGC; asgjë në main/Production.
+- **P1-D / Faza 7:** lokalizimi direkt dhe inventari i mbetur; testet e të gjitha modalëve/formave/statusit; QA e fokusit, aksesueshmërisë, visuals dhe renditjes; verifiko versionin Vercel; **phone QA nga pronari me screenshot-e**; miratimi i veçantë i DEMO.
+- **P0-R/M0–M1 / Faza 8:** validim i nevojës/tregut, PRD/threat-model, vendim platformë/backend, identity/auth/privacy/role access të garantuara në server; proof që një përdorues nuk lexon/shkruan privatësinë e një tjetri.
+- **P1-R/M2–M3:** community/plan/capacity, messaging sipas scope të aprovuar, media/notifications dhe discovery/inquiry Shop me seller ownership dhe moderim real; prova të rrjedhave vertikale e metrika për përdoruesit.
+- **P2/M4:** vetëm pas pilotit dhe kontrollit ligjor/e ekonomik, shqyrto pagesat, KYC/KYB, komisionin, rimbursimet dhe liability; asnjë vendim implicit 5%.
+- **P3/M5:** security/a11y/device testing, ops/observability/backup-restore, staged release dhe sign-off; zgjerim gjeografik/gjuhësor vetëm mbi metrika.
+
+### G. Pika e saktë e rifillimit dhe kriteret [PLAN]
+**Pika e fundit e verifikuar:** `5fe384...`, 131/131 Chromium PASS; dokumentacioni i mëpasshëm HEAD `534098b6b5194175e78193614debe1bb0ea773cb` vetëm tekst, PR #1 i pambashkuar.
+
+**Detyra e ardhshme e zhvillimit:** lexo Shop Plus current-source, inventarizo item-detail, request/reply, report/moderation, rental/time labels; zgjidh 1 grup të vogël të verifikueshëm, lidh me semantic i18n, mos ndrysho `option.value` ose UGC, shto teste, merr CI PASS me SHA të saktë; pastaj përditëso `CURRENT_STATE.md` dhe këtë snapshot pa fshirë seksionet historike. Mos e nis zhvillimin në këtë task të protokollit, i cili është dokumentacion-only.
+
+**Definition of Done për çdo etapë:** kod/kontrata sipas autorizimit, teste të reja dhe të vjetra PASS mbi SHA ekzakte, kontroll i diff-it dhe depencave, pa merge të paautorizuar, dokumentim i problemit/ndryshimit/provës/OPEN, rilexim GitHub i dy dokumenteve. Mos deklaro 100% me numër çelësash ose vetëm browser tests.
+
+### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
+- `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
+- `MASTER_HANDOFF.md` = vizioni, vendimet, arkitektura, evidenca dhe kufijtë; seksioni ACTIVE SNAPSHOT përditësohet inkrementalisht; **HISTORICAL RECORD poshtë ruhet pa fshirë ose falsifikuar eventet**.
+- Vendimet e arkitekturës të detajuara jetojnë te [Blueprint §10](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md), implementimi i i18n te [ADR](architecture/ILLYRIAN_I18N.md), kronologjia e DEMO-s te [roadmap](demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md).
+- Pronari autorizoi që pas çdo ndryshimi material të verifikuar të përditësohen **automatikisht gjatë punës aktive** vetëm këta dy dokumente, vetëm në `feat/i18n-shop-feedback-20261022`, pa pyetje të përsëritura. **Jo** punë në sfond, **jo** kod/PR merge/deploy/main/Production, **jo** sekrete. Për një detyrë të re të kodit duhen autorizime sipas rregullave përkatëse.
+- Commit-et e dokumentimit nuk janë ekuivalente me CI jeshil mbi HEAD nëse workflow nuk teston `*.md`; linko SHA-në më të fundit të **kodit/testeve** me logun CI. Nëse shkruan dokumente pas atij SHA, shëno `docs-only`.
+- Pas ndërprerjes: lexo CURRENT_STATE → ACTIVE SNAPSHOT → Blueprint/ADR/Roadmap, kontrollo GitHub HEAD/PR/CI dhe Vercel (nëse ke akses); krahaso live me checkpoint-in dhe bëj veprimin e parë të pambyllur. Raporto shkurt `u bë / mbetet / vijon / handoff ruajtur?`.
+
+---
+
+## HISTORICAL RECORD — dokumenti i mëparshëm, i ruajtur plotësisht
+
+> **KUJDES:** pjesa poshtë ruhet historikisht **verbatim**. Data, numra dhe formulime në krye (p.sh. “repository private” ose “290 çelësa”) kanë qenë të sakta vetëm sipas checkpoint-eve të tyre ose janë korrigjuar më vonë. Mos i përdor për statusin aktual pa kontrolluar ACTIVE SNAPSHOT dhe GitHub.
+
 # ILLYRIAN — MASTER HANDOFF (Status i18n, 22 tetor 2026)
 
 ## Për të vazhduar në një bisedë tjetër
