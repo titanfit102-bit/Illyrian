@@ -60,6 +60,12 @@
 
 **Definition of Done për çdo etapë:** kod/kontrata sipas autorizimit, teste të reja dhe të vjetra PASS mbi SHA ekzakte, kontroll i diff-it dhe depencave, pa merge të paautorizuar, dokumentim i problemit/ndryshimit/provës/OPEN, rilexim GitHub i dy dokumenteve. Mos deklaro 100% me numër çelësash ose vetëm browser tests.
 
+### G.1 — Audit i kodit Shop Plus pas checkpoint-it (23 October 2026) [FAKT / PLAN]
+- U verifikua live HEAD `2c9cff9fd2cdad64e9813c80f47f2d2b38ec8dc5`, PR #1 draft/open/unmerged, target `demo/v1.7-illyrian-shop` (SHA `015ce439...`), `main` `9f91b5c...`, repository PUBLIC. Krahasimi me source/test SHA `5fe384f...`: vetëm dy commits dokumentacioni në katër skedarë; run #39968158271 = 131/131 Chromium PASS mbi **SHA e kodit**, jo QA e veçantë për HEAD dokumentues.
+- Inventari në `demo/ILLYRIAN_SHOP_PLUS_v1.7.js` zbuloi direct-i18n të papërfunduar: `itemView()` (detaj, makinë, qira, stok, butona, paralajmërime), `period()/card()` (shfaqja e `muaj/javë` sipas locale), `board()` (tituj/lista/afate/empty/replies), `respond()` (formulari/placeholder), `moderation()` (etiketa/status/arsye); `render()` ka `aria-label` dhe close hardcoded, `inject()` ka etiketë hyrjeje hardcoded. Mundësia e përkthimit nga adapteri legacy nuk përbën provë për direct semantic bindings.
+- Suite `qa/illyrian-v17-i18n.spec.cjs` mbulon pjesë të katalogut, seller directory, forms, UGC, saved enum/order, por jo assertions e plotë të prezantimit të rrugëve më sipër. `qa/illyrian-v17-i18n-inventory.spec.cjs` kap Shop Plus vetëm në tab-in inicial; gjendjet conditionale nuk janë inventarizuar.
+- **Next isolated coding slice (not executed, code authorization required):** item detail + rental/period labels -> buyer request board/respond -> moderation/report status -> modal a11y. Use sq/en/it direct semantic keys, unchanged `option.value`/stored reason and order codes, UGC exclusion, mirrored locale catalogs, targeted en/it regression; require exact-SHA CI before docs checkpoint. No merge, deployment, or external services.
+
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
 - `MASTER_HANDOFF.md` = vizioni, vendimet, arkitektura, evidenca dhe kufijtë; seksioni ACTIVE SNAPSHOT përditësohet inkrementalisht; **HISTORICAL RECORD poshtë ruhet pa fshirë ose falsifikuar eventet**.

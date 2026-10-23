@@ -30,6 +30,12 @@
 5. Para aplikacionit real: zgjidh vendimet e hapura të platformës, tregut, sigurisë, kostove, licencimit dhe përputhshmërisë; ndiq [M0–M5](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md), jo implementim automatik.
 6. **Rrezik:** repository është PUBLIC, por dokumentet e vjetra e quajnë private; shqyrto ekspozimin, licencën dhe privatësinë para integrimit me sisteme reale.
 
+### Rezultati i inventarit Shop Plus — 2026-10-23 [FAKT, PA NDRYSHIM KODI]
+- Audit LIVE: HEAD `2c9cff9fd2cdad64e9813c80f47f2d2b38ec8dc5`; dy commits pas kodit `5fe384f89c5ad958825b52c81c6599dd055e1ad2` janë vetëm dokumentacion. CI #39968158271 = 131/131 Chromium PASS për SHA e kodit, jo një run në HEAD.
+- `demo/ILLYRIAN_SHOP_PLUS_v1.7.js`: `itemView()` (detaji, metadata makine/qiraje/stoku, butonat/disclaimer), `board()` (kërkesat, afati/empty/replies), `respond()` (formulari i përgjigjes), `moderation()` (tituj/statuset/arsyet) kanë ende tekste të forta shqip pa lidhje të drejtpërdrejtë semantike. `period()/card()` përdorin `muaj/javë` si etiketë UI në vend të tekstit sipas gjuhës. Dialog `aria-label`, mbyllja dhe butoni i hyrjes për Shop Plus janë gjithashtu hardcoded; adapteri legacy mund të ndryshojë disa fraza, por kjo nuk provon mbulim semantik.
+- `qa/illyrian-v17-i18n.spec.cjs` verifikon katalogun, kartat, dyqanet, formën e raportimit, porositë simuluese dhe kodet e ruajtura. `qa/illyrian-v17-i18n-inventory.spec.cjs` sheh vetëm skedën fillestare Shop Plus, jo detajet/kërkesat/përgjigjet/moderimin. **Coverage i plotë i18n dhe a11y është ende OPEN.**
+- **Hapi pasues [PLAN, KËRKON AUTORIZIM PËR KOD]:** patch i kufizuar `itemView() + period()/card()` me keys `shopPlus:*` për sq/en/it dhe teste Playwright për detail produkt/makinë/qira. Ruaj domain values, UGC, status codes, localStorage. Më pas `board()/respond()`, `moderation()`, dialog a11y. Pa merge/deploy.
+
 **Veprimi i saktë pasues:** inventar i kodit aktual të Shop Plus / pjesëve të mbetura, ndryshim i izoluar vetëm nëse ekziston autorizim për kod, teste për çdo SHA, pastaj checkpoint-i i dokumenteve. Kjo detyrë **vetëm dokumentacion** nuk autorizon ndryshime kodi.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
