@@ -124,18 +124,18 @@
  };
  const storesView=()=>{
   const sellers=[...new Set(all().map(x=>x.store))].sort((a,b)=>a.localeCompare(b,'sq'));
-  return '<h3>Dyqanet e vogla</h3><p>Çdo dyqan ka katalogun e ofertave të veta. Inventari këtu është vetëm provë.</p>'+
+  return '<h3 data-i18n-direct>'+ui('storesHeading','Dyqanet e vogla')+'</h3><p data-i18n-direct>'+ui('storesIntro','Çdo dyqan ka katalogun e ofertave të veta. Inventari këtu është vetëm provë.')+'</p>'+
   sellers.map(x=>{
     const rows=all().filter(p=>p.store===x),cities=[...new Set(rows.map(p=>p.city))].join(', ');
-    return '<article class="isp-card"><h4 data-user-content>'+esc(x)+'</h4><p>'+esc(cities)+' · '+rows.length+' listime demonstrative</p>'+
-     '<p>'+rows.filter(p=>p.type==='Produkte'&&numeric(p.quantity)>0).length+' produkte në stok (shembull)</p>'+btn('store:'+x,'Hap katalogun')+'</article>'
+    return '<article class="isp-card"><h4 data-user-content>'+esc(x)+'</h4><p>'+esc(cities)+' · '+rows.length+' <span data-i18n-direct>'+ui('demoListings','listime demonstrative')+'</span></p>'+
+     '<p>'+rows.filter(p=>p.type==='Produkte'&&numeric(p.quantity)>0).length+' <span data-i18n-direct>'+ui('storeStockExamples','produkte në stok (shembull)')+'</span></p>'+btn('store:'+x,feedback('openShopCatalog','Hap katalogun'),'data-i18n-direct')+'</article>'
   }).join('');
  };
  const storeView=()=>{
   const rows=all().filter(p=>p.store===state.shop);
-  return btn('stores','← Të gjitha dyqanet')+'<h3 data-user-content>'+esc(state.shop)+'</h3><p>'+rows.length+' oferta demonstrative; identiteti tregtar nuk është verifikuar.</p>'+
+  return btn('stores',feedback('allShops','← Të gjitha dyqanet'),'data-i18n-direct')+'<h3 data-user-content>'+esc(state.shop)+'</h3><p>'+rows.length+' <span data-i18n-direct>'+ui('demoOffers','oferta demonstrative; identiteti tregtar nuk është verifikuar.')+'</span></p>'+
     rows.map(card).join('')+
-    '<p class="isp-muted">Ofertat e sponsorizuara janë të etiketuara. Nuk kemi vlerësim të besueshmërisë së shitësit.</p>';
+    '<p class="isp-muted" data-i18n-direct>'+ui('sponsoredNote','Ofertat e sponsorizuara janë të etiketuara. Nuk kemi vlerësim të besueshmërisë së shitësit.')+'</p>';
  };
  const create=()=>{
   const editing=state.editId&&state.items.find(p=>p.id===state.editId);
@@ -183,18 +183,18 @@
  const checkout=()=>{
   const product=all().find(p=>p.type==='Produkte'&&numeric(p.quantity)>0);
   const v=product?.price||100,fee=+(v*.05).toFixed(2);
-  return '<h3>Porosia, kthimi dhe komisioni — shembull</h3>'+
-   '<article class="isp-card"><h4>Rrjedhë ilustruese</h4>'+
-   '<p>Blerësi bën porosinë → shitësi konfirmon stokun → dërgesa → dorëzim → mundësi për ankesë/kthim.</p>'+
-   '<p><b>Vlera shembull:</b> '+money(v)+'</p>'+
-   '<p><b>Komision ilustrues 5%:</b> '+money(fee)+'</p>'+
-   '<p><b>Te shitësi, përpara kostove/taksave:</b> '+money(v-fee)+'</p>'+
-   btn('sample-order','Simulo porosinë (pa pagesë)')+
+  return '<h3 data-i18n-direct>'+ui('checkoutHeading','Porosia, kthimi dhe komisioni — shembull')+'</h3>'+
+   '<article class="isp-card"><h4 data-i18n-direct>'+ui('checkoutFlow','Rrjedhë ilustruese')+'</h4>'+
+   '<p data-i18n-direct>'+ui('checkoutSteps','Blerësi bën porosinë → shitësi konfirmon stokun → dërgesa → dorëzim → mundësi për ankesë/kthim.')+'</p>'+
+   '<p><b data-i18n-direct>'+ui('demoValue','Vlera shembull:')+'</b> '+money(v)+'</p>'+
+   '<p><b data-i18n-direct>'+ui('demoFee','Komision ilustrues 5%:')+'</b> '+money(fee)+'</p>'+
+   '<p><b data-i18n-direct>'+ui('sellerNet','Te shitësi, përpara kostove/taksave:')+'</b> '+money(v-fee)+'</p>'+
+   btn('sample-order',feedback('simulateOrder','Simulo porosinë (pa pagesë)'),'data-i18n-direct')+
    '</article>'+
-   (state.sampleOrders.slice(-5).reverse().map(o=>'<article class="isp-card"><p>Porosia demo '+esc(o.id)+' · '+esc(o.status)+'</p>'+
-   btn('sample-cancel:'+o.id,'Anulo / kërko kthim')+
+   (state.sampleOrders.slice(-5).reverse().map(o=>'<article class="isp-card"><p><span data-i18n-direct>'+ui('demoOrder','Porosia demo')+'</span> '+esc(o.id)+' · <span data-i18n-direct>'+ui(o.status==='E krijuar në demo'?'statusCreated':'statusReturn',o.status)+'</span></p>'+
+   btn('sample-cancel:'+o.id,feedback('cancelReturn','Anulo / kërko kthim'),'data-i18n-direct')+
    '</article>').join(''))+
-   '<p class="isp-muted">5% nuk është tarifë e miratuar. Nuk ka transaksione, faturë, dërgesë, identitet apo rimbursim real. Ligjet dhe kostot duhen verifikuar përpara lansimit.</p>';
+   '<p class="isp-muted" data-i18n-direct>'+ui('checkoutWarning','5% nuk është tarifë e miratuar. Nuk ka transaksione, faturë, dërgesë, identitet apo rimbursim real. Ligjet dhe kostot duhen verifikuar përpara lansimit.')+'</p>';
  };
  const respond=()=>{
   const n=state.needs.find(x=>x.id===state.needIndex);
