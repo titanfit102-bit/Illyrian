@@ -111,7 +111,7 @@
   const p=all().find(x=>x.id===state.selected);
   if(!p)return '<p>Listimi nuk ekziston.</p>'+btn('catalog','Kthehu');
   return btn('catalog','← Kthehu te rezultatet')+'<article class="isp-card isp-focus">'+chip(p)+'<h3 data-user-content>'+esc(p.name)+'</h3><strong>'+price(p)+'</strong>'+
-   '<p data-user-content>'+esc(p.details||'Oferta është demonstrative.')+'</p><p>'+esc(p.store)+' · '+esc(p.city)+'</p>'+
+   '<p data-user-content>'+esc(p.details||'Oferta është demonstrative.')+'</p><p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+
    (p.type==='Makina'?'<p>Viti: '+esc(p.year)+' · Kilometra: '+esc(p.mileage)+' · Karburanti: '+esc(p.fuel)+'</p>':
    p.type==='Banesa me qira'?'<p>Sipërfaqe: '+esc(p.area)+' m² · '+esc(p.rooms)+' · Qira për '+esc(p.period||'muaj')+'</p>':
    p.type==='Produkte'?'<p>Gjendja: '+(numeric(p.quantity)>0?'Në stok, '+numeric(p.quantity)+' copë':'Pa stok')+'</p>':'')+
