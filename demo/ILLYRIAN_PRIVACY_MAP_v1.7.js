@@ -66,7 +66,7 @@
  const currentGroup=()=>groups.find(g=>g.id===state.selected)||groups[0];
  const groupPage=()=>{
   const g=currentGroup(),s=state.membership[g.id]||'none',owner=state.role==='owner',visible=g.privacy==='public'||s==='accepted'||owner;
-  return '<h3>Komunitete me rregulla dhe role</h3><p>Në një komunitet privat vetëm anëtarët e pranuar shohin përmbajtjen. Ky është një shembull i kontrolleve të aksesit, jo siguri serveri.</p>'+
+  return '<h3>'+ui('groupTitle','Komunitete me rregulla dhe role')+'</h3><p>'+ui('groupIntro','Në një komunitet privat vetëm anëtarët e pranuar shohin përmbajtjen. Ky është një shembull i kontrolleve të aksesit, jo siguri serveri.')+'</p>'+
   '<div class="il4-role">'+b('role:visitor','Si kërkues',!owner?'class="chosen"':'')+b('role:owner','Si moderator demo',owner?'class="chosen"':'')+'</div>'+
   '<div class="il4-tabs il4-people">'+groups.map(g=>b('group:'+g.id,g.name,g.id===state.selected?'aria-current="page"':'')).join('')+'</div>'+
   '<article class="il4-card"><h4 data-user-content>'+escaped(g.name)+'</h4><p>'+escaped(g.city)+' · '+(g.privacy==='private'?'Komunitet privat':'Komunitet publik')+' · '+g.members+' anëtarë shembull</p>'+
@@ -90,18 +90,18 @@
  const pin=(p,i,sel)=>'<button type="button" class="il4-pin '+(sel?'selected':'')+'" data-il4="pin:'+escaped(p.id)+'" style="left:'+((21+(i*37)%63))+'%;top:'+((18+(i*23)%62))+'%" aria-label="'+escaped('Shfaq '+p.name+' në '+p.city)+'">'+(p.kind==='business'?'▣':'●')+'</button>';
  const mapPage=()=>{
   const list=pins(),selected=list.find(p=>p.id===state.selectedPin)||list[0];
-  return '<h3>Zbulo aktivitetet dhe bizneset sipas qytetit</h3><p class="il4-muted"><b>Hartë skematike — JO hartë gjeografike.</b> Pozicionet e pikave janë ilustrative; nuk tregojnë koordinata, rrugë apo distanca reale.</p>'+
-  '<form id="il4-mapform"><label>Qyteti<select name="city">'+cities.map(c=>'<option '+(c===state.city?'selected ':'')+'value="'+escaped(c)+'">'+escaped(c)+'</option>').join('')+'</select></label>'+
-  '<label>Lloji<select name="kind">'+[['all',feedback('mapAll','Të gjitha')],['activity',feedback('mapActivities','Aktivitete')],['business',feedback('mapBusinesses','Biznese')]].map(([k,v])=>'<option '+(k===state.mapKind?'selected ':'')+'value="'+k+'">'+v+'</option>').join('')+'</select></label>'+
-  '<label>Kërko<input name="q" maxlength="60" value="'+escaped(state.search)+'" placeholder="P.sh. kafe, futboll, dyqan"></label>'+
-  '<button type="submit">Filtro</button></form>'+
+  return '<h3>'+ui('mapHeading','Zbulo aktivitetet dhe bizneset sipas qytetit')+'</h3><p class="il4-muted"><b>'+ui('mapDisclaimer','Hartë skematike — JO hartë gjeografike.')+'</b> '+ui('mapExplanation','Pozicionet e pikave janë ilustrative; nuk tregojnë koordinata, rrugë apo distanca reale.')+'</p>'+
+  '<form id="il4-mapform"><label>'+ui('mapCity','Qyteti')+'<select name="city">'+cities.map(c=>'<option '+(c===state.city?'selected ':'')+'value="'+escaped(c)+'">'+escaped(c)+'</option>').join('')+'</select></label>'+
+  '<label>'+ui('mapKind','Lloji')+'<select name="kind">'+[['all',feedback('mapAll','Të gjitha')],['activity',feedback('mapActivities','Aktivitete')],['business',feedback('mapBusinesses','Biznese')]].map(([k,v])=>'<option '+(k===state.mapKind?'selected ':'')+'value="'+k+'">'+escaped(v)+'</option>').join('')+'</select></label>'+
+  '<label>'+ui('mapSearch','Kërko')+'<input name="q" maxlength="60" value="'+escaped(state.search)+'" placeholder="'+ui('mapPlaceholder','P.sh. kafe, futboll, dyqan')+'"></label>'+
+  '<button type="submit">'+ui('mapFilter','Filtro')+'</button></form>'+
   '<div class="il4-map" aria-label="Skemë orientuese e rezultateve"><div class="il4-grid-lines"></div>'+
   '<div class="il4-map-label">ILLYRIAN · DEMO · '+escaped(state.city)+'</div>'+
   list.slice(0,16).map((p,i)=>pin(p,i,selected?.id===p.id)).join('')+
-  (list.length?'':'<p class="il4-no-pins">Nuk u gjetën shembuj për filtrat.</p>')+'</div>'+
-  (selected?'<article class="il4-card"><h4 data-user-content>'+escaped(selected.name)+'</h4><p>'+escaped(selected.city)+' · '+(selected.kind==='business'?'Biznes':'Aktivitet')+'</p><p data-user-content>'+escaped(selected.detail)+'</p></article>':'')+
+  (list.length?'':'<p class="il4-no-pins">'+ui('mapNoResults','Nuk u gjetën shembuj për filtrat.')+'</p>')+'</div>'+
+  (selected?'<article class="il4-card"><h4 data-user-content>'+escaped(selected.name)+'</h4><p>'+escaped(selected.city)+' · '+(selected.kind==='business'?ui('mapBusiness','Biznes'):ui('mapActivity','Aktivitet'))+'</p><p data-user-content>'+escaped(selected.detail)+'</p></article>':'')+
   '<div class="il4-results">'+list.slice(0,20).map(p=>b('pin:'+p.id,p.name+' — '+p.city)).join('')+'</div>'+
-  '<p class="il4-muted">Për hartë reale në aplikacionin profesional do të duhen burime të verifikuara vendesh, leje dhe rregulla privatësie.</p>';
+  '<p class="il4-muted">'+ui('mapSafety','Për hartë reale në aplikacionin profesional do të duhen burime të verifikuara vendesh, leje dhe rregulla privatësie.')+'</p>';
  };
  const sampleStatuses=[
   {id:'public',title:'Kafe me komunitetin',state:'available',public:true,note:'Aktivitet publik me vende të lira.'},
@@ -121,9 +121,9 @@
   })];
  };
  const stateLabel=s=>({available:'I hapur',full:'Plot',canceled:'Anuluar',expired:'I skaduar',private:'Privat',removed:'Nuk gjendet'})[s]||'I panjohur';
- const statuses=()=>'<h3>Gjendjet e aktiviteteve dhe kthimi i sigurt</h3><p>Kur hap një aktivitet nga Postimi/Story/Reel, gjendja duhet kontrolluar sërish. Klikimi nuk regjistron automatikisht pjesëmarrje.</p>'+
+ const statuses=()=>'<h3>'+ui('statusesHeading','Gjendjet e aktiviteteve dhe kthimi i sigurt')+'</h3><p>'+ui('statusesIntro','Kur hap një aktivitet nga Postimi/Story/Reel, gjendja duhet kontrolluar sërish. Klikimi nuk regjistron automatikisht pjesëmarrje.')+'</p>'+
  getPlanStatuses().map(p=>'<article class="il4-card"><div class="il4-cardtop"><strong data-user-content>'+escaped(p.public?p.title:'Aktivitet privat ose i padisponueshëm')+'</strong><span>'+escaped(stateLabel(p.state))+'</span></div>'+
- '<p>'+escaped(p.note)+'</p>'+b('state:'+p.state,'Çfarë mund të bëj?')+'</article>').join('')+
+ '<p>'+escaped(p.note)+'</p>'+b('state:'+p.state,feedback('statusesAction','Çfarë mund të bëj?'))+'</article>').join('')+
  '<p class="il4-muted">Shembujt e gjendjeve nuk janë rezervime, njoftime ose leje nga serveri.</p>';
  const render=()=>{
   if(!root)return;
