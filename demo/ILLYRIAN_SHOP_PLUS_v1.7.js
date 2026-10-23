@@ -161,13 +161,13 @@
   const active=state.needs.filter(n=>Date.parse(n.expires)>Date.now()).slice().reverse();
   return '<h3>“Kërkoj…” — kërkesat e komunitetit</h3><p>Përdoruesi përshkruan çfarë kërkon; dyqanet përgjigjen vetëm në këtë simulim. Pa kontakt real.</p>'+
    '<form id="isp-need" class="isp-fields">'+
-   '<label>Kërkoj<input name="title" minlength="5" maxlength="90" required placeholder="P.sh. biçikletë për qytet"></label>'+
-   '<label>Lloji<select name="type">'+TYPES.slice(1).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
+   '<label data-i18n-direct>'+ui('formRequestTitle','Kërkoj')+'<input name="title" minlength="5" maxlength="90" required placeholder="'+ui('formRequestPlaceholder','P.sh. biçikletë për qytet')+'"></label>'+
+   '<label data-i18n-direct>'+ui('formType','Lloji')+'<select name="type">'+TYPES.slice(1).map(x=>'<option data-i18n-direct value="'+esc(x)+'">'+typeLabel(x)+'</option>').join('')+'</select></label>'+
    '<label data-i18n-direct>'+esc(window.IllyrianI18n?.t('shop:city')||'Qyteti')+'<select name="city">'+CITIES.slice(1).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label>'+
-   '<label>Buxheti maksimal €<input name="budget" type="number" min="1" max="10000000" required></label>'+
-   '<label>Afati<select name="days"><option value="7">7 ditë</option><option value="14">14 ditë</option><option value="30">30 ditë</option></select></label>'+
-   '<label class="isp-span">Detajet<textarea name="details" rows="2" maxlength="240" placeholder="Karakteristikat e kërkuara"></textarea></label>'+
-   '<div class="isp-span"><button type="submit">Publiko kërkesën në demo</button></div></form>'+
+   '<label data-i18n-direct>'+ui('formBudget','Buxheti maksimal €')+'<input name="budget" type="number" min="1" max="10000000" required></label>'+
+   '<label data-i18n-direct>'+ui('formDeadline','Afati')+'<select name="days"><option value="7">'+ui('formSevenDays','7 ditë')+'</option><option value="14">'+ui('formFourteenDays','14 ditë')+'</option><option value="30">'+ui('formThirtyDays','30 ditë')+'</option></select></label>'+
+   '<label class="isp-span" data-i18n-direct>'+ui('formRequestDetails','Detajet')+'<textarea name="details" rows="2" maxlength="240" placeholder="'+ui('formDetailPlaceholder','Karakteristikat e kërkuara')+'"></textarea></label>'+
+   '<div class="isp-span"><button data-i18n-direct type="submit">'+ui('formPublishRequest','Publiko kërkesën në demo')+'</button></div></form>'+
    (active.length?active.map(n=>'<article class="isp-card"><h4 data-user-content>'+esc(n.title)+'</h4><p>'+esc(n.type)+' · '+esc(n.city)+' · buxheti '+money(n.budget)+'</p>'+
     '<p data-user-content>'+esc(n.details||'')+'</p><small>Skadon: '+esc(n.expires.slice(0,10))+'</small>'+
     btn('respond:'+n.id,'Përgjigju si dyqan (demo)')+(state.answers.filter(a=>a.needId===n.id).slice(-2).map(a=>'<p class="isp-reply">Përgjigje demo: <span data-user-content>'+esc(a.text)+'</span></p>').join(''))+
@@ -205,20 +205,20 @@
  };
  const report=()=>{
   const x=all().find(p=>p.id===state.selected);
-  return '<h3>Raporto listimin</h3><p data-user-content>'+esc(x?.name||'Listimi demonstrues')+'</p>'+
-  '<form id="isp-report"><label>Arsyeja<select name="reason"><option value="Informacion i pasaktë">Informacion i pasaktë</option><option value="Mashtrim i dyshuar">Mashtrim i dyshuar</option><option value="Listim i dyfishuar">Listim i dyfishuar</option><option value="Përmbajtje e papërshtatshme">Përmbajtje e papërshtatshme</option></select></label>'+
-  '<label>Përshkrim opsional<textarea name="detail" maxlength="180"></textarea></label>'+
-  '<button type="submit">Ruaj raportimin (demo)</button></form>';
+  return '<h3 data-i18n-direct>'+ui('formReportListing','Raporto listimin')+'</h3><p data-user-content>'+esc(x?.name||'Listimi demonstrues')+'</p>'+
+  '<form id="isp-report"><label data-i18n-direct>'+ui('formReason','Arsyeja')+'<select name="reason"><option data-i18n-direct value="Informacion i pasaktë">'+ui('formReasonInaccurate','Informacion i pasaktë')+'</option><option data-i18n-direct value="Mashtrim i dyshuar">'+ui('formReasonFraud','Mashtrim i dyshuar')+'</option><option data-i18n-direct value="Listim i dyfishuar">'+ui('formReasonDuplicate','Listim i dyfishuar')+'</option><option data-i18n-direct value="Përmbajtje e papërshtatshme">'+ui('formReasonInappropriate','Përmbajtje e papërshtatshme')+'</option></select></label>'+
+  '<label data-i18n-direct>'+ui('formOptionalDescription','Përshkrim opsional')+'<textarea name="detail" maxlength="180"></textarea></label>'+
+  '<button type="submit" data-i18n-direct>'+ui('formSaveReport','Ruaj raportimin (demo)')+'</button></form>';
  };
  const page=()=>state.tab==='catalog'?catalog():state.tab==='stores'?(state.shop?storeView():storesView()):
   state.tab==='item'?itemView():state.tab==='create'?create():state.tab==='needs'?board():
   state.tab==='respond'?respond():state.tab==='report'?report():state.tab==='moderation'?moderation():checkout();
  const render=()=>{if(!overlay||!state.open)return;
   overlay.innerHTML='<div class="isp-shade" data-isp="close"></div><section class="isp-panel" role="dialog" aria-modal="true" aria-label="ILLYRIAN Shop i avancuar">'+
-  '<header><div><small>ILLYRIAN · DEMO v1.7</small><h2>Shop i avancuar</h2></div>'+btn('close','✕ Mbyll')+'</header>'+
-  '<nav class="isp-nav">'+[['catalog','Kërko'],['stores','Dyqanet'],['needs','Kërkoj…'],['checkout','Porositë'],['moderation','Raportime']].map(([a,b])=>btn('tab:'+a,b,state.tab===a?'aria-current="page"':'')).join('')+'</nav>'+
+  '<header><div><small>ILLYRIAN · DEMO v1.7</small><h2 data-i18n-direct>'+ui('title','Shop i avancuar')+'</h2></div>'+btn('close','✕ Mbyll')+'</header>'+
+  '<nav class="isp-nav">'+[['catalog',feedback('search','Kërko')],['stores',feedback('stores','Dyqanet')],['needs',feedback('needs','Kërkoj…')],['checkout',feedback('orders','Porositë')],['moderation',feedback('reports','Raportime')]].map(([a,b])=>btn('tab:'+a,b,'data-i18n-direct '+(state.tab===a?'aria-current="page"':''))).join('')+'</nav>'+
   (state.notice?'<p class="isp-notice" role="status">'+esc(state.notice)+'</p>':'')+
-  page()+'<footer>Të dhëna fiktive · Nuk ka pagesa, rezervime, dërgesa ose kontakte reale.</footer></section>';
+  page()+'<footer data-i18n-direct>'+ui('footer','Të dhëna fiktive · Nuk ka pagesa, rezervime, dërgesa ose kontakte reale.')+'</footer></section>';
   overlay.querySelector('header button')?.focus();
  };
  const modalBackground=()=>{
