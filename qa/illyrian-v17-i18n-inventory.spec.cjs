@@ -53,7 +53,16 @@ test('List untranslated visible UI labels across main views',async({page})=>{
    await shop.click();await capture('shop');
    const plus=page.locator('[data-isp-open]').first();
    if(await plus.isVisible()){
-     await plus.click();await capture('shopPlus');await page.keyboard.press('Escape');
+     await plus.click();await capture('shopPlus');
+     await page.locator('#isp-root [data-isp="item:k1"]').click();await capture('shopPlus-item');
+     await page.locator('#isp-root [data-isp="report:k1"]').click();await capture('shopPlus-report');
+     await page.locator('#isp-root [data-isp="tab:moderation"]').click();await capture('shopPlus-moderation');
+     await page.locator('#isp-root [data-isp="tab:needs"]').click();await capture('shopPlus-needs');
+     await page.locator('#isp-root [data-isp="tab:checkout"]').click();await capture('shopPlus-checkout');
+     await page.locator('#isp-root [data-isp="tab:stores"]').click();await capture('shopPlus-stores');
+     await page.locator('#isp-root [data-isp="tab:catalog"]').click();
+     await page.locator('#isp-root [data-isp="create"]').click();await capture('shopPlus-create');
+     await page.keyboard.press('Escape');
    }
    await page.keyboard.press('Escape');
  }
@@ -74,7 +83,7 @@ test('List untranslated visible UI labels across main views',async({page})=>{
  const covered=new Set(lookup);
  const unique=[...new Set(snapshots.flatMap(s=>s.strings))];
  const missing=unique.filter(s=>!covered.has(s)&&!/^(\d+|[✦✕⬅→✓✉️🌍]|ILLYRIAN|Home|Reels|Story)/i.test(s));
- const report={date:'2026-10-22',scope:'visible sampled UI only; not all conditional paths',catalogKeys:lookup.length,observedLabels:unique.length,unmatchedLabels:missing.length,routes:snapshots.map(s=>({route:s.route,labels:s.strings.length})),unmatched:missing};
+ const report={date:'2026-10-22',scope:'visible sampled UI including Shop Plus detail/report/moderation/needs/checkout/stores/create; conditional saved states not exhaustive',catalogKeys:lookup.length,observedLabels:unique.length,unmatchedLabels:missing.length,routes:snapshots.map(s=>({route:s.route,labels:s.strings.length})),unmatched:missing};
  fs.mkdirSync('qa-results/i18n-inventory',{recursive:true});
  fs.writeFileSync('qa-results/i18n-inventory/visible-ui-sq.json',JSON.stringify(report,null,2));
  console.log('I18N_INVENTORY '+JSON.stringify({catalog:lookup.length,observed:unique.length,unmatched:missing.length,samples:missing.slice(0,85)}));

@@ -1272,3 +1272,42 @@ for(const [language,labels] of Object.entries({
   await expect(page.locator('#isp-root .isp-card [data-user-content]').first()).toHaveText('Kafe espresso 250 g');
  });
 }
+
+
+test('Shop Plus preserves unknown report codes and escapes persisted user text across languages',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify({items:[],needs:[],answers:[],sampleOrders:[],flags:[{target:'<img src=x onerror=alert(1)>',reason:'Unrecognized reason',detail:'Mbyll'}]}));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:moderation"]').click();
+ const report=page.locator('#isp-root .isp-card').first();
+ await expect(report.locator('[data-user-content]')).toHaveText('<img src=x onerror=alert(1)>');
+ await expect(report).toContainText('Unrecognized reason');
+ expect(await page.locator('#isp-root img[src="x"]').count()).toBe(0);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(report).toContainText('Unrecognized reason');
+ await expect(report.locator('[data-user-content]')).toHaveText('<img src=x onerror=alert(1)>');
+ const persisted=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(persisted.flags[0].reason).toBe('Unrecognized reason');
+});
+
+test('Shop Plus entry label switches languages before opening and close restores focus',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ const entry=page.locator('#illyrian-shop-layer [data-isp-open]').first();
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await expect(entry).toContainText('Advanced search');
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(entry).toContainText('Ricerca avanzata');
+ await entry.focus();await entry.click();
+ await expect(page.locator('#isp-root .isp-panel')).toHaveAttribute('aria-label','Negozio avanzato ILLYRIAN');
+ await page.keyboard.press('Escape');
+ await expect(page.locator('#isp-root')).toHaveCount(0);
+ await expect(entry).toBeFocused();
+});
