@@ -987,3 +987,118 @@ test('Plans user-authored place, event title and conditions are stable when loca
  expect(actual.place).toBe('Mbyll');
  expect(actual.conditions).toBe('Mbyll');
 });
+
+for(const [lang,label] of Object.entries({
+ sq:{create:'Publiko ofertë në demo',category:'Kategoria',seller:'Dyqani / shitësi',period:'Periudha e qirasë',month:'Për muaj',week:'Për javë',product:'Produkte',request:'Kërkoj',budget:'Buxheti maksimal €',deadline:'7 ditë',report:'Arsyeja',fraud:'Mashtrim i dyshuar',submit:'Ruaj raportimin (demo)',search:'Kërko',apply:'Apliko filtrat',sort:'Renditja',title:'Shop i avancuar'},
+ en:{create:'Publish offer in demo',category:'Category',seller:'Shop / seller',period:'Rental period',month:'Per month',week:'Per week',product:'Products',request:'Looking for',budget:'Maximum budget €',deadline:'7 days',report:'Reason',fraud:'Suspected fraud',submit:'Save report (demo)',search:'Search',apply:'Apply filters',sort:'Sort',title:'Advanced Shop'},
+ it:{create:'Pubblica offerta nella demo',category:'Categoria',seller:'Negozio / venditore',period:'Periodo di affitto',month:'Al mese',week:'A settimana',product:'Prodotti',request:'Cerco',budget:'Budget massimo €',deadline:'7 giorni',report:'Motivo',fraud:'Sospetta frode',submit:'Salva segnalazione (demo)',search:'Cerca',apply:'Applica filtri',sort:'Ordina',title:'Shop avanzato'}
+})){
+ test('Shop Plus direct catalog and listing labels retain domain codes: '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await expect(page.locator('#isp-root h2[data-i18n-direct]')).toHaveText(label.title);
+  const filters=page.locator('#isp-filters');
+  await expect(filters.locator('label:has(input[name="q"])')).toContainText(label.search);
+  await expect(filters.locator('label:has(select[name="sort"])')).toContainText(label.sort);
+  await expect(filters.locator('button[type="submit"]')).toHaveText(label.apply);
+  expect(await filters.locator('select[name="sort"] option').evaluateAll(a=>a.map(e=>e.value))).toEqual(['relevance','lowest','highest','name']);
+  await page.locator('#isp-root [data-isp="create"]').click();
+  const form=page.locator('#isp-create');
+  await expect(page.locator('#isp-root h3[data-i18n-direct]')).toHaveText(label.create);
+  await expect(form.locator('label:has(select[name="type"])')).toContainText(label.category);
+  await expect(form.locator('label:has(input[name="store"])')).toContainText(label.seller);
+  await expect(form.locator('label:has(select[name="period"])')).toContainText(label.period);
+  const types=await form.locator('select[name="type"] option').evaluateAll(a=>a.map(e=>({value:e.value,text:e.textContent.trim()})));
+  expect(types[0]).toEqual({value:'Produkte',text:label.product});
+  expect(types.map(x=>x.value)).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  const period=await form.locator('select[name="period"] option').evaluateAll(a=>a.map(e=>({value:e.value,text:e.textContent.trim()})));
+  expect(period).toEqual([{value:'muaj',text:label.month},{value:'javë',text:label.week}]);
+ });
+ test('Shop Plus direct buyer request and report preserve canonical codes: '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="tab:needs"]').click();
+  const need=page.locator('#isp-need');
+  await expect(need.locator('label:has(input[name="title"])')).toContainText(label.request);
+  await expect(need.locator('label:has(input[name="budget"])')).toContainText(label.budget);
+  const days=await need.locator('select[name="days"] option').evaluateAll(a=>a.map(e=>({value:e.value,text:e.textContent.trim()})));
+  expect(days[0]).toEqual({value:'7',text:label.deadline});
+  expect(days.map(x=>x.value)).toEqual(['7','14','30']);
+  await page.locator('#isp-root [data-isp="tab:catalog"]').click();
+  await page.locator('#isp-root [data-isp="item:k1"]').click();
+  await page.locator('#isp-root [data-isp="report:k1"]').click();
+  const form=page.locator('#isp-report');
+  await expect(form.locator('label:has(select[name="reason"])')).toContainText(label.report);
+  const reasons=await form.locator('select[name="reason"] option').evaluateAll(a=>a.map(e=>({value:e.value,text:e.textContent.trim()})));
+  expect(reasons[1]).toEqual({value:'Mashtrim i dyshuar',text:label.fraud});
+  await expect(form.locator('button[type="submit"]')).toHaveText(label.submit);
+ });
+}
+test('Shop Plus language changes retain unsent listing and buyer request fields and focus',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="create"]').click();
+ const listing=page.locator('#isp-create');
+ await listing.locator('select[name="type"]').selectOption('Banesa me qira');
+ await listing.locator('input[name="name"]').fill('Mbyll banesë');
+ await listing.locator('input[name="store"]').fill('Mbyll seller');
+ await listing.locator('select[name="city"]').selectOption('Durrës');
+ await listing.locator('input[name="price"]').fill('440.5');
+ await listing.locator('select[name="period"]').selectOption('javë');
+ await listing.locator('textarea[name="details"]').fill('Mbyll, untranslated user description');
+ await listing.locator('textarea[name="details"]').focus();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(listing.locator('select[name="type"]')).toHaveValue('Banesa me qira');
+  await expect(listing.locator('input[name="name"]')).toHaveValue('Mbyll banesë');
+  await expect(listing.locator('input[name="store"]')).toHaveValue('Mbyll seller');
+  await expect(listing.locator('select[name="city"]')).toHaveValue('Durrës');
+  await expect(listing.locator('input[name="price"]')).toHaveValue('440.5');
+  await expect(listing.locator('select[name="period"]')).toHaveValue('javë');
+  await expect(listing.locator('textarea[name="details"]')).toHaveValue('Mbyll, untranslated user description');
+  expect(await page.evaluate(()=>document.activeElement?.getAttribute('name'))).toBe('details');
+ }
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(before);
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ const request=page.locator('#isp-need');
+ await request.locator('input[name="title"]').fill('Mbyll request');
+ await request.locator('select[name="type"]').selectOption('Makina');
+ await request.locator('input[name="budget"]').fill('330');
+ await request.locator('textarea[name="details"]').fill('Mbyll custom details');
+ await request.locator('textarea[name="details"]').focus();
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(request.locator('input[name="title"]')).toHaveValue('Mbyll request');
+ await expect(request.locator('select[name="type"]')).toHaveValue('Makina');
+ await expect(request.locator('input[name="budget"]')).toHaveValue('330');
+ await expect(request.locator('textarea[name="details"]')).toHaveValue('Mbyll custom details');
+ expect(await page.evaluate(()=>document.activeElement?.getAttribute('name'))).toBe('details');
+});
+test('Shop Plus report form keeps unsent reason and text on locale switch',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="item:k1"]').click();
+ await page.locator('#isp-root [data-isp="report:k1"]').click();
+ const report=page.locator('#isp-report');
+ await report.locator('select[name="reason"]').selectOption('Mashtrim i dyshuar');
+ await report.locator('textarea[name="detail"]').fill('Mbyll');
+ await report.locator('textarea[name="detail"]').focus();
+ for(const lang of ['it','en','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(report.locator('select[name="reason"]')).toHaveValue('Mashtrim i dyshuar');
+  await expect(report.locator('textarea[name="detail"]')).toHaveValue('Mbyll');
+  expect(await page.evaluate(()=>document.activeElement?.getAttribute('name'))).toBe('detail');
+ }
+});
