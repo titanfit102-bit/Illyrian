@@ -888,3 +888,21 @@ for(const [lang,expectations] of Object.entries({
   await expect(page.locator('#il4-root h3').first()).toHaveText(expectations.states);
  });
 }
+
+test('Direct i18n binding is never overwritten by phrase translation collisions',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ await expect(page.locator('#il4-root [data-il4="tab:profiles"]')).toHaveText('Profili');
+ await page.evaluate(()=>{
+  const marker=document.createElement('span');
+  marker.id='i18n-direct-probe';marker.dataset.i18nDirect='1';
+  marker.textContent='Profili';document.querySelector('#phone').append(marker);
+ });
+ await expect(page.locator('#i18n-direct-probe')).toHaveText('Profili');
+ for(const lang of ['en','sq','it']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#i18n-direct-probe')).toHaveText('Profili');
+ }
+});
