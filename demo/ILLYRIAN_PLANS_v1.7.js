@@ -92,9 +92,9 @@
     if(!root)return;
     root.hidden=!state.open;
     if(!state.open){sync();return}
-    root.innerHTML=`<div class="ilp-shade" data-ilp="close"></div><div class="ilp-panel" role="dialog" aria-modal="true" aria-label="Paneli i organizatorit">
+    root.innerHTML=`<div class="ilp-shade" data-ilp="close"></div><div class="ilp-panel" role="dialog" aria-modal="true" aria-label="${ui('title','Aktivitetet dhe organizatori')}">
     <header><div><small>ILLYRIAN · PLANE</small><h2>Aktivitetet dhe organizatori</h2></div>${button('close','✕')}</header>
-    <nav aria-label="Roli i demonstrimit">${button('role:organizer','Si organizator',state.role==='organizer'?'class="chosen"':'')}${button('role:participant','Si pjesëmarrës',state.role==='participant'?'class="chosen"':'')}</nav>
+    <nav aria-label="${ui('role','Roli i demonstrimit')}">${button('role:organizer','Si organizator',state.role==='organizer'?'class="chosen"':'')}${button('role:participant','Si pjesëmarrës',state.role==='participant'?'class="chosen"':'')}</nav>
     ${state.notice?`<p class="ilp-notice" role="status">${escape(state.notice)}</p>`:''}
     ${content()}<p class="ilp-muted ilp-foot">PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.</p></div>`;
     sync();
