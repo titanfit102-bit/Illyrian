@@ -114,7 +114,7 @@
     '<p class="ilc-muted">Draftet kërkojnë konfirmim dhe publikim manual nga organizatori.</p>'+notice()+button('overview','Kthehu te zgjedhjet');
   function markup(){
     const body=state.view==='cities'?citiesView():state.view==='interest'?interestView():state.view==='welcome'?firstView():state.view==='repeat'?repeatView():state.view==='together'?togetherView():overview();
-    return '<div class="ilc-shade" data-ilc="close"></div><section class="ilc-sheet" role="dialog" aria-modal="true" aria-label="Lidhjet dhe aktivitetet demonstrative">'+
+    return '<div class="ilc-shade" data-ilc="close"></div><section class="ilc-sheet" role="dialog" aria-modal="true" aria-label="'+h(feedback('activities','Lidhjet dhe aktivitetet demonstrative'))+'">'+
       '<header><span>ILLYRIAN · DEMO v1.7</span>'+button('close','✕ Mbyll')+'</header>'+body+'</section>';
   }
   function render(){
@@ -275,6 +275,9 @@
       if(e.shiftKey&&(document.activeElement===items[0]||!root.contains(document.activeElement))){e.preventDefault();items.at(-1).focus();}
       else if(!e.shiftKey&&(document.activeElement===items.at(-1)||!root.contains(document.activeElement))){e.preventDefault();items[0].focus();}
     },true);
+    window.addEventListener('illyrian:language-changed',()=>{
+      if(state.open)root?.querySelector('.ilc-sheet')?.setAttribute('aria-label',feedback('activities','Lidhjet dhe aktivitetet demonstrative'));
+    });
     new MutationObserver(()=>{if(!state.open)queueMicrotask(sync)}).observe(screen,{childList:true,subtree:false});
     queueMicrotask(sync);
   }
