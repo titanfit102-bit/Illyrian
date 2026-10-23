@@ -1222,3 +1222,53 @@ for(const [language,labels] of Object.entries({
   await expect(detail.locator('h3[data-user-content]')).toHaveText('Apartament 2+1');
  });
 }
+
+
+for(const [language,labels] of Object.entries({
+ sq:{heading:'“Kërkoj…” — kërkesat e komunitetit',empty:'Ende pa kërkesa lokale.',expires:'Skadon:',reply:'Përgjigju si dyqan (demo)',form:'Mesazhi demonstrues',moderation:'Raportime dhe etiketa të promovimit',pending:'Në shqyrtim (simulim, jo moderator real)',reason:'Mashtrim i dyshuar',close:'✕ Mbyll'},
+ en:{heading:'“Looking for…” — community requests',empty:'No local requests yet.',expires:'Expires:',reply:'Reply as a shop (demo)',form:'Demo message',moderation:'Reports and sponsored labels',pending:'Under review (simulation, no real moderator)',reason:'Suspected fraud',close:'✕ Close'},
+ it:{heading:'“Cerco…” — richieste della comunità',empty:'Nessuna richiesta locale.',expires:'Scade:',reply:'Rispondi come negozio (demo)',form:'Messaggio dimostrativo',moderation:'Segnalazioni e annunci sponsorizzati',pending:'In esame (simulazione, senza moderatore reale)',reason:'Sospetta frode',close:'✕ Chiudi'}
+})){
+ test('Shop Plus requests replies moderation and accessible labels in '+language,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await expect(page.locator('#illyrian-shop-layer [data-isp-open]')).toContainText({sq:'Kërkim i avancuar',en:'Advanced search',it:'Ricerca avanzata'}[language]);
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await expect(page.locator('#isp-root header [data-isp="close"]')).toHaveText(labels.close);
+  await expect(page.locator('#isp-root .isp-panel')).toHaveAttribute('aria-label',{sq:'ILLYRIAN Shop i avancuar',en:'ILLYRIAN advanced shop',it:'Negozio avanzato ILLYRIAN'}[language]);
+  await page.locator('#isp-root [data-isp="tab:needs"]').click();
+  await expect(page.locator('#isp-root h3[data-i18n-direct]')).toHaveText(labels.heading);
+  await expect(page.locator('#isp-root .isp-empty')).toContainText(labels.empty);
+  const form=page.locator('#isp-need');
+  await form.locator('input[name="title"]').fill('Mbyll community request');
+  await form.locator('input[name="budget"]').fill('250');
+  await form.locator('select[name="days"]').selectOption('14');
+  await form.locator('textarea[name="details"]').fill('Mbyll user description');
+  await form.locator('button[type="submit"]').click();
+  await expect(page.locator('#isp-root .isp-card').first()).toContainText(labels.expires);
+  const needs=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).needs);
+  expect(needs[0].title).toBe('Mbyll community request');
+  expect(needs[0].details).toBe('Mbyll user description');
+  await expect(page.locator('#isp-root .isp-card [data-isp^="respond:"]')).toHaveText(labels.reply);
+  await page.locator('#isp-root .isp-card [data-isp^="respond:"]').click();
+  await expect(page.locator('#isp-answer label')).toContainText(labels.form);
+  await page.locator('#isp-answer textarea[name="text"]').fill('Mbyll response content');
+  await page.locator('#isp-answer button[type="submit"]').click();
+  await expect(page.locator('#isp-root .isp-reply [data-user-content]')).toHaveText('Mbyll response content');
+  await page.locator('#isp-root [data-isp="tab:catalog"]').click();
+  await page.locator('#isp-root [data-isp="item:k1"]').click();
+  await page.locator('#isp-root [data-isp="report:k1"]').click();
+  await page.locator('#isp-report select[name="reason"]').selectOption('Mashtrim i dyshuar');
+  await page.locator('#isp-report button[type="submit"]').click();
+  await expect(page.locator('#isp-root h3[data-i18n-direct]')).toHaveText(labels.moderation);
+  await expect(page.locator('#isp-root .isp-card').first()).toContainText(labels.reason);
+  await expect(page.locator('#isp-root .isp-card small')).toHaveText(labels.pending);
+  const persisted=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+  expect(JSON.parse(persisted).flags[0].reason).toBe('Mashtrim i dyshuar');
+  await page.evaluate(()=>window.IllyrianI18n.changeLanguage(language==='it'?'en':'it'));
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(persisted);
+  await expect(page.locator('#isp-root .isp-card [data-user-content]').first()).toHaveText('Kafe espresso 250 g');
+ });
+}

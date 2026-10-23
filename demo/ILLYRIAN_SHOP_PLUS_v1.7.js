@@ -166,7 +166,7 @@
  };
  const board=()=>{
   const active=state.needs.filter(n=>Date.parse(n.expires)>Date.now()).slice().reverse();
-  return '<h3>“Kërkoj…” — kërkesat e komunitetit</h3><p>Përdoruesi përshkruan çfarë kërkon; dyqanet përgjigjen vetëm në këtë simulim. Pa kontakt real.</p>'+
+  return '<h3 data-i18n-direct>'+ui('boardHeading','“Kërkoj…” — kërkesat e komunitetit')+'</h3><p data-i18n-direct>'+ui('boardIntro','Përdoruesi përshkruan çfarë kërkon; dyqanet përgjigjen vetëm në këtë simulim. Pa kontakt real.')+'</p>'+
    '<form id="isp-need" class="isp-fields">'+
    '<label data-i18n-direct>'+ui('formRequestTitle','Kërkoj')+'<input name="title" minlength="5" maxlength="90" required placeholder="'+ui('formRequestPlaceholder','P.sh. biçikletë për qytet')+'"></label>'+
    '<label data-i18n-direct>'+ui('formType','Lloji')+'<select name="type">'+TYPES.slice(1).map(x=>'<option data-i18n-direct value="'+esc(x)+'">'+typeLabel(x)+'</option>').join('')+'</select></label>'+
@@ -175,17 +175,18 @@
    '<label data-i18n-direct>'+ui('formDeadline','Afati')+'<select name="days"><option value="7">'+ui('formSevenDays','7 ditë')+'</option><option value="14">'+ui('formFourteenDays','14 ditë')+'</option><option value="30">'+ui('formThirtyDays','30 ditë')+'</option></select></label>'+
    '<label class="isp-span" data-i18n-direct>'+ui('formRequestDetails','Detajet')+'<textarea name="details" rows="2" maxlength="240" placeholder="'+ui('formDetailPlaceholder','Karakteristikat e kërkuara')+'"></textarea></label>'+
    '<div class="isp-span"><button data-i18n-direct type="submit">'+ui('formPublishRequest','Publiko kërkesën në demo')+'</button></div></form>'+
-   (active.length?active.map(n=>'<article class="isp-card"><h4 data-user-content>'+esc(n.title)+'</h4><p>'+esc(n.type)+' · '+esc(n.city)+' · buxheti '+money(n.budget)+'</p>'+
-    '<p data-user-content>'+esc(n.details||'')+'</p><small>Skadon: '+esc(n.expires.slice(0,10))+'</small>'+
-    btn('respond:'+n.id,'Përgjigju si dyqan (demo)')+(state.answers.filter(a=>a.needId===n.id).slice(-2).map(a=>'<p class="isp-reply">Përgjigje demo: <span data-user-content>'+esc(a.text)+'</span></p>').join(''))+
-    (n.owned?btn('remove-need:'+n.id,'Fshi kërkesën'):'')+'</article>').join(''):'<p class="isp-empty">Ende pa kërkesa lokale. Publiko një shembull.</p>')+
-   '<p class="isp-muted">Kërkesat nuk dërgohen te shitësit e vërtetë dhe skadojnë automatikisht.</p>';
+   (active.length?active.map(n=>'<article class="isp-card"><h4 data-user-content>'+esc(n.title)+'</h4><p>'+'<span data-i18n-direct>'+typeLabel(n.type)+'</span> · '+esc(n.city)+' · <span data-i18n-direct>'+ui('boardBudget','buxheti')+'</span> '+money(n.budget)+'</p>'+
+    '<p data-user-content>'+esc(n.details||'')+'</p><small><span data-i18n-direct>'+ui('boardExpires','Skadon:')+'</span> '+esc(new Intl.DateTimeFormat(window.IllyrianI18n?.language||'sq',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(n.expires)))+'</small>'+
+    btn('respond:'+n.id,feedback('boardRespond','Përgjigju si dyqan (demo)'),'data-i18n-direct')+(state.answers.filter(a=>a.needId===n.id).slice(-2).map(a=>'<p class="isp-reply"><span data-i18n-direct>'+ui('boardReply','Përgjigje demo:')+'</span> <span data-user-content>'+esc(a.text)+'</span></p>').join(''))+
+    (n.owned?btn('remove-need:'+n.id,feedback('boardRemove','Fshi kërkesën'),'data-i18n-direct'):'')+'</article>').join(''):'<p class="isp-empty" data-i18n-direct>'+ui('boardEmpty','Ende pa kërkesa lokale. Publiko një shembull.')+'</p>')+
+   '<p class="isp-muted" data-i18n-direct>'+ui('boardDisclaimer','Kërkesat nuk dërgohen te shitësit e vërtetë dhe skadojnë automatikisht.')+'</p>';
  };
+ const reasonLabel=code=>{const known={'Informacion i pasaktë':'formReasonInaccurate','Mashtrim i dyshuar':'formReasonFraud','Listim i dyfishuar':'formReasonDuplicate','Përmbajtje e papërshtatshme':'formReasonInappropriate'};return Object.prototype.hasOwnProperty.call(known,code)?ui(known[code],code):esc(code);};
  const moderation=()=>{
-  return '<h3>Raportime dhe etiketa të promovimit</h3><p>Përmbajtja e reklamuar duhet të shënohet; raportimet janë prova lokale.</p>'+
-   '<div class="isp-hero"><b>TRANSPARENCË</b><p>“PROMOVUAR · DEMO” shënon listimet e sponsorizuara fiktive. Në produktin real do të kërkohet politikë reklamash, raportime, shqyrtim dhe apelim.</p></div>'+
-   '<p>Raportime lokale: '+state.flags.length+'</p>'+
-   (state.flags.length?state.flags.slice(-15).reverse().map(f=>'<article class="isp-card"><p><b data-user-content>'+esc(f.target)+'</b> · '+esc(f.reason)+'</p><small>Në shqyrtim (simulim, jo moderator real)</small></article>').join(''):'<p class="isp-empty">Asnjë raportim demonstrues.</p>');
+  return '<h3 data-i18n-direct>'+ui('modHeading','Raportime dhe etiketa të promovimit')+'</h3><p data-i18n-direct>'+ui('modIntro','Përmbajtja e reklamuar duhet të shënohet; raportimet janë prova lokale.')+'</p>'+
+   '<div class="isp-hero"><b data-i18n-direct>'+ui('modTransparency','TRANSPARENCË')+'</b><p data-i18n-direct>'+ui('modDisclosure','“PROMOVUAR · DEMO” shënon listimet e sponsorizuara fiktive. Në produktin real do të kërkohet politikë reklamash, raportime, shqyrtim dhe apelim.')+'</p></div>'+
+   '<p><span data-i18n-direct>'+ui('modReportCount','Raportime lokale:')+'</span> '+state.flags.length+'</p>'+
+   (state.flags.length?state.flags.slice(-15).reverse().map(f=>'<article class="isp-card"><p><b data-user-content>'+esc(f.target)+'</b> · '+'<span data-i18n-direct>'+reasonLabel(f.reason)+'</span></p><small data-i18n-direct>'+ui('modPending','Në shqyrtim (simulim, jo moderator real)')+'</small></article>').join(''):'<p class="isp-empty" data-i18n-direct>'+ui('modEmpty','Asnjë raportim demonstrues.')+'</p>');
  };
  const checkout=()=>{
   const product=all().find(p=>p.type==='Produkte'&&numeric(p.quantity)>0);
@@ -205,14 +206,14 @@
  };
  const respond=()=>{
   const n=state.needs.find(x=>x.id===state.needIndex);
-  if(!n)return '<p>Kërkesa nuk u gjet.</p>'+btn('needs','Kthehu');
-  return '<h3>Përgjigje për: <span data-user-content>'+esc(n.title)+'</span></h3><p>Buxheti: '+money(n.budget)+' · '+esc(n.city)+'</p>'+
-   '<form id="isp-answer"><label>Mesazhi demonstrues<textarea name="text" maxlength="180" minlength="5" required placeholder="P.sh. Dyqani ka një alternativë."></textarea></label><button type="submit">Ruaj përgjigjen në demo</button></form>'+
-   '<p>Ky mesazh nuk u dërgohet blerësve ose dyqaneve reale.</p>';
+  if(!n)return '<p data-i18n-direct>'+ui('respondMissing','Kërkesa nuk u gjet.')+'</p>'+btn('needs',feedback('respondBack','Kthehu'),'data-i18n-direct');
+  return '<h3><span data-i18n-direct>'+ui('respondHeading','Përgjigje për:')+'</span> <span data-user-content>'+esc(n.title)+'</span></h3><p><span data-i18n-direct>'+ui('respondBudget','Buxheti:')+'</span> '+money(n.budget)+' · '+esc(n.city)+'</p>'+
+   '<form id="isp-answer"><label data-i18n-direct>'+ui('respondMessage','Mesazhi demonstrues')+'<textarea name="text" maxlength="180" minlength="5" required placeholder="'+ui('respondPlaceholder','P.sh. Dyqani ka një alternativë.')+'"></textarea></label><button data-i18n-direct type="submit">'+ui('respondSave','Ruaj përgjigjen në demo')+'</button></form>'+
+   '<p data-i18n-direct>'+ui('respondDisclaimer','Ky mesazh nuk u dërgohet blerësve ose dyqaneve reale.')+'</p>';
  };
  const report=()=>{
   const x=all().find(p=>p.id===state.selected);
-  return '<h3 data-i18n-direct>'+ui('formReportListing','Raporto listimin')+'</h3><p data-user-content>'+esc(x?.name||'Listimi demonstrues')+'</p>'+
+  return '<h3 data-i18n-direct>'+ui('formReportListing','Raporto listimin')+'</h3><p data-user-content>'+(x?.name?esc(x.name):ui('reportPlaceholder','Listimi demonstrues'))+'</p>'+
   '<form id="isp-report"><label data-i18n-direct>'+ui('formReason','Arsyeja')+'<select name="reason"><option data-i18n-direct value="Informacion i pasaktë">'+ui('formReasonInaccurate','Informacion i pasaktë')+'</option><option data-i18n-direct value="Mashtrim i dyshuar">'+ui('formReasonFraud','Mashtrim i dyshuar')+'</option><option data-i18n-direct value="Listim i dyfishuar">'+ui('formReasonDuplicate','Listim i dyfishuar')+'</option><option data-i18n-direct value="Përmbajtje e papërshtatshme">'+ui('formReasonInappropriate','Përmbajtje e papërshtatshme')+'</option></select></label>'+
   '<label data-i18n-direct>'+ui('formOptionalDescription','Përshkrim opsional')+'<textarea name="detail" maxlength="180"></textarea></label>'+
   '<button type="submit" data-i18n-direct>'+ui('formSaveReport','Ruaj raportimin (demo)')+'</button></form>';
@@ -221,8 +222,8 @@
   state.tab==='item'?itemView():state.tab==='create'?create():state.tab==='needs'?board():
   state.tab==='respond'?respond():state.tab==='report'?report():state.tab==='moderation'?moderation():checkout();
  const render=()=>{if(!overlay||!state.open)return;
-  overlay.innerHTML='<div class="isp-shade" data-isp="close"></div><section class="isp-panel" role="dialog" aria-modal="true" aria-label="ILLYRIAN Shop i avancuar">'+
-  '<header><div><small>ILLYRIAN · DEMO v1.7</small><h2 data-i18n-direct>'+ui('title','Shop i avancuar')+'</h2></div>'+btn('close','✕ Mbyll')+'</header>'+
+  overlay.innerHTML='<div class="isp-shade" data-isp="close"></div><section class="isp-panel" role="dialog" aria-modal="true" aria-label="'+ui('dialogLabel','ILLYRIAN Shop i avancuar')+'">'+
+  '<header><div><small>ILLYRIAN · DEMO v1.7</small><h2 data-i18n-direct>'+ui('title','Shop i avancuar')+'</h2></div>'+btn('close',feedback('closeDialog','✕ Mbyll'),'data-i18n-direct')+'</header>'+
   '<nav class="isp-nav">'+[['catalog',feedback('search','Kërko')],['stores',feedback('stores','Dyqanet')],['needs',feedback('needs','Kërkoj…')],['checkout',feedback('orders','Porositë')],['moderation',feedback('reports','Raportime')]].map(([a,b])=>btn('tab:'+a,b,'data-i18n-direct '+(state.tab===a?'aria-current="page"':''))).join('')+'</nav>'+
   (state.notice?'<p class="isp-notice" role="status">'+esc(state.notice)+'</p>':'')+
   page()+'<footer data-i18n-direct>'+ui('footer','Të dhëna fiktive · Nuk ka pagesa, rezervime, dërgesa ose kontakte reale.')+'</footer></section>';
@@ -325,14 +326,15 @@
  }
  function inject(){
   const el=document.querySelector('#illyrian-shop-layer');
-  if(!el||state.open||el.querySelector('[data-isp-open]'))return;
+  if(!el)return;const existing=el.querySelector('[data-isp-open]');if(existing){const label=feedback('entryAdvanced','Kërkim i avancuar · Katalogë · Kërkoj…');if(existing.textContent!==label)existing.textContent=label;if(!existing.hasAttribute('data-i18n-direct'))existing.dataset.i18nDirect='1';return}if(state.open)return;
   const actions=el.querySelector('.ils-actions')||el.querySelector('.ils-splash');
   if(!actions)return;
   const newBtn=document.createElement('button');
-  newBtn.type='button';newBtn.className='ils-btn';newBtn.dataset.ispOpen='1';newBtn.textContent='Kërkim i avancuar · Katalogë · Kërkoj…';
+  newBtn.type='button';newBtn.className='ils-btn';newBtn.dataset.ispOpen='1';newBtn.dataset.i18nDirect='1';newBtn.textContent=feedback('entryAdvanced','Kërkim i avancuar · Katalogë · Kërkoj…');
   actions.appendChild(newBtn);
  }
  function onLocaleChange(){
+  inject();
   if(!state.open||!overlay)return;
   const form=overlay.querySelector('form');
   const fields=form?[...form.elements].filter(e=>e.name).map(e=>({name:e.name,value:e.value,checked:e.type==='checkbox'?e.checked:null})):null;
