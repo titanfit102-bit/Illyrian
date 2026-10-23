@@ -243,7 +243,7 @@ window.ILLYRIAN_LOCALES.sq={
   },
   "shop": {
     "storageFull": "Nuk u ruajt: hapësira lokale është plot.",
-    "storageConflict": "Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.",
+
     "addedCartNotice": "Produkti u shtua në shportën demonstrative.",
     "confirmDelete": "Ta fshijmë këtë listim demonstrues?",
     "invalidListing": "Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.",
@@ -413,6 +413,7 @@ window.ILLYRIAN_LOCALES.sq={
     "formIdentityNote": "Nuk ruhet asnjë dokument identiteti, numër telefoni, pagesë ose adresë e saktë.",
     "formReportListing": "Raporto listimin",
     "storageFull": "Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.",
+    "storageConflict": "Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.",
     "filtersInvalid": "Kontrollo kufijtë e çmimit dhe filtrat numerikë.",
     "listingInvalid": "Plotëso saktë emrin, dyqanin, qytetin dhe çmimin.",
     "stockInvalid": "Inventari duhet të jetë 0–10000 copë.",

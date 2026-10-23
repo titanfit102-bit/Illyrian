@@ -243,7 +243,7 @@ window.ILLYRIAN_LOCALES.it={
   },
   "shop": {
     "storageFull": "Salvataggio non riuscito: lo spazio di archiviazione locale è esaurito.",
-    "storageConflict": "Shop Plus è stato modificato in un’altra scheda. Copia il testo non completato e ricarica la pagina prima di salvare.",
+
     "addedCartNotice": "Il prodotto è stato aggiunto al carrello dimostrativo.",
     "confirmDelete": "Eliminare questo annuncio dimostrativo?",
     "invalidListing": "Controlla categoria, nome dell'articolo, negozio, città e prezzo.",
@@ -413,6 +413,7 @@ window.ILLYRIAN_LOCALES.it={
     "formIdentityNote": "Non vengono salvati documenti d'identità, numeri di telefono, pagamenti o indirizzi precisi.",
     "formReportListing": "Segnala annuncio",
     "storageFull": "Impossibile salvare su questo dispositivo. Prova a rimuovere gli annunci precedenti.",
+    "storageConflict": "Shop Plus è stato modificato in un’altra scheda. Copia il testo non completato e ricarica la pagina prima di salvare.",
     "filtersInvalid": "Controlla i limiti di prezzo e i filtri numerici.",
     "listingInvalid": "Controlla il nome dell'articolo, il negozio, la città e il prezzo.",
     "stockInvalid": "La disponibilità deve essere compresa tra 0 e 10.000 unità.",

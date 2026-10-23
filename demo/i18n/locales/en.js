@@ -243,7 +243,7 @@ window.ILLYRIAN_LOCALES.en={
   },
   "shop": {
     "storageFull": "Could not save: local storage is full.",
-    "storageConflict": "Shop Plus changed in another tab. Copy any unfinished text and reload the page before saving.",
+
     "addedCartNotice": "The product was added to the demo cart.",
     "confirmDelete": "Delete this demo listing?",
     "invalidListing": "Check the category, item name, shop, city and price.",
@@ -413,6 +413,7 @@ window.ILLYRIAN_LOCALES.en={
     "formIdentityNote": "No identity documents, phone numbers, payments or precise addresses are saved.",
     "formReportListing": "Report listing",
     "storageFull": "Could not save on this device. Try removing old listings.",
+    "storageConflict": "Shop Plus changed in another tab. Copy any unfinished text and reload the page before saving.",
     "filtersInvalid": "Check the price limits and numeric filters.",
     "listingInvalid": "Check the item name, shop, city and price.",
     "stockInvalid": "Stock must be between 0 and 10,000 units.",
