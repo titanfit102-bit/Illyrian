@@ -9,8 +9,8 @@
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): **OPEN / DRAFT / UNMERGED**; head = dega sipër; target `demo/v1.7-illyrian-shop`.
 - Dega integruese DEMO: `015ce439e7c6d736149c6c300391586517664f62` (e pandryshuar gjatë verifikimit).
 - `main`: `9f91b5c083b4482a70a2149483cc799360e6102c` (e pandryshuar gjatë verifikimit).
-- **SHA i fundit i kodit + testeve të verifikuara:** `0d7dea774ea9a8dfd3996f8a808e873bd66277a5`.
-- [GitHub Actions #39989658495](https://github.com/titanfit102-bit/Illyrian/actions/runs/39989658495): **completed / success, 140/140 Playwright Chromium PASS (3.1m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
+- **SHA i fundit i kodit + testeve të verifikuara:** `726fb1f240423043a1ad3e291c6ff887b0496e2c`.
+- [GitHub Actions #40002937479](https://github.com/titanfit102-bit/Illyrian/actions/runs/40002937479): **completed / success, 148/148 Playwright Chromium PASS (3.5m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
 - i18n: **sq/en/it**, **549 çelësa/gjuhë**, **15 namespace**, `shopPlus` **165 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
 - Vercel: projekti `illyrian-demo` ekziston; **statusi dhe SHA-ja e Preview aktual NUK u verifikuan** sepse leximi i deployments ktheu **403 / team authorization**. Dokumentacioni i vjetër për READY `fbd04ad...` dhe build-rate-limit është historik; mos e paraqit si Preview të kodit të sotëm.
 
@@ -68,7 +68,18 @@
 - Veprime të lejuara tani: F09 konsolidim dokumentesh, F01/F07 Shop Plus QA, F10 test i18n parity. F08 kërkon kontratë funksionale të multi-tab, F02/F03/F04 kërkojnë autorizim të veçantë core/Plans, F05/F06 admin/deploy/CI workflow nuk modifikohen.
 - **Gates release OPEN**: adresimi i defekteve P1 jashtë Shop Plus, candidate URL/route SHA, telefon fizik, visual/a11y/screenreader, aprovim eksplicit. **Nuk** ka % të përgjithshme të besueshme të DEMO-s.
 
-**Veprimi i saktë pasues:** QA vizual dhe a11y për Shop Plus në telefon/screenreader, audit të gjendjeve të rralla sipas provave reale, verifikim read-only i Preview SHA kur Vercel lejon akses; kërko sign-off për DEMO vetëm pasi të mbyllen këto gates. Mos bëj merge/deploy/ndryshime të moduleve të tjera pa autorizim.
+### GPT Work audit — verified code corrections, 2026-10-23 [FAKT]
+- **F01 P1:** Shop Plus validation errors no longer rerender/delete unsaved draft; focus is directed to invalid field. Tests cover car/rental in sq/en/it and edit/retry with storage unchanged until success.
+- **F07 P2:** 0 km remains 0 in card/detail/edit instead of being replaced by a dash; zero survives save/reload.
+- **F10 P2:** Playwright runs a deterministic byte-parity check for root/demo adapter + three locale files, including negative in-memory mismatch tests.
+- **Source/test SHA:** `726fb1f240423043a1ad3e291c6ff887b0496e2c`, GitHub Actions #40002937479 = **148/148 PASS (3.5m)**; +8 regression tests. F09 documentation ACTIVE SNAPSHOT already consolidated in `5e360de8...`.
+- **OPEN despite passing suite:** F02 Reel UGC collision, F03 creator/Plans malformed storage, F04 social feed false success on write failure: evidence is in source and GPT Work replay, but core/Plans edits are outside authorized Shop Plus/i18n phase.
+- **F08 P2:** two-tab stale snapshot can overwrite confirmed data; choose a single-writer rule or explicit conflict rejection before implementation. No claim that reading storage before writing is atomic.
+- **F05 P1 gate:** `/` rewrite points at v1.5, while browser tests open v1.7. GitHub Vercel status shows an automatic deployment completed, but GET deployment under un24 returns 403: live route, source SHA and target remain unverified. No manual deploy initiated.
+- **F06 P1 gate:** no pull_request trigger, branches protected:false, rulesets 0. Changing workflow, branch policy or routing is outside this authorization.
+- **Release HOLD:** mobile/touch, accessibility screenreader, visual baseline, Vercel candidate verification and owner sign-off not complete. No merge/main/Production changes.
+
+**Veprimi i saktë pasues:** QA e mbetur e Shop Plus; për F08 kërkohet kontratë funksionale single-writer/conflict. Për F02/F03/F04 duhet autorizim i shprehur për core HTML/Reels/Plans; për F05/F06 autorizim për routing/deployment dhe workflow/admin. Mos bëj merge/deploy/ndryshime main/Production.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
 - Autorizim **i vazhdueshëm** vetëm për krijim/përditësim të `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` në `feat/i18n-shop-feedback-20261022`, pas çdo ndryshimi material e të **verifikuar**. Mos pyet çdo herë për këta dy dokumente, për sa kohë dega dhe kufijtë nuk ndryshojnë.

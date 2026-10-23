@@ -34,7 +34,7 @@
 - Audit i pavarur Work (2026-10-23): F01 draft-validation, F07 zero mileage, F09 active handoff dhe F10 parity gate të mbështetur drejtpërdrejt nga kodi; F02/F03/F04/F08 mekanizma të besueshëm dhe prova të auditit, por ndryshimet core/Plans janë jashtë scope-it të kësaj faze; F05/F06 janë gates konfigurimi dhe jo prova e një incidenti Production.
 
 ### E. Problemet, rreziqet, pasiguritë [OPEN / E PAVERIFIKUAR]
-1. Shop Plus direct i18n e rrjedhave kryesore është realizuar në Chromium; OPEN: F01 humbja e draftit pas validimit, F07 km=0, F08 konflikti dy-skeda, kontrolle a11y/mobile/error states. Plans/Privacy/Settings janë module të tjera dhe jashtë autorizimit aktual të kodit.
+1. Shop Plus direct i18n e rrjedhave kryesore është testuar në Chromium; F01/F07 janë korrigjuar dhe verifikuar 148/148. F10 pariteti i katalogëve është shtuar si gate. OPEN: F08 multi-tab, visual/a11y/mobile, F02/F03/F04 core/Plans jashtë autorizimit.
 2. Audit global i UGC në DOM, escape/HTML injection, bllokimi nga adapteri legacy, formatet locale/currency, tekstet e gjata, live-switch pa humbje të formave.
 3. A11y e plotë me tastierë, screenreader, ARIA, navigim fokus, pamje responsive portrait/landscape dhe verifikim vizual/performance në pajisje reale.
 4. Vercel Preview i SHA-së aktuale i paverifikuar për mungesë autorizimi; mos bëj deploy/upgrade pa leje.
@@ -51,8 +51,8 @@
 - **P3/M5:** security/a11y/device testing, ops/observability/backup-restore, staged release dhe sign-off; zgjerim gjeografik/gjuhësor vetëm mbi metrika.
 
 ### G. Pika e saktë e rifillimit dhe kriteret [PLAN]
-**Checkpoint aktiv para korrigjimeve:** `0d7dea774ea9a8dfd3996f8a808e873bd66277a5` = 140/140 Chromium PASS; `47d504e522132b9834e9d1d5178aca95af148190` = dokumentacion-only HEAD në kohën e auditit. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
-**Detyra pasuese sipas autorizimit:** (1) F01: draft i formularit Shop Plus të mos humbasë kur validimi dështon; (2) F07: km 0 të shfaqet dhe të ruhet në edit; (3) F10: test pariteti root/demo. Pastaj CI exact-SHA dhe checkpoint. Mos prek Reels/core, Plans, workflow/admin, deploy/merge.
+**Checkpoint aktiv:** `726fb1f240423043a1ad3e291c6ff887b0496e2c` = **148/148 Chromium PASS**, [Actions #40002937479](https://github.com/titanfit102-bit/Illyrian/actions/runs/40002937479). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
+**Detyra pasuese:** F01/F07/F09/F10 të korrigjuara për rastet e testuara; vazhdo vetëm QA Shop Plus brenda autorizimit. F08 kërkon kontratë për dy skeda, F02/F03/F04 zgjerim autorizimi core/Plans, F05/F06 autorizim deployment/admin/workflow. Asnjë merge/main/Production.
 **Definition of Done:** testi për rastin e dështimit, regresionet e vjetra, exact-SHA GitHub Actions PASS, diff i kufizuar, dokumentim i provës dhe i gates të hapura. Testet e kaluara nuk janë automatikisht miratim release.
 
 ### G.1 — AUDIT HISTORIK I SHOP PLUS (para korrigjimeve të 23 tetorit; jo gjendje aktive)
@@ -89,6 +89,13 @@
 - i18n inventory remains 549 keys per `sq/en/it`, 15 namespaces, Shop Plus 165; mirrors `i18n/locales` and `demo/i18n/locales` unchanged. Shop Plus semantic localization of major flows is **implemented and browser-regression-tested**, **not release approved**. Do not confuse demo fixtures/localStorage and 5% illustrative fee with actual commerce.
 - **OPEN:** mobile portrait/landscape screenshots from owner, real touch + screen reader/a11y audit, visual QA, dynamic/error-state inventory, Vercel Preview verification at exact code SHA (historical 403 authorization), demo release sign-off; i18n of other modules only with separate scope authorization. Draft PR #1 stays OPEN/UNMERGED; no main/Production, deployment or paid services.
 - **Next authorized step:** Shop Plus-only QA improvements driven by evidence, then prepare a phone testing checklist for owner; preserve current design and isolation. For deployment/merge/other modules request explicit approval.
+
+### Work audit correction checkpoint — 23 October 2026 [FAKT / OPEN]
+- F09 active A–G consolidation: commit `5e360de8c4c247a709157ff62486c7b9b51d0dcc`, historical archive unchanged.
+- F01/F07 code + F10 parity test: source SHA `726fb1f240423043a1ad3e291c6ff887b0496e2c`, [CI #40002937479](https://github.com/titanfit102-bit/Illyrian/actions/runs/40002937479) **148/148 PASS (3.5m)**, +8 tests. F01 preserves unsaved form DOM and focuses invalid fields for car/rental and related Shop Plus validations. F07 uses nullish mileage so valid 0 stays visible in card, detail and edit. F10 reads four pairs of files root/demo in Node and checks byte equality, including negative in-memory mutation.
+- F02/F03/F04 are evidence-backed P1 defects in Reel/core/Plans outside current authorization; no code changed there. F05 routing rewrite v1.5 is factual, live target/source unverified because Vercel team un24 GET returns 403 despite GitHub status success. F06 workflow lacks PR trigger and branch protection is not configured. F08 stale multiple-tab snapshot is unresolved pending product contract.
+- Release still HOLD pending P1 core issues, real preview route/SHA verification, visual/phone/screenreader, and owner sign-off. No manual deployment, merging or changes to main/Production.
+- NEXT: limited Shop Plus QA, no broad refactor. To fix other components obtain explicit scope; do not treat independent audit report as authorization.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
