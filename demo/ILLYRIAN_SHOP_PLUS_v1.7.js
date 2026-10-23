@@ -191,7 +191,7 @@
    '<p><b data-i18n-direct>'+ui('sellerNet','Te shitësi, përpara kostove/taksave:')+'</b> '+money(v-fee)+'</p>'+
    btn('sample-order',feedback('simulateOrder','Simulo porosinë (pa pagesë)'),'data-i18n-direct')+
    '</article>'+
-   (state.sampleOrders.slice(-5).reverse().map(o=>'<article class="isp-card"><p><span data-i18n-direct>'+ui('demoOrder','Porosia demo')+'</span> '+esc(o.id)+' · <span data-i18n-direct>'+ui(o.status==='E krijuar në demo'?'statusCreated':'statusReturn',o.status)+'</span></p>'+
+   (state.sampleOrders.slice(-5).reverse().map(o=>'<article class="isp-card"><p><span data-i18n-direct>'+ui('demoOrder','Porosia demo')+'</span> '+esc(o.id)+' · <span data-i18n-direct>'+(o.status==='E krijuar në demo'?ui('statusCreated',o.status):o.status==='Kërkesë anulimi/kthimi (demo)'?ui('statusReturn',o.status):esc(o.status))+'</span></p>'+
    btn('sample-cancel:'+o.id,feedback('cancelReturn','Anulo / kërko kthim'),'data-i18n-direct')+
    '</article>').join(''))+
    '<p class="isp-muted" data-i18n-direct>'+ui('checkoutWarning','5% nuk është tarifë e miratuar. Nuk ka transaksione, faturë, dërgesë, identitet apo rimbursim real. Ligjet dhe kostot duhen verifikuar përpara lansimit.')+'</p>';
