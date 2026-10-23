@@ -177,6 +177,14 @@
     if(!root||!state.open)return;
     // An unchanged locale must never tear down a focused open dialog.
     if(renderedLanguage===window.IllyrianI18n?.language)return;
+    // In the read-only list, rewriting the whole dialog would detach its
+    // focused close button. Update semantic labels without replacing nodes.
+    if(state.view==='list'&&!state.notice){
+      root.querySelector('.ilp-panel')?.setAttribute('aria-label',feedback('title','Aktivitetet dhe organizatori'));
+      root.querySelector('.ilp-panel nav')?.setAttribute('aria-label',feedback('role','Roli i demonstrimit'));
+      renderedLanguage=window.IllyrianI18n?.language;
+      return;
+    }
     const active=document.activeElement;
     const action=active?.dataset?.ilp,field=active?.name;
     const currentForm=root.querySelector('#ilp-form');
