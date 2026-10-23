@@ -582,3 +582,65 @@ test('Shop Plus protects user request name and details on language switch',async
   await expect(page.locator('#isp-root .isp-card p[data-user-content]').filter({hasText:'Mbyll'})).toHaveText('Mbyll');
  }
 });
+
+for(const [lang,labels] of Object.entries({
+ sq:{category:'Kategoria',inventory:'Inventari produkt (copë)',period:'Periudha e qirasë',month:'Për muaj',week:'Për javë',request:'Buxheti maksimal €',reason:'Arsyeja',fraud:'Mashtrim i dyshuar',days:'7 ditë',save:'Ruaj raportimin (demo)'},
+ en:{category:'Category',inventory:'Product stock (units)',period:'Rental period',month:'Per month',week:'Per week',request:'Maximum budget €',reason:'Reason',fraud:'Suspected fraud',days:'7 days',save:'Save report (demo)'},
+ it:{category:'Categoria',inventory:'Giacenza prodotto (unità)',period:'Periodo di affitto',month:'Al mese',week:'A settimana',request:'Budget massimo €',reason:'Motivo',fraud:'Sospetta frode',days:'7 giorni',save:'Salva segnalazione (demo)'}
+})){
+ test('Shop Plus static listing form is localized with immutable values: '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="create"]').click();
+  const f=page.locator('#isp-create');
+  await expect(f.locator('label:has(select[name="type"])')).toContainText(labels.category);
+  await expect(f.locator('label:has(input[name="quantity"])')).toContainText(labels.inventory);
+  await expect(f.locator('label:has(select[name="period"])')).toContainText(labels.period);
+  const options=await f.locator('select[name="period"]').evaluate(el=>[...el.options].map(o=>({value:o.value,label:o.textContent.trim()})));
+  expect(options).toEqual([{value:'muaj',label:labels.month},{value:'javë',label:labels.week}]);
+  expect(await f.locator('select[name="type"] option').evaluateAll(nodes=>nodes.map(n=>n.value))).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  await f.locator('input[name="name"]').fill('Mbyll');
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang==='it'?'en':'it');
+  await expect(f.locator('input[name="name"]')).toHaveValue('Mbyll');
+  expect(await f.locator('select[name="type"] option').evaluateAll(nodes=>nodes.map(n=>n.value))).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+ });
+ test('Shop Plus static request form labels translate and keep deadline values: '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="tab:needs"]').click();
+  const f=page.locator('#isp-need');
+  await expect(f.locator('label:has(input[name="budget"])')).toContainText(labels.request);
+  const dates=await f.locator('select[name="days"]').evaluate(el=>[...el.options].map(o=>({code:o.value,label:o.textContent.trim()})));
+  expect(dates.map(x=>x.code)).toEqual(['7','14','30']);
+  expect(dates[0].label).toBe(labels.days);
+  await f.locator('input[name="title"]').fill('Local buyer request');
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang==='en'?'sq':'en');
+  await expect(f.locator('input[name="title"]')).toHaveValue('Local buyer request');
+ });
+ test('Shop Plus report reason labels localize without changing reason codes: '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="item:k1"]').click();
+  await page.locator('#isp-root [data-isp="report:k1"]').click();
+  const f=page.locator('#isp-report');
+  await expect(f.locator('label:has(select[name="reason"])')).toContainText(labels.reason);
+  const options=await f.locator('select[name="reason"]').evaluate(el=>[...el.options].map(o=>({code:o.value,label:o.textContent.trim()})));
+  expect(options.map(x=>x.code)).toEqual(['Informacion i pasaktë','Mashtrim i dyshuar','Listim i dyfishuar','Përmbajtje e papërshtatshme']);
+  expect(options[1].label).toBe(labels.fraud);
+  await expect(f.locator('button[type="submit"]')).toHaveText(labels.save);
+  await f.locator('select[name="reason"]').selectOption('Mashtrim i dyshuar');
+  await f.locator('textarea[name="detail"]').fill('Mbyll');
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang==='it'?'sq':'it');
+  await expect(f.locator('select[name="reason"]')).toHaveValue('Mashtrim i dyshuar');
+  await expect(f.locator('textarea[name="detail"]')).toHaveValue('Mbyll');
+ });
+}
