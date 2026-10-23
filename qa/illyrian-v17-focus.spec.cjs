@@ -163,3 +163,50 @@ for(const [width,height] of [[320,568],[844,390]]){
   await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
  });
 }
+
+
+// Non-Shop Plus modal actual keyboard trap across compact layouts.
+// This guards module boundaries that have independent focus implementations:
+// Connections, Privacy/Map and Governance. No data is published or persisted.
+for(const [width,height] of [[320,568],[844,390]]){
+ for(const config of [
+  {name:'Connections',screen:'events',open:'[data-ilc-entry]',root:'#ilc-root',dialog:'.ilc-sheet',closed:'hidden'},
+  {name:'Privacy/Map',screen:'explore',open:'#il4-entry [data-il4-entry]',root:'#il4-root',dialog:'.il4-panel',closed:'hidden'},
+  {name:'Governance',screen:'explore',open:'#ig6-entry [data-ig6="open"]',root:'#ig6-root',dialog:'.ig6-panel',closed:'detached'}
+ ]){
+  test('Non-Shop Plus modal actual keyboard trap across compact layouts - '+config.name+' '+width+'x'+height,async({page})=>{
+   await page.setViewportSize({width,height});
+   await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+   const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+   if(await guest.isVisible()){
+    await guest.click();
+    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+   }
+   if(config.screen==='events')await page.locator('.head [data-act="tab"][data-val="events"]').click();
+   else await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+   const opener=page.locator(config.open).first();
+   await opener.focus();
+   await expect(opener).toBeFocused();
+   await opener.click();
+   const root=page.locator(config.root);
+   await expect(root).toBeVisible();
+   await expect(root.locator(config.dialog)).toHaveAttribute('role','dialog');
+   await expect(root.locator(config.dialog)).toHaveAttribute('aria-modal','true');
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+   const controls=root.locator('button:not([disabled]):visible,input:not([disabled]):visible,select:not([disabled]):visible,textarea:not([disabled]):visible');
+   const first=controls.first(),last=controls.last();
+   await expect(first).toBeFocused();
+   await last.focus();
+   await expect(last).toBeFocused();
+   await page.keyboard.press('Tab');
+   await expect(first).toBeFocused();
+   await page.keyboard.press('Shift+Tab');
+   await expect(last).toBeFocused();
+   await page.keyboard.press('Escape');
+   if(config.closed==='detached')await expect(root).toHaveCount(0);
+   else await expect(root).toBeHidden();
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+   await expect(opener).toBeFocused();
+  });
+ }
+}
