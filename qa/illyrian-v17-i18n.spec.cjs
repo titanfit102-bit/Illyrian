@@ -731,3 +731,76 @@ for(const [locale,messages] of Object.entries({
   await expect(page.locator('#ilp-root .ilp-notice')).toHaveText(messages.saved);
  });
 }
+
+test('Privacy rolls back unsaved private follow request and retries successfully',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ const key='illyrian_demo_v17_privacy_map',before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await rejectModuleWrites(page,key);
+ await page.locator('#il4-root [data-il4="follow-request"]').click();
+ await expect(page.locator('#il4-root .il4-notice')).toHaveText('Change not saved; local storage is full.');
+ await expect(page.locator('#il4-root [data-il4="follow-request"]')).toBeVisible();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await allowModuleWrites(page);
+ await page.locator('#il4-root [data-il4="follow-request"]').click();
+ await expect(page.locator('#il4-root .il4-notice')).toHaveText('Action saved in the demo.');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_privacy_map')));
+ expect(saved.follow.leon).toBe('pending');
+});
+test('Privacy quota failure restores group membership status',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ await page.locator('#il4-root [data-il4="tab:groups"]').click();
+ const key='illyrian_demo_v17_privacy_map',before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await rejectModuleWrites(page,key);
+ await page.locator('#il4-root [data-il4="group-request"]').click();
+ await expect(page.locator('#il4-root .il4-notice')).toHaveText('Modifica non salvata: lo spazio locale è esaurito.');
+ await expect(page.locator('#il4-root [data-il4="group-request"]')).toBeVisible();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await allowModuleWrites(page);
+ await page.locator('#il4-root [data-il4="group-request"]').click();
+ await expect(page.locator('#il4-root .il4-notice')).toHaveText('Adesione/richiesta salvata nella demo.');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_privacy_map')));
+ expect(saved.membership['albania-milan']).toBe('pending');
+});
+for(const [locale,labels] of Object.entries({
+ sq:{all:'Të gjitha',activities:'Aktivitete',business:'Biznese',available:'Mund të kërkosh pjesëmarrje nga aktiviteti origjinal.',accepted:'I pranuar'},
+ en:{all:'All',activities:'Activities',business:'Businesses',available:'You can request to join from the original activity.',accepted:'Accepted'},
+ it:{all:'Tutte',activities:'Attività',business:'Attività commerciali',available:"Puoi richiedere di partecipare dall'attività originale.",accepted:'Accettato'}
+})){
+ test('Privacy stable map filter values and translated labels in '+locale,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+  await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+  await page.locator('#il4-entry [data-il4-entry]').click();
+  await page.locator('#il4-root [data-il4="tab:map"]').click();
+  const opts=await page.locator('#il4-mapform select[name="kind"]').evaluate(el=>[...el.options].map(x=>({value:x.value,label:x.textContent.trim()})));
+  expect(opts).toEqual([{value:'all',label:labels.all},{value:'activity',label:labels.activities},{value:'business',label:labels.business}]);
+  await page.locator('#il4-mapform select[name="kind"]').selectOption('business');
+  await page.locator('#il4-mapform button[type="submit"]').click();
+  await expect(page.locator('#il4-mapform select[name="kind"]')).toHaveValue('business');
+  await page.locator('#il4-root [data-il4="tab:states"]').click();
+  await page.locator('#il4-root [data-il4="state:available"]').first().click();
+  await expect(page.locator('#il4-root .il4-notice')).toContainText(labels.available);
+ });
+}
+test('Privacy does not translate user-entered activity title on map',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const day=new Date(Date.now()+14*24*60*60*1000).toISOString().slice(0,10);
+  localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({events:[{id:'custom-map',title:'Mbyll',privacy:'public',cancelled:false,date:day,time:'17:00',city:'Tiranë'}],requests:[]}));
+ });
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ await page.locator('#il4-root [data-il4="tab:map"]').click();
+ await page.locator('#il4-root .il4-results [data-il4="pin:plan-0"]').click();
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#il4-root .il4-card h4[data-user-content]')).toHaveText('Mbyll');
+ }
+});
