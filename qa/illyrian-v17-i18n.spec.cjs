@@ -1267,7 +1267,7 @@ for(const [language,labels] of Object.entries({
   await expect(page.locator('#isp-root .isp-card small')).toHaveText(labels.pending);
   const persisted=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
   expect(JSON.parse(persisted).flags[0].reason).toBe('Mashtrim i dyshuar');
-  await page.evaluate(()=>window.IllyrianI18n.changeLanguage(language==='it'?'en':'it'));
+  await page.evaluate(lang=>window.IllyrianI18n.changeLanguage(lang),language==='it'?'en':'it');
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(persisted);
   await expect(page.locator('#isp-root .isp-card [data-user-content]').first()).toHaveText('Kafe espresso 250 g');
  });
