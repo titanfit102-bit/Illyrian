@@ -380,6 +380,7 @@ async function allowModuleWrites(page){
 }
 test('Shop Plus reverts failed buyer request instead of displaying unsaved request',async({page})=>{
  await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
  await page.locator('[data-ilshop-open]').first().click();
  await page.locator('#illyrian-shop-layer [data-isp-open]').click();
@@ -479,3 +480,64 @@ for(const [lang,expected] of Object.entries({
   }
  });
 }
+
+for(const [locale,notices] of Object.entries({
+ sq:{invalid:'Kontrollo kërkesën, qytetin, buxhetin dhe afatin.',saved:'Kërkesa u regjistrua vetëm në këtë pajisje.',listingInvalid:'Plotëso saktë emrin, dyqanin, qytetin dhe çmimin.'},
+ en:{invalid:'Check the request, city, budget and deadline.',saved:'The request was saved only on this device.',listingInvalid:'Check the item name, shop, city and price.'},
+ it:{invalid:'Controlla la richiesta, la città, il budget e la scadenza.',saved:'La richiesta è stata salvata solo su questo dispositivo.',listingInvalid:"Controlla il nome dell'articolo, il negozio, la città e il prezzo."}
+})){
+ test('Shop Plus '+locale+' request validation and saved canonical codes',async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="tab:needs"]').click();
+  await page.locator('#isp-need').evaluate(form=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+  await expect(page.locator('#isp-root .isp-notice')).toHaveText(notices.invalid);
+  await page.locator('#isp-need input[name="title"]').fill('Mbyll');
+  await page.locator('#isp-need input[name="budget"]').fill('300');
+  await page.locator('#isp-need button[type="submit"]').click();
+  await expect(page.locator('#isp-root .isp-notice')).toHaveText(notices.saved);
+  const needs=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).needs);
+  expect(needs[0].title).toBe('Mbyll');
+  expect(needs[0].type).toBe('Produkte');
+  expect(needs[0].city).toBe('Tiranë');
+ });
+ test('Shop Plus '+locale+' listing validation shows semantic feedback',async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="create"]').click();
+  await page.locator('#isp-create').evaluate(form=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+  await expect(page.locator('#isp-root .isp-notice')).toHaveText(notices.listingInvalid);
+ });
+}
+test('Shop Plus preserves unsaved request input on storage rejection, then succeeds without retyping',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ await page.locator('#isp-need input[name="title"]').fill('Mbyll');
+ await page.locator('#isp-need input[name="budget"]').fill('425');
+ await page.locator('#isp-need textarea[name="details"]').fill('Custom description Mbyll');
+ const storageKey='illyrian_demo_v17_shop_plus';
+ const before=await page.evaluate(key=>localStorage.getItem(key),storageKey);
+ await rejectModuleWrites(page,storageKey);
+ await page.locator('#isp-need button[type="submit"]').click();
+ await expect(page.locator('#isp-root .isp-notice')).toHaveText('Could not save on this device. Try removing old listings.');
+ await expect(page.locator('#isp-need input[name="title"]')).toHaveValue('Mbyll');
+ await expect(page.locator('#isp-need input[name="budget"]')).toHaveValue('425');
+ await expect(page.locator('#isp-need textarea[name="details"]')).toHaveValue('Custom description Mbyll');
+ expect(await page.evaluate(key=>localStorage.getItem(key),storageKey)).toBe(before);
+ await allowModuleWrites(page);
+ await page.locator('#isp-need button[type="submit"]').click();
+ await expect(page.locator('#isp-root .isp-notice')).toHaveText('The request was saved only on this device.');
+ const need=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).needs[0]);
+ expect(need.title).toBe('Mbyll');
+ expect(need.details).toBe('Custom description Mbyll');
+});
