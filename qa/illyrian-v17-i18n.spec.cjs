@@ -906,3 +906,84 @@ test('Direct i18n binding is never overwritten by phrase translation collisions'
   await expect(page.locator('#i18n-direct-probe')).toHaveText('Profili');
  }
 });
+
+for(const [lang,expected] of Object.entries({
+ sq:{create:'Krijo aktivitetin',type:'Lloji',city:'Qyteti',place:'Vendi',kind:'Miqësi dhe komunitet',privacy:'Dukshmëria',private:'Privat',submit:'Publiko aktivitetin (demo)'},
+ en:{create:'Create activity',type:'Type',city:'City',place:'Location',kind:'Friendship and community',privacy:'Visibility',private:'Private',submit:'Publish activity (demo)'},
+ it:{create:'Crea attività',type:'Tipo',city:'Città',place:'Luogo',kind:'Amicizia e comunità',privacy:'Visibilità',private:'Privato',submit:'Pubblica attività (demo)'}
+})){
+ test('Plans direct semantic form labels and unchanged option codes in '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('[data-ilp-entry]').first().click();
+  await page.locator('#ilp-root [data-ilp="new"]').click();
+  const form=page.locator('#ilp-form');
+  await expect(page.locator('#ilp-root h3[data-i18n-direct]')).toHaveText(expected.create);
+  await expect(form.locator('label:has(select[name="kind"])')).toContainText(expected.type);
+  await expect(form.locator('label:has(select[name="city"])')).toContainText(expected.city);
+  await expect(form.locator('label:has(input[name="place"])')).toContainText(expected.place);
+  await expect(form.locator('label:has(select[name="privacy"])')).toContainText(expected.privacy);
+  const types=await form.locator('select[name="kind"] option').evaluateAll(x=>x.map(z=>({value:z.value,label:z.textContent.trim()})));
+  expect(types.map(x=>x.value)).toEqual(['Sport','Miqësi dhe komunitet','Kulturë','Alumni','Bashkëpunim']);
+  expect(types[1].label).toBe(expected.kind);
+  const vis=await form.locator('select[name="privacy"] option').evaluateAll(x=>x.map(z=>({value:z.value,label:z.textContent.trim()})));
+  expect(vis.map(x=>x.value)).toEqual(['public','private']);
+  expect(vis[1].label).toBe(expected.private);
+  await expect(form.locator('button[type="submit"]')).toHaveText(expected.submit);
+ });
+}
+test('Plans live language switching keeps every unsaved field, canonical selections and focus',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('[data-ilp-entry]').first().click();
+ await page.locator('#ilp-root [data-ilp="new"]').click();
+ const form=page.locator('#ilp-form');
+ await form.locator('input[name="title"]').fill('Mbyll takim komuniteti');
+ await form.locator('select[name="kind"]').selectOption('Miqësi dhe komunitet');
+ await form.locator('select[name="city"]').selectOption('Milano');
+ await form.locator('input[name="place"]').fill('Mbyll public square');
+ await form.locator('input[name="capacity"]').fill('15');
+ await form.locator('input[name="price"]').fill('12.5');
+ await form.locator('select[name="privacy"]').selectOption('private');
+ await form.locator('textarea[name="conditions"]').fill('Mbyll - participant supplied conditions');
+ await form.locator('textarea[name="conditions"]').focus();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(form.locator('input[name="title"]')).toHaveValue('Mbyll takim komuniteti');
+  await expect(form.locator('select[name="kind"]')).toHaveValue('Miqësi dhe komunitet');
+  await expect(form.locator('select[name="city"]')).toHaveValue('Milano');
+  await expect(form.locator('input[name="place"]')).toHaveValue('Mbyll public square');
+  await expect(form.locator('input[name="capacity"]')).toHaveValue('15');
+  await expect(form.locator('input[name="price"]')).toHaveValue('12.5');
+  await expect(form.locator('select[name="privacy"]')).toHaveValue('private');
+  await expect(form.locator('textarea[name="conditions"]')).toHaveValue('Mbyll - participant supplied conditions');
+  expect(await page.evaluate(()=>document.activeElement?.name)).toBe('conditions');
+ }
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
+});
+test('Plans user-authored place, event title and conditions are stable when locale switches',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('[data-ilp-entry]').first().click();
+ await page.locator('#ilp-root [data-ilp="new"]').click();
+ const form=page.locator('#ilp-form');
+ await form.locator('input[name="title"]').fill('Mbyll gathering');
+ await form.locator('input[name="place"]').fill('Mbyll');
+ await form.locator('textarea[name="conditions"]').fill('Mbyll');
+ await form.locator('button[type="submit"]').click();
+ const node=page.locator('#ilp-root');
+ for(const lang of ['en','sq','it']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(node.locator('h3[data-user-content]')).toHaveText('Mbyll gathering');
+  await expect(node.locator('span[data-user-content]')).toHaveText('Mbyll');
+  await expect(node.locator('p[data-user-content]')).toHaveText('Mbyll');
+ }
+ const actual=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_plans')).events[0]);
+ expect(actual.title).toBe('Mbyll gathering');
+ expect(actual.place).toBe('Mbyll');
+ expect(actual.conditions).toBe('Mbyll');
+});
