@@ -1591,3 +1591,41 @@ test('audit F08 stale form warning follows locale without rewriting values',asyn
  expect(await writer.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).needs.map(n=>n.title))).toEqual(['Other writer']);
  await context.close();
 });
+
+
+
+test('Shop Plus rejects seller reply after request expires during an open draft, then allows retry',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const saved={items:[],needs:[{
+   id:'expiry-check',owned:true,type:'Produkte',city:'Tiranë',
+   title:'Mbyll request awaiting reply',details:'User-provided text',
+   budget:150,expires:new Date(Date.now()+86400000).toISOString()
+  }],answers:[],flags:[],sampleOrders:[]};
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify(saved));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ await page.locator('#isp-root [data-isp="respond:expiry-check"]').click();
+ const reply=page.locator('#isp-answer textarea[name="text"]');
+ await reply.fill('Mbyll seller draft should survive expiry');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ await page.evaluate(()=>{
+  window.__illyrianRealNow=Date.now;
+  Date.now=()=>window.__illyrianRealNow()+2*86400000;
+ });
+ await page.locator('#isp-answer button[type="submit"]').click();
+ await expect(page.locator('#isp-root .isp-notice')).toContainText('Kërkesa ose mesazhi');
+ await expect(reply).toHaveValue('Mbyll seller draft should survive expiry');
+ await expect(reply).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(before);
+ await page.evaluate(()=>{Date.now=window.__illyrianRealNow;delete window.__illyrianRealNow});
+ await page.locator('#isp-answer button[type="submit"]').click();
+ const state=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(state.answers).toEqual([{needId:'expiry-check',text:'Mbyll seller draft should survive expiry'}]);
+ await expect(page.locator('#isp-root .isp-reply [data-user-content]')).toHaveText('Mbyll seller draft should survive expiry');
+});
