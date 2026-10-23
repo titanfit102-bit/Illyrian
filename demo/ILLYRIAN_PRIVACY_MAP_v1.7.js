@@ -37,25 +37,26 @@
  let root=null,opener=null,inertSnapshot=[];
  const b=(act,label,extra='')=>'<button type="button" data-il4="'+escaped(act)+'" '+extra+'>'+escaped(label)+'</button>';
  const feedback=(key,fallback)=>window.IllyrianI18n?.t('privacy:'+key)||fallback;
+ const ui=(key,fallback)=>escaped(feedback(key,fallback));
  const persisted=()=>({follow:state.follow,membership:state.membership});
  let lastSaved=JSON.stringify(persisted());
  const save=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
   Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Ndryshimi nuk u ruajt; hapësira lokale është plot.');return false}};
  const statusLabel=x=>({none:feedback('statusNone','Pa kërkesë'),pending:feedback('statusPending','Në pritje'),accepted:feedback('statusAccepted','I pranuar'),declined:feedback('statusDeclined','Refuzuar'),blocked:feedback('statusBlocked','I bllokuar')})[x||'none'];
  const note=()=>state.notice?'<p class="il4-notice" role="status">'+escaped(state.notice)+'</p>':'';
- const header=()=>'<header class="il4-head"><div><small>ILLYRIAN · SIGURI & ZBULIM</small><h2>Privatësia dhe harta</h2></div>'+b('close','✕ Mbyll')+'</header><p class="il4-warning">Prototip me identitete dhe vende të sajuara. Rolet dhe lejet janë vetëm simulim lokal; nuk ofrojnë siguri reale.</p>';
+ const header=()=>'<header class="il4-head"><div><small>ILLYRIAN · SIGURI & ZBULIM</small><h2>'+ui('title','Privatësia dhe harta')+'</h2></div>'+b('close','✕ Mbyll')+'</header><p class="il4-warning">'+ui('warning','Prototip me identitete dhe vende të sajuara. Rolet dhe lejet janë vetëm simulim lokal; nuk ofrojnë siguri reale.')+'</p>';
  const tabRow=()=>'<nav class="il4-tabs" aria-label="Fushat e Fazës 4">'+[
-  ['profiles','Profilet'],['groups','Komunitetet'],['map','Harta'],['states','Gjendjet e planeve']
+  ['profiles',feedback('profiles','Profilet')],['groups',feedback('communities','Komunitetet')],['map',feedback('map','Harta')],['states',feedback('states','Gjendjet e planeve')]
  ].map(([id,t])=>b('tab:'+id,t,id===state.tab?'aria-current="page"':'')).join('')+'</nav>';
  const currentProfile=()=>people.find(p=>p.id===state.selected)||people[0];
  const profiles=()=>{
   const p=currentProfile(),s=state.follow[p.id]||'none',owner=state.role==='owner',publicView=p.audience==='public'||s==='accepted';
-  return '<h3>Profile private dhe ndjekje</h3><p>Provo rolin e vizitorit dhe të pronarit të profilit. Një kërkesë private nuk jep akses derisa të pranohet.</p>'+
-  '<div class="il4-role">'+b('role:visitor','Shiko si vizitor',!owner?'class="chosen"':'')+b('role:owner','Simulo pronarin',owner?'class="chosen"':'')+'</div>'+
+  return '<h3>'+ui('privateProfiles','Profile private dhe ndjekje')+'</h3><p>Provo rolin e vizitorit dhe të pronarit të profilit. Një kërkesë private nuk jep akses derisa të pranohet.</p>'+
+  '<div class="il4-role">'+b('role:visitor',feedback('visitor','Shiko si vizitor'),!owner?'class="chosen"':'')+b('role:owner',feedback('owner','Simulo pronarin'),owner?'class="chosen"':'')+'</div>'+
   '<div class="il4-tabs il4-people">'+people.map(x=>b('profile:'+x.id,x.name,x.id===p.id?'aria-current="page"':'')).join('')+'</div>'+
-  '<article class="il4-card"><h4>'+escaped(p.name)+'</h4><p>'+escaped(p.city)+' · '+(p.audience==='private'?'Profil privat':'Profil publik')+'</p>'+
+  '<article class="il4-card"><h4 data-user-content>'+escaped(p.name)+'</h4><p>'+escaped(p.city)+' · '+(p.audience==='private'?'Profil privat':'Profil publik')+'</p>'+
   '<p><strong>Gjendja:</strong> '+escaped(statusLabel(s))+'</p>'+
-  (publicView||owner?'<p>'+escaped(p.about)+'</p>':'<p class="il4-muted">Përshkrimi dhe përmbajtja e këtij profili janë të fshehura.</p>')+
+  (publicView||owner?'<p data-user-content>'+escaped(p.about)+'</p>':'<p class="il4-muted">Përshkrimi dhe përmbajtja e këtij profili janë të fshehura.</p>')+
   (owner?'<p><b>Panel pronari — simulim</b></p>'+
    (s==='pending'?b('follow-approve','Prano kërkesën')+b('follow-deny','Refuzo'):'<p>Asnjë kërkesë aktive për t’u shqyrtuar.</p>'):
    s==='none'||s==='declined'?b('follow-request',p.audience==='private'?'Kërko të ndjekësh':'Ndiq'):s==='pending'?b('follow-withdraw','Tërhiq kërkesën'):s==='accepted'?b('follow-withdraw','Ndalo ndjekjen'):'<p>Kontakti është i bllokuar në këtë simulim.</p>')+
@@ -68,9 +69,9 @@
   return '<h3>Komunitete me rregulla dhe role</h3><p>Në një komunitet privat vetëm anëtarët e pranuar shohin përmbajtjen. Ky është një shembull i kontrolleve të aksesit, jo siguri serveri.</p>'+
   '<div class="il4-role">'+b('role:visitor','Si kërkues',!owner?'class="chosen"':'')+b('role:owner','Si moderator demo',owner?'class="chosen"':'')+'</div>'+
   '<div class="il4-tabs il4-people">'+groups.map(g=>b('group:'+g.id,g.name,g.id===state.selected?'aria-current="page"':'')).join('')+'</div>'+
-  '<article class="il4-card"><h4>'+escaped(g.name)+'</h4><p>'+escaped(g.city)+' · '+(g.privacy==='private'?'Komunitet privat':'Komunitet publik')+' · '+g.members+' anëtarë shembull</p>'+
+  '<article class="il4-card"><h4 data-user-content>'+escaped(g.name)+'</h4><p>'+escaped(g.city)+' · '+(g.privacy==='private'?'Komunitet privat':'Komunitet publik')+' · '+g.members+' anëtarë shembull</p>'+
   '<p><strong>Status:</strong> '+escaped(statusLabel(s))+'</p>'+
-  (visible?'<p>'+escaped(g.about)+'</p><p class="il4-muted">Rregulla: respekto privatësinë, mos shpërnda të dhëna kontakti pa pëlqim.</p>':
+  (visible?'<p data-user-content>'+escaped(g.about)+'</p><p class="il4-muted">Rregulla: respekto privatësinë, mos shpërnda të dhëna kontakti pa pëlqim.</p>':
    '<p class="il4-muted">Postimet dhe lista e anëtarëve janë të fshehura deri në pranim.</p>')+
   (owner?(s==='pending'?b('group-approve','Prano anëtarin')+b('group-deny','Refuzo kërkesën'):
    '<p>Paneli i moderatorit: nuk ka kërkesë aktive.</p>'):
@@ -128,9 +129,9 @@
   if(!root)return;
   root.hidden=!state.open;
   if(!state.open)return;
-  root.innerHTML='<div class="il4-shade" data-il4="close"></div><section class="il4-panel" role="dialog" aria-modal="true" aria-label="Privatësia, komunitetet dhe vendet">'+
+  root.innerHTML='<div class="il4-shade" data-il4="close"></div><section class="il4-panel" role="dialog" aria-modal="true" aria-label="'+ui('entry','Privatësia, komunitetet dhe vendet')+'">'+
   header()+tabRow()+note()+(state.tab==='profiles'?profiles():state.tab==='groups'?groupPage():state.tab==='map'?mapPage():statuses())+
-  '<footer>Vetëm demonstrim lokal · Nuk ka përdorues, hartë, mesazhe apo kërkesa reale.</footer></section>';
+  '<footer>'+ui('footer','Vetëm demonstrim lokal · Nuk ka përdorues, hartë, mesazhe apo kërkesa reale.')+'</footer></section>';
   root.querySelector('.il4-head button')?.focus();
  };
  const open=which=>{if(!root||state.open)return;opener=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.tab=['profiles','groups','map','states'].includes(which)?which:'profiles';state.notice='';state.role='visitor';state.selected=state.tab==='groups'?'albania-milan':'leon';render()};
@@ -180,9 +181,27 @@
   const node=document.createElement('div');
   node.id='il4-entry';
   node.dataset.open=type;
-  node.innerHTML='<div><strong>Privatësia, komunitetet dhe vendet</strong><p>Profile private · Grupe · Hartë · Gjendja e planeve</p></div><button type="button" data-il4-entry="1">Eksploro →</button>';
+  node.innerHTML='<div><strong>'+ui('entry','Privatësia, komunitetet dhe vendet')+'</strong><p>Profile private · Grupe · Hartë · Gjendja e planeve</p></div><button type="button" data-il4-entry="1">'+ui('open','Eksploro →')+'</button>';
   const anchor=screen.querySelector('.section-header')||screen.querySelector('.v10-event-tabs')||screen.firstElementChild;
   anchor?.parentNode?.insertBefore(node,anchor.nextSibling);
+ }
+ function onLocaleChange(){
+  if(!root)return;
+  const entry=document.querySelector('#il4-entry');
+  if(entry){
+   const title=entry.querySelector('strong'),button=entry.querySelector('[data-il4-entry]');
+   if(title)title.textContent=feedback('entry','Privatësia, komunitetet dhe vendet');
+   if(button)button.textContent=feedback('open','Eksploro →');
+  }
+  if(!state.open)return;
+  const current=root.querySelector('#il4-mapform');
+  const fields=current?{city:current.elements.city.value,kind:current.elements.kind.value,q:current.elements.q.value}:null;
+  const active=document.activeElement,action=active?.dataset?.il4,inputName=active?.name;
+  render();
+  const form=root.querySelector('#il4-mapform');
+  if(fields&&form){form.elements.city.value=fields.city;form.elements.kind.value=fields.kind;form.elements.q.value=fields.q}
+  if(inputName&&form?.elements[inputName])form.elements[inputName].focus();
+  else if(action)root.querySelector('[data-il4="'+action+'"]')?.focus();
  }
  function init(){
   const phone=document.querySelector('#phone'),screen=document.querySelector('#screen');
@@ -216,6 +235,7 @@
    else if(!e.shiftKey&&(focused===buttons[buttons.length-1]||!root.contains(focused))){e.preventDefault();buttons[0].focus();}
   },true);
   new MutationObserver(()=>{if(!state.open)queueMicrotask(sync)}).observe(screen,{childList:true,subtree:false});
+  window.addEventListener('illyrian:language-changed',onLocaleChange);
   queueMicrotask(sync);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
