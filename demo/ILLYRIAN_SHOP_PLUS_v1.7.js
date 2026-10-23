@@ -34,10 +34,11 @@
  const all=()=>[...state.items,...SEED];
  const numeric=(v,fallback=0)=>Number.isFinite(+v)?Number(v):fallback;
  const money=v=>new Intl.NumberFormat(window.IllyrianI18n?.language||'it',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(numeric(v));
+ const feedback=(key,fallback)=>window.IllyrianI18n?.t('shopPlus:'+key)||fallback;
  const persisted=()=>({items:state.items,needs:state.needs,answers:state.answers,flags:state.flags,sampleOrders:state.sampleOrders});
  let lastSaved=JSON.stringify(persisted());
  const save=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
-  Object.assign(state,JSON.parse(lastSaved));state.notice='Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.';return false}};
+  Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.');return false}};
  const btn=(act,text,extra='')=>'<button type="button" data-isp="'+esc(act)+'" '+extra+'>'+esc(text)+'</button>';
  const pill=(value,active)=>'<button type="button" data-isp="type:'+esc(value)+'" aria-pressed="'+(active?'true':'false')+'" class="'+(active?'chosen':'')+'">'+esc(value)+'</button>';
  const period=p=>p.type==='Banesa me qira'?'/'+esc(p.period||'muaj'):'';
@@ -237,7 +238,17 @@
   inertBefore.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertBefore=[];
   if(previous?.isConnected)previous.focus();
  };
- const message=m=>{state.notice=m;if(!save()&&state.tab==='item'&&!all().some(p=>p.id===state.selected))state.tab='create';render()};
+ // On failed storage writes, keep the existing form DOM (including unsaved fields) for retry.
+ const showStorageError=()=>{
+  if(!overlay)return;
+  let note=overlay.querySelector('.isp-notice');
+  if(!note){note=document.createElement('p');note.className='isp-notice';overlay.querySelector('.isp-nav')?.insertAdjacentElement('afterend',note)}
+  note.setAttribute('role','status');note.textContent=state.notice;
+ };
+ const message=(m,onSaved)=>{
+  if(!save()){showStorageError();return false}
+  onSaved?.();state.notice=m;render();return true
+ };
  const action=act=>{
   if(act==='close')return close();
   if(act.startsWith('tab:')){state.tab=act.slice(4);state.shop='';state.notice='';render();return}
@@ -253,16 +264,16 @@
   if(act.startsWith('edit:')){const id=act.slice(5);if(!state.items.some(p=>p.id===id&&p.owned))return;state.editId=id;state.tab='create';render();return}
   if(act==='create'){state.editId=null;state.tab='create';render();return}
   if(act.startsWith('respond:')){state.needIndex=act.slice(8);state.tab='respond';render();return}
-  if(act.startsWith('remove-need:')){const id=act.slice(12);state.needs=state.needs.filter(n=>n.id!==id||!n.owned);return message('Kërkesa u fshi lokalisht.')}
-  if(act==='sample-order'){const i={id:'D'+Date.now().toString(36),status:'E krijuar në demo'};state.sampleOrders.push(i);state.sampleOrders=state.sampleOrders.slice(-20);return message('Porosia u regjistrua vetëm në simulim.')}
-  if(act.startsWith('sample-cancel:')){const id=act.slice(14);const order=state.sampleOrders.find(o=>o.id===id);if(order)order.status='Kërkesë anulimi/kthimi (demo)';return message('Kërkesa e kthimit u regjistrua; nuk ka rimbursim real.')}
+  if(act.startsWith('remove-need:')){const id=act.slice(12);state.needs=state.needs.filter(n=>n.id!==id||!n.owned);return message(feedback('requestRemoved','Kërkesa u fshi lokalisht.'))}
+  if(act==='sample-order'){const i={id:'D'+Date.now().toString(36),status:'E krijuar në demo'};state.sampleOrders.push(i);state.sampleOrders=state.sampleOrders.slice(-20);return message(feedback('orderSaved','Porosia u regjistrua vetëm në simulim.'))}
+  if(act.startsWith('sample-cancel:')){const id=act.slice(14);const order=state.sampleOrders.find(o=>o.id===id);if(order)order.status='Kërkesë anulimi/kthimi (demo)';return message(feedback('returnSaved','Kërkesa e kthimit u regjistrua; nuk ka rimbursim real.'))}
  };
  function submit(form){
   const d=new FormData(form),v=k=>String(d.get(k)||'').trim(),num=k=>d.get(k)===''?null:Number(d.get(k));
   if(form.id==='isp-filters'){
    const min=num('min'),max=num('max'),year=num('year'),km=num('km'),area=num('area');
    if([min,max,year,km,area].some(x=>x!==null&&(!Number.isFinite(x)||x<0))||(min!==null&&max!==null&&min>max)){
-    state.notice='Kontrollo kufijtë e çmimit dhe filtrat numerikë.';render();return}
+    state.notice=feedback('filtersInvalid','Kontrollo kufijtë e çmimit dhe filtrat numerikë.');render();return}
    if(!CITIES.includes(v('city'))||!['relevance','lowest','highest','name'].includes(v('sort')))return;
    state.query=v('q').slice(0,90);state.city=v('city');state.min=min===null?'':String(min);state.max=max===null?'':String(max);
    state.sort=v('sort');state.yearMin=year===null?'':String(year);state.maxKm=km===null?'':String(km);state.areaMin=area===null?'':String(area);
@@ -271,36 +282,36 @@
   if(form.id==='isp-create'){
    const kind=v('type'),name=v('name'),store=v('store'),city=v('city'),p=num('price'),q=num('quantity'),year=num('year'),km=num('mileage'),area=num('area');
    if(!TYPES.slice(1).includes(kind)||!CITIES.slice(1).includes(city)||name.length<4||name.length>90||store.length<2||store.length>70||p===null||!Number.isFinite(p)||p<.5||p>10000000){
-    state.notice='Plotëso saktë emrin, dyqanin, qytetin dhe çmimin.';render();return}
-   if(kind==='Produkte'&&(q===null||!Number.isInteger(q)||q<0||q>10000)){state.notice='Inventari duhet të jetë 0–10000 copë.';render();return}
-   if(kind==='Makina'&&(year===null||!Number.isInteger(year)||year<1950||year>2030||km===null||!Number.isInteger(km)||km<0||km>2000000)){state.notice='Vendos vitin dhe kilometrat e makinës.';render();return}
-   if(kind==='Banesa me qira'&&(area===null||!Number.isFinite(area)||area<1||area>10000)){state.notice='Vendos sipërfaqen e banesës.';render();return}
+    state.notice=feedback('listingInvalid','Plotëso saktë emrin, dyqanin, qytetin dhe çmimin.');render();return}
+   if(kind==='Produkte'&&(q===null||!Number.isInteger(q)||q<0||q>10000)){state.notice=feedback('stockInvalid','Inventari duhet të jetë 0–10000 copë.');render();return}
+   if(kind==='Makina'&&(year===null||!Number.isInteger(year)||year<1950||year>2030||km===null||!Number.isInteger(km)||km<0||km>2000000)){state.notice=feedback('vehicleInvalid','Vendos vitin dhe kilometrat e makinës.');render();return}
+   if(kind==='Banesa me qira'&&(area===null||!Number.isFinite(area)||area<1||area>10000)){state.notice=feedback('rentalInvalid','Vendos sipërfaqen e banesës.');render();return}
    const old=state.items.find(i=>i.id===state.editId&&i.owned);
-   if(!old&&state.items.length>=30){state.notice='Kufiri i listimeve lokale u arrit.';render();return}
+   if(!old&&state.items.length>=30){state.notice=feedback('listingsLimit','Kufiri i listimeve lokale u arrit.');render();return}
    const item={id:old?.id||'own'+Date.now().toString(36),owned:true,type:kind,name,store,city,price:p,details:v('details').slice(0,450),quantity:kind==='Produkte'?q:null,
     year:kind==='Makina'?year:null,mileage:kind==='Makina'?km:null,area:kind==='Banesa me qira'?area:null,rooms:v('rooms').slice(0,30),
     period:['muaj','javë'].includes(v('period'))?v('period'):'muaj',sku:'',promoted:false};
    if(old)Object.assign(old,item);else state.items.unshift(item);
-   state.tab='item';state.selected=item.id;state.editId=null;message('Listimi u ruajt vetëm në pajisjen tënde.');return;
+   message(feedback('listingSaved','Listimi u ruajt vetëm në pajisjen tënde.'),()=>{state.tab='item';state.selected=item.id;state.editId=null});return;
   }
   if(form.id==='isp-need'){
    const type=v('type'),city=v('city'),title=v('title'),budget=num('budget'),days=num('days');
    if(!TYPES.slice(1).includes(type)||!CITIES.slice(1).includes(city)||title.length<5||title.length>90||budget===null||!Number.isFinite(budget)||budget<1||budget>10000000||![7,14,30].includes(days)){
-    state.notice='Kontrollo kërkesën, qytetin, buxhetin dhe afatin.';render();return}
-   if(state.needs.length>=25){state.notice='Kufiri lokal i kërkesave u arrit.';render();return}
+    state.notice=feedback('requestInvalid','Kontrollo kërkesën, qytetin, buxhetin dhe afatin.');render();return}
+   if(state.needs.length>=25){state.notice=feedback('requestsLimit','Kufiri lokal i kërkesave u arrit.');render();return}
    state.needs.push({id:'n'+Date.now().toString(36),owned:true,type,city,title,budget,details:v('details').slice(0,240),expires:new Date(Date.now()+days*86400000).toISOString()});
-   state.tab='needs';message('Kërkesa u regjistrua vetëm në këtë pajisje.');return;
+   message(feedback('requestSaved','Kërkesa u regjistrua vetëm në këtë pajisje.'),()=>{state.tab='needs'});return;
   }
   if(form.id==='isp-answer'){
    const need=state.needs.find(n=>n.id===state.needIndex),txt=v('text').slice(0,180);
-   if(!need||Date.parse(need.expires)<Date.now()||txt.length<5||state.answers.length>=50){state.notice='Kërkesa ose mesazhi nuk është i vlefshëm.';render();return}
-   state.answers.push({needId:need.id,text:txt});state.tab='needs';message('Përgjigjja u ruajt vetëm në demo.');return;
+   if(!need||Date.parse(need.expires)<Date.now()||txt.length<5||state.answers.length>=50){state.notice=feedback('answerInvalid','Kërkesa ose mesazhi nuk është i vlefshëm.');render();return}
+   state.answers.push({needId:need.id,text:txt});message(feedback('answerSaved','Përgjigjja u ruajt vetëm në demo.'),()=>{state.tab='needs'});return;
   }
   if(form.id==='isp-report'){
    const allowed=['Informacion i pasaktë','Mashtrim i dyshuar','Listim i dyfishuar','Përmbajtje e papërshtatshme'],reason=v('reason');
-   if(!allowed.includes(reason)||state.flags.length>=40)return;
+   if(!allowed.includes(reason)||state.flags.length>=40){state.notice=feedback('reportInvalid','Arsyeja e raportimit nuk është e vlefshme ose u arrit kufiri.');render();return;}
    state.flags.push({target:all().find(p=>p.id===state.selected)?.name||'Listim',reason,detail:v('detail').slice(0,180)});
-   state.tab='moderation';message('Raportimi është provë lokale; asnjë moderator nuk u njoftua.');return;
+   message(feedback('reportSaved','Raportimi është provë lokale; asnjë moderator nuk u njoftua.'),()=>{state.tab='moderation'});return;
   }
  }
  function inject(){
