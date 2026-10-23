@@ -26,35 +26,38 @@
   const self=id=>requests(id).find(r=>r.name==='Profili im'&&['pending','accepted','waitlist'].includes(r.status));
   const closed=e=>e.cancelled||new Date(e.date+'T'+e.time).getTime()<Date.now();
   const feedback=(key,fallback)=>window.IllyrianI18n?.t('plans:'+key)||fallback;
+  const ui=(key,fallback)=>escape(feedback(key,fallback));
+  const typeKey=code=>({Sport:'kindSport','Miqësi dhe komunitet':'kindSocial',Kulturë:'kindCulture',Alumni:'kindAlumni',Bashkëpunim:'kindCollaboration'}[code]||null);
+  const visibilityKey=code=>({public:'visibilityPublic',private:'visibilityPrivate'}[code]||null);
   const storedData=()=>({events:state.events,requests:state.requests,messages:state.messages,attendance:state.attendance});
   let lastSaved=JSON.stringify(storedData());
   const save=()=>{try{const value=JSON.stringify(storedData());localStorage.setItem(KEY,value);lastSaved=value;return true}catch{
     Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('localStorageError','Nuk mund të ruhej ndryshimi në pajisje.');return false}};
   const button=(a,label,extra='')=>`<button type="button" data-ilp="${escape(a)}" ${extra}>${escape(label)}</button>`;
-  const choose=(values,current)=>values.map(v=>`<option ${v===current?'selected':''} value="${escape(v)}">${escape(v)}</option>`).join('');
-  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv'}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · ${escape(e.place)}</p><p>${accepted(e.id).length}/${e.capacity} të pranuar · ${pending(e.id).length} në pritje</p>${button('detail:'+e.id,'Hap aktivitetin →')}</article>`;
+  const choose=(values,current,keyOf=()=>null)=>values.map(v=>`<option data-i18n-direct ${v===current?'selected':''} value="${escape(v)}">${keyOf(v)?ui(keyOf(v),v):escape(v)}</option>`).join('');
+  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv'}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · <span data-user-content>${escape(e.place)}</span></p><p>${accepted(e.id).length}/${e.capacity} të pranuar · ${pending(e.id).length} në pritje</p>${button('detail:'+e.id,'Hap aktivitetin →')}</article>`;
   const form=()=>{
     const e=state.edit?event(state.edit):null;
     const v=e||(draft||{title:'',kind:kinds[0],city:cities[0],place:'',date:after(7),time:'17:00',capacity:8,price:0,privacy:'public',conditions:''});
-    return `<h3>${e?'Redakto aktivitetin':'Krijo aktivitetin'}</h3><form id="ilp-form" novalidate>
-    <label>Titulli<input name="title" required maxlength="90" value="${escape(v.title)}" placeholder="P.sh. Takim shqiptarësh"></label>
-    <label>Lloji<select name="kind">${choose(kinds,v.kind)}</select></label>
-    <label>Qyteti<select name="city">${choose(cities,v.city)}</select></label>
-    <label>Vendi<input name="place" maxlength="100" required value="${escape(v.place)}" placeholder="Vend publik takimi"></label>
-    <div class="ilp-grid"><label>Data<input type="date" name="date" min="${after(0)}" value="${escape(v.date)}" required></label><label>Ora<input type="time" name="time" required value="${escape(v.time)}"></label></div>
-    <div class="ilp-grid"><label>Kapaciteti<input name="capacity" type="number" min="1" max="100" value="${Number(v.capacity)}"></label><label>Kontributi €<input name="price" type="number" min="0" max="10000" step=".5" value="${Number(v.price)}"></label></div>
-    <label>Dukshmëria<select name="privacy">${choose(['public','private'],v.privacy)}</select></label>
-    <label>Kushtet<textarea name="conditions" maxlength="240">${escape(v.conditions)}</textarea></label>
-    <p class="ilp-muted">Aktiviteti është vetëm provë. Nuk publikohen vendndodhje personale apo kërkesa reale.</p>
-    <p id="ilp-error" role="alert"></p><button type="submit">${e?'Ruaj ndryshimet':'Publiko aktivitetin (demo)'}</button>${button('list','Kthehu')}</form>`;
+    return `<h3 data-i18n-direct>${e?ui('formEdit','Redakto aktivitetin'):ui('formCreate','Krijo aktivitetin')}</h3><form id="ilp-form" novalidate>
+    <label data-i18n-direct>${ui('formName','Titulli')}<input name="title" required maxlength="90" value="${escape(v.title)}" placeholder="${ui('formNameHint','P.sh. Takim shqiptarësh')}"></label>
+    <label data-i18n-direct>${ui('formKind','Lloji')}<select name="kind">${choose(kinds,v.kind,typeKey)}</select></label>
+    <label data-i18n-direct>${ui('formCity','Qyteti')}<select name="city">${choose(cities,v.city)}</select></label>
+    <label data-i18n-direct>${ui('formPlace','Vendi')}<input name="place" maxlength="100" required value="${escape(v.place)}" placeholder="${ui('formPlaceHint','Vend publik takimi')}"></label>
+    <div class="ilp-grid"><label data-i18n-direct>${ui('formDate','Data')}<input type="date" name="date" min="${after(0)}" value="${escape(v.date)}" required></label><label data-i18n-direct>${ui('formTime','Ora')}<input type="time" name="time" required value="${escape(v.time)}"></label></div>
+    <div class="ilp-grid"><label data-i18n-direct>${ui('formCapacity','Kapaciteti')}<input name="capacity" type="number" min="1" max="100" value="${Number(v.capacity)}"></label><label data-i18n-direct>${ui('formContribution','Kontributi €')}<input name="price" type="number" min="0" max="10000" step=".5" value="${Number(v.price)}"></label></div>
+    <label data-i18n-direct>${ui('formPrivacy','Dukshmëria')}<select name="privacy">${choose(['public','private'],v.privacy,visibilityKey)}</select></label>
+    <label data-i18n-direct>${ui('formConditions','Kushtet')}<textarea name="conditions" maxlength="240">${escape(v.conditions)}</textarea></label>
+    <p class="ilp-muted" data-i18n-direct>${ui('formInfo','Aktiviteti është vetëm provë. Nuk publikohen vendndodhje personale apo kërkesa reale.')}</p>
+    <p id="ilp-error" role="alert"></p><button type="submit" data-i18n-direct>${e?ui('formSave','Ruaj ndryshimet'):ui('formPublish','Publiko aktivitetin (demo)')}</button>${button('list',feedback('formBack','Kthehu'),'data-i18n-direct')}</form>`;
   };
   const detail=()=>{
     const e=event(state.id);if(!e)return button('list','Kthehu');
     const my=self(e.id),owner=state.role==='organizer',ended=closed(e);
     let html=`<div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${ended?'I anuluar ose i kaluar':free(e)===0?'Vendet plot':'Aktiv'}</div>
-    <h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · ${escape(e.place)}</p>
+    <h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · <span data-user-content>${escape(e.place)}</span></p>
     <p><b>${accepted(e.id).length}/${e.capacity}</b> vende · ${pending(e.id).length} kërkesa · ${waiting(e.id).length} në listë pritjeje</p>
-    <p>${escape(e.conditions||'Nuk ka kushte shtesë.')}</p><p class="ilp-muted">${e.privacy==='public'?'Publik':'Privat'} · ${Number(e.price)||0} € · Vetëm demonstrim</p>`;
+    <p data-user-content>${escape(e.conditions||'Nuk ka kushte shtesë.')}</p><p class="ilp-muted">${e.privacy==='public'?'Publik':'Privat'} · ${Number(e.price)||0} € · Vetëm demonstrim</p>`;
     if(owner){
       if(!ended)html+=button('edit','Redakto')+button('cancel','Anulo aktivitetin');
       html+=`<h4>Menaxho kërkesat</h4>`;
@@ -71,7 +74,7 @@
     }
     const mayChat=owner||my?.status==='accepted';
     if(mayChat){
-      html+='<h4>Biseda e grupit — demo</h4><div class="ilp-chat">'+(state.messages.filter(m=>m.eventId===e.id).slice(-15).map(m=>'<p><b>'+escape(m.name)+':</b> '+escape(m.text)+'</p>').join('')||'<p>Ende pa mesazhe.</p>')+'</div>';
+      html+='<h4>Biseda e grupit — demo</h4><div class="ilp-chat">'+(state.messages.filter(m=>m.eventId===e.id).slice(-15).map(m=>'<p><b data-user-content>'+escape(m.name)+':</b> <span data-user-content>'+escape(m.text)+'</span></p>').join('')||'<p>Ende pa mesazhe.</p>')+'</div>';
       if(!ended)html+='<form id="ilp-chat-form"><input name="message" maxlength="280" placeholder="Shkruaj në grup..." aria-label="Mesazhi në grup" required><button type="submit">Dërgo</button></form>';
       else html+='<p class="ilp-muted">Biseda është vetëm për lexim.</p>';
     }else html+='<p class="ilp-muted">Biseda është e disponueshme vetëm pas pranimit.</p>';
@@ -162,7 +165,7 @@
     const visible=state.events.filter(e=>e.id!=='demo-football'&&e.privacy==='public');
     if(!visible.length){cards?.remove();return}
     if(!cards){cards=document.createElement('section');cards.id='ilp-created-list';screen.appendChild(cards)}
-    const markup='<h3>Aktivitete të krijuara në demo</h3>'+visible.map(e=>`<article class="ilp-card"><strong>${escape(e.title)}</strong><p>${escape(e.city)} · ${escape(e.date)}</p><button type="button" data-ilp-open="${escape(e.id)}">Hap planin →</button></article>`).join('');
+    const markup='<h3>Aktivitete të krijuara në demo</h3>'+visible.map(e=>`<article class="ilp-card"><strong data-user-content>${escape(e.title)}</strong><p>${escape(e.city)} · ${escape(e.date)}</p><button type="button" data-ilp-open="${escape(e.id)}">Hap planin →</button></article>`).join('');
     if(cards.innerHTML!==markup)cards.innerHTML=markup;
   }
   function init(){
