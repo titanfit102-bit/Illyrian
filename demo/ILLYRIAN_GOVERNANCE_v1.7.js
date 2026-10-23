@@ -146,7 +146,7 @@
   if(!root||!state.open)return;
   root.hidden=false;
   const before=document.activeElement,act=before?.dataset?.ig6;
-  root.innerHTML='<div class="ig6-shade" data-ig6="close"></div><section class="ig6-panel" role="dialog" aria-modal="true" aria-label="Besimi, raportimet dhe panelet e ILLYRIAN">'+
+  root.innerHTML='<div class="ig6-shade" data-ig6="close"></div><section class="ig6-panel" role="dialog" aria-modal="true" aria-label="'+clean(feedback('title','Besimi dhe menaxhimi'))+'">'+
    '<header><div><small>ILLYRIAN · DEMO v1.7</small><h2>Besimi dhe menaxhimi</h2></div>'+b('close','✕ Mbyll')+'</header>'+
    '<p class="ig6-warning">Asnjë rol nuk është i verifikuar; kjo faqe nuk kryen moderim, pagesa ose vendime reale.</p>'+tabs()+
    notice()+view()+'<footer>Vetëm demonstrim në pajisje. Për prodhim kërkohen audit, autorizime dhe proces apelimi i sigurt.</footer></section>';
@@ -266,6 +266,9 @@
    else if(!e.shiftKey&&(document.activeElement===list.at(-1)||!root.contains(document.activeElement))){e.preventDefault();list[0].focus()}
   },true);
   document.addEventListener('focusin',e=>{if(state.open&&root&&!root.contains(e.target))root.querySelector('.ig6-panel header button')?.focus()},true);
+  window.addEventListener('illyrian:language-changed',()=>{
+   if(state.open)root?.querySelector('.ig6-panel')?.setAttribute('aria-label',feedback('title','Besimi dhe menaxhimi'));
+  });
   new MutationObserver(()=>{if(!state.open)queueMicrotask(sync)}).observe(screen,{childList:true,subtree:false});
   queueMicrotask(sync);
  }
