@@ -999,7 +999,7 @@ for(const [lang,label] of Object.entries({
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
   await page.locator('[data-ilshop-open]').first().click();
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
-  await expect(page.locator('#isp-root h2[data-i18n-direct]')).toHaveText(label.title);
+  await expect(page.locator('#isp-root header h2[data-i18n-direct]')).toHaveText(label.title);
   const filters=page.locator('#isp-filters');
   await expect(filters.locator('label:has(input[name="q"])')).toContainText(label.search);
   await expect(filters.locator('label:has(select[name="sort"])')).toContainText(label.sort);
