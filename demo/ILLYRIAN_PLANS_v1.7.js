@@ -20,7 +20,7 @@
     attendance:Array.isArray(stored.attendance)?stored.attendance.slice(-100).filter(x=>typeof x==='string'):[],
     open:false,view:'list',role:'organizer',id:'demo-football',edit:null,notice:''
   };
-  let root,trigger,draft=null,inertSnapshot=[];
+  let root,trigger,draft=null,inertSnapshot=[],renderedLanguage=null;
   const event=id=>state.events.find(x=>x.id===id);
   const requests=id=>state.requests.filter(r=>r.eventId===id);
   const accepted=id=>requests(id).filter(r=>r.status==='accepted');
@@ -97,6 +97,7 @@
     <nav aria-label="${ui('role','Roli i demonstrimit')}">${button('role:organizer','Si organizator',state.role==='organizer'?'class="chosen"':'')}${button('role:participant','Si pjesëmarrës',state.role==='participant'?'class="chosen"':'')}</nav>
     ${state.notice?`<p class="ilp-notice" role="status">${escape(state.notice)}</p>`:''}
     ${content()}<p class="ilp-muted ilp-foot">PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.</p></div>`;
+    renderedLanguage=window.IllyrianI18n?.language||'en';
     sync();
   }
   const open=(id)=>{if(state.open)return;trigger=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.notice='';state.view=id?'detail':'list';if(id)state.id=id;render();root.querySelector('header button')?.focus()};
@@ -174,6 +175,8 @@
   }
   function onLocaleChange(){
     if(!root||!state.open)return;
+    // An unchanged locale must never tear down a focused open dialog.
+    if(renderedLanguage===window.IllyrianI18n?.language)return;
     const active=document.activeElement;
     const action=active?.dataset?.ilp,field=active?.name;
     const currentForm=root.querySelector('#ilp-form');
@@ -189,24 +192,10 @@
     }
     const nextChat=root.querySelector('#ilp-chat-form');
     if(nextChat&&chatText!==undefined)nextChat.elements.message.value=chatText;
-    // Rebuilding the active dialog can detach the focused control. Restore its
-    // semantic target, falling back to the close button so focus never escapes.
+    // Restore the same control after an actual locale change; preserve drafts.
     const fieldTarget=field&&(next?.elements.namedItem(field)||nextChat?.elements.namedItem(field));
     const actionTarget=action&&root.querySelector('[data-ilp="'+action+'"]');
-    const focusTarget=fieldTarget||actionTarget||root.querySelector('.ilp-panel header button');
-    focusTarget?.focus();
-    // Other locale listeners and the legacy DOM translator may still update
-    // the interface in this event turn. Recheck after their DOM work settles.
-    const restoreAfterDOM=()=>{
-      if(!state.open||!root?.isConnected||root.hidden||root.contains(document.activeElement))return;
-      const liveForm=root.querySelector('#ilp-form'),liveChat=root.querySelector('#ilp-chat-form');
-      const liveField=field&&(liveForm?.elements.namedItem(field)||liveChat?.elements.namedItem(field));
-      const liveAction=action&&root.querySelector('[data-ilp="'+action+'"]');
-      (liveField||liveAction||root.querySelector('.ilp-panel header button'))?.focus();
-    };
-    queueMicrotask(restoreAfterDOM);
-    // After other modules finish synchronous updates, restore before paint.
-    requestAnimationFrame(restoreAfterDOM);
+    (fieldTarget||actionTarget||root.querySelector('.ilp-panel header button'))?.focus();
   }
   function init(){
     const phone=document.querySelector('#phone'),screen=document.querySelector('#screen');if(!phone||!screen)return;
