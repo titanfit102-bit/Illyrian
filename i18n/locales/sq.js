@@ -243,6 +243,7 @@ window.ILLYRIAN_LOCALES.sq={
   },
   "shop": {
     "storageFull": "Nuk u ruajt: hapësira lokale është plot.",
+    "storageConflict": "Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.",
     "addedCartNotice": "Produkti u shtua në shportën demonstrative.",
     "confirmDelete": "Ta fshijmë këtë listim demonstrues?",
     "invalidListing": "Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.",

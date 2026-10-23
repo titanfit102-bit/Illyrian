@@ -243,6 +243,7 @@ window.ILLYRIAN_LOCALES.en={
   },
   "shop": {
     "storageFull": "Could not save: local storage is full.",
+    "storageConflict": "Shop Plus changed in another tab. Copy any unfinished text and reload the page before saving.",
     "addedCartNotice": "The product was added to the demo cart.",
     "confirmDelete": "Delete this demo listing?",
     "invalidListing": "Check the category, item name, shop, city and price.",

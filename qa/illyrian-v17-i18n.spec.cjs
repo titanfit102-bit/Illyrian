@@ -1531,3 +1531,62 @@ test('audit F02 Reel and Story author caption remains unchanged on locale switch
   await expect(page.locator('#layer .v16-viewer .v16-content > p[data-user-content]')).toHaveText('Mbyll');
  }
 });
+
+
+test('audit F08 rejects stale request in second tab and succeeds after reload',async({browser})=>{
+ const context=await browser.newContext(),first=await context.newPage(),second=await context.newPage();
+ async function prepare(page){
+  await ready(page);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ }
+ await prepare(first);await prepare(second);
+ await second.locator('#isp-need input[name="title"]').fill('Second tab draft Mbyll');
+ await second.locator('#isp-need input[name="budget"]').fill('750');
+ await second.locator('#isp-need textarea[name="details"]').fill('Mbyll unsaved description');
+ await first.locator('#isp-need input[name="title"]').fill('First tab confirmed request');
+ await first.locator('#isp-need input[name="budget"]').fill('300');
+ await first.locator('#isp-need button[type="submit"]').click();
+ await expect(second.locator('#isp-root .isp-notice')).toContainText('skedë tjetër');
+ const original=await first.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ await second.locator('#isp-need button[type="submit"]').click();
+ await expect(second.locator('#isp-root .isp-notice')).toContainText('skedë tjetër');
+ await expect(second.locator('#isp-need input[name="title"]')).toHaveValue('Second tab draft Mbyll');
+ await expect(second.locator('#isp-need textarea[name="details"]')).toHaveValue('Mbyll unsaved description');
+ expect(await second.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(original);
+ await second.reload({waitUntil:'load'});
+ await second.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await second.locator('[data-ilshop-open]').first().click();
+ await second.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await second.locator('#isp-root [data-isp="tab:needs"]').click();
+ await second.locator('#isp-need input[name="title"]').fill('Second tab after reload');
+ await second.locator('#isp-need input[name="budget"]').fill('750');
+ await second.locator('#isp-need button[type="submit"]').click();
+ expect(await first.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).needs.map(x=>x.title))).toEqual(['First tab confirmed request','Second tab after reload']);
+ await context.close();
+});
+test('audit F08 stale form warning follows locale without rewriting values',async({browser})=>{
+ const context=await browser.newContext(),writer=await context.newPage(),other=await context.newPage();
+ for(const page of [writer,other]){
+  await ready(page);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ }
+ await other.locator('#isp-need input[name="title"]').fill('Original typed content Mbyll');
+ await writer.locator('#isp-need input[name="title"]').fill('Other writer');
+ await writer.locator('#isp-need input[name="budget"]').fill('100');
+ await writer.locator('#isp-need button[type="submit"]').click();
+ for(const [locale,word] of [['en','another tab'],['it','un’altra scheda'],['sq','skedë tjetër']]){
+  await other.evaluate(lang=>window.IllyrianI18n.changeLanguage(lang),locale);
+  await other.locator('#isp-need input[name="budget"]').fill('400');
+  await other.locator('#isp-need button[type="submit"]').click();
+  await expect(other.locator('#isp-root .isp-notice')).toContainText(word);
+  await expect(other.locator('#isp-need input[name="title"]')).toHaveValue('Original typed content Mbyll');
+ }
+ expect(await writer.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).needs.map(n=>n.title))).toEqual(['Other writer']);
+ await context.close();
+});

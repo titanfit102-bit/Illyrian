@@ -243,6 +243,7 @@ window.ILLYRIAN_LOCALES.it={
   },
   "shop": {
     "storageFull": "Salvataggio non riuscito: lo spazio di archiviazione locale è esaurito.",
+    "storageConflict": "Shop Plus è stato modificato in un’altra scheda. Copia il testo non completato e ricarica la pagina prima di salvare.",
     "addedCartNotice": "Il prodotto è stato aggiunto al carrello dimostrativo.",
     "confirmDelete": "Eliminare questo annuncio dimostrativo?",
     "invalidListing": "Controlla categoria, nome dell'articolo, negozio, città e prezzo.",

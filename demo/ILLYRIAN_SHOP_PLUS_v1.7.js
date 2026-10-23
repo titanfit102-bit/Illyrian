@@ -20,8 +20,9 @@
   {id:'s1',type:'Shërbime',name:'Pastrim banese',sku:'',store:'Shërbime Elbasani',city:'Elbasan',price:45,details:'Çmimi orientues demonstrues.',promoted:false}
  ];
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const read=(key)=>{try{const v=JSON.parse(localStorage.getItem(key)||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{return{}}};
- const saved=read(KEY);
+ // Preserve the initial persisted version for cross-tab optimistic checks.
+ const initialRaw=(()=>{try{return localStorage.getItem(KEY)}catch{return null}})();
+ const saved=(()=>{try{const v=JSON.parse(initialRaw||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{return{}}})();
  const filterList=(arr,max)=>Array.isArray(arr)?arr.filter(x=>x&&typeof x==='object'&&!Array.isArray(x)).slice(0,max):[];
  const state={
   items:filterList(saved.items,30),needs:filterList(saved.needs,25),answers:filterList(saved.answers,50),
@@ -38,9 +39,23 @@
  const ui=(key,fallback)=>esc(feedback(key,fallback));
  const typeLabel=code=>esc(window.IllyrianI18n?.t('shop:'+({'Të gjitha':'all','Produkte':'products','Makina':'cars','Banesa me qira':'rentals','Shërbime':'services'}[code]))||code);
  const persisted=()=>({items:state.items,needs:state.needs,answers:state.answers,flags:state.flags,sampleOrders:state.sampleOrders});
- let lastSaved=JSON.stringify(persisted());
- const save=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
-  Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.');return false}};
+ let lastSaved=JSON.stringify(persisted()),expectedRaw=initialRaw;
+ const rejectStale=()=>{
+  Object.assign(state,JSON.parse(lastSaved));
+  state.notice=feedback('storageConflict','Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.');
+  return false;
+ };
+ const save=()=>{try{
+   // This detects observed stale writes; localStorage lacks atomic CAS.
+   // Truly simultaneous writes require server-side transactions in the real app.
+   if(localStorage.getItem(KEY)!==expectedRaw)return rejectStale();
+   const next=JSON.stringify(persisted());
+   localStorage.setItem(KEY,next);expectedRaw=next;lastSaved=next;return true;
+  }catch{
+   Object.assign(state,JSON.parse(lastSaved));
+   state.notice=feedback('storageFull','Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.');
+   return false;
+  }};
  const btn=(act,text,extra='')=>'<button type="button" data-isp="'+esc(act)+'" '+extra+'>'+esc(text)+'</button>';
  const pill=(value,active)=>'<button type="button" data-i18n-direct data-isp="type:'+esc(value)+'" aria-pressed="'+(active?'true':'false')+'" class="'+(active?'chosen':'')+'">'+typeLabel(value)+'</button>';
  const periodLabel=code=>code==='javë'?ui('periodWeek','javë'):code==='muaj'||!code?ui('periodMonth','muaj'):esc(code);
@@ -358,6 +373,13 @@
   const phone=document.querySelector('#phone');if(!phone)return;
   document.addEventListener('click',e=>{const el=e.target.closest('[data-isp-open]');if(el){e.preventDefault();e.stopPropagation();open()}},true);
   window.addEventListener('illyrian:language-changed',onLocaleChange);
+  // Warn immediately but never rerender and erase an unsent form.
+  window.addEventListener('storage',e=>{
+   if(e.storageArea!==localStorage||(e.key!==KEY&&e.key!==null))return;
+   if(localStorage.getItem(KEY)===expectedRaw)return;
+   state.notice=feedback('storageConflict','Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.');
+   if(state.open)showStorageError();
+  });
   document.addEventListener('keydown',e=>{
    if(!state.open)return;
    if(e.key==='Escape'){e.preventDefault();close();return}
