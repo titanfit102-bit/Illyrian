@@ -51,8 +51,8 @@
 - **P3/M5:** security/a11y/device testing, ops/observability/backup-restore, staged release dhe sign-off; zgjerim gjeografik/gjuhësor vetëm mbi metrika.
 
 ### G. Pika e saktë e rifillimit dhe kriteret [PLAN]
-**Checkpoint aktiv:** `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166` = **153/153 Chromium PASS**, [Actions #40009859286](https://github.com/titanfit102-bit/Illyrian/actions/runs/40009859286). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
-**Detyra pasuese:** F08 reject-if-stale për Shop Plus është implementuar/testuar por **nuk është atomic CAS**; F05/F06 mbeten gates. Vetëm audit read-only për F05/F06 lejohet pa ndryshime të reja administrimi/deploy. Kontroll visual/a11y/telefon dhe sign-off mbeten OPEN. Asnjë merge/main/Production.
+**Checkpoint aktiv:** `5940e1d9130a928d0b917c7022db945f849c8412` = **157/157 Chromium PASS**, [Actions #40012871234](https://github.com/titanfit102-bit/Illyrian/actions/runs/40012871234). Commit-et 0d7dea7 / 47d504e janë referenca historike auditimi. Referencat SHA më të vjetra në seksionet G.1 dhe historikun janë checkpoint-e kronologjike, **jo hapa të pambyllur**.
+**Detyra pasuese:** 157/157 PASS përfshin katër teste të reja Shop Plus keyboard/focus, dhe 21 pamje shtesë në artifact vizual; **screenshot-et dhe telefoni nuk janë shqyrtuar manualisht**. F05/F06 mbeten release gates; audit read-only lejohet, ndryshimet Vercel/CI/admin kërkojnë leje të veçantë. F08 nuk është atomic CAS. Asnjë merge/main/Production.
 **Definition of Done:** testi për rastin e dështimit, regresionet e vjetra, exact-SHA GitHub Actions PASS, diff i kufizuar, dokumentim i provës dhe i gates të hapura. Testet e kaluara nuk janë automatikisht miratim release.
 
 ### G.1 — AUDIT HISTORIK I SHOP PLUS (para korrigjimeve të 23 tetorit; jo gjendje aktive)
@@ -120,6 +120,13 @@
 - `.github/workflows/illyrian-v17-browser-qa.yml` has `push` for demo and feat/i18n branches plus `workflow_dispatch`; no `pull_request`. Four existing GitHub branches have `protected:false`; repo `rulesets` list count = 0. Thus push CI proof (153/153) is not PR-required-check protection.
 - **Pending explicit approval:** any Vercel project access repair or routing change; any workflow/branch ruleset mutation; manual deploy, merge or Production modification. Only read-only evidence and planning were performed in this checkpoint.
 - **Next:** request scope for F05/F06 operational changes, keep phone screenshot, keyboard/screenreader and owner sign-off as additional release gates.
+
+### Shop Plus focus / visual evidence slice — verified 157/157 (23 October 2026) [FAKT / OPEN]
+- Code unchanged in this slice; QA-only changes to `qa/illyrian-v17-focus.spec.cjs` + `qa/illyrian-v17-visual.spec.cjs`. Commits `5315042258f40b8bd4be9a9c58cc432b3f1066c1` and corrected visual-navigation `5940e1d9130a928d0b917c7022db945f849c8412`.
+- [Exact-SHA Actions #40012871234](https://github.com/titanfit102-bit/Illyrian/actions/runs/40012871234) **157/157 Chromium PASS (3.4m)**, checked job log and four new keyboard cases (320×568, 390×844, 844×390, 1280×800) for Shop Plus dialog semantics, focus loop, Escape stacking, original opener focus and inert restoration.
+- The existing seven-viewport visual test was extended by Shop Plus catalog/needs/create screenshots: 3 additions per viewport, 21 extra images, 63 generated images across all nine states. `illyrian-v17-visual-review` artifact listed for the run. **No human comparison, mobile physical-device, screenreader or WCAG certification yet.**
+- F05/F06 remain unresolved: root route points to v1.5, Vercel team `un24` API 403 and previously build-rate-limited status; no branch ruleset protection/PR-trigger. No workflows, Vercel, admin, merge, main or Production changes in this slice.
+- Next: visual screenshot/manual device review and owner sign-off. Operational fixes F05/F06 require separate permission. Keep F08 residual non-atomic limitation explicit.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.

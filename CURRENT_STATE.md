@@ -5,12 +5,12 @@
 ## 1. Referencat e verifikuara [FAKT]
 - Repository: [`titanfit102-bit/Illyrian`](https://github.com/titanfit102-bit/Illyrian), **PUBLIC** sipas GitHub API; jo private. Mos vendos sekrete në repo.
 - Dega e vetme e autorizuar për përditësimet e vazhdimësisë: `feat/i18n-shop-feedback-20261022`.
-- **HEAD i kodit/testeve para këtij checkpoint-i të dokumenteve:** `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166`; pas commit-it docs-only lexo HEAD-in LIVE, jo një SHA historike.
+- **HEAD i kodit/testeve para këtij checkpoint-i të dokumenteve:** `5940e1d9130a928d0b917c7022db945f849c8412`; pas commit-it docs-only lexo HEAD-in LIVE, jo një SHA historike.
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): **OPEN / DRAFT / UNMERGED**; head = dega sipër; target `demo/v1.7-illyrian-shop`.
 - Dega integruese DEMO: `015ce439e7c6d736149c6c300391586517664f62` (e pandryshuar gjatë verifikimit).
 - `main`: `9f91b5c083b4482a70a2149483cc799360e6102c` (e pandryshuar gjatë verifikimit).
-- **SHA i fundit i kodit + testeve të verifikuara:** `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166`.
-- [GitHub Actions #40009859286](https://github.com/titanfit102-bit/Illyrian/actions/runs/40009859286): **completed / success, 153/153 Playwright Chromium PASS (3.3m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
+- **SHA i fundit i kodit + testeve të verifikuara:** `5940e1d9130a928d0b917c7022db945f849c8412`.
+- [GitHub Actions #40012871234](https://github.com/titanfit102-bit/Illyrian/actions/runs/40012871234): **completed / success, 157/157 Playwright Chromium PASS (3.4m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
 - i18n: **sq/en/it**, **550 çelësa/gjuhë**, **15 namespace**, `shopPlus` **166 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
 - Vercel: projekti `illyrian-demo` ekziston; **statusi dhe SHA-ja e Preview aktual NUK u verifikuan** sepse leximi i deployments ktheu **403 / team authorization**. Dokumentacioni i vjetër për READY `fbd04ad...` dhe build-rate-limit është historik; mos e paraqit si Preview të kodit të sotëm.
 
@@ -103,7 +103,15 @@
 - **F06:** workflow `.github/workflows/illyrian-v17-browser-qa.yml` ka vetëm `push` për degët demo/feat-i18n dhe `workflow_dispatch`, **nuk ka `pull_request` trigger**. GitHub API: `main`, `demo/v1.7-illyrian-shop`, `feat/i18n-shop-feedback-20261022`, `demo/v1.6-stories-reels` raportojnë `protected:false`; `/rulesets` = **0**. Green push run nuk është review/merge gate.
 - **Plan i propozuar (jo i zbatuar):** (1) verifiko projektin/domenin dhe scope e saktë Vercel pa shpenzim; (2) pasi të miratohet ndryshimi, sinkronizo root route të preview për candidate v1.7 pa prekur Production pa aprovimin eksplicit; (3) me autorizim workflow/admin, shto PR QA trigger, checks të domosdoshme dhe rregull për degën integruese; (4) testo në SHA e saktë para çdo merge. **Asnjë ndryshim routing/CI/politikash, asnjë deploy** në këtë audit.
 
-**Veprimi i saktë pasues:** për F05 kërko verifikimin read-only të root URL/entrypoint/served SHA, pa ndryshim routing/deploy; për F06 përgatit planin e kontrollit PR/rulesets dhe kërko lejen e domosdoshme para ndryshimit të workflow/administrimit. QA vizuale, screenreader dhe telefon fizik mbeten OPEN; pa merge/main/Production.
+### Faza 7 — QA shtesë Shop Plus, keyboard dhe prova vizuale (2026-10-23) [FAKT / OPEN]
+- **Kodi i aplikacionit i paprekur** në këtë fazë: u modifikuan vetëm `qa/illyrian-v17-focus.spec.cjs` dhe `qa/illyrian-v17-visual.spec.cjs` në degën `feat/i18n-shop-feedback-20261022`. Commits `5315042258f40b8bd4be9a9c58cc432b3f1066c1` (testet) dhe `5940e1d9130a928d0b917c7022db945f849c8412` (korrigjim navigimi në test).
+- **4 teste të reja real-keyboard** për Shop Plus në 320×568, 390×844, 844×390 dhe 1280×800; verifikojnë `role=dialog` / `aria-modal=true`, `Tab` dhe `Shift+Tab` wrapping, modal stacking, `Escape`, rikthim fokusi dhe rikthim të `inert` të sfondit. Janë prova Chromium, **jo** provë screenreader/WCAG.
+- **Screenshot evidence:** testi vizual ekzistues tani merr edhe Shop Plus (katalog, kërkesa, krijim listimi) në **7 viewport-e** të përcaktuara; 3 pamje shtesë për viewport, gjithsej **21 screenshot-e shtesë**, **63 në gjithë suitën vizuale**. [Actions run #40012871234](https://github.com/titanfit102-bit/Illyrian/actions/runs/40012871234) krijoi artifact `illyrian-v17-visual-review` (i disponueshëm, pa skaduar në kohën e kontrollit). Fotot **nuk janë shqyrtuar manualisht për cilësi**; nuk ka certifikim vizual.
+- **Exact-SHA `5940e1d9130a928d0b917c7022db945f849c8412`: 157/157 Chromium Playwright PASS (3.4m)**, job logu i kontrolluar, përfshirë katër testet e reja. HEAD dokumentesh pas këtij checkpoint-i mund të jetë më i ri dhe nuk e ndryshon SHA-në e testuar.
+- **F05 / F06 mbeten OPEN:** konfigurimi root i Vercel ende `/` → v1.5, qasja te projekti `un24` 403, statusi i mëparshëm Vercel për code SHA `a5b93fe8...` ishte `failure/build-rate-limit`; versioni i shërbyer nuk është verifikuar. Workflow ka vetëm push/dispatch, pa trigger `pull_request`, dhe nuk ka proteksione/rulesets. Asgjë nga këto nuk u ndryshua.
+- **Release HOLD:** duhen rishikuar screenshot-et, kontrolle me screenreader, telefon fizik/touch portrait+landscape, manual QA dhe miratimi i pronarit; PR #1 mbetet Draft, pa merge ose manual deploy.
+
+**Veprimi i saktë pasues:** përdor artifact-in vizual të GitHub Actions për inspektim njerëzor dhe checklist në telefon; F05 kërkon qasje të vlefshme read-only në Vercel për source SHA/root route, F06 leje të veçantë për PR checks/rulesets. Mos bëj routing/CI/Production/merge/deploy pa autorizim.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
 - Autorizim **i vazhdueshëm** vetëm për krijim/përditësim të `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` në `feat/i18n-shop-feedback-20261022`, pas çdo ndryshimi material e të **verifikuar**. Mos pyet çdo herë për këta dy dokumente, për sa kohë dega dhe kufijtë nuk ndryshojnë.
@@ -116,4 +124,4 @@
 ## 5. Bootstrap për një bisedë të re
 Kur përdoruesi shkruan **“Vazhdo projektin”**, lexo me radhë: `CURRENT_STATE.md` → pjesën **ACTIVE SNAPSHOT** të `MASTER_HANDOFF.md` → `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 → `architecture/ILLYRIAN_I18N.md` → `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Pastaj verifiko **HEAD, PR #1, diff pas checkpoint-it, CI mbi SHA e saktë dhe deployment**. Përcakto veprimin e parë të pambyllur dhe kufijtë e autorizimit. Mos nis nga zero dhe mos shpik informacionin që nuk mund të rikuperosh.
 
-**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166` (CI **153/153**). Commit-i vijues i dokumenteve është docs-only; kontrollo HEAD live. Nuk ekziston sinkronizim në sfond.
+**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `5940e1d9130a928d0b917c7022db945f849c8412` (CI **157/157**). Commit-i vijues i dokumenteve është docs-only; kontrollo HEAD live. Nuk ekziston sinkronizim në sfond.
