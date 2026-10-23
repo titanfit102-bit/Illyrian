@@ -1629,3 +1629,81 @@ test('Shop Plus rejects seller reply after request expires during an open draft,
  expect(state.answers).toEqual([{needId:'expiry-check',text:'Mbyll seller draft should survive expiry'}]);
  await expect(page.locator('#isp-root .isp-reply [data-user-content]')).toHaveText('Mbyll seller draft should survive expiry');
 });
+
+
+
+for(const lang of ['sq','en','it']){
+ test('Shop Plus category fields preserve drafts through switches '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="create"]').click();
+  const f=page.locator('#isp-create');
+  const product=f.locator('[data-isp-category="Produkte"]'),car=f.locator('[data-isp-category="Makina"]'),rental=f.locator('[data-isp-category="Banesa me qira"]');
+  await expect(product.first()).toBeVisible();
+  await expect(car.first()).toBeHidden();
+  await expect(rental.first()).toBeHidden();
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+  await f.locator('input[name="quantity"]').fill('7');
+  await f.locator('select[name="type"]').selectOption('Makina');
+  await expect(product.first()).toBeHidden();
+  await expect(car.first()).toBeVisible();
+  await f.locator('input[name="year"]').fill('2020');
+  await f.locator('input[name="mileage"]').fill('0');
+  await f.locator('select[name="type"]').selectOption('Banesa me qira');
+  await expect(car.first()).toBeHidden();
+  await expect(rental.first()).toBeVisible();
+  await f.locator('input[name="area"]').fill('80');
+  await f.locator('input[name="rooms"]').fill('2+1');
+  await f.locator('select[name="period"]').selectOption('javë');
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang==='sq'?'it':'sq');
+  await expect(rental.first()).toBeVisible();
+  await expect(car.first()).toBeHidden();
+  await f.locator('select[name="type"]').selectOption('Makina');
+  await expect(f.locator('input[name="year"]')).toHaveValue('2020');
+  await expect(f.locator('input[name="mileage"]')).toHaveValue('0');
+  await f.locator('select[name="type"]').selectOption('Produkte');
+  await expect(f.locator('input[name="quantity"]')).toHaveValue('7');
+  await f.locator('select[name="type"]').selectOption('Banesa me qira');
+  await expect(f.locator('input[name="area"]')).toHaveValue('80');
+  await expect(f.locator('input[name="rooms"]')).toHaveValue('2+1');
+  await expect(f.locator('select[name="period"]')).toHaveValue('javë');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(before);
+ });
+}
+
+test('Shop Plus category-specific save and edit strip irrelevant metadata',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="create"]').click();
+ const f=page.locator('#isp-create');
+ await f.locator('input[name="name"]').fill('Mbyll vehicle listing');
+ await f.locator('input[name="store"]').fill('Mbyll shop');
+ await f.locator('input[name="price"]').fill('9000');
+ await f.locator('select[name="type"]').selectOption('Banesa me qira');
+ await f.locator('input[name="area"]').fill('78');
+ await f.locator('input[name="rooms"]').fill('1+1');
+ await f.locator('select[name="period"]').selectOption('javë');
+ await f.locator('select[name="type"]').selectOption('Makina');
+ await f.locator('input[name="year"]').fill('2020');
+ await f.locator('input[name="mileage"]').fill('0');
+ await f.locator('button[type="submit"]').click();
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+ expect(saved).toMatchObject({type:'Makina',year:2020,mileage:0,area:null,rooms:'',period:'muaj'});
+ await page.locator('#isp-root [data-isp^="edit:"]').click();
+ const edit=page.locator('#isp-create');
+ await expect(edit.locator('[data-isp-category="Makina"]').first()).toBeVisible();
+ await expect(edit.locator('[data-isp-category="Banesa me qira"]').first()).toBeHidden();
+ await expect(edit.locator('input[name="mileage"]')).toHaveValue('0');
+ await edit.locator('select[name="type"]').selectOption('Banesa me qira');
+ await expect(edit.locator('[data-isp-category="Banesa me qira"]').first()).toBeVisible();
+ await edit.locator('input[name="area"]').fill('88');
+ await edit.locator('select[name="period"]').selectOption('javë');
+ await edit.locator('button[type="submit"]').click();
+ const revised=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+ expect(revised).toMatchObject({type:'Banesa me qira',year:null,mileage:null,area:88,period:'javë'});
+});
