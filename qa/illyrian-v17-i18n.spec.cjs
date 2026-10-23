@@ -433,3 +433,47 @@ test('Governance does not retain an unsaved report in simulated moderation',asyn
  await page.locator('#ig6-report button[type="submit"]').click();
  await expect(page.locator('#ig6-root .ig6-card').filter({hasText:'Unsaved example report'})).toHaveCount(1);
 });
+
+for(const [lang,expected] of Object.entries({
+ sq:{citiesInvalid:'Zgjidh dy qytete të ndryshme për këtë shembull.',citiesSaved:'Dy qytetet u ruajtën në pajisje.',reportSaved:'Raportimi u ruajt. Nuk iu dërgua askujt.',reportInvalid:'Kontrollo formularin ose kufirin e raporteve.'},
+ en:{citiesInvalid:'Choose two different cities for this example.',citiesSaved:'Both cities were saved on this device.',reportSaved:'The report was saved locally. It was not sent to anyone.',reportInvalid:'Check the report form or the report limit.'},
+ it:{citiesInvalid:'Scegli due città diverse per questo esempio.',citiesSaved:'Entrambe le città sono state salvate su questo dispositivo.',reportSaved:'La segnalazione è stata salvata localmente. Non è stata inviata a nessuno.',reportInvalid:'Controlla il modulo di segnalazione o il limite di segnalazioni.'}
+})){
+ test('Connections uses semantic '+lang+' notices and stable city values',async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('#ilc-entry [data-ilc-entry]').click();
+  await page.locator('#ilc-root [data-ilc="view:cities"]').click();
+  await page.locator('#ilc-cities select[name="origin"]').selectOption('Tiranë');
+  await page.locator('#ilc-cities button[type="submit"]').click();
+  await expect(page.locator('#ilc-root .ilc-note[role="status"]')).toHaveText(expected.citiesInvalid);
+  await page.locator('#ilc-cities select[name="origin"]').selectOption('Milano');
+  await page.locator('#ilc-cities button[type="submit"]').click();
+  await expect(page.locator('#ilc-root .ilc-note[role="status"]')).toHaveText(expected.citiesSaved);
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_connections')));
+  expect(saved.home).toBe('Tiranë');
+  expect(saved.origin).toBe('Milano');
+ });
+ test('Governance uses semantic '+lang+' notices and keeps user report text',async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+  await page.locator('#ig6-entry [data-ig6="open"]').click();
+  await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
+  await page.locator('#ig6-report').evaluate(form=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+  await expect(page.locator('#ig6-root .ig6-note[role="status"]')).toHaveText(expected.reportInvalid);
+  await page.locator('#ig6-report input[name="target"]').fill('Mbyll');
+  await page.locator('#ig6-report button[type="submit"]').click();
+  await expect(page.locator('#ig6-root .ig6-note[role="status"]')).toHaveText(expected.reportSaved);
+  const report=page.locator('#ig6-root .ig6-card h4[data-user-content]').filter({hasText:'Mbyll'});
+  await expect(report).toHaveText('Mbyll');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_governance')).cases);
+  expect(saved[0].target).toBe('Mbyll');
+  expect(saved[0].reason).toBe('Informacion i pasaktë');
+  for(const next of ['sq','en','it']){
+   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),next);
+   await expect(report).toHaveText('Mbyll');
+  }
+ });
+}
