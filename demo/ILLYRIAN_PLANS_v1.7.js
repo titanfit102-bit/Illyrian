@@ -168,6 +168,27 @@
     const markup='<h3>Aktivitete të krijuara në demo</h3>'+visible.map(e=>`<article class="ilp-card"><strong data-user-content>${escape(e.title)}</strong><p>${escape(e.city)} · ${escape(e.date)}</p><button type="button" data-ilp-open="${escape(e.id)}">Hap planin →</button></article>`).join('');
     if(cards.innerHTML!==markup)cards.innerHTML=markup;
   }
+  function onLocaleChange(){
+    if(!root||!state.open)return;
+    const active=document.activeElement;
+    const action=active?.dataset?.ilp,field=active?.name;
+    const currentForm=root.querySelector('#ilp-form');
+    const currentChat=root.querySelector('#ilp-chat-form');
+    const fields=currentForm?Array.from(currentForm.elements).filter(x=>x.name).map(x=>({name:x.name,value:x.value})):null;
+    const validation=currentForm?.querySelector('#ilp-error')?.textContent||'';
+    const chatText=currentChat?.elements.message?.value;
+    render();
+    const next=root.querySelector('#ilp-form');
+    if(fields&&next){
+      fields.forEach(x=>{const control=next.elements.namedItem(x.name);if(control)control.value=x.value});
+      const error=next.querySelector('#ilp-error');if(error)error.textContent=validation;
+    }
+    const nextChat=root.querySelector('#ilp-chat-form');
+    if(nextChat&&chatText!==undefined)nextChat.elements.message.value=chatText;
+    if(field&&(next?.elements.namedItem(field)||nextChat?.elements.namedItem(field)))
+      (next?.elements.namedItem(field)||nextChat?.elements.namedItem(field)).focus();
+    else if(action)root.querySelector('[data-ilp="'+action+'"]')?.focus();
+  }
   function init(){
     const phone=document.querySelector('#phone'),screen=document.querySelector('#screen');if(!phone||!screen)return;
     const style=document.createElement('style');style.textContent=`
@@ -230,6 +251,7 @@
       state.view='form';
       render();
     });
+    window.addEventListener('illyrian:language-changed',onLocaleChange);
     const observer=new MutationObserver(()=>{if(!state.open)queueMicrotask(sync)});
     observer.observe(screen,{childList:true,subtree:false});
     queueMicrotask(sync);
