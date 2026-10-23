@@ -35,6 +35,7 @@ for(const [w,h] of sizes){
     await page.locator('#isp-root [data-isp="tab:needs"]').click();
     await expect(page.locator('#isp-need')).toBeVisible();
     await capture(page,w,h,'02b-shop-plus-needs');
+    await page.locator('#isp-root [data-isp="tab:catalog"]').click();
     await page.locator('#isp-root [data-isp="create"]').click();
     await expect(page.locator('#isp-create')).toBeVisible();
     await capture(page,w,h,'02c-shop-plus-create');
