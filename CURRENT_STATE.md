@@ -9,8 +9,8 @@
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): **OPEN / DRAFT / UNMERGED**; head = dega sipër; target `demo/v1.7-illyrian-shop`.
 - Dega integruese DEMO: `015ce439e7c6d736149c6c300391586517664f62` (e pandryshuar gjatë verifikimit).
 - `main`: `9f91b5c083b4482a70a2149483cc799360e6102c` (e pandryshuar gjatë verifikimit).
-- **SHA i fundit i kodit + testeve të verifikuara:** `726fb1f240423043a1ad3e291c6ff887b0496e2c`.
-- [GitHub Actions #40002937479](https://github.com/titanfit102-bit/Illyrian/actions/runs/40002937479): **completed / success, 148/148 Playwright Chromium PASS (3.5m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
+- **SHA i fundit i kodit + testeve të verifikuara:** `881faaeb05ceddfdd3d9a21cccf3286fc71101d4`.
+- [GitHub Actions #40005987342](https://github.com/titanfit102-bit/Illyrian/actions/runs/40005987342): **completed / success, 151/151 Playwright Chromium PASS (3.6m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
 - i18n: **sq/en/it**, **549 çelësa/gjuhë**, **15 namespace**, `shopPlus` **165 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
 - Vercel: projekti `illyrian-demo` ekziston; **statusi dhe SHA-ja e Preview aktual NUK u verifikuan** sepse leximi i deployments ktheu **403 / team authorization**. Dokumentacioni i vjetër për READY `fbd04ad...` dhe build-rate-limit është historik; mos e paraqit si Preview të kodit të sotëm.
 
@@ -79,7 +79,16 @@
 - **F06 P1 gate:** no pull_request trigger, branches protected:false, rulesets 0. Changing workflow, branch policy or routing is outside this authorization.
 - **Release HOLD:** mobile/touch, accessibility screenreader, visual baseline, Vercel candidate verification and owner sign-off not complete. No merge/main/Production changes.
 
-**Veprimi i saktë pasues:** QA e mbetur e Shop Plus; për F08 kërkohet kontratë funksionale single-writer/conflict. Për F02/F03/F04 duhet autorizim i shprehur për core HTML/Reels/Plans; për F05/F06 autorizim për routing/deployment dhe workflow/admin. Mos bëj merge/deploy/ndryshime main/Production.
+### Checkpoint i verifikuar — F02/F03/F04 (23 tetor 2026) [FAKT]
+- **Autorizim i këtij hapi:** `vazhdojm athere` pas propozimit eksplicit për të korrigjuar F04, F03, F02; vetëm këto tri ndërhyrje në degën ekzistuese, jo zgjerim i përgjithshëm për core, Plans, workflow apo Vercel.
+- **F04 (feed quota):** `persist()` raporton true/false; `v5-publish` kthen mbrapsht shtimin kur dështon localStorage, mban draftin/kompozitorin dhe nuk konfirmon publikim. Testoi refuzimin e ruajtjes dhe retry.
+- **F03 (media/Plans corrupt storage):** importi i creator filtron rekordet null/primitive/mungesë ID; Plans filtron regjistrimet e pavlefshme nga events/requests/messages/attendance pa i rishkruar automatikisht bytes e ruajtura. Testoi riprovimin e hapjes me JSON të përzier dhe ruajtjen e raw storage.
+- **F02 (Reel/Story UGC):** përshkrimet jo bosh të autorëve marrin `data-user-content` si në viewer-in aktual ashtu dhe në atë legacy; testi sq/en/it siguron se `Mbyll` mbetet përmbajtje përdoruesi.
+- **Provat:** kodi `a66aad40ceb5544703df5beec8fb163aa4685f24` = 148/148 PASS (teste të mëparshme). QA `a8ef86a2fd6db3f2f3600840a9d8f6e68ec8ff5b` = 150 PASS / 1 test failed **për shkak të selektorit të vjetër të navigimit**, jo defektit runtime. Korrigjimi i testit `881faaeb05ceddfdd3d9a21cccf3286fc71101d4` = [Actions #40005987342](https://github.com/titanfit102-bit/Illyrian/actions/runs/40005987342) **151/151 PASS (3.6m)**, e verifikuar në log.
+- **Nga 10 gjetjet e auditit: 7 të korrigjuara në rrugët e testuara** (F01, F02, F03, F04, F07, F09, F10). **OPEN:** F05 (entrypoint/served SHA, Vercel 403), F06 (PR trigger/branch protections), F08 (multi-tab stale state, kërkon vendim single-writer vs conflict). Jo certifikim release, jo mbulim total i korruptimit të të dhënave.
+- **Scope dhe siguria:** ndryshuan vetëm `demo/ILLYRIAN_DEMO_v1.7.html`, `demo/ILLYRIAN_PLANS_v1.7.js` dhe `qa/illyrian-v17-i18n.spec.cjs` në fazën F02–F04. Pa merge/main/Production ose deploy manual; Git integration mund të gjenerojë automatikisht Preview dhe nuk provon live route.
+
+**Veprimi i saktë pasues:** për F08 përcakto rregullin e konfliktit mes skedave (single-writer ose reject-if-stale) përpara patch-it; F06 kërkon leje workflow/branch protection dhe F05 kërkon leje routing/deploy ose akses vetëm-lexim në scope Vercel. Pastaj QA visual, keyboard/screenreader dhe test në telefon me screenshot-e, plus sign-off. Pa merge/deploy/main/Production.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
 - Autorizim **i vazhdueshëm** vetëm për krijim/përditësim të `CURRENT_STATE.md` dhe `MASTER_HANDOFF.md` në `feat/i18n-shop-feedback-20261022`, pas çdo ndryshimi material e të **verifikuar**. Mos pyet çdo herë për këta dy dokumente, për sa kohë dega dhe kufijtë nuk ndryshojnë.
@@ -92,4 +101,4 @@
 ## 5. Bootstrap për një bisedë të re
 Kur përdoruesi shkruan **“Vazhdo projektin”**, lexo me radhë: `CURRENT_STATE.md` → pjesën **ACTIVE SNAPSHOT** të `MASTER_HANDOFF.md` → `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 → `architecture/ILLYRIAN_I18N.md` → `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Pastaj verifiko **HEAD, PR #1, diff pas checkpoint-it, CI mbi SHA e saktë dhe deployment**. Përcakto veprimin e parë të pambyllur dhe kufijtë e autorizimit. Mos nis nga zero dhe mos shpik informacionin që nuk mund të rikuperosh.
 
-**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `0d7dea774ea9a8dfd3996f8a808e873bd66277a5` (CI 140/140). Commit-i i këtij përditësimi është **docs-only** dhe duhet lexuar nga HEAD live. Dokumentet nuk ekzekutohen në sfond.
+**Checkpoint status (2026-10-23):** SHA e fundit e **kodit/testeve të verifikuara** është `881faaeb05ceddfdd3d9a21cccf3286fc71101d4` (CI **151/151**). Commit-i vijues i dokumenteve është docs-only; kontrollo HEAD live. Nuk ekziston sinkronizim në sfond.
