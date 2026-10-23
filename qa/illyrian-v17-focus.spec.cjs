@@ -210,3 +210,49 @@ for(const [width,height] of [[320,568],[844,390]]){
   });
  }
 }
+
+
+// Accessible modal names follow sq/en/it without re-rendering unsent state.
+// Language is UI-only. Assert exact semantic catalog keys, focus, inert status,
+// and module localStorage, not a phrase-adapter's incidental text replacement.
+for(const config of [
+ {name:'Connections',tab:'events',opener:'[data-ilc-entry]',dialog:'#ilc-root .ilc-sheet',key:'connections:activities',storage:'illyrian_demo_v17_connections'},
+ {name:'Plans',tab:'events',opener:'[data-ilp-entry]',dialog:'#ilp-root .ilp-panel',key:'plans:title',storage:'illyrian_demo_v17_plans'},
+ {name:'Governance',tab:'explore',opener:'#ig6-entry [data-ig6="open"]',dialog:'#ig6-root .ig6-panel',key:'governance:title',storage:'illyrian_demo_v17_governance'}
+]){
+ test('Accessible modal names follow sq/en/it without re-rendering unsent state - '+config.name,async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+  if(config.tab==='events')await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  else await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+  const opener=page.locator(config.opener).first();
+  await opener.click();
+  const dialog=page.locator(config.dialog);
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveAttribute('role','dialog');
+  await expect(dialog).toHaveAttribute('aria-modal','true');
+  const before=await page.evaluate(key=>localStorage.getItem(key),config.storage);
+  for(const lang of ['sq','en','it','sq']){
+   await page.evaluate(language=>window.IllyrianI18n.changeLanguage(language),lang);
+   const label=await page.evaluate(key=>window.IllyrianI18n.t(key),config.key);
+   await expect(dialog).toHaveAttribute('aria-label',label);
+   if(config.name==='Plans'){
+    const roleLabel=await page.evaluate(()=>window.IllyrianI18n.t('plans:role'));
+    await expect(dialog.locator('nav').first()).toHaveAttribute('aria-label',roleLabel);
+   }
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+   await expect(dialog.locator('header button')).toBeFocused();
+   expect(await page.evaluate(key=>localStorage.getItem(key),config.storage)).toBe(before);
+  }
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(opener).toBeFocused();
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+ });
+}
