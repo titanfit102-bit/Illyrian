@@ -401,6 +401,7 @@ test('Shop Plus reverts failed buyer request instead of displaying unsaved reque
 });
 test('Connections reverts an unsaved interest and does not announce success',async({page})=>{
  await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('.head [data-act="tab"][data-val="events"]').click();
  await page.locator('#ilc-entry [data-ilc-entry]').click();
  await page.locator('#ilc-root [data-ilc="view:interest"]').click();
@@ -417,6 +418,7 @@ test('Connections reverts an unsaved interest and does not announce success',asy
 });
 test('Governance does not retain an unsaved report in simulated moderation',async({page})=>{
  await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
  await page.locator('#ig6-entry [data-ig6="open"]').click();
  await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
