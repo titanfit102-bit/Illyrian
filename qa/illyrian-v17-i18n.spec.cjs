@@ -1189,3 +1189,36 @@ test('Shop Plus does not mislabel unrecognized persisted order statuses as retur
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
  await expect(order).toContainText('Mbyll');
 });
+
+
+for(const [language,labels] of Object.entries({
+ sq:{back:'← Kthehu te rezultatet',stock:'Gjendja:',fuel:'Karburanti:',diesel:'Naftë',area:'Sipërfaqe:',rental:'Qira për muaj',unit:'copë',report:'Raporto listimin'},
+ en:{back:'← Back to results',stock:'Availability:',fuel:'Fuel:',diesel:'Diesel',area:'Area:',rental:'Rental per month',unit:'units',report:'Report listing'},
+ it:{back:'← Torna ai risultati',stock:'Disponibilità:',fuel:'Carburante:',diesel:'Diesel',area:'Superficie:',rental:'Affitto per mese',unit:'unità',report:'Segnala annuncio'}
+})){
+ test('Shop Plus localized product vehicle and rental detail with stable seed content in '+language,async({page})=>{
+  await ready(page);
+  await page.evaluate(lang=>window.IllyrianI18n.changeLanguage(lang),language);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="item:k1"]').click();
+  const detail=page.locator('#isp-root .isp-focus');
+  await expect(page.locator('#isp-root [data-isp="catalog"]')).toHaveText(labels.back);
+  await expect(detail).toContainText(labels.stock);
+  await expect(detail).toContainText(labels.unit);
+  await expect(detail).toContainText(labels.report);
+  await expect(detail.locator('h3[data-user-content]')).toHaveText('Kafe espresso 250 g');
+  await page.locator('#isp-root [data-isp="catalog"]').click();
+  await page.locator('#isp-root [data-isp="item:v1"]').click();
+  await expect(detail).toContainText(labels.fuel);
+  await expect(detail).toContainText(labels.diesel);
+  await expect(detail.locator('h3[data-user-content]')).toHaveText('Volkswagen Golf 7');
+  await page.locator('#isp-root [data-isp="catalog"]').click();
+  await page.locator('#isp-root [data-isp="item:h1"]').click();
+  await expect(detail).toContainText(labels.area);
+  await expect(detail).toContainText(labels.rental);
+  await expect(detail.locator('strong [data-i18n-direct]')).toHaveText('/'+({sq:'muaj',en:'month',it:'mese'}[language]));
+  await expect(detail.locator('h3[data-user-content]')).toHaveText('Apartament 2+1');
+ });
+}

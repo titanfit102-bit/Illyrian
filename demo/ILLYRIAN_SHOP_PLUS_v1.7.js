@@ -43,7 +43,9 @@
   Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.');return false}};
  const btn=(act,text,extra='')=>'<button type="button" data-isp="'+esc(act)+'" '+extra+'>'+esc(text)+'</button>';
  const pill=(value,active)=>'<button type="button" data-i18n-direct data-isp="type:'+esc(value)+'" aria-pressed="'+(active?'true':'false')+'" class="'+(active?'chosen':'')+'">'+typeLabel(value)+'</button>';
- const period=p=>p.type==='Banesa me qira'?'/'+esc(p.period||'muaj'):'';
+ const periodLabel=code=>code==='javë'?ui('periodWeek','javë'):code==='muaj'||!code?ui('periodMonth','muaj'):esc(code);
+ const fuelLabel=code=>({'Naftë':'fuelDiesel','Hibrid':'fuelHybrid','Benzinë':'fuelPetrol'}[code]?ui({'Naftë':'fuelDiesel','Hibrid':'fuelHybrid','Benzinë':'fuelPetrol'}[code],code):esc(code||''));
+ const period=p=>p.type==='Banesa me qira'?'<span data-i18n-direct>/'+periodLabel(p.period)+'</span>':'';
  const price=p=>money(p.price)+period(p);
  const safeItems=()=>{
   const min=state.min===''?null:numeric(state.min,NaN);
@@ -78,8 +80,8 @@
  const card=p=>'<article class="isp-card"><div class="isp-typeline"><span data-i18n-direct>'+typeLabel(p.type)+'</span>'+chip(p)+'</div><h4 data-user-content>'+esc(p.name)+'</h4>'+
   '<strong>'+price(p)+'</strong><p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+
   (p.type==='Produkte'?'<p><span data-i18n-direct>'+ui('inventory','Inventari:')+'</span> '+(numeric(p.quantity)>0?numeric(p.quantity)+' <span data-i18n-direct>'+ui('units','copë (demo)')+'</span>':'<span data-i18n-direct>'+ui('outOfStockDemo','Pa stok (demo)')+'</span>')+'</p>':
-   p.type==='Makina'?'<p><span data-i18n-direct>'+ui('yearShort','Viti')+'</span> '+esc(p.year||'–')+' · '+esc(p.mileage||'–')+' km · '+esc(p.fuel||'')+'</p>':
-   p.type==='Banesa me qira'?'<p>'+esc(p.rooms||'–')+' · '+esc(p.area||'–')+' m² · '+esc(p.period||'muaj')+'</p>':'')+
+   p.type==='Makina'?'<p><span data-i18n-direct>'+ui('yearShort','Viti')+'</span> '+esc(p.year||'–')+' · '+esc(p.mileage||'–')+' km · <span data-i18n-direct>'+fuelLabel(p.fuel)+'</span>'+'</p>':
+   p.type==='Banesa me qira'?'<p>'+esc(p.rooms||'–')+' · '+esc(p.area||'–')+' m² · <span data-i18n-direct>'+periodLabel(p.period)+'</span>'+'</p>':'')+
   btn('item:'+p.id,feedback('detailsSeller','Detajet dhe shitësi'),'data-i18n-direct')+
   '<button type="button" data-i18n-direct data-isp="store:'+esc(p.store)+'">'+ui('viewShop','Shiko dyqanin')+'</button>'+
   (p.owned?btn('edit:'+p.id,feedback('editListingAction','Redakto listimin'),'data-i18n-direct'):'')+
@@ -111,16 +113,21 @@
  };
  const itemView=()=>{
   const p=all().find(x=>x.id===state.selected);
-  if(!p)return '<p>Listimi nuk ekziston.</p>'+btn('catalog','Kthehu');
-  return btn('catalog','← Kthehu te rezultatet')+'<article class="isp-card isp-focus">'+chip(p)+'<h3 data-user-content>'+esc(p.name)+'</h3><strong>'+price(p)+'</strong>'+
-   '<p data-user-content>'+esc(p.details||'Oferta është demonstrative.')+'</p><p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+
-   (p.type==='Makina'?'<p>Viti: '+esc(p.year)+' · Kilometra: '+esc(p.mileage)+' · Karburanti: '+esc(p.fuel)+'</p>':
-   p.type==='Banesa me qira'?'<p>Sipërfaqe: '+esc(p.area)+' m² · '+esc(p.rooms)+' · Qira për '+esc(p.period||'muaj')+'</p>':
-   p.type==='Produkte'?'<p>Gjendja: '+(numeric(p.quantity)>0?'Në stok, '+numeric(p.quantity)+' copë':'Pa stok')+'</p>':'')+
-   btn('store:'+p.store,'Katalogu i dyqanit')+
-   btn('report:'+p.id,'Raporto listimin')+
-   (p.owned?btn('edit:'+p.id,'Ndrysho listimin'):'')+
-   '</article><p class="isp-muted">Asnjë pagesë ose kontakt real. Makina dhe banesa nuk rezervohen në këtë demo.</p>';
+  if(!p)return '<p data-i18n-direct>'+ui('itemMissing','Listimi nuk ekziston.')+'</p>'+btn('catalog',feedback('itemBack','Kthehu'),'data-i18n-direct');
+  const detail=p.details?'<p data-user-content>'+esc(p.details)+'</p>':'<p data-i18n-direct>'+ui('itemDemoDescription','Oferta është demonstrative.')+'</p>';
+  const attributes=p.type==='Makina'?
+   '<p><span data-i18n-direct>'+ui('itemYear','Viti:')+'</span> '+esc(p.year||'–')+' · <span data-i18n-direct>'+ui('itemMileage','Kilometra:')+'</span> '+esc(p.mileage||'–')+' · <span data-i18n-direct>'+ui('itemFuel','Karburanti:')+'</span> <span data-i18n-direct>'+fuelLabel(p.fuel)+'</span></p>':
+   p.type==='Banesa me qira'?
+   '<p><span data-i18n-direct>'+ui('itemArea','Sipërfaqe:')+'</span> '+esc(p.area||'–')+' m² · <span data-user-content>'+esc(p.rooms||'–')+'</span> · <span data-i18n-direct>'+ui('itemRentalFor','Qira për')+' '+periodLabel(p.period)+'</span></p>':
+   p.type==='Produkte'?
+   '<p><span data-i18n-direct>'+ui('itemStock','Gjendja:')+'</span> '+(numeric(p.quantity)>0?'<span data-i18n-direct>'+ui('itemAvailable','Në stok,')+'</span> '+numeric(p.quantity)+' <span data-i18n-direct>'+ui('itemUnit','copë')+'</span>':'<span data-i18n-direct>'+ui('itemEmptyStock','Pa stok')+'</span>')+'</p>':'';
+  return btn('catalog',feedback('itemBackResults','← Kthehu te rezultatet'),'data-i18n-direct')+
+   '<article class="isp-card isp-focus">'+chip(p)+'<h3 data-user-content>'+esc(p.name)+'</h3><strong>'+price(p)+'</strong>'+
+   detail+'<p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+attributes+
+   btn('store:'+p.store,feedback('itemSellerCatalog','Katalogu i dyqanit'),'data-i18n-direct')+
+   btn('report:'+p.id,feedback('itemReport','Raporto listimin'),'data-i18n-direct')+
+   (p.owned?btn('edit:'+p.id,feedback('itemEdit','Ndrysho listimin'),'data-i18n-direct'):'')+
+   '</article><p class="isp-muted" data-i18n-direct>'+ui('itemDisclaimer','Asnjë pagesë ose kontakt real. Makina dhe banesa nuk rezervohen në këtë demo.')+'</p>';
  };
  const storesView=()=>{
   const sellers=[...new Set(all().map(x=>x.store))].sort((a,b)=>a.localeCompare(b,'sq'));
