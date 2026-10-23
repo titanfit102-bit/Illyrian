@@ -660,3 +660,11 @@ The scoped CI workflow now includes root `i18n/**` changes in push path filters.
 - Critical bug discovered by expanded tests: old DOM phrase adapter retranslated direct Italian `Profili` to `Profilo`. Fixed with explicit `[data-i18n-direct]` boundary in root and demo adapters, distinct from the `[data-user-content]` content exclusion.
 - Nine new Playwright cases since 101 baseline; current **Actions #39944600826 at `d803758ee14cfaa26bc5cab4eee8e27571d5a535` = 110/110 PASS, 2.9m**. Prior failures prompted a real source fix, no test deletion. **PR #1 stays DRAFT/unmerged; no main/Production changes.**
 - Next: direct binding/static copy in Plans/Shop Plus and remaining Privacy blocks; global UGC audit; Android/phone, responsive/keyboard/screenreader, Vercel candidate checks, owner screenshot review. Simulated UI roles are not security backend controls.
+
+
+### P1-D Plans form multilingual integration — 23 October 2026
+- 25 direct semantic translated Plans form keys for sq/en/it; **460 keys/locale**, 15 namespaces and matching root/demo bundles.
+- Listing of stored kinds/cities/visibility codes stays unchanged; visible event form labels, placeholders, option captions and submit action are localized. Explicit `data-i18n-direct` prevents double-translation.
+- Live locale switching retains unsaved event form fields, canonical selection, focus, chat draft and validation text, with no false submission. Targeted user-authored venue/conditions/messages/events are shielded by `data-user-content`.
+- Five added Chromium browser scenarios. [Actions #39946187468](https://github.com/titanfit102-bit/Illyrian/actions/runs/39946187468), exact tested commit `5961a1d90a25b8d7768fe022ec3de3f3760e78a7`: **115/115 PASS (3.0m)**; no tests removed. Draft PR #1 remains unmerged; main/DEMO integration/Production were not modified.
+- Remaining work: more static Plans/Shop Plus/Privacy UI, Shop Plus semantic direct-key conversion, complete UGC inventory, visual/a11y/mobile QA, real Preview verification and owner phone screenshot acceptance. Release/real-app gates unchanged.
