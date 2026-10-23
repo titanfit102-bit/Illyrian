@@ -63,6 +63,11 @@
 - Katalogë **549 keys/locale (sq/en/it), 15 namespace, shopPlus 165**, mirror root/demo identik në verifikimin e fundit. **Asnjë merge, deploy apo ndryshim main/Production**.
 - **GATE TANI [OPEN]:** Shop Plus locale paths janë mbuluar fort nga Chromium, por mbeten testi vizual portrait/landscape, ekranlexuesi, vizita në telefon fizik dhe screenshot-et e pronarit; Vercel Preview SHA pa akses të verifikuar (403 historik). Lokalizimi i pjesëve të tjera të aplikacionit është jashtë autorizimit aktual për kodin. `main`, PR merge dhe deploy kërkojnë leje veçmas.
 
+### Audit i pavarur GPT Work — verifikimi kritik 2026-10-23 [FAKT + PLAN]
+- Gjetjet F01/F07/F09/F10: modele të konfirmuara nga kodi. F02/F03/F04/F08: shkaqe të dukshme dhe riprodhime të raportuara nga audituesi, pa riprodhim tonin dinamik të pavarur ende. F05: rewrite /→v1.5 konfirmohet nga `demo/vercel.json` por jo përmbajtja live; F06: mungon trigger `pull_request` në workflow, jo merge i ndodhur. `main`/Production/merge/deploy mbeten jashtë autorizimit.
+- Veprime të lejuara tani: F09 konsolidim dokumentesh, F01/F07 Shop Plus QA, F10 test i18n parity. F08 kërkon kontratë funksionale të multi-tab, F02/F03/F04 kërkojnë autorizim të veçantë core/Plans, F05/F06 admin/deploy/CI workflow nuk modifikohen.
+- **Gates release OPEN**: adresimi i defekteve P1 jashtë Shop Plus, candidate URL/route SHA, telefon fizik, visual/a11y/screenreader, aprovim eksplicit. **Nuk** ka % të përgjithshme të besueshme të DEMO-s.
+
 **Veprimi i saktë pasues:** QA vizual dhe a11y për Shop Plus në telefon/screenreader, audit të gjendjeve të rralla sipas provave reale, verifikim read-only i Preview SHA kur Vercel lejon akses; kërko sign-off për DEMO vetëm pasi të mbyllen këto gates. Mos bëj merge/deploy/ndryshime të moduleve të tjera pa autorizim.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]
