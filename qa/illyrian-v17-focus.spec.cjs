@@ -237,6 +237,9 @@ for(const config of [
   await expect(dialog).toBeVisible();
   await expect(dialog).toHaveAttribute('role','dialog');
   await expect(dialog).toHaveAttribute('aria-modal','true');
+  // Initial focus follows the close control; after language updates any
+  // focusable control inside the dialog is valid, but background focus is not.
+  await expect(dialog.locator('header button')).toBeFocused();
   const before=await page.evaluate(key=>localStorage.getItem(key),config.storage);
   for(const lang of ['sq','en','it','sq']){
    await page.evaluate(language=>window.IllyrianI18n.changeLanguage(language),lang);
@@ -247,7 +250,8 @@ for(const config of [
     await expect(dialog.locator('nav').first()).toHaveAttribute('aria-label',roleLabel);
    }
    await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
-   await expect(dialog.locator('header button')).toBeFocused();
+   const focusInside=await dialog.evaluate(node=>node.contains(document.activeElement));
+   expect(focusInside,config.name+' dialog focus must remain inside on '+lang).toBe(true);
    expect(await page.evaluate(key=>localStorage.getItem(key),config.storage)).toBe(before);
   }
   await page.keyboard.press('Escape');
