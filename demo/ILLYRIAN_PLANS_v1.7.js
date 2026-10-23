@@ -25,10 +25,13 @@
   const free=e=>Math.max(0,e.capacity-accepted(e.id).length);
   const self=id=>requests(id).find(r=>r.name==='Profili im'&&['pending','accepted','waitlist'].includes(r.status));
   const closed=e=>e.cancelled||new Date(e.date+'T'+e.time).getTime()<Date.now();
-  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({events:state.events,requests:state.requests,messages:state.messages,attendance:state.attendance}));return true}catch{state.notice='Nuk mund të ruhej ndryshimi në pajisje.';return false}};
+  const storedData=()=>({events:state.events,requests:state.requests,messages:state.messages,attendance:state.attendance});
+  let lastSaved=JSON.stringify(storedData());
+  const save=()=>{try{const value=JSON.stringify(storedData());localStorage.setItem(KEY,value);lastSaved=value;return true}catch{
+    Object.assign(state,JSON.parse(lastSaved));state.notice='Nuk mund të ruhej ndryshimi në pajisje.';return false}};
   const button=(a,label,extra='')=>`<button type="button" data-ilp="${escape(a)}" ${extra}>${escape(label)}</button>`;
   const choose=(values,current)=>values.map(v=>`<option ${v===current?'selected':''} value="${escape(v)}">${escape(v)}</option>`).join('');
-  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv'}</div><h3>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · ${escape(e.place)}</p><p>${accepted(e.id).length}/${e.capacity} të pranuar · ${pending(e.id).length} në pritje</p>${button('detail:'+e.id,'Hap aktivitetin →')}</article>`;
+  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv'}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · ${escape(e.place)}</p><p>${accepted(e.id).length}/${e.capacity} të pranuar · ${pending(e.id).length} në pritje</p>${button('detail:'+e.id,'Hap aktivitetin →')}</article>`;
   const form=()=>{
     const e=state.edit?event(state.edit):null;
     const v=e||(draft||{title:'',kind:kinds[0],city:cities[0],place:'',date:after(7),time:'17:00',capacity:8,price:0,privacy:'public',conditions:''});
@@ -48,7 +51,7 @@
     const e=event(state.id);if(!e)return button('list','Kthehu');
     const my=self(e.id),owner=state.role==='organizer',ended=closed(e);
     let html=`<div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${ended?'I anuluar ose i kaluar':free(e)===0?'Vendet plot':'Aktiv'}</div>
-    <h3>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · ${escape(e.place)}</p>
+    <h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · ${escape(e.place)}</p>
     <p><b>${accepted(e.id).length}/${e.capacity}</b> vende · ${pending(e.id).length} kërkesa · ${waiting(e.id).length} në listë pritjeje</p>
     <p>${escape(e.conditions||'Nuk ka kushte shtesë.')}</p><p class="ilp-muted">${e.privacy==='public'?'Publik':'Privat'} · ${Number(e.price)||0} € · Vetëm demonstrim</p>`;
     if(owner){
@@ -90,7 +93,14 @@
   }
   const open=(id)=>{if(state.open)return;trigger=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.notice='';state.view=id?'detail':'list';if(id)state.id=id;render();root.querySelector('header button')?.focus()};
   const close=()=>{state.open=false;render();inertSnapshot.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertSnapshot=[];if(trigger?.isConnected)trigger.focus()};
-  const notice=s=>{state.notice=s;save();render()};
+  const notice=s=>{
+    state.notice=s;
+    if(save()){render();return}
+    if(!root)return;
+    let note=root.querySelector('.ilp-notice');
+    if(!note){note=document.createElement('p');note.className='ilp-notice';note.setAttribute('role','status');root.querySelector('nav')?.insertAdjacentElement('afterend',note)}
+    note.textContent=state.notice;
+  };
   function click(a){
     const k=a.dataset.ilp||'',e=event(state.id),owner=state.role==='organizer';
     if(k==='close'){close();return}
@@ -136,7 +146,8 @@
     let e=state.edit?event(state.edit):null;
     if(e){if(closed(e)||v.capacity<accepted(e.id).length)return error('Kapaciteti nuk mbulon pjesëmarrësit e pranuar.');Object.assign(e,v);}
     else{if(state.events.length>=24)return error('Kufiri i demonstrimit u arrit.');e={id:'p'+Date.now().toString(36),...v,cancelled:false};state.events.unshift(e);}
-    state.id=e.id;state.edit=null;draft=null;state.view='detail';notice('Aktiviteti u ruajt në demonstrim.');
+    if(!save()){error(state.notice);return}
+    state.id=e.id;state.edit=null;draft=null;state.view='detail';state.notice='Aktiviteti u ruajt në demonstrim.';render();
   }
   function sync(){
     const screen=document.querySelector('#screen');if(!screen)return;
