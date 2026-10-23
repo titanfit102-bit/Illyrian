@@ -154,7 +154,7 @@
   '<label data-i18n-direct>'+ui('formPropertyType','Lloji i banesës')+'<input name="rooms" maxlength="30" value="'+esc(p.rooms||'')+'" placeholder="2+1"></label>'+
   '<label data-i18n-direct>'+ui('formPeriod','Periudha e qirasë')+'<select name="period"><option value="muaj" '+(p.period==="javë"?'':'selected')+'>'+ui('formPerMonth','Për muaj')+'</option><option value="javë" '+(p.period==="javë"?'selected':'')+'>'+ui('formPerWeek','Për javë')+'</option></select></label>'+
   '<label class="isp-span" data-i18n-direct>'+ui('formDescription','Përshkrimi')+'<textarea name="details" maxlength="450" rows="3">'+esc(p.details||'')+'</textarea></label>'+
-  '<div class="isp-span"><button type="submit">'+(editing?ui('formSaveChanges','Ruaj ndryshimet'):ui('formPublish','Publiko në demo'))+'</button></div></form>'+
+  '<div class="isp-span"><button type="submit" data-i18n-direct>'+(editing?ui('formSaveChanges','Ruaj ndryshimet'):ui('formPublish','Publiko në demo'))+'</button></div></form>'+
   '<p class="isp-muted" data-i18n-direct>'+ui('formIdentityNote','Nuk ruhet asnjë dokument identiteti, numër telefoni, pagesë ose adresë e saktë.')+'</p>';
  };
  const board=()=>{
