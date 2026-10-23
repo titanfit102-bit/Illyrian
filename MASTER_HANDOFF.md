@@ -1,6 +1,9 @@
 # ILLYRIAN — MASTER HANDOFF
 ## CONTINUITY PROTOCOL — ACTIVE SNAPSHOT (2026-10-23)
 
+**CHECKPOINT MË I FUNDIT (supersedes older QA references below):** exact source/test SHA `524e60075fde2a6cf905946e9388cd57a1ecee3e` — [Actions #40030427581](https://github.com/titanfit102-bit/Illyrian/actions/runs/40030427581), **173/173 Chromium PASS**, job logs checked; PR #1 Draft/unmerged. The previous 167/167 at `853f698e9a8e21865eb98503dc95db8874ce2218` also passed. F05/F06/physical phone/screenreader/sign-off remain open.
+
+
 ### AUTORIZIMI KANONIK I ZHVILLIMIT — VENDIMI MË I FUNDIT I PRONARIT
 - **Dega e lejuar:** `feat/i18n-shop-feedback-20261022`, repository `titanfit102-bit/Illyrian`. Zhvillo, korrigjo, refaktoro në shkallë të vogël, lokalizo, testo dhe përdor Vercel **Preview** për **të gjithë DEMO-n v1.7**, përfshirë Shop, Shop Plus, social UI, Stories/Reels, Plans, Connections, Privacy/Map, Governance dhe QA/CI të kësaj dege. **Nuk kërkohet miratim për çdo ndryshim normal, të kufizuar dhe të kthyeshëm.**
 - **Lejohen brenda kësaj dege:** ndryshime të zakonshme të kodit, teste Playwright/Actions, rregullime bug-esh dhe UX në përputhje me vizionin ekzistues, route/config të Preview të izoluar, verifikim deployment/SHA, screenshot-e dhe dokumente `CURRENT_STATE.md` + `MASTER_HANDOFF.md`. Mund të vazhdosh pas një testi të suksesshëm pa pyetur çdo herë.
@@ -203,6 +206,14 @@
 - Test-only change in `qa/illyrian-v17-focus.spec.cjs`, commit [`853f698e`](https://github.com/titanfit102-bit/Illyrian/commit/853f698e9a8e21865eb98503dc95db8874ce2218) (2 new real-keyboard Chromium cases: 320×568, 844×390). Checks type-specific first Tab target after price for Products/Car/Rental/Services; hidden unrelated controls not keyboard-focused, modal closes into Shop. No app runtime, roadmap, main, Production or merge changes.
 - [Actions #40027081226](https://github.com/titanfit102-bit/Illyrian/actions/runs/40027081226), exact source/test SHA `853f698e9a8e21865eb98503dc95db8874ce2218`: status in_progress, conclusion not yet available. Do not call this patch PASS or release-ready until run finishes and logs/results are inspected. Prior 165/165 at `af20db8c` is the last confirmed passing QA baseline unless this run is confirmed.
 - NEXT: inspect current CI exact SHA, fix any failing regression on the authorized branch, then assess other DEMO-wide a11y gaps; F05 Vercel Preview HTTP for new SHA (rate-limit/SSO), F06 branch protection, physical phone/screenreader and final owner sign-off remain OPEN. O1–O8 remain research, not approved features.
+
+
+### QA module-wide keyboard checkpoint — 2026-10-23 [VERIFIED / 173 OF 173 PASS]
+- **Exact source/test SHA:** [`524e60075fde2a6cf905946e9388cd57a1ecee3e`](https://github.com/titanfit102-bit/Illyrian/commit/524e60075fde2a6cf905946e9388cd57a1ecee3e) — only `qa/illyrian-v17-focus.spec.cjs` changed relative to the previous tested QA SHA. No runtime/UI, locale, architecture, main, Production or integration changes.
+- **CI:** [Actions #40030427581](https://github.com/titanfit102-bit/Illyrian/actions/runs/40030427581) **completed / success, 173/173 Chromium Playwright PASS (4.1m)**; job log checked, all six new cases passed. Previous [#40027081226](https://github.com/titanfit102-bit/Illyrian/actions/runs/40027081226) **167/167 PASS (3.5m)** at `853f698e9a8e21865eb98503dc95db8874ce2218`, including both category-specific Shop Plus keyboard tests.
+- **New coverage:** Connections, Privacy/Map and Governance, each at 320×568 and 844×390; real Tab/Shift+Tab wrapping, modal role + aria-modal, background inert restoration, Escape closes and returns focus to opener. Chromium browser only, not assistive-technology/physical-device certification.
+- **Remaining gates [OPEN]:** F05 latest exact-SHA Vercel Preview HTTP/served route (SSO/team permission 403 and deployment rate-limit previously reported); F06 required PR checks/branch protection (administrative change not undertaken); physical phone, TalkBack/VoiceOver, broader accessibility/visual review and owner release sign-off. PR #1 stays Draft, unmerged. O1–O8 remain unapproved research.
+- **Next:** audit uncovered a11y/i18n paths across DEMO and add evidence-driven corrections in the same authorized branch. Do not equate 173 automated tests with production readiness.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
