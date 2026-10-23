@@ -36,6 +36,11 @@
 - `qa/illyrian-v17-i18n.spec.cjs` verifikon katalogun, kartat, dyqanet, formën e raportimit, porositë simuluese dhe kodet e ruajtura. `qa/illyrian-v17-i18n-inventory.spec.cjs` sheh vetëm skedën fillestare Shop Plus, jo detajet/kërkesat/përgjigjet/moderimin. **Coverage i plotë i18n dhe a11y është ende OPEN.**
 - **Hapi pasues [PLAN, KËRKON AUTORIZIM PËR KOD]:** patch i kufizuar `itemView() + period()/card()` me keys `shopPlus:*` për sq/en/it dhe teste Playwright për detail produkt/makinë/qira. Ruaj domain values, UGC, status codes, localStorage. Më pas `board()/respond()`, `moderation()`, dialog a11y. Pa merge/deploy.
 
+### Checkpoint i verifikuar: Shop Plus item detail + rental labels — 2026-10-23
+- Source/locale/QA commit: `40396a7342221a244391d5416a7df1b11a8e5835`; [GitHub Actions #39981149744](https://github.com/titanfit102-bit/Illyrian/actions/runs/39981149744) = **134/134 Playwright Chromium PASS (3.3m)** në SHA ekzakte; u kontrollua logu.
+- `itemView()`: etiketa produkti/makine/qiraje/stoku/veprimesh direkt sq/en/it; `period()/card()` tregojnë etiketa gjuhësore `muaj/javë`, pa ndryshuar vlerat persistente. Karburanti i njohur shfaqet i lokalizuar, i panjohuri mbetet origjinal. U shtuan 22 keys për gjuhë: **521/locale, 15 namespace**; pasqyra root/demo identike. +3 E2E testet e detajeve.
+- **OPEN pas këtij checkpoint-i:** `board()`, `respond()`, `moderation()`, dialog a11y dhe entry-button, audit UI/UGC global, Vercel SHA, testimi fizik/visual/a11y.
+
 **Veprimi i saktë pasues:** inventar i kodit aktual të Shop Plus / pjesëve të mbetura, ndryshim i izoluar vetëm nëse ekziston autorizim për kod, teste për çdo SHA, pastaj checkpoint-i i dokumenteve. Kjo detyrë **vetëm dokumentacion** nuk autorizon ndryshime kodi.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]

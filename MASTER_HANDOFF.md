@@ -66,6 +66,11 @@
 - Suite `qa/illyrian-v17-i18n.spec.cjs` mbulon pjesë të katalogut, seller directory, forms, UGC, saved enum/order, por jo assertions e plotë të prezantimit të rrugëve më sipër. `qa/illyrian-v17-i18n-inventory.spec.cjs` kap Shop Plus vetëm në tab-in inicial; gjendjet conditionale nuk janë inventarizuar.
 - **Next isolated coding slice (not executed, code authorization required):** item detail + rental/period labels -> buyer request board/respond -> moderation/report status -> modal a11y. Use sq/en/it direct semantic keys, unchanged `option.value`/stored reason and order codes, UGC exclusion, mirrored locale catalogs, targeted en/it regression; require exact-SHA CI before docs checkpoint. No merge, deployment, or external services.
 
+### Shop Plus Phase 7 incremental slice — verified 134/134 (23 October 2026)
+- `40396a7342221a244391d5416a7df1b11a8e5835` lokalizoi `itemView()` me direct semantic keys për produkt/makinë/qira dhe 22 keys/locale sq/en/it; `period()/card()` përkthejnë etiketat mujore/javore pa ndryshuar kodet e ruajtura ose UGC. Mirror `i18n/locales` dhe `demo/i18n/locales` të njëjta. +3 raste Playwright.
+- CI [#39981149744](https://github.com/titanfit102-bit/Illyrian/actions/runs/39981149744) = **134/134 PASS (3.3m)** në SHA e saktë, i kontrolluar edhe nga logu. Nuk provon a11y të plotë, telefona apo Vercel preview.
+- Next: i18n e `board()/respond()/moderation()`, dialog dhe entry labels, me regressive tests, pastaj visual/UGC/a11y audit. Pa merge/deploy/Production.
+
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
 - `MASTER_HANDOFF.md` = vizioni, vendimet, arkitektura, evidenca dhe kufijtë; seksioni ACTIVE SNAPSHOT përditësohet inkrementalisht; **HISTORICAL RECORD poshtë ruhet pa fshirë ose falsifikuar eventet**.
