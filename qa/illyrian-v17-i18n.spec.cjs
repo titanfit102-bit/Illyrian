@@ -860,3 +860,31 @@ test('Privacy profile and group user-origin fields remain unchanged through loca
   await expect(page.locator('#il4-root .il4-card h4[data-user-content]')).toHaveText('Shqiptarët në Milano');
  }
 });
+
+for(const [lang,expectations] of Object.entries({
+ sq:{groups:'Komunitete me rregulla dhe role',map:'Zbulo aktivitetet dhe bizneset sipas qytetit',city:'Qyteti',kind:'Lloji',button:'Filtro',placeholder:'P.sh. kafe, futboll, dyqan',states:'Gjendjet e aktiviteteve dhe kthimi i sigurt'},
+ en:{groups:'Communities with rules and roles',map:'Discover activities and businesses by city',city:'City',kind:'Type',button:'Filter',placeholder:'E.g. café, football, shop',states:'Activity statuses and safe navigation'},
+ it:{groups:'Comunità con regole e ruoli',map:'Scopri attività e aziende per città',city:'Città',kind:'Tipo',button:'Filtra',placeholder:'Es. bar, calcio, negozio',states:'Stati delle attività e navigazione sicura'}
+})){
+ test('Privacy direct map, group and plan-state headings in '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+  await page.locator('#il4-entry [data-il4-entry]').click();
+  await page.locator('#il4-root [data-il4="tab:groups"]').click();
+  await expect(page.locator('#il4-root h3').first()).toHaveText(expectations.groups);
+  await page.locator('#il4-root [data-il4="tab:map"]').click();
+  await expect(page.locator('#il4-root h3').first()).toHaveText(expectations.map);
+  const form=page.locator('#il4-mapform');
+  await expect(form.locator('label:has(select[name="city"])')).toContainText(expectations.city);
+  await expect(form.locator('label:has(select[name="kind"])')).toContainText(expectations.kind);
+  await expect(form.locator('input[name="q"]')).toHaveAttribute('placeholder',expectations.placeholder);
+  await expect(form.locator('button[type="submit"]')).toHaveText(expectations.button);
+  const kinds=await form.locator('select[name="kind"] option').evaluateAll(nodes=>nodes.map(x=>x.value));
+  expect(kinds).toEqual(['all','activity','business']);
+  const cityCodes=await form.locator('select[name="city"] option').evaluateAll(nodes=>nodes.map(x=>x.value));
+  expect(cityCodes).toContain('Tiranë');
+  await page.locator('#il4-root [data-il4="tab:states"]').click();
+  await expect(page.locator('#il4-root h3').first()).toHaveText(expectations.states);
+ });
+}
