@@ -1170,3 +1170,22 @@ test('Shop Plus order state retains original persisted enum while display locali
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
  await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText('Annullamento/reso richiesto (demo)');
 });
+
+test('Shop Plus does not mislabel unrecognized persisted order statuses as return requests',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const key='illyrian_demo_v17_shop_plus';
+  localStorage.setItem(key,JSON.stringify({items:[],needs:[],answers:[],flags:[],sampleOrders:[{id:'unknown-test',status:'Mbyll'}]}));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:checkout"]').click();
+ const order=page.locator('#isp-root .isp-card').filter({hasText:'unknown-test'});
+ await expect(order).toContainText('Mbyll');
+ await expect(order).not.toContainText('Cancellation/return requested');
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(order).toContainText('Mbyll');
+});
