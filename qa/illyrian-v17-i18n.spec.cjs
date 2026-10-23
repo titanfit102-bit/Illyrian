@@ -644,3 +644,44 @@ for(const [lang,labels] of Object.entries({
   await expect(f.locator('textarea[name="detail"]')).toHaveValue('Mbyll');
  });
 }
+
+test('Plans rejects unsaved event creation without losing form input or stored data',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('[data-ilp-entry]').first().click();
+ await page.locator('#ilp-root [data-ilp="new"]').click();
+ const form=page.locator('#ilp-form');
+ await form.locator('input[name="title"]').fill('Weekend plan Mbyll');
+ await form.locator('input[name="place"]').fill('Public meeting location');
+ const key='illyrian_demo_v17_plans';
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await rejectModuleWrites(page,key);
+ await form.locator('button[type="submit"]').click();
+ await expect(form).toBeVisible();
+ await expect(form.locator('#ilp-error')).toHaveText('Nuk mund të ruhej ndryshimi në pajisje.');
+ await expect(form.locator('input[name="title"]')).toHaveValue('Weekend plan Mbyll');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await allowModuleWrites(page);
+ await form.locator('button[type="submit"]').click();
+ await expect(page.locator('#ilp-root .ilp-card h3[data-user-content]')).toHaveCount(0);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_plans')).events);
+ expect(saved.some(x=>x.title==='Weekend plan Mbyll')).toBe(true);
+ await expect(page.locator('#ilp-root h3[data-user-content]')).toHaveText('Weekend plan Mbyll');
+});
+test('Plans failed cancel restores stored event and never claims success',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('[data-ilp-entry]').first().click();
+ await page.locator('#ilp-root [data-ilp="detail:demo-football"]').click();
+ const key='illyrian_demo_v17_plans';
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await rejectModuleWrites(page,key);
+ page.on('dialog',dlg=>dlg.accept());
+ await page.locator('#ilp-root [data-ilp="cancel"]').click();
+ await expect(page.locator('#ilp-root .ilp-notice')).toHaveText('Nuk mund të ruhej ndryshimi në pajisje.');
+ await expect(page.locator('#ilp-root [data-ilp="cancel"]')).toBeVisible();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await allowModuleWrites(page);
+ await page.locator('#ilp-root [data-ilp="cancel"]').click();
+ await expect(page.locator('#ilp-root .ilp-notice')).toHaveText('Aktiviteti u anulua.');
+});
