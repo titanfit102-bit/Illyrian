@@ -1311,3 +1311,43 @@ test('Shop Plus entry label switches languages before opening and close restores
  await expect(page.locator('#isp-root')).toHaveCount(0);
  await expect(entry).toBeFocused();
 });
+
+
+test('Shop Plus draft seller response survives sq/en/it locale changes with focus and storage intact',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const expires=new Date(Date.now()+86400000).toISOString();
+  const state={
+   items:[],needs:[{id:'audit-need',owned:true,type:'Produkte',city:'Tiranë',
+    title:'Mbyll community inquiry',details:'Mbyll original request details',
+    budget:220,expires}],answers:[],flags:[],sampleOrders:[]
+  };
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify(state));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ await expect(page.locator('#isp-root h4[data-user-content]')).toHaveText('Mbyll community inquiry');
+ await page.locator('#isp-root [data-isp="respond:audit-need"]').click();
+ const response=page.locator('#isp-answer textarea[name="text"]');
+ const draft='Mbyll custom message and details';
+ await response.fill(draft);
+ await response.focus();
+ const saved=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ const labels={sq:'Mesazhi demonstrues',en:'Demo message',it:'Messaggio dimostrativo'};
+ for(const lang of ['en','it','sq']){
+  await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
+  await expect(page.locator('#isp-answer label')).toContainText(labels[lang]);
+  await expect(response).toHaveValue(draft);
+  await expect(response).toBeFocused();
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(saved);
+  await expect(page.locator('#isp-root h3 [data-user-content]')).toHaveText('Mbyll community inquiry');
+ }
+ await page.locator('#isp-answer button[type="submit"]').click();
+ const final=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(final.needs[0].title).toBe('Mbyll community inquiry');
+ expect(final.answers).toEqual([{needId:'audit-need',text:draft}]);
+ await expect(page.locator('#isp-root .isp-reply [data-user-content]')).toHaveText(draft);
+});
