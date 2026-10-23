@@ -173,6 +173,12 @@
 
 **Veprimi i saktë pasues:** vazhdo QA të të gjithë DEMO-s dhe auditin e UX. Për F05 zhblloko verifikimin e Vercel Preview pa pagesë: limit deploy + akses team SSO/403; mos pretendo që `af20db8` është live. Për F06 mund të përgatiten CI/PR checks në branch; rregullat administrative me ndikim më të gjerë kërkojnë miratim. Kryej QA fizike në telefon/screenreader dhe vetëm pastaj sign-off. Pa merge/main/Production.
 
+
+### Shop Plus keyboard category-order — 2026-10-23 [COMMITTED / CI PENDING]
+- Test-only change in `qa/illyrian-v17-focus.spec.cjs`, commit [`853f698e`](https://github.com/titanfit102-bit/Illyrian/commit/853f698e9a8e21865eb98503dc95db8874ce2218) (2 new real-keyboard Chromium cases: 320×568, 844×390). Checks type-specific first Tab target after price for Products/Car/Rental/Services; hidden unrelated controls not keyboard-focused, modal closes into Shop. No app runtime, roadmap, main, Production or merge changes.
+- [Actions #40027081226](https://github.com/titanfit102-bit/Illyrian/actions/runs/40027081226), exact source/test SHA `853f698e9a8e21865eb98503dc95db8874ce2218`: status in_progress, conclusion not yet available. Do not call this patch PASS or release-ready until run finishes and logs/results are inspected. Prior 165/165 at `af20db8c` is the last confirmed passing QA baseline unless this run is confirmed.
+- NEXT: inspect current CI exact SHA, fix any failing regression on the authorized branch, then assess other DEMO-wide a11y gaps; F05 Vercel Preview HTTP for new SHA (rate-limit/SSO), F06 branch protection, physical phone/screenreader and final owner sign-off remain OPEN. O1–O8 remain research, not approved features.
+
 ## 4. Protokolli operativ dhe autorizimi [VENDIM AKTIV I PRONARIT, 2026-10-23]
 - **Norma operative e vetme është §0 më sipër.** Për zhvillim, korrigjime, teste dhe Vercel Preview të **të gjithë DEMO-s** brenda degës së autorizuar nuk kërkohet leje e përsëritur. Referencat e vjetra për kufizimin vetëm te Shop Plus, për ndalimin e çdo deploy Preview apo për kërkesë lejeje UX/CI janë **superseded**, jo rregulla aktive.
 - Miratim paraprak kërkohet vetëm për **merge, Production, shpenzime, ndryshime madhore ose veprime të rrezikshme**. Mbroj degët e tjera dhe sekretet; ndryshimet e aksesit/SSO që rrisin ekspozimin e projekteve duhen vlerësuar si veprime sensitive.
