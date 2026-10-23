@@ -74,15 +74,15 @@
   }
   return [...groups.entries()].filter(([_,items])=>items.length>1).map(([sku,items])=>({sku,items:items.sort((a,b)=>a.price-b.price)}));
  };
- const chip=p=>(p.promoted?'<span class="isp-sponsored">PROMOVUAR · DEMO</span>':'');
- const card=p=>'<article class="isp-card"><div class="isp-typeline"><span>'+esc(p.type)+'</span>'+chip(p)+'</div><h4 data-user-content>'+esc(p.name)+'</h4>'+
+ const chip=p=>(p.promoted?'<span class="isp-sponsored" data-i18n-direct>'+ui('promoted','PROMOVUAR · DEMO')+'</span>':'');
+ const card=p=>'<article class="isp-card"><div class="isp-typeline"><span data-i18n-direct>'+typeLabel(p.type)+'</span>'+chip(p)+'</div><h4 data-user-content>'+esc(p.name)+'</h4>'+
   '<strong>'+price(p)+'</strong><p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+
-  (p.type==='Produkte'?'<p>Inventari: '+(numeric(p.quantity)>0?numeric(p.quantity)+' copë (demo)':'Pa stok (demo)')+'</p>':
-   p.type==='Makina'?'<p>Viti '+esc(p.year||'–')+' · '+esc(p.mileage||'–')+' km · '+esc(p.fuel||'')+'</p>':
+  (p.type==='Produkte'?'<p><span data-i18n-direct>'+ui('inventory','Inventari:')+'</span> '+(numeric(p.quantity)>0?numeric(p.quantity)+' <span data-i18n-direct>'+ui('units','copë (demo)')+'</span>':'<span data-i18n-direct>'+ui('outOfStockDemo','Pa stok (demo)')+'</span>')+'</p>':
+   p.type==='Makina'?'<p><span data-i18n-direct>'+ui('yearShort','Viti')+'</span> '+esc(p.year||'–')+' · '+esc(p.mileage||'–')+' km · '+esc(p.fuel||'')+'</p>':
    p.type==='Banesa me qira'?'<p>'+esc(p.rooms||'–')+' · '+esc(p.area||'–')+' m² · '+esc(p.period||'muaj')+'</p>':'')+
-  btn('item:'+p.id,'Detajet dhe shitësi')+
-  '<button type="button" data-isp="store:'+esc(p.store)+'">Shiko dyqanin</button>'+
-  (p.owned?btn('edit:'+p.id,'Redakto listimin'):'')+
+  btn('item:'+p.id,feedback('detailsSeller','Detajet dhe shitësi'),'data-i18n-direct')+
+  '<button type="button" data-i18n-direct data-isp="store:'+esc(p.store)+'">'+ui('viewShop','Shiko dyqanin')+'</button>'+
+  (p.owned?btn('edit:'+p.id,feedback('editListingAction','Redakto listimin'),'data-i18n-direct'):'')+
   '</article>';
  const filters=()=>'<form id="isp-filters"><div class="isp-fields">'+
    '<label data-i18n-direct>'+ui('search','Kërko')+'<input name="q" maxlength="90" type="search" placeholder="'+ui('searchPlaceholder','Produkt, dyqan, makinë...')+'" value="'+esc(state.query)+'"></label>'+
@@ -97,17 +97,17 @@
    '<div class="isp-actions"><button type="submit" data-i18n-direct>'+ui('applyFilters','Apliko filtrat')+'</button>'+btn('clear-filters',feedback('clear','Pastro'),'data-i18n-direct')+'</div></form>';
  const catalog=()=>{
   const result=safeItems(),sets=productSets();
-  return '<div class="isp-hero"><b>ILLYRIAN SHOP · KËRKIM I AVANCUAR</b><h2>Gjej produktin, jo vetëm një reklamë.</h2><p>Krahaso dyqanet dhe shiko karakteristikat e ofertave. Çdo listim është demonstrues.</p></div>'+
+  return '<div class="isp-hero"><b data-i18n-direct>'+ui('catalogTag','ILLYRIAN SHOP · KËRKIM I AVANCUAR')+'</b><h2 data-i18n-direct>'+ui('headline','Gjej produktin, jo vetëm një reklamë.')+'</h2><p data-i18n-direct>'+ui('catalogIntro','Krahaso dyqanet dhe shiko karakteristikat e ofertave. Çdo listim është demonstrues.')+'</p></div>'+
    '<nav class="isp-kinds">'+TYPES.map(x=>pill(x,x===state.type)).join('')+'</nav>'+filters()+
-   (state.shop?'<p class="isp-active">Dyqani: '+esc(state.shop)+' '+btn('clear-store','Hiq filtrin')+'</p>':'')+
-   '<div class="isp-rowhead"><h3>'+result.length+' oferta</h3><span>'+new Set(result.map(x=>x.store)).size+' shitës/dyqane</span></div>'+
-   (sets.length?'<section class="isp-compare"><h3>I njëjti produkt, disa dyqane</h3>'+sets.map(g=>
-     '<article><b>'+esc(g.items[0].name)+'</b><p>Shembull me të njëjtin produkt/SKU. Çmimi nuk përfshin transport ose taksa.</p>'+
-     g.items.map(i=>'<div class="isp-offer"><span>'+esc(i.store)+' · '+esc(i.city)+'</span><b>'+money(i.price)+'</b><small>'+(numeric(i.quantity)>0?'Në stok':'Pa stok')+'</small></div>').join('')+
+   (state.shop?'<p class="isp-active"><span data-i18n-direct>'+ui('storeFilter','Dyqani:')+'</span> <span data-user-content>'+esc(state.shop)+'</span> '+btn('clear-store',feedback('removeStoreFilter','Hiq filtrin'),'data-i18n-direct')+'</p>':'')+
+   '<div class="isp-rowhead"><h3>'+result.length+' <span data-i18n-direct>'+ui('offersCount','oferta')+'</span></h3><span>'+new Set(result.map(x=>x.store)).size+' <span data-i18n-direct>'+ui('sellersCount','shitës/dyqane')+'</span></span></div>'+
+   (sets.length?'<section class="isp-compare"><h3 data-i18n-direct>'+ui('sameProduct','I njëjti produkt, disa dyqane')+'</h3>'+sets.map(g=>
+     '<article><b data-user-content>'+esc(g.items[0].name)+'</b><p data-i18n-direct>'+ui('sameSkuNote','Shembull me të njëjtin produkt/SKU. Çmimi nuk përfshin transport ose taksa.')+'</p>'+
+     g.items.map(i=>'<div class="isp-offer"><span><span data-user-content>'+esc(i.store)+'</span> · '+esc(i.city)+'</span><b>'+money(i.price)+'</b><small data-i18n-direct>'+(numeric(i.quantity)>0?ui('stockAvailable','Në stok'):ui('outOfStock','Pa stok'))+'</small></div>').join('')+
      '</article>').join('')+'</section>':'')+
-   (result.length?'<div class="isp-cards">'+result.map(card).join('')+'</div>':'<div class="isp-empty">Nuk u gjet asnjë ofertë. Ndrysho filtrat.</div>')+
-   btn('create','+ Publiko ofertën tënde')+
-   '<p class="isp-muted">Nuk kemi bërë verifikim të stokut, çmimeve, shitësve ose produkteve: të gjitha janë shembuj.</p>';
+   (result.length?'<div class="isp-cards">'+result.map(card).join('')+'</div>':'<div class="isp-empty" data-i18n-direct>'+ui('emptyCatalog','Nuk u gjet asnjë ofertë. Ndrysho filtrat.')+'</div>')+
+   btn('create',window.IllyrianI18n?.t('shop:publishOffer')||'+ Publiko ofertën tënde','data-i18n-direct')+
+   '<p class="isp-muted" data-i18n-direct>'+ui('unverifiedCatalog','Nuk kemi bërë verifikim të stokut, çmimeve, shitësve ose produkteve: të gjitha janë shembuj.')+'</p>';
  };
  const itemView=()=>{
   const p=all().find(x=>x.id===state.selected);
