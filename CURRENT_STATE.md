@@ -97,6 +97,12 @@
 - **F08 = i zbutur për ndryshime të vërejtura, jo transaksion atomik**. `localStorage` nuk ka compare-and-swap/lock; shkrimet *vërtet njëkohësisht*, ABA dhe module të tjera të DEMO-s mbeten jashtë provës. Produkti real duhet të ketë kontroll versionesh/transaksionesh server-side. **Mos deklaro mbulim global të F08.**
 - Nga 10 gjetjet e auditit: **7 të korrigjuara dhe të testuara më parë; F08 mitigim i testuar vetëm për Shop Plus; F05 dhe F06 ende OPEN**. Demo release HOLD për F05/F06, QA visual/a11y/telefon, dhe miratim.
 
+### F05/F06 — audit read-only pas F08 [FAKT, 2026-10-23]
+- **F05 config:** `demo/vercel.json` ende ka rewrite `"/" -> "/ILLYRIAN_DEMO_v1.5.html"`; testi Chromium hap rrugën direkte `/ILLYRIAN_DEMO_v1.7.html` dhe nuk provon se çfarë shërben rrënja e domain-it live.
+- **F05 status në GitHub për code SHA `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166`:** `Vercel = failure`, target i raportuar `https://vercel.com/un24?upgradeToPro=build-rate-limit`. Kjo tregon një bllokues të build/statusit për këtë commit, **jo** provë se Production është ndryshuar dhe **jo** arsye për upgrade me pagesë pa miratim. `get_project`, `list_deployments`, `get_deployment` në scope `un24` kthyen të gjitha **403**, kështu që URL/served SHA/target nuk u certifikuan.
+- **F06:** workflow `.github/workflows/illyrian-v17-browser-qa.yml` ka vetëm `push` për degët demo/feat-i18n dhe `workflow_dispatch`, **nuk ka `pull_request` trigger**. GitHub API: `main`, `demo/v1.7-illyrian-shop`, `feat/i18n-shop-feedback-20261022`, `demo/v1.6-stories-reels` raportojnë `protected:false`; `/rulesets` = **0**. Green push run nuk është review/merge gate.
+- **Plan i propozuar (jo i zbatuar):** (1) verifiko projektin/domenin dhe scope e saktë Vercel pa shpenzim; (2) pasi të miratohet ndryshimi, sinkronizo root route të preview për candidate v1.7 pa prekur Production pa aprovimin eksplicit; (3) me autorizim workflow/admin, shto PR QA trigger, checks të domosdoshme dhe rregull për degën integruese; (4) testo në SHA e saktë para çdo merge. **Asnjë ndryshim routing/CI/politikash, asnjë deploy** në këtë audit.
+
 **Veprimi i saktë pasues:** për F05 kërko verifikimin read-only të root URL/entrypoint/served SHA, pa ndryshim routing/deploy; për F06 përgatit planin e kontrollit PR/rulesets dhe kërko lejen e domosdoshme para ndryshimit të workflow/administrimit. QA vizuale, screenreader dhe telefon fizik mbeten OPEN; pa merge/main/Production.
 
 ## 4. Protokolli operativ dhe autorizimi [VENDIM I PRONARIT, 2026-10-23]

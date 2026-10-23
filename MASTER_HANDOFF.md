@@ -114,6 +114,13 @@
 - Audit gates remaining **F05** Vercel entrypoint/source SHA (last Vercel GET denied 403), **F06** PR trigger/branch rulesets (requires separate permission), and manual visual/a11y/physical phone review and owner sign-off. No main/Production/merge or manual deploy.
 - **Next within current scope:** read-only F05/F06 evidence and preparing QA checklist; request authorization before changes to Vercel/workflows/admin.
 
+### Read-only release-gate inspection — F05/F06 (2026-10-23) [FAKT / OPEN]
+- Read-only comparison at head `0d593391f4ad622e6b9d9cdb9c40bf8ee04d0bd0`: `demo/vercel.json` rewrites root `/` to `/ILLYRIAN_DEMO_v1.5.html`; v1.7 Playwright tests open the explicit HTML path and do not validate the live domain/root route.
+- Vercel status for code SHA `a5b93fe8f12dd6fa299781f01037e7e5f2f7b166` is `failure` on GitHub with target `vercel.com/un24?upgradeToPro=build-rate-limit`. Authenticated project/list-deployments/get-deployment requests against `un24` all returned 403; do not claim READY, current preview URL, served code SHA or Production deployment. Do not purchase an upgrade without permission.
+- `.github/workflows/illyrian-v17-browser-qa.yml` has `push` for demo and feat/i18n branches plus `workflow_dispatch`; no `pull_request`. Four existing GitHub branches have `protected:false`; repo `rulesets` list count = 0. Thus push CI proof (153/153) is not PR-required-check protection.
+- **Pending explicit approval:** any Vercel project access repair or routing change; any workflow/branch ruleset mutation; manual deploy, merge or Production modification. Only read-only evidence and planning were performed in this checkpoint.
+- **Next:** request scope for F05/F06 operational changes, keep phone screenshot, keyboard/screenreader and owner sign-off as additional release gates.
+
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
 - `MASTER_HANDOFF.md` = vizioni, vendimet, arkitektura, evidenca dhe kufijtë; seksioni ACTIVE SNAPSHOT përditësohet inkrementalisht; **HISTORICAL RECORD poshtë ruhet pa fshirë ose falsifikuar eventet**.
