@@ -9,11 +9,15 @@
   const seed=()=>[{id:'demo-football',title:'Futboll dhe njohje të reja',kind:'Sport',city:'Tiranë',place:'Fusha pranë Liqenit Artificial',date:after(8),time:'17:30',capacity:3,price:0,privacy:'public',conditions:'Për të rritur. Sillni veshje sportive.',cancelled:false}];
   const seedRequests=[{id:'arta',eventId:'demo-football',name:'Arta K.',status:'pending'},{id:'leon',eventId:'demo-football',name:'Leon M.',status:'pending'},{id:'besa',eventId:'demo-football',name:'Besa H.',status:'accepted'}];
   let stored={};try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&typeof v==='object'&&!Array.isArray(v))stored=v}catch{}
+  // Tolerate partial legacy records, not nulls or primitive stored entries.
+  // Do not overwrite raw localStorage merely by loading this DEMO.
+  const records=(arr,max,tail=false)=>Array.isArray(arr)?(tail?arr.slice(-max):arr.slice(0,max)).filter(v=>v&&typeof v==='object'&&!Array.isArray(v)):null;
+  const eventsSafe=records(stored.events,24),requestsSafe=records(stored.requests,200);
   const state={
-    events:Array.isArray(stored.events)?stored.events.slice(0,24):seed(),
-    requests:Array.isArray(stored.requests)?stored.requests.slice(0,200):seedRequests,
-    messages:Array.isArray(stored.messages)?stored.messages.slice(-100):[],
-    attendance:Array.isArray(stored.attendance)?stored.attendance.slice(-100):[],
+    events:eventsSafe?eventsSafe.filter(e=>typeof e.id==='string'&&e.id.length>0):seed(),
+    requests:requestsSafe?requestsSafe.filter(x=>typeof x.id==='string'&&typeof x.eventId==='string'):seedRequests,
+    messages:records(stored.messages,100,true)?.filter(x=>typeof x.eventId==='string')||[],
+    attendance:Array.isArray(stored.attendance)?stored.attendance.slice(-100).filter(x=>typeof x==='string'):[],
     open:false,view:'list',role:'organizer',id:'demo-football',edit:null,notice:''
   };
   let root,trigger,draft=null,inertSnapshot=[];
