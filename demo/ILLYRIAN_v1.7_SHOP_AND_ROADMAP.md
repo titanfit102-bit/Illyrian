@@ -668,3 +668,11 @@ The scoped CI workflow now includes root `i18n/**` changes in push path filters.
 - Live locale switching retains unsaved event form fields, canonical selection, focus, chat draft and validation text, with no false submission. Targeted user-authored venue/conditions/messages/events are shielded by `data-user-content`.
 - Five added Chromium browser scenarios. [Actions #39946187468](https://github.com/titanfit102-bit/Illyrian/actions/runs/39946187468), exact tested commit `5961a1d90a25b8d7768fe022ec3de3f3760e78a7`: **115/115 PASS (3.0m)**; no tests removed. Draft PR #1 remains unmerged; main/DEMO integration/Production were not modified.
 - Remaining work: more static Plans/Shop Plus/Privacy UI, Shop Plus semantic direct-key conversion, complete UGC inventory, visual/a11y/mobile QA, real Preview verification and owner phone screenshot acceptance. Release/real-app gates unchanged.
+
+
+### P1-D Shop Plus direct-key migration — 23 October 2026
+- Converted key static Shop Plus form, report, buyer need, catalog filter and navigation UI from phrase-based localization into explicit `shopPlus:*` / `shop:*` calls, with `data-i18n-direct` contract; **no new locale keys**. Root/demo locale bundles remain **460 keys/locale, 15 namespaces**.
+- All category, city, sort, period, report-reason, day-count and stored domain IDs stay unchanged; only display labels translate in sq/en/it. Currency remains existing locale-aware EUR formatting.
+- Switching language while Shop Plus is open retains unsaved form text, numeric inputs, dropdown values, checkboxes and focus without submitting a draft. Existing localStorage quota rollback and scoped UGC protections were preserved.
+- Eight new browser tests (115 to 123). Verified [Actions #39948438751](https://github.com/titanfit102-bit/Illyrian/actions/runs/39948438751) on tested code/test SHA `82b62fd06b724e5436a5ed7bbc51b2aa32e1de0f`: **123/123 Playwright Chromium PASS, 2.8m**. Root/demo catalog parity and JS syntax passed.
+- OPEN: further Shop Plus static copy (catalog, shops, product cards, simulation checkout), additional Plans and Privacy fragments, complete UGC inventory, visual/a11y/mobile QA, Vercel Preview SHA, owner review via phone screenshots. Draft PR #1 must remain unmerged; no main/Production modification.
