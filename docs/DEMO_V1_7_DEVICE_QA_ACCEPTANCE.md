@@ -67,4 +67,10 @@ All must be demonstrably satisfied before suggesting owner sign-off:
 - **F05 refresher:** protected Preview `dpl_7TATfNoxVzmH2uCAfkUNxvFATmtJ` for exact SHA: HTTP `/` 200, served committed HTML as full prefix plus Vercel feedback script; Shop Plus JS and Italian locale JS HTTP 200 and exact committed source. Previous **16/16** runtime asset check at `4e57bb5cc22de1dd750c329a82957e6b0cbfaf57` was already verified and runtime files have not changed since.
 - **F06 release HOLD:** targeted branch protection administrative proposal [`docs/F06_REQUIRED_CHECKS_DECISION.md`](F06_REQUIRED_CHECKS_DECISION.md); no branch admin settings modified. Physical Android/iPhone, TalkBack/VoiceOver, owner sign-off remain NOT TESTED / OPEN.
 
+## 7. Latest emulated touch smoke — 2026-10-24
+- Exact source/QA SHA `b36708848d0b869ffa71238d81b0a35c007e82c6` — [PR CI #40104667894](https://github.com/titanfit102-bit/Illyrian/actions/runs/40104667894): **190/190 Chromium + 16/16 WebKit PASS**; [push #40104665295](https://github.com/titanfit102-bit/Illyrian/actions/runs/40104665295): **190/190 Chromium PASS**. Four new WebKit `tap()` cases cover Reels/Shop Plus at 390×844 and 844×390.
+- An intermediate failed run `c5075ac5` asserted a WebKit-Linux `navigator.maxTouchPoints` value not supported by the runner. That assertion was removed, while real tap/UI assertions remained; all four touch cases then passed. Do NOT label the initial run green.
+- F05 latest protected Preview `dpl_7Mka3RYEWQBEkZK6tkWyABc692sj`: HTTP `/` **200**, same-SHA DEMO HTML source exact prefix plus Vercel feedback append. The earlier **16/16** asset source-parity check was performed on `4e57bb5c`, with no runtime changes since.
+- **Physical device cases M01–M18: NOT TESTED.** Linux WebKit touch emulation cannot replace Android Chrome/iOS Safari real devices, TalkBack/VoiceOver, text scaling and hardware. F06 branch protection still pending authorized owner decision. No release sign-off.
+
 **Source of authority:** `CURRENT_STATE.md`, `MASTER_HANDOFF.md` active section, GitHub LIVE code/CI, existing DEMO architecture. This file is a QA execution aid, not an assertion that cases were performed.
