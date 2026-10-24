@@ -1,6 +1,9 @@
 # ILLYRIAN — MASTER HANDOFF
 ## CONTINUITY PROTOCOL — ACTIVE SNAPSHOT (2026-10-23)
 
+**LATEST VERIFIED UPDATE (2026-10-24):** `f17b1a762a2f4d133dadd71c28cd6869dcd600ba`, [CI #40035194115](https://github.com/titanfit102-bit/Illyrian/actions/runs/40035194115): **176/176 PASS**. Plans locale-change focus regression corrected; earlier failures superseded. PR stays Draft; F05/F06/physical-device/screenreader/sign-off open.
+
+
 **CHECKPOINT MË I FUNDIT (supersedes older QA references below):** exact source/test SHA `524e60075fde2a6cf905946e9388cd57a1ecee3e` — [Actions #40030427581](https://github.com/titanfit102-bit/Illyrian/actions/runs/40030427581), **173/173 Chromium PASS**, job logs checked; PR #1 Draft/unmerged. The previous 167/167 at `853f698e9a8e21865eb98503dc95db8874ce2218` also passed. F05/F06/physical phone/screenreader/sign-off remain open.
 
 
@@ -222,6 +225,13 @@
 - **Important regression detection:** [Actions #40031943902](https://github.com/titanfit102-bit/Illyrian/actions/runs/40031943902), [#40032459379](https://github.com/titanfit102-bit/Illyrian/actions/runs/40032459379), and [#40033096231](https://github.com/titanfit102-bit/Illyrian/actions/runs/40033096231) failed the new Plans focus condition only; 175/176 cases passed. Latest log proves focus escaped the dialog on repeated sq locale change. Other new Connections/Governance cases passed. Do not claim release-ready or 176 pass.
 - Plans locale handler now attempts synchronous, microtask and before-paint focus restoration if the focus leaves the open modal; QA has a post-paint check plus focused-element diagnostics. **Latest source/test SHA:** `2174dc7d5ad6b49c9736b453a069b88d4f7fe497`. [Actions #40034226116](https://github.com/titanfit102-bit/Illyrian/actions/runs/40034226116) started and was **in progress** at this checkpoint. If this run fails, inspect exact job logs, fix root cause or roll back this attempted slice; retain previously verified **173/173 at `524e6007`** as last green baseline.
 - F05 Preview HTTP/exact deploy SHA, F06 PR-required-check protection, physical phone/TalkBack/VoiceOver and owner final sign-off remain OPEN. No merge, main, Production or permissions changes.
+
+
+### A11y dialog names + Plans locale focus — VERIFIED 2026-10-24 (Europe/Rome)
+- GitHub LIVE exact code/test SHA [`f17b1a762a2f4d133dadd71c28cd6869dcd600ba`](https://github.com/titanfit102-bit/Illyrian/commit/f17b1a762a2f4d133dadd71c28cd6869dcd600ba); [Actions #40035194115](https://github.com/titanfit102-bit/Illyrian/actions/runs/40035194115), **completed/success, 176/176 Chromium Playwright PASS (3.7m)**. Checked browser-smoke job logs. This replaces the earlier pending/failing 175/176 attempts; do not conflate intermediate regressions with current green state.
+- Connections/Governance dialog accessible names and Plans dialog/role label now follow sq/en/it; latest Plans update performs in-place dialog label updates on language changes to avoid DOM replacement that caused focus loss in prior runs. Three additional i18n/a11y test cases beyond prior 173 baseline, including post-paint focus containment. Verify only Chromium-scoped behaviors; no real screenreader validation.
+- PR #1 remains Draft/unmerged on `feat/i18n-shop-feedback-20261022`. No main/Production change. This document commit is docs-only; current tested code SHA stays `f17b1a762a2f4d133dadd71c28cd6869dcd600ba`.
+- OPEN: F05 Vercel Preview exact deployed SHA/HTTP root, F06 PR required checks/branch protection, device portrait/landscape, TalkBack/VoiceOver, final product sign-off. Next QA: inspect other module keyboard/i18n accessibility gaps without adding unrelated O1–O8 research features.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
