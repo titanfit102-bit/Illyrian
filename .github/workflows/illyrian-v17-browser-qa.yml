@@ -14,6 +14,13 @@ on:
       - 'qa/**'
       - 'playwright.config.cjs'
       - '.github/workflows/illyrian-v17-browser-qa.yml'
+  # Stage a future merge gate on the integration branch, not on main.
+  # Do not path-filter required PR checks: skipped checks can remain pending.
+  # This will only run for PRs targeting the integration branch once the
+  # workflow configuration is present and active on the target branch.
+  pull_request:
+    branches:
+      - demo/v1.7-illyrian-shop
   workflow_dispatch:
 
 permissions:
@@ -33,6 +40,8 @@ jobs:
     steps:
       - name: Checkout isolated demo branch
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false # Tests cannot access the checkout token
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
