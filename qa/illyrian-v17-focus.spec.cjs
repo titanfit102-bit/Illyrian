@@ -342,3 +342,40 @@ for(const [width,height] of [[390,844],[844,390]]){
   await expect(opener).toBeFocused();
  });
 }
+
+
+// Reels Feed opener focus distinguishes heading and first thumbnail even
+// though both controls use action=open-reels and id=0. Both button-close and
+// Escape-close must return focus to the actual starting control after repaint.
+for(const [width,height] of [[390,844],[844,390]]){
+ for(const config of [
+  {name:'rail heading',selector:'#screen .v4-reels-head [data-act="open-reels"][data-id="0"]'},
+  {name:'first thumbnail',selector:'#screen .v4-reels-list .v4-reel-thumb[data-act="open-reels"][data-id="0"]'}
+ ]){
+  test('Reels Feed opener focus distinguishes heading and first thumbnail - '+config.name+' '+width+'x'+height,async({page})=>{
+   await page.setViewportSize({width,height});
+   await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+   const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+   if(await guest.isVisible()){
+    await guest.click();
+    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+   }
+   const opener=page.locator(config.selector);
+   await expect(opener).toBeVisible();
+   for(const closeMode of ['button','Escape']){
+    await opener.focus();
+    await expect(opener).toBeFocused();
+    await opener.click();
+    const overlay=page.locator('#layer .v4-reel-overlay');
+    await expect(overlay).toBeVisible();
+    await expect(overlay).toHaveAttribute('aria-modal','true');
+    await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+    if(closeMode==='button')await overlay.locator('[data-act="reel-close"]').click();
+    else await page.keyboard.press('Escape');
+    await expect(overlay).toHaveCount(0);
+    await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+    await expect(opener).toBeFocused();
+   }
+  });
+ }
+}

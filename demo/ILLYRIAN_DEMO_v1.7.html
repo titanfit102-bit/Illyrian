@@ -1937,7 +1937,7 @@ document.head.appendChild(v15Style);
   function focusables(root){return [...root.querySelectorAll(focusableSelector)].filter(el=>el.getClientRects().length>0&&!el.closest('[hidden],[inert]'));}
   function signature(el){
     if(!el||el===document.body||el===document.documentElement)return null;
-    return {el,id:el.id||'',act:el.dataset?.act||'',item:el.dataset?.id||'',val:el.dataset?.val||'',inNavbar:!!el.closest('#navbar')};
+    return {el,id:el.id||'',act:el.dataset?.act||'',item:el.dataset?.id||'',val:el.dataset?.val||'',inNavbar:!!el.closest('#navbar'),reelRailRegion:el.closest('.v4-reels-list')?'.v4-reels-list':el.closest('.v4-reels-head')?'.v4-reels-head':''};
   }
   function locate(key,root){
     if(!key)return null;
@@ -1947,7 +1947,11 @@ document.head.appendChild(v15Style);
       const matches=[...root.querySelectorAll('[data-act]')].filter(el=>el.dataset.act===key.act&&(el.dataset.id||'')===key.item&&(el.dataset.val||'')===key.val);
       // A feed button may share the action with a navbar opener. Restore focus
       // to the same region instead of the first matching action in document order.
-      return (key.inNavbar?matches.find(el=>!!el.closest('#navbar')):null)||matches[0]||null;
+      // Some feed controls share both action and item ID (the "show all"
+      // button and Reel #0). Match the opener's region after DOM repaint.
+      const scoped=key.inNavbar?matches.find(el=>!!el.closest('#navbar')):
+        key.reelRailRegion?matches.find(el=>!!el.closest(key.reelRailRegion)):null;
+      return scoped||matches[0]||null;
     }
     return null;
   }
