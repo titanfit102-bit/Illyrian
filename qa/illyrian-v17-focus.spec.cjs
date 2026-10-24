@@ -265,3 +265,40 @@ for(const config of [
   await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
  });
 }
+
+
+// Built-in Reels actual keyboard trap and focus return, complementing
+// existing visual/44px hit-target assertions. No publish/share is triggered.
+for(const [width,height] of [[390,844],[844,390]]){
+ test('Built-in Reels actual keyboard trap and focus return - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  const opener=page.locator('#navbar [data-act="open-reels"]');
+  await opener.focus();
+  await expect(opener).toBeFocused();
+  await opener.click();
+  const overlay=page.locator('#layer .v4-reel-overlay');
+  await expect(overlay).toBeVisible();
+  await expect(overlay).toHaveAttribute('role','dialog');
+  await expect(overlay).toHaveAttribute('aria-modal','true');
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+  const buttons=overlay.locator('button:not([disabled]):visible');
+  const first=buttons.first(),last=buttons.last();
+  await expect(first).toBeFocused();
+  await last.focus();
+  await expect(last).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(first).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(last).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(overlay).toHaveCount(0);
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+  await expect(opener).toBeFocused();
+ });
+}
