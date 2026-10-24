@@ -1,5 +1,5 @@
 # ILLYRIAN — CURRENT_STATE
-> Checkpoint: 2026-10-23 (Europe/Rome). **Ky është indeksi i rikuperimit**, jo raport përfundimtar release.
+> Checkpoint: 2026-10-24 (Europe/Rome). **Ky është indeksi i rikuperimit**, jo raport përfundimtar release.
 > **Autoriteti:** gjendja LIVE e GitHub > ky checkpoint > pjesët më të vjetra historike. Lexo edhe [MASTER_HANDOFF.md](MASTER_HANDOFF.md) dhe [blueprint-in](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md).
 
 ## 0. AUTORIZIMI AKTIV — 2026-10-23 [VENDIM I PRONARIT / ZËVENDËSON KUFIZIMET E VJETRA]
@@ -15,14 +15,14 @@
 - **Research / Propozime strategjike (JO të miratuara):** [Raporti origjinal i plotë i inovacionit GPT Work — 2026-10-23](docs/research/ILLYRIAN_PRODUCT_INNOVATION_STRATEGIC_REVIEW_2026-10-23.md), ruajtur pa përmbledhje ose ndryshim në `docs/research/`. Përmban **O1–O8**, analiza e tregut, alternativa O2/O3, riskun, metrikat, sugjerimet M0–M5 dhe burimet. **Kjo është arkivë kërkimi, jo ndryshim roadmap-i, autorizim ose backlog implementimi.** Referencë integriteti: SHA-256 `7f19e302920a8b69d6dd453400d9f9e2247c5d9f28db962e2f5ebbf913d2c845` (54,265 bytes). Propozimet lexohen vetëm për shqyrtim dhe miratim të veçantë; hapat aktualë të DEMO-s, F05/F06 dhe QA telefon/screenreader mbeten të hapura.
 - Repository: [`titanfit102-bit/Illyrian`](https://github.com/titanfit102-bit/Illyrian), **PUBLIC** sipas GitHub API; jo private. Mos vendos sekrete në repo.
 - Dega e autorizuar për **zhvillimin normal të gjithë DEMO-s dhe vazhdimësinë**: `feat/i18n-shop-feedback-20261022` (rregulli aktiv në §0).
-- **HEAD i kodit/testeve para këtij checkpoint-i të dokumenteve:** `524e60075fde2a6cf905946e9388cd57a1ecee3e`; pas commit-it docs-only lexo HEAD-in LIVE, jo një SHA historike.
+- **HEAD i kodit/testeve para këtij checkpoint-i të dokumenteve:** `d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a`; pas commit-it docs-only lexo HEAD-in LIVE, jo një SHA historike.
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): **OPEN / DRAFT / UNMERGED**; head = dega sipër; target `demo/v1.7-illyrian-shop`.
 - Dega integruese DEMO: `015ce439e7c6d736149c6c300391586517664f62` (e pandryshuar gjatë verifikimit).
 - `main`: `9f91b5c083b4482a70a2149483cc799360e6102c` (e pandryshuar gjatë verifikimit).
-- **SHA i fundit i kodit + testeve të verifikuara:** `f17b1a762a2f4d133dadd71c28cd6869dcd600ba`.
-- [GitHub Actions #40030427581](https://github.com/titanfit102-bit/Illyrian/actions/runs/40030427581): **completed / success, 173/173 Playwright Chromium PASS (4.1m)** mbi SHA-në e mësipërme; logu i job-it u kontrollua. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
+- **SHA i fundit i kodit + testeve të verifikuara:** `d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a`.
+- [GitHub Actions PR #40085347389](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085347389) dhe [push #40085343736](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085343736): **completed / success, 177/177 Playwright Chromium PASS në secilin** mbi SHA-në e mësipërme; u kontrolluan logjet e job-eve. Kjo **nuk** certifikon plotësinë e UI, aksesueshmërinë, telefonin ose sigurinë reale.
 - i18n: **sq/en/it**, **550 çelësa/gjuhë**, **15 namespace**, `shopPlus` **166 çelësa/gjuhë**; pasqyrat `i18n/locales/` dhe `demo/i18n/locales/` janë verifikuar identike.
-- **Vercel Preview — DEPLOYMENT I FUNDIT I KODIT ËSHTË I BLOKUAR:** për source/test SHA `af20db8c80dfdb401e0933909140ff0b4dbe249f`, GitHub Vercel status është **failure: deployment rate limited — retry in 24 hours** (pa pagesë). Alias-i `illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app` ende tregon deployment-in `dpl_CLSRkS5exjFd1hdNiz6t4iHT6Y23` (`READY`, source SHA `03a156cc...`, **docs-only përpara korrigjimit të fundit UX-P2**). Konfigurimi branch `/` → DEMO v1.7 është në GitHub; **Preview nuk është konfirmuar për kodin e ri `af20db8c80dfdb401e0933909140ff0b4dbe249f`**, as HTTP root për shkak të Vercel team SSO/403. Production alias vazhdon `dpl_a9wJ8nGy8SQ54mzDRmcLnQ1qD31U` (`main`). F05 OPEN deri te akses/limit dhe testim fizik; asnjë pagesë e autorizuar.
+- **Vercel Preview, update 2026-10-24:** deployment `dpl_2wwYbXo6h9r5sPUiCfXFLhK7az1h` është `READY` / target Preview (null) për source SHA `d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a` sipas API read-only; versioni i vjetër i kufizuar nga deployment rate-limit është checkpoint historik. Team-scoped API `un24` ende refuzon `403` dhe HTTP root nuk është provuar. Production nuk është ndryshuar nga kjo punë. F05 mbetet OPEN.
 
 ## 2. Ku kemi mbetur [IMPLEMENTIM + KUFIZIME]
 - DEMO v1.7 është **HTML + vanilla JavaScript + module + localStorage**; jo app real React Native/Expo, backend, pagesa, moderim apo identitet real.
@@ -30,7 +30,7 @@
 - i18next 25.7.0 lokal, fallback teknik `en`; përkthim semantik direkt në rrugët e migruara; `data-i18n-direct` shmang mbishkrimin nga adapteri legacy; `data-user-content` mbron tekstet e përdoruesit në rrugët e audituara.
 - Vlerat teknike të kategorive/statusit/qyteteve/formularëve **nuk përkthehen** në storage. Refuzimi i `localStorage` rikthen gjendjen e fundit të ruajtur në rrugët e testuara. Kalimi i gjuhës ruan inputet e papublikuara në formularët e trajtuar.
 - Cikli i fundit: **Shop Plus direct i18n sq/en/it** për katalog/karta/dyqane, detaje makine/qiraje/produkti, kërkesa/përgjigje, raportime/moderim, dialog ARIA dhe hyrje; testet për përmbajtje të panjohur, kode origjinale dhe fokus janë të verifikuara në Chromium. **5% është komision ilustrues, JO tarifë e miratuar.**
-- **Pa merge në degën DEMO, `main` apo Production.** Vercel Preview i izoluari është `READY` sipas API në SHA `a2faad6`; HTTP root mbetet i paverifikuar për shkak të 403.
+- **Pa merge në degën DEMO, `main` apo Production.** Preview i izoluari ka deployment `READY` në SHA të fundit të testuar; HTTP root mbetet i paverifikuar për shkak të 403.
 
 ## 3. Bllokimet dhe puna e hapur [OPEN]
 1. **i18n Shop Plus kryesor është implementuar/testuar**; mbulim i plotë i gjendjeve të rralla, accessibility/keyboard, UGC dhe elementet e tjera të DEMO-s mbeten për audit dhe korrigjime **tani të autorizuara**. Mos e interpreto mbulimin ekzistues si 100%.
@@ -202,6 +202,14 @@
 - PR #1 remains Draft/unmerged on `feat/i18n-shop-feedback-20261022`. No main/Production change. This document commit is docs-only; current tested code SHA stays `f17b1a762a2f4d133dadd71c28cd6869dcd600ba`.
 - OPEN: F05 Vercel Preview exact deployed SHA/HTTP root, F06 PR required checks/branch protection, device portrait/landscape, TalkBack/VoiceOver, final product sign-off. Next QA: inspect other module keyboard/i18n accessibility gaps without adding unrelated O1–O8 research features.
 
+### F06 — CI për Pull Request aktiv, pa required checks — 2026-10-24 [VERIFIKUAR / PJESËRISHT I HAPUR]
+- **Source/test SHA:** [`d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a`](https://github.com/titanfit102-bit/Illyrian/commit/d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a), i izoluar në `feat/i18n-shop-feedback-20261022`; pa ndryshime në DEMO runtime, main, degën integruese, Production ose rregullat administrative të GitHub.
+- Workflow `.github/workflows/illyrian-v17-browser-qa.yml`: `pull_request` target `demo/v1.7-illyrian-shop`, pa `paths` filter në PR (shmang required check të ngecur Pending), `permissions: contents: read`, `actions/checkout` me `persist-credentials: false`. `push` dhe `workflow_dispatch` ruhen. `pull_request_target` nuk përdoret.
+- Shtuar 1 test i politikës F06 te `qa/illyrian-v17.spec.cjs`. **Exact SHA, GitHub Actions** [PR run #40085347389](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085347389): **177/177 PASS (4.1m)**; [push run #40085343736](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085343736): **177/177 PASS (4.0m)**. Logjet e job-eve u kontrolluan dhe testi F06 kaloi në të dy.
+- **F06 OPEN administrativisht:** GitHub raportoi `protected:false` për `demo/v1.7-illyrian-shop`, pa rulesets; PR checks tani ekzekutohen realisht, por **nuk janë required për merge**. Aktivizimi i branch protection/ruleset mund të ndikojë integrimin dhe kërkon miratim veçmas; nuk u krye.
+- **F05 OPEN për HTTP:** Vercel `list_deployments` konfirmoi deployment `dpl_2wwYbXo6h9r5sPUiCfXFLhK7az1h`, `READY`, target Preview `null`, me source SHA `d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a`. Qasja scoped në team `un24` kthen `403`; nuk u provua HTTP `/` ose përmbajtja e shërbyer. Kërkohet miratimi i përdoruesit për team access nga link-u i përkohshëm (mos ruaj në repo link/token njëpërdorimësh).
+- **Release HOLD:** telefoni real portrait/landscape, TalkBack/VoiceOver, verifikimi HTTP i Preview, required checks/branch protection dhe sign-off i pronarit mbeten të pambyllura. Workflow i ri prodhon përkohësisht run `push` dhe `pull_request` për të njëjtin feature commit; konsumi i dyfishtë i CI është çështje optimizimi përpara skalimit, jo arsye për të ulur një gate.
+
 ## 4. Protokolli operativ dhe autorizimi [VENDIM AKTIV I PRONARIT, 2026-10-23]
 - **Norma operative e vetme është §0 më sipër.** Për zhvillim, korrigjime, teste dhe Vercel Preview të **të gjithë DEMO-s** brenda degës së autorizuar nuk kërkohet leje e përsëritur. Referencat e vjetra për kufizimin vetëm te Shop Plus, për ndalimin e çdo deploy Preview apo për kërkesë lejeje UX/CI janë **superseded**, jo rregulla aktive.
 - Miratim paraprak kërkohet vetëm për **merge, Production, shpenzime, ndryshime madhore ose veprime të rrezikshme**. Mbroj degët e tjera dhe sekretet; ndryshimet e aksesit/SSO që rrisin ekspozimin e projekteve duhen vlerësuar si veprime sensitive.
@@ -212,4 +220,4 @@
 ## 5. Bootstrap për një bisedë të re
 Kur përdoruesi shkruan **“Vazhdo projektin”**, lexo me radhë: `CURRENT_STATE.md` → pjesën **ACTIVE SNAPSHOT** të `MASTER_HANDOFF.md` → `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 → `architecture/ILLYRIAN_I18N.md` → `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Pastaj verifiko **HEAD, PR #1, diff pas checkpoint-it, CI mbi SHA e saktë dhe deployment**. Përcakto veprimin e parë të pambyllur dhe kufijtë e autorizimit. Mos nis nga zero dhe mos shpik informacionin që nuk mund të rikuperosh.
 
-**Checkpoint status (2026-10-24):** SHA e fundit e **kodit/testeve të verifikuara** është `f17b1a762a2f4d133dadd71c28cd6869dcd600ba` (CI **176/176**). HEAD pas shënimeve docs-only mund të jetë më i ri; kontrollo GitHub LIVE. Nuk ekziston sinkronizim në sfond.
+**Checkpoint status (2026-10-24):** SHA e fundit e **kodit/testeve të verifikuara** është `d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a` (PR + push CI **177/177**). HEAD pas shënimeve docs-only mund të jetë më i ri; kontrollo GitHub LIVE. Nuk ekziston sinkronizim në sfond.

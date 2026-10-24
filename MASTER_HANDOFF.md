@@ -1,10 +1,10 @@
 # ILLYRIAN — MASTER HANDOFF
 ## CONTINUITY PROTOCOL — ACTIVE SNAPSHOT (2026-10-23)
 
-**LATEST VERIFIED UPDATE (2026-10-24):** `f17b1a762a2f4d133dadd71c28cd6869dcd600ba`, [CI #40035194115](https://github.com/titanfit102-bit/Illyrian/actions/runs/40035194115): **176/176 PASS**. Plans locale-change focus regression corrected; earlier failures superseded. PR stays Draft; F05/F06/physical-device/screenreader/sign-off open.
+**LATEST VERIFIED UPDATE (2026-10-24):** `d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a`, [PR CI #40085347389](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085347389) dhe [push CI #40085343736](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085343736): **177/177 PASS secila**. F06 ka trigger `pull_request` aktiv e të verifikuar (read-only), por pa required checks/branch protection; F05 ka Preview `READY` por HTTP i pabotuar për ne për shkak të scope 403. PR Draft/Unmerged; telefoni/screenreader/sign-off OPEN.
 
 
-**CHECKPOINT MË I FUNDIT (supersedes older QA references below):** exact source/test SHA `524e60075fde2a6cf905946e9388cd57a1ecee3e` — [Actions #40030427581](https://github.com/titanfit102-bit/Illyrian/actions/runs/40030427581), **173/173 Chromium PASS**, job logs checked; PR #1 Draft/unmerged. The previous 167/167 at `853f698e9a8e21865eb98503dc95db8874ce2218` also passed. F05/F06/physical phone/screenreader/sign-off remain open.
+**CHECKPOINT HISTORIK (superseded nga LATEST VERIFIED UPDATE sipër):** exact source/test SHA `524e60075fde2a6cf905946e9388cd57a1ecee3e` — [Actions #40030427581](https://github.com/titanfit102-bit/Illyrian/actions/runs/40030427581), **173/173 Chromium PASS**, job logs checked; PR #1 Draft/unmerged. The previous 167/167 at `853f698e9a8e21865eb98503dc95db8874ce2218` also passed. F05/F06/physical phone/screenreader/sign-off remain open.
 
 
 ### AUTORIZIMI KANONIK I ZHVILLIMIT — VENDIMI MË I FUNDIT I PRONARIT
@@ -232,6 +232,14 @@
 - Connections/Governance dialog accessible names and Plans dialog/role label now follow sq/en/it; latest Plans update performs in-place dialog label updates on language changes to avoid DOM replacement that caused focus loss in prior runs. Three additional i18n/a11y test cases beyond prior 173 baseline, including post-paint focus containment. Verify only Chromium-scoped behaviors; no real screenreader validation.
 - PR #1 remains Draft/unmerged on `feat/i18n-shop-feedback-20261022`. No main/Production change. This document commit is docs-only; current tested code SHA stays `f17b1a762a2f4d133dadd71c28cd6869dcd600ba`.
 - OPEN: F05 Vercel Preview exact deployed SHA/HTTP root, F06 PR required checks/branch protection, device portrait/landscape, TalkBack/VoiceOver, final product sign-off. Next QA: inspect other module keyboard/i18n accessibility gaps without adding unrelated O1–O8 research features.
+
+### F06 — CI për Pull Request aktiv, pa required checks — 2026-10-24 [VERIFIKUAR / PJESËRISHT I HAPUR]
+- **Source/test SHA:** [`d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a`](https://github.com/titanfit102-bit/Illyrian/commit/d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a), i izoluar në `feat/i18n-shop-feedback-20261022`; pa ndryshime në DEMO runtime, main, degën integruese, Production ose rregullat administrative të GitHub.
+- Workflow `.github/workflows/illyrian-v17-browser-qa.yml`: `pull_request` target `demo/v1.7-illyrian-shop`, pa `paths` filter në PR (shmang required check të ngecur Pending), `permissions: contents: read`, `actions/checkout` me `persist-credentials: false`. `push` dhe `workflow_dispatch` ruhen. `pull_request_target` nuk përdoret.
+- Shtuar 1 test i politikës F06 te `qa/illyrian-v17.spec.cjs`. **Exact SHA, GitHub Actions** [PR run #40085347389](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085347389): **177/177 PASS (4.1m)**; [push run #40085343736](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085343736): **177/177 PASS (4.0m)**. Logjet e job-eve u kontrolluan dhe testi F06 kaloi në të dy.
+- **F06 OPEN administrativisht:** GitHub raportoi `protected:false` për `demo/v1.7-illyrian-shop`, pa rulesets; PR checks tani ekzekutohen realisht, por **nuk janë required për merge**. Aktivizimi i branch protection/ruleset mund të ndikojë integrimin dhe kërkon miratim veçmas; nuk u krye.
+- **F05 OPEN për HTTP:** Vercel `list_deployments` konfirmoi deployment `dpl_2wwYbXo6h9r5sPUiCfXFLhK7az1h`, `READY`, target Preview `null`, me source SHA `d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a`. Qasja scoped në team `un24` kthen `403`; nuk u provua HTTP `/` ose përmbajtja e shërbyer. Kërkohet miratimi i përdoruesit për team access nga link-u i përkohshëm (mos ruaj në repo link/token njëpërdorimësh).
+- **Release HOLD:** telefoni real portrait/landscape, TalkBack/VoiceOver, verifikimi HTTP i Preview, required checks/branch protection dhe sign-off i pronarit mbeten të pambyllura. Workflow i ri prodhon përkohësisht run `push` dhe `pull_request` për të njëjtin feature commit; konsumi i dyfishtë i CI është çështje optimizimi përpara skalimit, jo arsye për të ulur një gate.
 
 ### H. MASTER CONTINUITY PROTOCOL — mënyra e punës [VENDIM]
 - `CURRENT_STATE.md` = gjendja e fundit e shkurtër / indeksi i rifillimit.
