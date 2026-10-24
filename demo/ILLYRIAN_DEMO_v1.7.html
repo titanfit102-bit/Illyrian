@@ -1937,13 +1937,18 @@ document.head.appendChild(v15Style);
   function focusables(root){return [...root.querySelectorAll(focusableSelector)].filter(el=>el.getClientRects().length>0&&!el.closest('[hidden],[inert]'));}
   function signature(el){
     if(!el||el===document.body||el===document.documentElement)return null;
-    return {el,id:el.id||'',act:el.dataset?.act||'',item:el.dataset?.id||'',val:el.dataset?.val||''};
+    return {el,id:el.id||'',act:el.dataset?.act||'',item:el.dataset?.id||'',val:el.dataset?.val||'',inNavbar:!!el.closest('#navbar')};
   }
   function locate(key,root){
     if(!key)return null;
     if(key.el?.isConnected&&root.contains(key.el))return key.el;
     if(key.id){const match=[...root.querySelectorAll('[id]')].find(el=>el.id===key.id);if(match)return match;}
-    if(key.act)return [...root.querySelectorAll('[data-act]')].find(el=>el.dataset.act===key.act&&(el.dataset.id||'')===key.item&&(el.dataset.val||'')===key.val)||null;
+    if(key.act){
+      const matches=[...root.querySelectorAll('[data-act]')].filter(el=>el.dataset.act===key.act&&(el.dataset.id||'')===key.item&&(el.dataset.val||'')===key.val);
+      // A feed button may share the action with a navbar opener. Restore focus
+      // to the same region instead of the first matching action in document order.
+      return (key.inNavbar?matches.find(el=>!!el.closest('#navbar')):null)||matches[0]||null;
+    }
     return null;
   }
   function focus(el){if(!el)return;try{el.focus({preventScroll:true});}catch{el.focus();}}
