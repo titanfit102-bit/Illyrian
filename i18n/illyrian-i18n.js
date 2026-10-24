@@ -40,7 +40,7 @@ function reindex(){
 }
 reindex();
 const priorText=new WeakMap(),priorAttrs=new WeakMap();
-const exclude='script,style,textarea,[contenteditable],[data-user-content],.post-copy,.post-name,.post-photo,.v6-chat-bubble,.v6-message-bubble,.v6-comment-text,.ilp-chat-msg,.ilp-chat,.ils-product-title,.isp-listing-title,.bubble,.v6-bubble,.v4-inbox-content,.v6-inbox-item,.v16-comment-list,.v10-share-preview,.v5-preview-foot,.ils-card h3,.isp-card h3';
+const exclude='script,style,textarea,[contenteditable],[data-user-content],[data-i18n-direct],.post-copy,.post-name,.post-photo,.v6-chat-bubble,.v6-message-bubble,.v6-comment-text,.ilp-chat-msg,.ilp-chat,.ils-product-title,.isp-listing-title,.bubble,.v6-bubble,.v4-inbox-content,.v6-inbox-item,.v16-comment-list,.v10-share-preview,.v5-preview-foot,.ils-card h3,.isp-card h3';
 function replaced(s){
  const part=s.trim(),path=phrases.get(part);
  return path?s.replace(part,engine.t(path)):s;

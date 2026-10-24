@@ -36,22 +36,27 @@
  };
  let root=null,opener=null,inertSnapshot=[];
  const b=(act,label,extra='')=>'<button type="button" data-il4="'+escaped(act)+'" '+extra+'>'+escaped(label)+'</button>';
- const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({follow:state.follow,membership:state.membership}));return true}catch{state.notice='Ndryshimi nuk u ruajt; hapësira lokale është plot.';return false}};
- const statusLabel=x=>({none:'Pa kërkesë',pending:'Në pritje',accepted:'I pranuar',declined:'Refuzuar',blocked:'I bllokuar'})[x||'none'];
+ const feedback=(key,fallback)=>window.IllyrianI18n?.t('privacy:'+key)||fallback;
+ const ui=(key,fallback)=>escaped(feedback(key,fallback));
+ const persisted=()=>({follow:state.follow,membership:state.membership});
+ let lastSaved=JSON.stringify(persisted());
+ const save=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
+  Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Ndryshimi nuk u ruajt; hapësira lokale është plot.');return false}};
+ const statusLabel=x=>({none:feedback('statusNone','Pa kërkesë'),pending:feedback('statusPending','Në pritje'),accepted:feedback('statusAccepted','I pranuar'),declined:feedback('statusDeclined','Refuzuar'),blocked:feedback('statusBlocked','I bllokuar')})[x||'none'];
  const note=()=>state.notice?'<p class="il4-notice" role="status">'+escaped(state.notice)+'</p>':'';
- const header=()=>'<header class="il4-head"><div><small>ILLYRIAN · SIGURI & ZBULIM</small><h2>Privatësia dhe harta</h2></div>'+b('close','✕ Mbyll')+'</header><p class="il4-warning">Prototip me identitete dhe vende të sajuara. Rolet dhe lejet janë vetëm simulim lokal; nuk ofrojnë siguri reale.</p>';
+ const header=()=>'<header class="il4-head"><div><small>ILLYRIAN · SIGURI & ZBULIM</small><h2 data-i18n-direct>'+ui('title','Privatësia dhe harta')+'</h2></div>'+b('close','✕ Mbyll')+'</header><p class="il4-warning" data-i18n-direct>'+ui('warning','Prototip me identitete dhe vende të sajuara. Rolet dhe lejet janë vetëm simulim lokal; nuk ofrojnë siguri reale.')+'</p>';
  const tabRow=()=>'<nav class="il4-tabs" aria-label="Fushat e Fazës 4">'+[
-  ['profiles','Profilet'],['groups','Komunitetet'],['map','Harta'],['states','Gjendjet e planeve']
- ].map(([id,t])=>b('tab:'+id,t,id===state.tab?'aria-current="page"':'')).join('')+'</nav>';
+  ['profiles',feedback('profiles','Profilet')],['groups',feedback('communities','Komunitetet')],['map',feedback('map','Harta')],['states',feedback('states','Gjendjet e planeve')]
+ ].map(([id,t])=>b('tab:'+id,t,(id===state.tab?'aria-current="page" ':'')+'data-i18n-direct="1"')).join('')+'</nav>';
  const currentProfile=()=>people.find(p=>p.id===state.selected)||people[0];
  const profiles=()=>{
   const p=currentProfile(),s=state.follow[p.id]||'none',owner=state.role==='owner',publicView=p.audience==='public'||s==='accepted';
-  return '<h3>Profile private dhe ndjekje</h3><p>Provo rolin e vizitorit dhe të pronarit të profilit. Një kërkesë private nuk jep akses derisa të pranohet.</p>'+
-  '<div class="il4-role">'+b('role:visitor','Shiko si vizitor',!owner?'class="chosen"':'')+b('role:owner','Simulo pronarin',owner?'class="chosen"':'')+'</div>'+
+  return '<h3 data-i18n-direct>'+ui('privateProfiles','Profile private dhe ndjekje')+'</h3><p>Provo rolin e vizitorit dhe të pronarit të profilit. Një kërkesë private nuk jep akses derisa të pranohet.</p>'+
+  '<div class="il4-role">'+b('role:visitor',feedback('visitor','Shiko si vizitor'),!owner?'class="chosen"':'')+b('role:owner',feedback('owner','Simulo pronarin'),owner?'class="chosen"':'')+'</div>'+
   '<div class="il4-tabs il4-people">'+people.map(x=>b('profile:'+x.id,x.name,x.id===p.id?'aria-current="page"':'')).join('')+'</div>'+
-  '<article class="il4-card"><h4>'+escaped(p.name)+'</h4><p>'+escaped(p.city)+' · '+(p.audience==='private'?'Profil privat':'Profil publik')+'</p>'+
+  '<article class="il4-card"><h4 data-user-content>'+escaped(p.name)+'</h4><p>'+escaped(p.city)+' · '+(p.audience==='private'?'Profil privat':'Profil publik')+'</p>'+
   '<p><strong>Gjendja:</strong> '+escaped(statusLabel(s))+'</p>'+
-  (publicView||owner?'<p>'+escaped(p.about)+'</p>':'<p class="il4-muted">Përshkrimi dhe përmbajtja e këtij profili janë të fshehura.</p>')+
+  (publicView||owner?'<p data-user-content>'+escaped(p.about)+'</p>':'<p class="il4-muted">Përshkrimi dhe përmbajtja e këtij profili janë të fshehura.</p>')+
   (owner?'<p><b>Panel pronari — simulim</b></p>'+
    (s==='pending'?b('follow-approve','Prano kërkesën')+b('follow-deny','Refuzo'):'<p>Asnjë kërkesë aktive për t’u shqyrtuar.</p>'):
    s==='none'||s==='declined'?b('follow-request',p.audience==='private'?'Kërko të ndjekësh':'Ndiq'):s==='pending'?b('follow-withdraw','Tërhiq kërkesën'):s==='accepted'?b('follow-withdraw','Ndalo ndjekjen'):'<p>Kontakti është i bllokuar në këtë simulim.</p>')+
@@ -61,12 +66,12 @@
  const currentGroup=()=>groups.find(g=>g.id===state.selected)||groups[0];
  const groupPage=()=>{
   const g=currentGroup(),s=state.membership[g.id]||'none',owner=state.role==='owner',visible=g.privacy==='public'||s==='accepted'||owner;
-  return '<h3>Komunitete me rregulla dhe role</h3><p>Në një komunitet privat vetëm anëtarët e pranuar shohin përmbajtjen. Ky është një shembull i kontrolleve të aksesit, jo siguri serveri.</p>'+
+  return '<h3 data-i18n-direct>'+ui('groupTitle','Komunitete me rregulla dhe role')+'</h3><p>'+ui('groupIntro','Në një komunitet privat vetëm anëtarët e pranuar shohin përmbajtjen. Ky është një shembull i kontrolleve të aksesit, jo siguri serveri.')+'</p>'+
   '<div class="il4-role">'+b('role:visitor','Si kërkues',!owner?'class="chosen"':'')+b('role:owner','Si moderator demo',owner?'class="chosen"':'')+'</div>'+
   '<div class="il4-tabs il4-people">'+groups.map(g=>b('group:'+g.id,g.name,g.id===state.selected?'aria-current="page"':'')).join('')+'</div>'+
-  '<article class="il4-card"><h4>'+escaped(g.name)+'</h4><p>'+escaped(g.city)+' · '+(g.privacy==='private'?'Komunitet privat':'Komunitet publik')+' · '+g.members+' anëtarë shembull</p>'+
+  '<article class="il4-card"><h4 data-user-content>'+escaped(g.name)+'</h4><p>'+escaped(g.city)+' · '+(g.privacy==='private'?'Komunitet privat':'Komunitet publik')+' · '+g.members+' anëtarë shembull</p>'+
   '<p><strong>Status:</strong> '+escaped(statusLabel(s))+'</p>'+
-  (visible?'<p>'+escaped(g.about)+'</p><p class="il4-muted">Rregulla: respekto privatësinë, mos shpërnda të dhëna kontakti pa pëlqim.</p>':
+  (visible?'<p data-user-content>'+escaped(g.about)+'</p><p class="il4-muted">Rregulla: respekto privatësinë, mos shpërnda të dhëna kontakti pa pëlqim.</p>':
    '<p class="il4-muted">Postimet dhe lista e anëtarëve janë të fshehura deri në pranim.</p>')+
   (owner?(s==='pending'?b('group-approve','Prano anëtarin')+b('group-deny','Refuzo kërkesën'):
    '<p>Paneli i moderatorit: nuk ka kërkesë aktive.</p>'):
@@ -85,18 +90,18 @@
  const pin=(p,i,sel)=>'<button type="button" class="il4-pin '+(sel?'selected':'')+'" data-il4="pin:'+escaped(p.id)+'" style="left:'+((21+(i*37)%63))+'%;top:'+((18+(i*23)%62))+'%" aria-label="'+escaped('Shfaq '+p.name+' në '+p.city)+'">'+(p.kind==='business'?'▣':'●')+'</button>';
  const mapPage=()=>{
   const list=pins(),selected=list.find(p=>p.id===state.selectedPin)||list[0];
-  return '<h3>Zbulo aktivitetet dhe bizneset sipas qytetit</h3><p class="il4-muted"><b>Hartë skematike — JO hartë gjeografike.</b> Pozicionet e pikave janë ilustrative; nuk tregojnë koordinata, rrugë apo distanca reale.</p>'+
-  '<form id="il4-mapform"><label>Qyteti<select name="city">'+cities.map(c=>'<option '+(c===state.city?'selected ':'')+'value="'+escaped(c)+'">'+escaped(c)+'</option>').join('')+'</select></label>'+
-  '<label>Lloji<select name="kind">'+[['all','Të gjitha'],['activity','Aktivitete'],['business','Biznese']].map(([k,v])=>'<option '+(k===state.mapKind?'selected ':'')+'value="'+k+'">'+v+'</option>').join('')+'</select></label>'+
-  '<label>Kërko<input name="q" maxlength="60" value="'+escaped(state.search)+'" placeholder="P.sh. kafe, futboll, dyqan"></label>'+
-  '<button type="submit">Filtro</button></form>'+
+  return '<h3 data-i18n-direct>'+ui('mapHeading','Zbulo aktivitetet dhe bizneset sipas qytetit')+'</h3><p class="il4-muted"><b>'+ui('mapDisclaimer','Hartë skematike — JO hartë gjeografike.')+'</b> '+ui('mapExplanation','Pozicionet e pikave janë ilustrative; nuk tregojnë koordinata, rrugë apo distanca reale.')+'</p>'+
+  '<form id="il4-mapform"><label data-i18n-direct>'+ui('mapCity','Qyteti')+'<select name="city">'+cities.map(c=>'<option '+(c===state.city?'selected ':'')+'value="'+escaped(c)+'">'+(c===cities[0]?ui('mapAll',c):escaped(c))+'</option>').join('')+'</select></label>'+
+  '<label data-i18n-direct>'+ui('mapKind','Lloji')+'<select name="kind">'+[['all',feedback('mapAll','Të gjitha')],['activity',feedback('mapActivities','Aktivitete')],['business',feedback('mapBusinesses','Biznese')]].map(([k,v])=>'<option '+(k===state.mapKind?'selected ':'')+'value="'+k+'">'+escaped(v)+'</option>').join('')+'</select></label>'+
+  '<label data-i18n-direct>'+ui('mapSearch','Kërko')+'<input name="q" maxlength="60" value="'+escaped(state.search)+'" placeholder="'+ui('mapPlaceholder','P.sh. kafe, futboll, dyqan')+'"></label>'+
+  '<button type="submit" data-i18n-direct>'+ui('mapFilter','Filtro')+'</button></form>'+
   '<div class="il4-map" aria-label="Skemë orientuese e rezultateve"><div class="il4-grid-lines"></div>'+
-  '<div class="il4-map-label">ILLYRIAN · DEMO · '+escaped(state.city)+'</div>'+
+  '<div class="il4-map-label" data-i18n-direct>ILLYRIAN · DEMO · '+(state.city===cities[0]?ui('mapAll',state.city):escaped(state.city))+'</div>'+
   list.slice(0,16).map((p,i)=>pin(p,i,selected?.id===p.id)).join('')+
-  (list.length?'':'<p class="il4-no-pins">Nuk u gjetën shembuj për filtrat.</p>')+'</div>'+
-  (selected?'<article class="il4-card"><h4>'+escaped(selected.name)+'</h4><p>'+escaped(selected.city)+' · '+(selected.kind==='business'?'Biznes':'Aktivitet')+'</p><p>'+escaped(selected.detail)+'</p></article>':'')+
+  (list.length?'':'<p class="il4-no-pins">'+ui('mapNoResults','Nuk u gjetën shembuj për filtrat.')+'</p>')+'</div>'+
+  (selected?'<article class="il4-card"><h4 data-user-content>'+escaped(selected.name)+'</h4><p>'+escaped(selected.city)+' · '+(selected.kind==='business'?ui('mapBusiness','Biznes'):ui('mapActivity','Aktivitet'))+'</p><p data-user-content>'+escaped(selected.detail)+'</p></article>':'')+
   '<div class="il4-results">'+list.slice(0,20).map(p=>b('pin:'+p.id,p.name+' — '+p.city)).join('')+'</div>'+
-  '<p class="il4-muted">Për hartë reale në aplikacionin profesional do të duhen burime të verifikuara vendesh, leje dhe rregulla privatësie.</p>';
+  '<p class="il4-muted">'+ui('mapSafety','Për hartë reale në aplikacionin profesional do të duhen burime të verifikuara vendesh, leje dhe rregulla privatësie.')+'</p>';
  };
  const sampleStatuses=[
   {id:'public',title:'Kafe me komunitetin',state:'available',public:true,note:'Aktivitet publik me vende të lira.'},
@@ -116,17 +121,17 @@
   })];
  };
  const stateLabel=s=>({available:'I hapur',full:'Plot',canceled:'Anuluar',expired:'I skaduar',private:'Privat',removed:'Nuk gjendet'})[s]||'I panjohur';
- const statuses=()=>'<h3>Gjendjet e aktiviteteve dhe kthimi i sigurt</h3><p>Kur hap një aktivitet nga Postimi/Story/Reel, gjendja duhet kontrolluar sërish. Klikimi nuk regjistron automatikisht pjesëmarrje.</p>'+
- getPlanStatuses().map(p=>'<article class="il4-card"><div class="il4-cardtop"><strong>'+escaped(p.public?p.title:'Aktivitet privat ose i padisponueshëm')+'</strong><span>'+escaped(stateLabel(p.state))+'</span></div>'+
- '<p>'+escaped(p.note)+'</p>'+b('state:'+p.state,'Çfarë mund të bëj?')+'</article>').join('')+note()+
+ const statuses=()=>'<h3 data-i18n-direct>'+ui('statusesHeading','Gjendjet e aktiviteteve dhe kthimi i sigurt')+'</h3><p>'+ui('statusesIntro','Kur hap një aktivitet nga Postimi/Story/Reel, gjendja duhet kontrolluar sërish. Klikimi nuk regjistron automatikisht pjesëmarrje.')+'</p>'+
+ getPlanStatuses().map(p=>'<article class="il4-card"><div class="il4-cardtop"><strong data-user-content>'+escaped(p.public?p.title:'Aktivitet privat ose i padisponueshëm')+'</strong><span>'+escaped(stateLabel(p.state))+'</span></div>'+
+ '<p>'+escaped(p.note)+'</p>'+b('state:'+p.state,feedback('statusesAction','Çfarë mund të bëj?'))+'</article>').join('')+
  '<p class="il4-muted">Shembujt e gjendjeve nuk janë rezervime, njoftime ose leje nga serveri.</p>';
  const render=()=>{
   if(!root)return;
   root.hidden=!state.open;
   if(!state.open)return;
-  root.innerHTML='<div class="il4-shade" data-il4="close"></div><section class="il4-panel" role="dialog" aria-modal="true" aria-label="Privatësia, komunitetet dhe vendet">'+
+  root.innerHTML='<div class="il4-shade" data-il4="close"></div><section class="il4-panel" role="dialog" aria-modal="true" aria-label="'+ui('entry','Privatësia, komunitetet dhe vendet')+'">'+
   header()+tabRow()+note()+(state.tab==='profiles'?profiles():state.tab==='groups'?groupPage():state.tab==='map'?mapPage():statuses())+
-  '<footer>Vetëm demonstrim lokal · Nuk ka përdorues, hartë, mesazhe apo kërkesa reale.</footer></section>';
+  '<footer data-i18n-direct>'+ui('footer','Vetëm demonstrim lokal · Nuk ka përdorues, hartë, mesazhe apo kërkesa reale.')+'</footer></section>';
   root.querySelector('.il4-head button')?.focus();
  };
  const open=which=>{if(!root||state.open)return;opener=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.tab=['profiles','groups','map','states'].includes(which)?which:'profiles';state.notice='';state.role='visitor';state.selected=state.tab==='groups'?'albania-milan':'leon';render()};
@@ -141,26 +146,26 @@
   if(a.startsWith('pin:')){state.selectedPin=a.slice(4);render();return}
   if(a.startsWith('state:')){
    const k=a.slice(6);
-   const response={available:'Mund të kërkosh pjesëmarrje nga aktiviteti origjinal.',full:'Vendet janë plot. Organizatori mund të përdorë listën e pritjes.',canceled:'Aktiviteti është anuluar; nuk lejohet kërkesë e re.',expired:'Aktiviteti ka kaluar dhe nuk pranon kërkesa.',private:'Kërko autorizim; emri dhe përmbajtja private nuk ekspozohen.',removed:'Ky aktivitet nuk është më i disponueshëm.'};
-   state.notice=response[k]||'Gjendje e panjohur.';render();return;
+   const response={available:feedback('stateAvailable','Mund të kërkosh pjesëmarrje nga aktiviteti origjinal.'),full:feedback('stateFull','Vendet janë plot. Organizatori mund të përdorë listën e pritjes.'),canceled:feedback('stateCanceled','Aktiviteti është anuluar; nuk lejohet kërkesë e re.'),expired:feedback('stateExpired','Aktiviteti ka kaluar dhe nuk pranon kërkesa.'),private:feedback('statePrivate','Kërko autorizim; emri dhe përmbajtja private nuk ekspozohen.'),removed:feedback('stateRemoved','Ky aktivitet nuk është më i disponueshëm.')};
+   state.notice=response[k]||feedback('stateUnknown','Gjendje e panjohur.');render();return;
   }
   if(state.tab==='profiles'){
    const p=currentProfile(),s=state.follow[p.id]||'none';
    if(a==='follow-request'&&state.role==='visitor'&&(s==='none'||s==='declined')){
-    state.follow[p.id]=p.audience==='private'?'pending':'accepted';return msg('Veprimi u ruajt në simulim.')}
-   if(a==='follow-withdraw'&&state.role==='visitor'&&(s==='pending'||s==='accepted')){state.follow[p.id]='none';return msg('Ndjekja ose kërkesa u tërhoq.')}
-   if(a==='follow-approve'&&state.role==='owner'&&s==='pending'){state.follow[p.id]='accepted';return msg('Kërkesa u pranua në simulim.')}
-   if(a==='follow-deny'&&state.role==='owner'&&s==='pending'){state.follow[p.id]='declined';return msg('Kërkesa u refuzua.')}
-   if(a==='block'&&state.role==='visitor'){state.follow[p.id]='blocked';return msg('Kontakti u bllokua në këtë simulim.')}
-   if(a==='unblock'&&state.role==='visitor'&&s==='blocked'){state.follow[p.id]='none';return msg('Bllokimi u hoq.')}
+    state.follow[p.id]=p.audience==='private'?'pending':'accepted';return msg(feedback('followSaved','Veprimi u ruajt në simulim.'))}
+   if(a==='follow-withdraw'&&state.role==='visitor'&&(s==='pending'||s==='accepted')){state.follow[p.id]='none';return msg(feedback('followWithdrawn','Ndjekja ose kërkesa u tërhoq.'))}
+   if(a==='follow-approve'&&state.role==='owner'&&s==='pending'){state.follow[p.id]='accepted';return msg(feedback('followApproved','Kërkesa u pranua në simulim.'))}
+   if(a==='follow-deny'&&state.role==='owner'&&s==='pending'){state.follow[p.id]='declined';return msg(feedback('requestDeclined','Kërkesa u refuzua.'))}
+   if(a==='block'&&state.role==='visitor'){state.follow[p.id]='blocked';return msg(feedback('blocked','Kontakti u bllokua në këtë simulim.'))}
+   if(a==='unblock'&&state.role==='visitor'&&s==='blocked'){state.follow[p.id]='none';return msg(feedback('unblocked','Bllokimi u hoq.'))}
   }
   if(state.tab==='groups'){
    const g=currentGroup(),s=state.membership[g.id]||'none';
    if(a==='group-request'&&state.role==='visitor'&&(s==='none'||s==='declined')){
-    state.membership[g.id]=g.privacy==='private'?'pending':'accepted';return msg('Anëtarësia/kërkesa u ruajt në simulim.')}
-   if(a==='group-withdraw'&&state.role==='visitor'&&(s==='pending'||s==='accepted')){state.membership[g.id]='none';return msg('Anëtarësia/kërkesa u tërhoq.')}
-   if(a==='group-approve'&&state.role==='owner'&&s==='pending'){state.membership[g.id]='accepted';return msg('Anëtarësia u pranua.')}
-   if(a==='group-deny'&&state.role==='owner'&&s==='pending'){state.membership[g.id]='declined';return msg('Kërkesa u refuzua.')}
+    state.membership[g.id]=g.privacy==='private'?'pending':'accepted';return msg(feedback('membershipSaved','Anëtarësia/kërkesa u ruajt në simulim.'))}
+   if(a==='group-withdraw'&&state.role==='visitor'&&(s==='pending'||s==='accepted')){state.membership[g.id]='none';return msg(feedback('membershipWithdrawn','Anëtarësia/kërkesa u tërhoq.'))}
+   if(a==='group-approve'&&state.role==='owner'&&s==='pending'){state.membership[g.id]='accepted';return msg(feedback('membershipApproved','Anëtarësia u pranua.'))}
+   if(a==='group-deny'&&state.role==='owner'&&s==='pending'){state.membership[g.id]='declined';return msg(feedback('requestDeclined','Kërkesa u refuzua.'))}
   }
  }
  function sync(){
@@ -176,9 +181,27 @@
   const node=document.createElement('div');
   node.id='il4-entry';
   node.dataset.open=type;
-  node.innerHTML='<div><strong>Privatësia, komunitetet dhe vendet</strong><p>Profile private · Grupe · Hartë · Gjendja e planeve</p></div><button type="button" data-il4-entry="1">Eksploro →</button>';
+  node.innerHTML='<div><strong data-i18n-direct>'+ui('entry','Privatësia, komunitetet dhe vendet')+'</strong><p>Profile private · Grupe · Hartë · Gjendja e planeve</p></div><button type="button" data-il4-entry="1" data-i18n-direct>'+ui('open','Eksploro →')+'</button>';
   const anchor=screen.querySelector('.section-header')||screen.querySelector('.v10-event-tabs')||screen.firstElementChild;
   anchor?.parentNode?.insertBefore(node,anchor.nextSibling);
+ }
+ function onLocaleChange(){
+  if(!root)return;
+  const entry=document.querySelector('#il4-entry');
+  if(entry){
+   const title=entry.querySelector('strong'),button=entry.querySelector('[data-il4-entry]');
+   if(title)title.textContent=feedback('entry','Privatësia, komunitetet dhe vendet');
+   if(button)button.textContent=feedback('open','Eksploro →');
+  }
+  if(!state.open)return;
+  const current=root.querySelector('#il4-mapform');
+  const fields=current?{city:current.elements.city.value,kind:current.elements.kind.value,q:current.elements.q.value}:null;
+  const active=document.activeElement,action=active?.dataset?.il4,inputName=active?.name;
+  render();
+  const form=root.querySelector('#il4-mapform');
+  if(fields&&form){form.elements.city.value=fields.city;form.elements.kind.value=fields.kind;form.elements.q.value=fields.q}
+  if(inputName&&form?.elements[inputName])form.elements[inputName].focus();
+  else if(action)root.querySelector('[data-il4="'+action+'"]')?.focus();
  }
  function init(){
   const phone=document.querySelector('#phone'),screen=document.querySelector('#screen');
@@ -195,7 +218,7 @@
   root.addEventListener('submit',e=>{
    if(e.target.id!=='il4-mapform')return;
    e.preventDefault();const data=new FormData(e.target),city=String(data.get('city')),kind=String(data.get('kind'));
-   if(!cities.includes(city)||!['all','activity','business'].includes(kind)){state.notice='Filtër i pavlefshëm.';render();return}
+   if(!cities.includes(city)||!['all','activity','business'].includes(kind)){state.notice=feedback('invalidFilter','Filtër i pavlefshëm.');render();return}
    state.city=city;state.mapKind=kind;state.search=String(data.get('q')||'').slice(0,60);state.selectedPin='';render();
   });
   document.addEventListener('focusin',e=>{
@@ -212,6 +235,7 @@
    else if(!e.shiftKey&&(focused===buttons[buttons.length-1]||!root.contains(focused))){e.preventDefault();buttons[0].focus();}
   },true);
   new MutationObserver(()=>{if(!state.open)queueMicrotask(sync)}).observe(screen,{childList:true,subtree:false});
+  window.addEventListener('illyrian:language-changed',onLocaleChange);
   queueMicrotask(sync);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});

@@ -27,9 +27,13 @@
  let opener=null, layer=null, toastTimer=null;
  const all=()=>[...state.listings,...SEED];
  const clean=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const shopMessage=(key,fallback)=>window.IllyrianI18n?.t('shop:'+key)||fallback;
  const money=n=>{const v=Number(n||0),locale=window.IllyrianI18n?.language||'it';return new Intl.NumberFormat(locale,{style:'currency',currency:'EUR',minimumFractionDigits:v%1?2:0,maximumFractionDigits:2}).format(v)};
  const price=p=>money(p.price)+(p.kind==='Banesa me qira'?'/muaj':p.unit==='nga'?' nga':'');
- const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({listings:state.listings,cart:state.cart,orders:state.orders,requests:state.requests}));return true}catch{notify('Nuk u ruajt: hapësira lokale është plot.');return false}};
+ const persistentData=()=>({listings:state.listings,cart:state.cart,orders:state.orders,requests:state.requests});
+ const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(persistentData()));return true}catch{notify(shopMessage('storageFull','Nuk u ruajt: hapësira lokale është plot.'));return false}};
+ // Keep the on-screen and stored Shop state consistent if persistence is denied (quota/private mode).
+ const transact=change=>{const before=JSON.stringify(persistentData());change();if(persist())return true;Object.assign(state,JSON.parse(before));return false};
  const byId=id=>all().find(p=>p.id===id);
  const matches=(p)=>{
   const q=state.query.toLocaleLowerCase('sq').trim();
@@ -38,7 +42,7 @@
  };
  const visible=()=>{const x=all().filter(matches);if(state.sort==='price-low')x.sort((a,b)=>a.price-b.price);if(state.sort==='price-high')x.sort((a,b)=>b.price-a.price);if(state.sort==='store')x.sort((a,b)=>a.store.localeCompare(b.store,'sq'));return x};
  const shops=()=>[...new Set(visible().map(p=>p.store))];
- const tile=p=>`<article class="ils-card"><div class="ils-illustration" aria-hidden="true">${clean(p.emoji||'📦')}</div><div class="ils-card-main"><span class="ils-kind">${clean(p.kind)}</span><h3>${clean(p.name)}</h3><strong>${price(p)}</strong><p>${clean(p.store)} · ${clean(p.city)}</p><button class="ils-btn ils-secondary" data-ils="detail" data-id="${clean(p.id)}">Shiko detajet</button></div></article>`;
+ const tile=p=>`<article class="ils-card"><div class="ils-illustration" aria-hidden="true">${clean(p.emoji||'📦')}</div><div class="ils-card-main"><span class="ils-kind">${clean(p.kind)}</span><h3>${clean(p.name)}</h3><strong>${price(p)}</strong><p data-user-content>${clean(p.store)} · ${clean(p.city)}</p><button class="ils-btn ils-secondary" data-ils="detail" data-id="${clean(p.id)}">Shiko detajet</button></div></article>`;
  const header=(sub)=>`<header class="ils-top"><button data-ils="back" class="ils-back" aria-label="Kthehu te ILLYRIAN">←</button><div><strong>ILLYRIAN <span>Shop</span></strong><small>${clean(sub||'Gjej, krahaso dhe zbulo oferta')}</small></div><button data-ils="cart" class="ils-cart" aria-label="Hap shportën">🛒 <b>${cartCount()}</b></button></header>`;
  const cartCount=()=>Object.values(state.cart).reduce((a,b)=>a+Math.min(99,Math.max(0,Number(b)||0)),0);
  const cartItems=()=>Object.entries(state.cart).map(([id,qty])=>({p:byId(id),qty:Math.min(99,Math.max(0,Number(qty)||0))})).filter(x=>x.p&&x.p.kind==='Produkte'&&x.qty>0);
@@ -50,7 +54,7 @@
   return `<section class="ils-splash"><span>MARKETPLACE SHQIPTAR · PROTOTIP</span><h2>Gjej produktin në disa dyqane.</h2><p>Produkte, biznese lokale, makina, banesa me qira dhe shërbime.</p></section>
    <label class="ils-search"><span aria-hidden="true">⌕</span><input id="ils-search" type="search" placeholder="Kërko produkt, dyqan, makinë, banesë…" value="${clean(state.query)}" autocomplete="off" aria-label="Kërko në ILLYRIAN Shop"></label>
    <div class="ils-category" role="group" aria-label="Kategoritë">${CATEGORIES.map(c=>`<button data-ils="category" data-value="${clean(c)}" class="${state.category===c?'selected':''}" aria-pressed="${state.category===c}">${clean(c)}</button>`).join('')}</div>
-   <div class="ils-filter"><label>Qyteti<select id="ils-city">${CITIES.map(c=>`<option ${state.city===c?'selected':''}>${clean(c)}</option>`).join('')}</select></label><label>Renditja<select id="ils-sort"><option value="relevance" ${state.sort==='relevance'?'selected':''}>Relevanca</option><option value="price-low" ${state.sort==='price-low'?'selected':''}>Çmimi: më i ulët</option><option value="price-high" ${state.sort==='price-high'?'selected':''}>Çmimi: më i lartë</option><option value="store" ${state.sort==='store'?'selected':''}>Emri i dyqanit</option></select></label></div>
+   <div class="ils-filter"><label>Qyteti<select id="ils-city">${CITIES.map(c=>`<option value="${clean(c)}" ${state.city===c?'selected':''}>${clean(c)}</option>`).join('')}</select></label><label>Renditja<select id="ils-sort"><option value="relevance" ${state.sort==='relevance'?'selected':''}>Relevanca</option><option value="price-low" ${state.sort==='price-low'?'selected':''}>Çmimi: më i ulët</option><option value="price-high" ${state.sort==='price-high'?'selected':''}>Çmimi: më i lartë</option><option value="store" ${state.sort==='store'?'selected':''}>Emri i dyqanit</option></select></label></div>
    <div class="ils-actions">${btn('sell','+ Publiko listimin tënd')}${btn('my','Listimet e mia','ils-btn ils-secondary')}</div>
    ${state.store?`<div class="ils-selected-store">Dyqani: <strong>${clean(state.store)}</strong> <button data-ils="clear-store">Hiq filtrin ×</button></div>`:''}
    <div class="ils-section-head"><h3>${data.length} rezultate</h3><small>${foundShops.length} dyqane/ofrues</small></div>
@@ -59,13 +63,13 @@
    ${status()}`;
  }
  function detail(){const p=byId(state.selected);if(!p)return '<div class="ils-empty">Listimi nuk ekziston.</div>';
-  return `<button class="ils-text-link" data-ils="browse">← Kthehu te rezultatet</button><div class="ils-product-cover" aria-hidden="true">${clean(p.emoji)}</div><span class="ils-kind">${clean(p.kind)} · ${clean(p.city)}</span><h2>${clean(p.name)}</h2><h3 class="ils-price">${price(p)}</h3><p class="ils-description">${clean(p.description)}</p><div class="ils-seller"><small>Shitësi / dyqani</small><strong>${clean(p.store)}</strong><button data-ils="store" data-value="${clean(p.store)}">Shiko listimet e këtij dyqani →</button></div>
+  return `<button class="ils-text-link" data-ils="browse">← Kthehu te rezultatet</button><div class="ils-product-cover" aria-hidden="true">${clean(p.emoji)}</div><span class="ils-kind">${clean(p.kind)} · ${clean(p.city)}</span><h2 data-user-content>${clean(p.name)}</h2><h3 class="ils-price">${price(p)}</h3><p class="ils-description" data-user-content>${clean(p.description)}</p><div class="ils-seller"><small>Shitësi / dyqani</small><strong data-user-content>${clean(p.store)}</strong><button data-ils="store" data-value="${clean(p.store)}">Shiko listimet e këtij dyqani →</button></div>
    ${p.kind==='Produkte'?btn('add','+ Shto në shportë'):btn('contact','Kërko informacion (demo)')}
    ${p.owned?btn('edit','Ndrysho listimin','ils-btn ils-secondary')+btn('delete','Fshi listimin','ils-btn ils-secondary'):''}
    <div class="ils-info"><strong>Transaksion demonstrues</strong><p>Nuk ka pagesë reale, shpërndarje të dhënash apo verifikim shitësi. Kontakto vetëm brenda simulimit.</p></div>`;
  }
  function form(){const editing=state.view==='edit',p=editing?byId(state.selected):null;
- const option=(arr,value)=>arr.map(x=>`<option ${x===value?'selected':''}>${clean(x)}</option>`).join('');
+ const option=(arr,value)=>arr.map(x=>`<option value="${clean(x)}" ${x===value?'selected':''}>${clean(x)}</option>`).join('');
  return `<button class="ils-text-link" data-ils="browse">← Kthehu në Shop</button><h2>${editing?'Ndrysho listimin':'Publiko një listim'}</h2><p class="ils-description">Listimet ruhen vetëm në shfletuesin tënd. Nuk shfaqen te përdorues të tjerë.</p>
  <form id="ils-sell-form" class="ils-form">
  <label>Kategoria<select name="kind" required>${option(CATEGORIES.slice(1),p?.kind||'Produkte')}</select></label>
@@ -113,20 +117,23 @@
   if(action==='store'){state.store=button.dataset.value||'';state.view='browse';render();return}
   if(action==='clear-store'){state.store='';render();return}
   if(action==='detail'){state.selected=id;state.view='detail';render();return}
-  if(action==='add'){const p=byId(state.selected);if(!p||p.kind!=='Produkte')return;state.cart[p.id]=Math.min(99,(Number(state.cart[p.id])||0)+1);persist();render();notify('Produkti u shtua në shportën demonstrative.');return}
-  if(action==='remove-cart'){delete state.cart[id];persist();render();return}
-  if(action==='checkout'){if(!cartItems().length)return;state.orders.unshift({created:Date.now(),total:cartTotal(),lines:cartItems().length,status:'DEMO'});state.orders=state.orders.slice(0,20);state.cart={};persist();state.view='confirmation';render();return}
-  if(action==='contact'){const p=byId(state.selected);if(!p)return;state.requests.unshift({id:p.id,at:Date.now()});state.requests=state.requests.slice(0,30);persist();state.view='confirmation';render();return}
+  if(action==='add'){const p=byId(state.selected);if(!p||p.kind!=='Produkte')return;if(!transact(()=>{state.cart[p.id]=Math.min(99,(Number(state.cart[p.id])||0)+1)}))return;render();notify(shopMessage('addedCartNotice','Produkti u shtua në shportën demonstrative.'));return}
+  if(action==='remove-cart'){if(!transact(()=>{delete state.cart[id]}))return;render();return}
+  if(action==='checkout'){if(!cartItems().length)return;if(!transact(()=>{state.orders.unshift({created:Date.now(),total:cartTotal(),lines:cartItems().length,status:'DEMO'});state.orders=state.orders.slice(0,20);state.cart={}}))return;state.view='confirmation';render();return}
+  if(action==='contact'){const p=byId(state.selected);if(!p)return;if(!transact(()=>{state.requests.unshift({id:p.id,at:Date.now()});state.requests=state.requests.slice(0,30)}))return;state.view='confirmation';render();return}
   if(action==='edit'){const p=byId(state.selected);if(!p?.owned)return;state.view='edit';render();return}
-  if(action==='delete'){const p=byId(state.selected);if(!p?.owned||!confirm('Ta fshijmë këtë listim demonstrues?'))return;state.listings=state.listings.filter(x=>x.id!==p.id);delete state.cart[p.id];state.selected=null;persist();state.view='my';render();return}
+  if(action==='delete'){const p=byId(state.selected);if(!p?.owned||!confirm(shopMessage('confirmDelete','Ta fshijmë këtë listim demonstrues?')))return;if(!transact(()=>{state.listings=state.listings.filter(x=>x.id!==p.id);delete state.cart[p.id]}))return;state.selected=null;state.view='my';render();return}
  },true);
  document.addEventListener('input',event=>{if(!state.open||event.target?.id!=='ils-search')return;const pos=event.target.selectionStart;const value=event.target.value;const scroll=layer.querySelector('.ils-body')?.scrollTop||0;state.query=value;render();const input=layer.querySelector('#ils-search');if(input){input.focus({preventScroll:true});try{input.setSelectionRange(pos,pos)}catch{}}if(layer.querySelector('.ils-body'))layer.querySelector('.ils-body').scrollTop=scroll;},true);
  document.addEventListener('change',event=>{if(!state.open)return;if(event.target?.id==='ils-city'){state.city=event.target.value;render()}else if(event.target?.id==='ils-sort'){state.sort=event.target.value;render()}},true);
  document.addEventListener('submit',event=>{if(!state.open||event.target?.id!=='ils-sell-form')return;event.preventDefault();event.stopPropagation();const f=new FormData(event.target);const kind=String(f.get('kind')||'');const name=String(f.get('name')||'').trim();const store=String(f.get('store')||'').trim();const city=String(f.get('city')||'');const price=Number(f.get('price'));
-  if(!CATEGORIES.slice(1).includes(kind)||name.length<4||store.length<2||!CITIES.slice(1).includes(city)||!Number.isFinite(price)||price<0.5||price>1e7){notify('Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.');return}
+  if(!CATEGORIES.slice(1).includes(kind)||name.length<4||store.length<2||!CITIES.slice(1).includes(city)||!Number.isFinite(price)||price<0.5||price>1e7){notify(shopMessage('invalidListing','Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.'));return}
   const data={kind,name:name.slice(0,90),store:store.slice(0,70),city,price:Math.round(price*100)/100,description:String(f.get('description')||'').slice(0,450),emoji:kind==='Makina'?'🚗':kind==='Banesa me qira'?'🏠':kind==='Shërbime'?'🛠️':'📦',owned:true,unit:kind==='Banesa me qira'?'muaj':'copë'};
-  if(state.view==='edit'){const p=byId(state.selected);if(!p?.owned)return;Object.assign(p,data)}else{if(state.listings.length>=30){notify('Maksimumi 30 listime demonstrative.');return}data.id='user-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);state.listings.unshift(data)}
-  persist();state.selected=data.id||state.selected;state.view='my';render();notify('Listimi u ruajt vetëm në këtë shfletues.');
+  const current=state.view==='edit'?byId(state.selected):null;if(state.view==='edit'&&!current?.owned)return;
+  if(!current&&state.listings.length>=30){notify(shopMessage('maxListings','Maksimumi 30 listime demonstrative.'));return}
+  if(!current)data.id='user-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);
+  if(!transact(()=>{if(current)Object.assign(current,data);else state.listings.unshift(data)}))return;
+  state.selected=data.id||state.selected;state.view='my';render();notify(shopMessage('listingSaved','Listimi u ruajt vetëm në këtë shfletues.'));
  },true);
  document.addEventListener('keydown',event=>{if(!state.open||!layer)return;
   if(event.key==='Escape'){if(document.getElementById('isp-root'))return;event.stopImmediatePropagation();event.preventDefault();close();return}

@@ -579,3 +579,108 @@ U verifikuan gjashtë katalogët en/sq/it, secili me 290 çelësa në 15 namespa
 - GitHub Actions run [#39852708170](https://github.com/titanfit102-bit/Illyrian/actions/runs/39852708170), commit `7d7b3dbf3ae7a4744c5dad4e2f75fac548b00dcb`, **completed/success: 53/53 teste Playwright PASS (1.9m)**. Kjo suitë përfshin teste të reja për formatimin EUR në sq/en/it, titujt e Shop/Plans/Privacy/Governance në secilën gjuhë, ruajtjen e preferencës, fallback, pluralizimin dhe regresionet e mëparshme. Nuk është certifikim i 100% të çdo teksti historik në DEMO.
 - **Vercel Preview nuk është sinkronizuar me kodin më të ri:** statusi i Vercel për commit-in dokumentues `bb2794e67c1f8cf68ea5eeb4325f38813645682b` është `failure` me destinacion `upgradeToPro=build-rate-limit`. Preview-i i verifikuar READY ishte ende mbi commit-in `fbd04ad37c653a233617a7464ad6a15a550c9b4a`; kështu ndryshimet e formatimit EUR dhe testet shtesë mund të mos jenë publikuar atje. Ky është **kufizim deploy/plan**, jo dështim i suite-s Chromium. Nuk u ndryshuan pagesa, plan, domain apo Production për ta anashkaluar kufirin.
 - **Kufiri i mbulimit gjuhësor:** 290 çelësa secila nga 3 gjuhët dhe 15 namespace janë të verifikuar, por nuk është mbyllur lokalizimi i çdo dialogu, formulari, gjendjeje bosh ose gabimi. Ka nevojë për inspektim më të thellë të përmbajtjes UI në gjuhët en/it, migrim nga lookup trashëgimie në çelësa direkt dhe testim final në telefon.
+
+
+## Cikli i18n 3 — Shop runtime feedback (22 tetor 2026; audit i pavarur)
+
+- Audit i lidhur me HEAD bazë `015ce439e7c6d736149c6c300391586517664f62`; dega `main` e pandryshuar në `9f91b5c083b4482a70a2149483cc799360e6102c` në çastin e auditit. Repository u konfirmua **PUBLIC**, ndryshe nga përshkrimi i vjetër “private”: kontrolli i ekspozimit është detyrë sigurie para backend-it real.
+- CI historike #39852708170 u verifikua nga logu: **53 passed (1.9m)** mbi SHA `7d7b3db...`. Nuk certifikon të gjitha rrugët e UI.
+- Vercel READY i fundit i verifikuar ishte SHA `fbd04ad...`, jo HEAD; statusi Vercel në HEAD është **failure / build-rate-limit**. Nuk ka deployment të ri të deklaruar.
+- Zbulim konkret: `demo/ILLYRIAN_SHOP_v1.7.js` kishte gjashtë mesazhe runtime (toast, validim, ruajtje, konfirmim fshirjeje) vetëm në shqip. U migruan në `IllyrianI18n.t('shop:*')` pa prekur kategoritë, produktet, ruajtjen lokale, vlerat e filtrave ose emrat e përdoruesve.
+- U shtuan gjashtë çelësa semantikë në çdo katalog `en/sq/it` (296 total në secilën gjuhë), me pasqyra te `demo/i18n` identike. U shtuan tre skenarë Chromium për mesazhin e shtimit në shportë, validimin e formularit dhe ruajtjen e listimit në `sq/en/it`; totali i parashikuar është 56 teste, por rezultati final duhet marrë nga run i commit-it të ri.
+- Kodi dhe workflow i testimit u vendosën vetëm te `feat/i18n-shop-feedback-20261022` (commit `3e3e651e1bc8a7cb07e1561f9b194bf300c81042`). Asnjë merge në demo/main, asnjë Production. CI e veçuar: https://github.com/titanfit102-bit/Illyrian/actions/runs/39857060705 .
+- **Për vazhdim:** kërko rezultatin final të CI; nëse dështon, rregullo testin/kodin në këtë degë dhe ri-verifiko. Pastaj vazhdo me përkthimin direkt të formave/erroreve në Plans, Connections, Shop Plus, Privacy, Governance dhe UI kryesore. Audit i plotë visual/a11y dhe telefon fizik mbeten OPEN.
+
+
+
+## Architecture proposal integration / execution gate — 23 October 2026
+The owner approved the **compatible principles** from Master Architecture Upgrade and Shop Addendum 02 after independent GPT Work critique, not wholesale implementation. Full classified decisions/open gates are at `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 and `MASTER_HANDOFF.md` (2026-10-23 addendum); they replace neither this existing timeline nor Phase 8 M0–M5.
+
+- NOW (DEMO P0): fix i18n Shop category/city form values and other affected controls; 54/56 Chromium results are not a PASS; ensure storage failures are not incorrectly reported as saved; isolate user content from legacy phrase translator; strengthen PR CI, only branch PR.
+- THEN (DEMO P1-D): complete sq/en/it with semantic keys across screens, forms, notices; keep illustrative financial/privacy/analytics paths clearly simulated; audit Shop/Shop Plus state consistency, Settings, browser regression, 7 viewports, accessibility and physical phone screenshots.
+- REAL APP DESIGN: unified account with scoped capabilities and authorization; shared analytics, notification, moderation and multilingual architecture; Shop canonical seller/shop/listing model with three transaction flows, social→listing deep references. Prefer modular backend and evaluate RN/Expo versus Web/PWA using evidence, without vendor lock-in.
+- CONDITIONAL: Shop discovery/inquiries as a narrow MVP differentiator must be pilot-validated. Payments/commissions, full video/DM/dashboards and scaling remain later, gated by economics, legality, privacy and performance. Demo 5% is illustrative only.
+- Not decided: first target country/city, public code visibility/licensing, stack/provider, launch scope, operations budget and payments. No irreversible configuration or merge, no projects outside ILLYRIAN.
+- Independent report: `ILLYRIAN_MASTER_ARCHITECTURE_REVIEW_AND_EXECUTION_PLAN` dated 22 Oct 2026 (Work read-only, snapshot `4a951e4...`). Treat its facts as time-bound and its recommendations as proposals, not blanket approvals.
+
+
+### P0-D progress — Shop select value / UGC fix (23 October 2026)
+Documented accepted architecture in blueprint §10 and handoff. Corrected Shop form/category and city option values to remain stable across translations, and excluded user listing title/seller/description from automatic UI translation. Regression tests extended to 57. **Actions #39865986736: 57/57 passed (Chromium, code SHA `db574224d4849775224fb6ee4df0247aa2f18c46`).** PR #1 stays Draft; no merge, production or main changes. Remaining DEMO gates: localStorage failure rollback, other select values, full semantic localization, mobile/visual/a11y and current Vercel candidate verification.
+
+
+
+### P0-D execution checkpoint — 23 October 2026, verified 65/65
+- Draft PR #1 latest code/test SHA `b0a85f1119149d092328ae912d79299a87b9862f` passed [Chromium Actions #39868919668](https://github.com/titanfit102-bit/Illyrian/actions/runs/39868919668): **65/65 PASS (2.1m)**. Eight tests added after historical 57/57.
+- Corrected Shop base local persistence to rollback failure atomically for create/edit/delete/cart/checkout/inquiry; no false success or discard of prior persisted state.
+- Shop Plus, Connections and Governance now restore last committed in-memory persisted snapshot after storage failure, with corrected Connections success flags. Added explicit values for selected multilingual forms and reason/time selectors, preserving legacy literal data codes.
+- No branch merge, `main` or Production update. Existing demo features remain. Coverage still incomplete for many locale strings, full UGC exclusion, screen reader/mobile/visual review, current Vercel Preview, and consolidated Shop+Shop Plus domain. No claim that 65/65 = finished product.
+- Next P0/P1-D path: audit residual dynamic strings and data-valued controls; preserve unsaved field contents in secondary forms after quota errors; CI PR checks including root i18n path; Vercel candidate verification without plan purchase; manual phone screenshot review after stabilization. Product Phase 8 M0–M5 remains DESIGN/validation, not backend shipped.
+
+
+
+### P1-D localization progress — Connections/Governance (23 Oct 2026)
+Following P0 Shop storage hardening (65/65), updated two additional modules with semantic sq/en/it runtime feedback (23 new keys total), catalog mirrors at **319 keys per locale**, and scoped protection for user-written reports/drafts. Six new Chromium tests cover all three locales, validation, persisted stable values and unchanged user text. **GitHub Actions #39930979544 on code+test SHA `f5478b1716289bec575dfd5e23cd4294132dfcad`: 71/71 PASS (2.1m).** No code copied across other projects, no merges or deployment.
+The scoped CI workflow now includes root `i18n/**` changes in push path filters. Follow-up: Shop Plus dynamic forms/errors, Plans/Privacy, UGC exclusions, locale switching while dialogs are open, PR gating, visual/accessibility QA, Vercel Preview refresh, and the owner's full phone screenshot review. This is not full multilingual certification or production readiness.
+
+
+
+### P1-D Shop Plus localization checkpoint — 23 October 2026
+- Localized 18 Shop Plus dynamic feedback strings for sq/en/it, reaching **337 keys/locale** with 15 namespaces and identical root/demo bundles.
+- Hardened failure UX: failed browser storage writes preserve unsaved form input and prevent false success navigation for Shop Plus listing, request, answer and report flows.
+- Scoped UGC exclusions now cover Shop Plus listing identities/descriptions, buyer requests/answers, reports and shop identifiers. Existing `type/city/reason` values remain stable.
+- Added nine Chromium browser tests since 71 baseline: multilingual feedback and data contract, failed-save retry, UGC unchanged on language switch. **Actions #39935174398 (commit `893538c33dd7cdecf9aa77e359a999d649a7a247`): 80/80 PASS (2.4m).**
+- Branch `feat/i18n-shop-feedback-20261022` / Draft PR #1 only; no merge into DEMO, main or Production. Not a deployment or native-phone acceptance.
+- Next: Plans, Privacy, static Shop Plus UI strings, semantic option labels, remaining forms/dynamic messages, full screen/a11y/visual QA, current Vercel Preview identity and physical device screenshot review. Real backend and live commerce remain gated separately.
+
+
+### P1-D static Shop Plus form localization — 23 October 2026
+- Added **37 sq/en/it form-label and select-display translations** while preserving technical `option.value` and local browser state. Root/demo catalog mirrors have **374 keys per language**, 15 namespaces.
+- Nine new Playwright cases across sq/en/it validate listing creation fields, rental periods, buyer deadline options, report reasons and switching the active language while forms retain user input.
+- **CI #39937253596: 89/89 Chromium PASS (2.6m)**, code/test SHA `429927296870ea6b6d6ca1e90ab3cb4726cb307d`; this is not physical-phone or full i18n coverage.
+- Note: Static fields are currently localized through the existing DOM phrase adapter backed by keys, not direct semantic bindings. Full Shop Plus prose remains under review. Next implementation phases: Plans and Privacy runtime strings/persistence regressions; broader UI/UGC, accessibility/visual, Preview and owner's phone screenshots. No merge/Production.
+
+
+### P1-D Plans verification checkpoint — 23 October 2026
+- 18 new direct localized runtime keys for Plans in sq/en/it, reaching **392 keys/locale**, root/demo synchronized; existing `plans:localStorageError` reused.
+- P0 Plans: failed local writes no longer retain mutated events, join requests, attendance or group messages; failed create/edit keeps form values and shows a storage error without claiming completion. Event titles excluded from transient DOM i18n phrase changes in selected views.
+- Six added QA cases (89→95), including quota failure, cancel rollback, en/it success/validation and storage error messages; [Actions #39938445963](https://github.com/titanfit102-bit/Illyrian/actions/runs/39938445963), tested SHA `8c2ebfd57227f6f4f22ffa377a2067f83022c072`: **95/95 PASS (2.7m)**.
+- Next: Privacy module, remaining static Plans/Shop Plus copy, full UGC/screen reader/mobile/visual QA; verify Vercel Preview and owner phone screenshots. No merge, production, payments, provisioning or branch integration.
+
+
+### P1-D Privacy localization and persistence checkpoint — 23 October 2026
+- Added 26 privacy-map direct semantic sq/en/it keys, synchronized root and demo catalogs at **418 keys/locale**, 15 namespaces. Statuses, follow/group actions, map kinds, state feedback and storage errors now localized in tested paths.
+- Refused browser writes roll back simulated follow/membership state and do not report false success; important **not** to treat client roles as production permission enforcement. Stable `select.value` codes preserved.
+- Targeted UGC protection for selected map names/descriptions and public activity titles; removed duplicated status announcement.
+- Added six browser scenarios since 95 baseline. **CI #39939993711**, code+tests SHA `2048ca78c9d062cb2afa8028251a6f600456c36a`: **101/101 PASS (2.7m)**. Prior 98/101 run led to legitimate duplicate-notice fix.
+- Draft PR #1 remains unmerged. Next: residual static UI strings and direct-key consistency for Privacy/Plans/Shop Plus, full UGC audit, visual/a11y/device QA, Vercel candidate identity, owner's phone screenshots, then app-real M0–M5 decisions.
+
+
+### P1-D Privacy static UI / direct-key compatibility (23 Oct 2026)
+- Added 17 new sq/en/it `privacy:*` keys (435/locale; 15 namespaces), converted scoped Privacy & Map navigation/warnings/header/group/map/state UI to direct semantic translations and preserved unsubmitted map input/focus through live locale changes. Maintained canonical city/filter/status IDs and user-owned text.
+- Critical bug discovered by expanded tests: old DOM phrase adapter retranslated direct Italian `Profili` to `Profilo`. Fixed with explicit `[data-i18n-direct]` boundary in root and demo adapters, distinct from the `[data-user-content]` content exclusion.
+- Nine new Playwright cases since 101 baseline; current **Actions #39944600826 at `d803758ee14cfaa26bc5cab4eee8e27571d5a535` = 110/110 PASS, 2.9m**. Prior failures prompted a real source fix, no test deletion. **PR #1 stays DRAFT/unmerged; no main/Production changes.**
+- Next: direct binding/static copy in Plans/Shop Plus and remaining Privacy blocks; global UGC audit; Android/phone, responsive/keyboard/screenreader, Vercel candidate checks, owner screenshot review. Simulated UI roles are not security backend controls.
+
+
+### P1-D Plans form multilingual integration — 23 October 2026
+- 25 direct semantic translated Plans form keys for sq/en/it; **460 keys/locale**, 15 namespaces and matching root/demo bundles.
+- Listing of stored kinds/cities/visibility codes stays unchanged; visible event form labels, placeholders, option captions and submit action are localized. Explicit `data-i18n-direct` prevents double-translation.
+- Live locale switching retains unsaved event form fields, canonical selection, focus, chat draft and validation text, with no false submission. Targeted user-authored venue/conditions/messages/events are shielded by `data-user-content`.
+- Five added Chromium browser scenarios. [Actions #39946187468](https://github.com/titanfit102-bit/Illyrian/actions/runs/39946187468), exact tested commit `5961a1d90a25b8d7768fe022ec3de3f3760e78a7`: **115/115 PASS (3.0m)**; no tests removed. Draft PR #1 remains unmerged; main/DEMO integration/Production were not modified.
+- Remaining work: more static Plans/Shop Plus/Privacy UI, Shop Plus semantic direct-key conversion, complete UGC inventory, visual/a11y/mobile QA, real Preview verification and owner phone screenshot acceptance. Release/real-app gates unchanged.
+
+
+### P1-D Shop Plus direct-key migration — 23 October 2026
+- Converted key static Shop Plus form, report, buyer need, catalog filter and navigation UI from phrase-based localization into explicit `shopPlus:*` / `shop:*` calls, with `data-i18n-direct` contract; **no new locale keys**. Root/demo locale bundles remain **460 keys/locale, 15 namespaces**.
+- All category, city, sort, period, report-reason, day-count and stored domain IDs stay unchanged; only display labels translate in sq/en/it. Currency remains existing locale-aware EUR formatting.
+- Switching language while Shop Plus is open retains unsaved form text, numeric inputs, dropdown values, checkboxes and focus without submitting a draft. Existing localStorage quota rollback and scoped UGC protections were preserved.
+- Eight new browser tests (115 to 123). Verified [Actions #39948438751](https://github.com/titanfit102-bit/Illyrian/actions/runs/39948438751) on tested code/test SHA `82b62fd06b724e5436a5ed7bbc51b2aa32e1de0f`: **123/123 Playwright Chromium PASS, 2.8m**. Root/demo catalog parity and JS syntax passed.
+- OPEN: further Shop Plus static copy (catalog, shops, product cards, simulation checkout), additional Plans and Privacy fragments, complete UGC inventory, visual/a11y/mobile QA, Vercel Preview SHA, owner review via phone screenshots. Draft PR #1 must remain unmerged; no main/Production modification.
+
+
+### P1-D Shop Plus catalog, merchants and simulated orders — 23 October 2026
+- Added 39 direct sq/en/it catalog/stock/offer/shop/checkout display keys without changing canonical domain data; total **499 keys/locale, 15 namespaces** and identical root/demo bundles.
+- Product and seller names in updated cards/compare listings remain user-originated; promoted badges and inventory labels translate, but no stock verification or real selling exists. Sellers show demonstrative listings only.
+- Simulated checkout continues using illustrative 5% fee, no real payment/delivery/refund. Stored order statuses are unchanged historical codes; translated display labels are applied only at render, with unknown statuses preserved rather than mislabeled.
+- Eight extra Playwright scenarios (123→131), [Actions #39968158271](https://github.com/titanfit102-bit/Illyrian/actions/runs/39968158271), tested SHA `5fe384f89c5ad958825b52c81c6599dd055e1ad2`, **131/131 PASS (3.3m)**. A prior selector-only test regression was fixed without deleting tests.
+- Still OPEN: further static strings in item detail, buyer-request board and replies, moderation/reporting, rental time labels, plus remaining Plans/Privacy UI, accessibility/responsiveness/global UGC and real Preview/physical-phone acceptance. Draft PR #1 remains unmerged. Do not touch main/DEMO integration/Production without explicit approval.

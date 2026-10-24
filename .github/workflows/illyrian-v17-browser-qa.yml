@@ -1,6 +1,7 @@
 name: ILLYRIAN v1.7 Chromium QA
 # Runner outage resolved: Playwright passed 10/10 on real ubuntu-latest runner.
-# Restrict automatic runs to changes that can affect the demo or QA harness.
+# Feature-branch commits are covered by the open PR's required-check candidates.
+# Avoid duplicate Chromium runs for a single PR update; preserve integration push QA.
 on:
   push:
     branches:
@@ -9,9 +10,17 @@ on:
       - 'demo/**/*.html'
       - 'demo/**/*.css'
       - 'demo/**/*.js'
+      - 'i18n/**' # Root locale edits must trigger the browser localization tests
       - 'qa/**'
       - 'playwright.config.cjs'
       - '.github/workflows/illyrian-v17-browser-qa.yml'
+  # Stage a future merge gate on the integration branch, not on main.
+  # Do not path-filter required PR checks: skipped checks can remain pending.
+  # This will only run for PRs targeting the integration branch once the
+  # workflow configuration is present and active on the target branch.
+  pull_request:
+    branches:
+      - demo/v1.7-illyrian-shop
   workflow_dispatch:
 
 permissions:
@@ -25,12 +34,15 @@ concurrency:
 
 jobs:
   browser-smoke:
+    name: browser-smoke-${{ github.event_name }}
     if: github.repository == 'titanfit102-bit/Illyrian'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
       - name: Checkout isolated demo branch
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false # Tests cannot access the checkout token
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -66,3 +78,37 @@ jobs:
           path: qa-results/i18n-inventory/
           if-no-files-found: ignore
           retention-days: 14
+
+  # Bounded WebKit engine probe, not an iOS-device or VoiceOver certification.
+  # PR-only avoids repeating WebKit work on the same feature push.
+  webkit-smoke:
+    name: webkit-smoke-${{ github.event_name }}
+    if: github.repository == 'titanfit102-bit/Illyrian' && github.event_name == 'pull_request'
+    needs: browser-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - name: Checkout isolated demo branch (read-only)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Playwright test runner
+        run: npm install --no-save --no-audit --no-fund @playwright/test@1.55.1
+      - name: Install WebKit and CI system libraries
+        run: npx playwright install --with-deps webkit
+      - name: Run bounded WebKit Reels and Stories keyboard smoke
+        run: npx playwright test --config=playwright.webkit.config.cjs
+      - name: Preserve WebKit failures for diagnosis
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: illyrian-v17-webkit-failures
+          path: |
+            qa-results/artifacts-webkit/
+            qa-results/report-webkit/
+          if-no-files-found: ignore
+          retention-days: 7
