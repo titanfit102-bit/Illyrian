@@ -58,7 +58,8 @@ All must be demonstrably satisfied before suggesting owner sign-off:
 
 ## 5. Current evidence ledger (not results from this document)
 - Prior confirmed CI: [177/177 PR run #40085347389](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085347389) and [177/177 push run #40085343736](https://github.com/titanfit102-bit/Illyrian/actions/runs/40085343736), exact QA SHA `d4f9bba2c5836fa21d44c9abd72d9a1c79b4353a`.
-- Reels keyboard regression cases added afterward at `d9219abb92439b6a8cd1cdb89e3c4a3fe7a7bde2`; **result requires its own exact-SHA CI check**.
-- F05 HTTP root, manual phone, screenreader and owner sign-off remain OPEN unless separate new evidence is recorded.
+- **Historical QA:** first Reels keyboard regression cases at `d9219abb92439b6a8cd1cdb89e3c4a3fe7a7bde2` initially exposed a failed focus return, fixed by later commits; latest passing 189/189 supersedes those failing attempts.
+- **F05 PASS:** source SHA `4e57bb5cc22de1dd750c329a82957e6b0cbfaf57`, Preview `dpl_5XHeZrwthaDnjv2dMCyVcmmzXXn3` READY, protected `GET /` returned HTTP 200 with full committed HTML prefix and a Vercel feedback script appended. **16/16** referenced assets HTTP 200 with exact source parity. Does not imply anonymous unprotected access.
+- **Latest CI:** [PR #40093963203](https://github.com/titanfit102-bit/Illyrian/actions/runs/40093963203) and [push #40093960592](https://github.com/titanfit102-bit/Illyrian/actions/runs/40093960592): **189/189 PASS each**, exact SHA `4e57bb5cc22de1dd750c329a82957e6b0cbfaf57`. Physical phone, actual screenreaders, F06 enforcement and owner sign-off remain OPEN / NOT TESTED.
 
 **Source of authority:** `CURRENT_STATE.md`, `MASTER_HANDOFF.md` active section, GitHub LIVE code/CI, existing DEMO architecture. This file is a QA execution aid, not an assertion that cases were performed.
