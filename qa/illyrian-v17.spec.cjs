@@ -96,3 +96,18 @@ test('F05 branch-local Preview entrypoint resolves to DEMO v1.7 in Vercel config
  expect(roots[0].destination).toBe('/ILLYRIAN_DEMO_v1.7.html');
  expect(fs.existsSync(path.resolve(__dirname,'../demo/ILLYRIAN_DEMO_v1.7.html'))).toBe(true);
 });
+
+
+test('F06 staged integration PR workflow guard remains read-only and never path-skipped',async()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const yaml=fs.readFileSync(path.resolve(__dirname,'../.github/workflows/illyrian-v17-browser-qa.yml'),'utf8');
+ // This is an explicit policy regression, not a YAML parser or a live PR check.
+ const prBlock=yaml.match(/^  pull_request:\s*\n((?:^[ \t]{4,}.*\n|^\s*\n)*)/m);
+ expect(prBlock,'pull_request event must be configured').toBeTruthy();
+ expect(prBlock[1]).toMatch(/^    branches:\s*\n      - demo\/v1\.7-illyrian-shop\s*$/m);
+ expect(prBlock[1]).not.toMatch(/^    paths(?:-ignore)?:/m);
+ expect(yaml).toMatch(/^permissions:\s*\n  contents: read\s*$/m);
+ expect(yaml).toMatch(/^\s+persist-credentials: false\b/m);
+ expect(yaml).toMatch(/^  workflow_dispatch:\s*$/m);
+ expect(yaml).not.toMatch(/^  pull_request_target:\s*$/m);
+});
