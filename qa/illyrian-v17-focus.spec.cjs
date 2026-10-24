@@ -379,3 +379,46 @@ for(const [width,height] of [[390,844],[844,390]]){
   });
  }
 }
+
+
+// Reel-to-profile and chat restores internal focus when returning to Reel,
+// without disrupting the focus return to the navbar when Reel finally closes.
+// Test real keyboard events with both the explicit Back button and Escape.
+for(const [width,height] of [[390,844],[844,390]]){
+ for(const [action,description] of [['reel-chat','chat'],['reel-person','profile']]){
+  test('Reel-to-profile and chat restores internal focus - '+description+' '+width+'x'+height,async({page})=>{
+   await page.setViewportSize({width,height});
+   await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+   const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+   if(await guest.isVisible()){
+    await guest.click();
+    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+   }
+   const opener=page.locator('#navbar [data-act="open-reels"]');
+   await opener.focus();
+   await expect(opener).toBeFocused();
+   await opener.click();
+   const reel=page.locator('#layer .v4-reel-overlay');
+   const trigger=reel.locator('[data-act="'+action+'"]');
+   for(const closeMode of ['back','Escape']){
+    await expect(reel).toBeVisible();
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    const modal=page.locator('#layer .modal[role="dialog"][aria-modal="true"]');
+    await expect(modal).toBeVisible();
+    await expect(reel).toHaveCount(0);
+    if(closeMode==='back')await modal.locator('[data-act="v16-reel-back"]').click();
+    else await page.keyboard.press('Escape');
+    await expect(reel).toBeVisible();
+    await expect(modal).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+    await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+   }
+   await page.keyboard.press('Escape');
+   await expect(reel).toHaveCount(0);
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+   await expect(opener).toBeFocused();
+  });
+ }
+}

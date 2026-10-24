@@ -1728,6 +1728,11 @@ document.head.appendChild(v15Style);
     state.tab=from.tab;render({scroll:true});
     const screen=document.querySelector('#screen');
     if(screen)screen.scrollTop=from.scroll;
+    // The Reel dialog stays open when returning from a profile/chat. Restore
+    // the trigger within this Reel, not the generic first close button.
+    if(['reel-chat','reel-person'].includes(from.focusAction)){
+      document.querySelector('#layer .v4-reel-overlay [data-act="'+from.focusAction+'"]')?.focus({preventScroll:true});
+    }
     return true;
   }
   // Legacy buttons and overlay dismissal both call close(); preserve Reel origin in either case.
@@ -1747,7 +1752,7 @@ document.head.appendChild(v15Style);
   function handle(action,id,val){
     if(action==='reel-person'||action==='reel-chat'){
       if(!state.reelOpen)return false;
-      memory.reelReturn={index:state.reelIndex,tab:state.tab,scroll:Number(document.querySelector('#screen')?.scrollTop||0)};
+      memory.reelReturn={index:state.reelIndex,tab:state.tab,scroll:Number(document.querySelector('#screen')?.scrollTop||0),focusAction:action};
       openModal(action==='reel-chat'?'chat':'user-profile',id);return true;
     }
     if(action==='v16-reel-back')return restoreReel();
