@@ -106,6 +106,12 @@ test('F06 staged integration PR workflow guard remains read-only and never path-
  expect(prBlock,'pull_request event must be configured').toBeTruthy();
  expect(prBlock[1]).toMatch(/^    branches:\s*\n      - demo\/v1\.7-illyrian-shop\s*$/m);
  expect(prBlock[1]).not.toMatch(/^    paths(?:-ignore)?:/m);
+ // An open feature PR already triggers Chromium + WebKit checks. Feature push
+ // duplicates those Chromium minutes; integration-branch pushes remain covered.
+ const pushBlock=yaml.match(/^  push:\s*\n((?:^[ \\t]{4,}.*\n|^\s*\n)*)/m);
+ expect(pushBlock,'integration push QA must remain configured').toBeTruthy();
+ expect(pushBlock[1]).toMatch(/^    branches:\s*\n      - demo\/v1\.7-illyrian-shop\s*$/m);
+ expect(pushBlock[1]).not.toContain('feat/i18n-');
  expect(yaml).toMatch(/^permissions:\s*\n  contents: read\s*$/m);
  expect(yaml).toMatch(/^\s+persist-credentials: false\b/m);
  expect(yaml).toMatch(/^  workflow_dispatch:\s*$/m);
