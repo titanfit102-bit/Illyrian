@@ -111,3 +111,18 @@ test('F06 staged integration PR workflow guard remains read-only and never path-
  expect(yaml).toMatch(/^  workflow_dispatch:\s*$/m);
  expect(yaml).not.toMatch(/^  pull_request_target:\s*$/m);
 });
+
+
+// Required-check candidates must be distinct for PR and push even when
+// both events produce checks for the same SHA. GitHub counts skipped as a
+// successful conclusion, so a push-side skipped WebKit check must not have
+// the same name as the actual PR WebKit job.
+test('F06 PR status check names are unambiguous across events',async()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const yaml=fs.readFileSync(path.resolve(__dirname,'../.github/workflows/illyrian-v17-browser-qa.yml'),'utf8');
+ const eventNameExpression='$'+'{{ github.event_name }}';
+ for(const name of ['browser-smoke','webkit-smoke']){
+  expect(yaml).toContain('  '+name+':\n    name: '+name+'-'+eventNameExpression);
+ }
+ expect(yaml).toMatch(/^  webkit-smoke:\s*\n(?:.*\n){0,4}    if: .*github\.event_name == 'pull_request'/m);
+});
