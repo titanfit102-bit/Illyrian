@@ -14,7 +14,9 @@ async function enterDemo(page,width,height){
   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').tap();
  }
  await expect(page.locator('#v7-auth.visible')).toHaveCount(0);
- expect(await page.evaluate(()=>navigator.maxTouchPoints)).toBeGreaterThan(0);
+ // Do not assert navigator.maxTouchPoints: Linux WebKit may expose 0 even
+ // for hasTouch-enabled Playwright contexts. Real tap() calls below enforce
+ // touch-capable contexts and check whether the UI responds to touch.
 }
 
 for(const [width,height] of [[390,844],[844,390]]){
