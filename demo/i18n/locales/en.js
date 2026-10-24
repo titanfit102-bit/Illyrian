@@ -476,6 +476,9 @@ window.ILLYRIAN_LOCALES.en={
     "activities": "Demo connections and activities"
   },
   "privacy": {
+    "tabsAria": "Phase 4 sections",
+    "mapAria": "Illustrative results map",
+    "pinAria": "Show {{name}} in {{city}}",
     "groupTitle": "Communities with rules and roles",
     "groupIntro": "In a private community only approved members see the content. This illustrates access control, not server-side security.",
     "mapHeading": "Discover activities and businesses by city",

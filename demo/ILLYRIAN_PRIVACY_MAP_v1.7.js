@@ -45,7 +45,7 @@
  const statusLabel=x=>({none:feedback('statusNone','Pa kërkesë'),pending:feedback('statusPending','Në pritje'),accepted:feedback('statusAccepted','I pranuar'),declined:feedback('statusDeclined','Refuzuar'),blocked:feedback('statusBlocked','I bllokuar')})[x||'none'];
  const note=()=>state.notice?'<p class="il4-notice" role="status">'+escaped(state.notice)+'</p>':'';
  const header=()=>'<header class="il4-head"><div><small>ILLYRIAN · SIGURI & ZBULIM</small><h2 data-i18n-direct>'+ui('title','Privatësia dhe harta')+'</h2></div>'+b('close','✕ Mbyll')+'</header><p class="il4-warning" data-i18n-direct>'+ui('warning','Prototip me identitete dhe vende të sajuara. Rolet dhe lejet janë vetëm simulim lokal; nuk ofrojnë siguri reale.')+'</p>';
- const tabRow=()=>'<nav class="il4-tabs" aria-label="Fushat e Fazës 4">'+[
+ const tabRow=()=>'<nav class="il4-tabs" aria-label="'+ui('tabsAria','Fushat e Fazës 4')+'">'+[
   ['profiles',feedback('profiles','Profilet')],['groups',feedback('communities','Komunitetet')],['map',feedback('map','Harta')],['states',feedback('states','Gjendjet e planeve')]
  ].map(([id,t])=>b('tab:'+id,t,(id===state.tab?'aria-current="page" ':'')+'data-i18n-direct="1"')).join('')+'</nav>';
  const currentProfile=()=>people.find(p=>p.id===state.selected)||people[0];
@@ -87,7 +87,8 @@
   const query=state.search.trim().toLocaleLowerCase('sq');
   return all.filter(p=>(state.city==='Të gjitha'||p.city===state.city)&&(state.mapKind==='all'||p.kind===state.mapKind)&&(!query||[p.name,p.city,p.detail].join(' ').toLocaleLowerCase('sq').includes(query)));
  };
- const pin=(p,i,sel)=>'<button type="button" class="il4-pin '+(sel?'selected':'')+'" data-il4="pin:'+escaped(p.id)+'" style="left:'+((21+(i*37)%63))+'%;top:'+((18+(i*23)%62))+'%" aria-label="'+escaped('Shfaq '+p.name+' në '+p.city)+'">'+(p.kind==='business'?'▣':'●')+'</button>';
+ const pinLabel=p=>escaped(window.IllyrianI18n?.t("privacy:pinAria",{name:p.name,city:p.city})||("Shfaq "+p.name+" në "+p.city));
+ const pin=(p,i,sel)=>'<button type="button" class="il4-pin '+(sel?'selected':'')+'" data-il4="pin:'+escaped(p.id)+'" style="left:'+((21+(i*37)%63))+'%;top:'+((18+(i*23)%62))+'%" aria-label="'+pinLabel(p)+'">'+(p.kind==='business'?'▣':'●')+'</button>';
  const mapPage=()=>{
   const list=pins(),selected=list.find(p=>p.id===state.selectedPin)||list[0];
   return '<h3 data-i18n-direct>'+ui('mapHeading','Zbulo aktivitetet dhe bizneset sipas qytetit')+'</h3><p class="il4-muted"><b>'+ui('mapDisclaimer','Hartë skematike — JO hartë gjeografike.')+'</b> '+ui('mapExplanation','Pozicionet e pikave janë ilustrative; nuk tregojnë koordinata, rrugë apo distanca reale.')+'</p>'+
@@ -95,7 +96,7 @@
   '<label data-i18n-direct>'+ui('mapKind','Lloji')+'<select name="kind">'+[['all',feedback('mapAll','Të gjitha')],['activity',feedback('mapActivities','Aktivitete')],['business',feedback('mapBusinesses','Biznese')]].map(([k,v])=>'<option '+(k===state.mapKind?'selected ':'')+'value="'+k+'">'+escaped(v)+'</option>').join('')+'</select></label>'+
   '<label data-i18n-direct>'+ui('mapSearch','Kërko')+'<input name="q" maxlength="60" value="'+escaped(state.search)+'" placeholder="'+ui('mapPlaceholder','P.sh. kafe, futboll, dyqan')+'"></label>'+
   '<button type="submit" data-i18n-direct>'+ui('mapFilter','Filtro')+'</button></form>'+
-  '<div class="il4-map" aria-label="Skemë orientuese e rezultateve"><div class="il4-grid-lines"></div>'+
+  '<div class="il4-map" aria-label="'+ui('mapAria','Skemë orientuese e rezultateve')+'"><div class="il4-grid-lines"></div>'+
   '<div class="il4-map-label" data-i18n-direct>ILLYRIAN · DEMO · '+(state.city===cities[0]?ui('mapAll',state.city):escaped(state.city))+'</div>'+
   list.slice(0,16).map((p,i)=>pin(p,i,selected?.id===p.id)).join('')+
   (list.length?'':'<p class="il4-no-pins">'+ui('mapNoResults','Nuk u gjetën shembuj për filtrat.')+'</p>')+'</div>'+

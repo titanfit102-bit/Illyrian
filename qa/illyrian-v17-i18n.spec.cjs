@@ -1749,3 +1749,30 @@ test('visual regression: Privacy city All caption localizes, canonical filter va
  await root.locator('button[data-il4="close"]').click();
  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
 });
+
+
+test('Privacy map pin ARIA localization preserves focus and user-origin names across sq/en/it',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ const root=page.locator('#il4-root');
+ await root.locator('[data-il4="tab:map"]').click();
+ const pin=root.locator('.il4-pin[data-il4="pin:m1"]');
+ await expect(pin).toBeVisible();
+ await pin.focus();
+ for(const [lang,region,tabs,label] of [
+  ['sq','Skemë orientuese e rezultateve','Fushat e Fazës 4','Shfaq Takim i komunitetit në Tiranë'],
+  ['en','Illustrative results map','Phase 4 sections','Show Takim i komunitetit in Tiranë'],
+  ['it','Mappa illustrativa dei risultati','Sezioni della fase 4','Mostra Takim i komunitetit a Tiranë']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('html')).toHaveAttribute('lang',lang);
+  await expect(root.locator('.il4-map')).toHaveAttribute('aria-label',region);
+  await expect(root.locator('nav.il4-tabs').first()).toHaveAttribute('aria-label',tabs);
+  await expect(pin).toHaveAttribute('aria-label',label);
+  await expect(pin).toBeFocused();
+  await expect(pin).toHaveAttribute('data-il4','pin:m1');
+ }
+ await root.locator('button[data-il4="close"]').click();
+ await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+});

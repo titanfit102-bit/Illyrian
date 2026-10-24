@@ -476,6 +476,9 @@ window.ILLYRIAN_LOCALES.sq={
     "activities": "Lidhjet dhe aktivitetet demonstrative"
   },
   "privacy": {
+    "tabsAria": "Fushat e Fazës 4",
+    "mapAria": "Skemë orientuese e rezultateve",
+    "pinAria": "Shfaq {{name}} në {{city}}",
     "groupTitle": "Komunitete me rregulla dhe role",
     "groupIntro": "Në një komunitet privat vetëm anëtarët e pranuar shohin përmbajtjen. Ky është një shembull i kontrolleve të aksesit, jo siguri serveri.",
     "mapHeading": "Zbulo aktivitetet dhe bizneset sipas qytetit",

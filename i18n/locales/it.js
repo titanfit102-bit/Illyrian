@@ -476,6 +476,9 @@ window.ILLYRIAN_LOCALES.it={
     "activities": "Legami e attività dimostrative"
   },
   "privacy": {
+    "tabsAria": "Sezioni della fase 4",
+    "mapAria": "Mappa illustrativa dei risultati",
+    "pinAria": "Mostra {{name}} a {{city}}",
     "groupTitle": "Comunità con regole e ruoli",
     "groupIntro": "In una comunità privata solo i membri approvati vedono i contenuti. È una dimostrazione del controllo degli accessi, non della sicurezza del server.",
     "mapHeading": "Scopri attività e aziende per città",
