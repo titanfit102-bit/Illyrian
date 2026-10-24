@@ -77,3 +77,36 @@ jobs:
           path: qa-results/i18n-inventory/
           if-no-files-found: ignore
           retention-days: 14
+
+  # Bounded WebKit engine probe, not an iOS-device or VoiceOver certification.
+  # PR-only avoids repeating WebKit work on the same feature push.
+  webkit-smoke:
+    if: github.repository == 'titanfit102-bit/Illyrian' && github.event_name == 'pull_request'
+    needs: browser-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - name: Checkout isolated demo branch (read-only)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Playwright test runner
+        run: npm install --no-save --no-audit --no-fund @playwright/test@1.55.1
+      - name: Install WebKit and CI system libraries
+        run: npx playwright install --with-deps webkit
+      - name: Run bounded WebKit Reels and Stories keyboard smoke
+        run: npx playwright test --config=playwright.webkit.config.cjs
+      - name: Preserve WebKit failures for diagnosis
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: illyrian-v17-webkit-failures
+          path: |
+            qa-results/artifacts-webkit/
+            qa-results/report-webkit/
+          if-no-files-found: ignore
+          retention-days: 7
