@@ -302,3 +302,43 @@ for(const [width,height] of [[390,844],[844,390]]){
   await expect(opener).toBeFocused();
  });
 }
+
+
+// Built-in Stories keyboard focus across navigation and Escape.
+// Exercises the original story-open button after DOM re-render and verifies
+// focus containment when moving to the next story; no publishing is triggered.
+for(const [width,height] of [[390,844],[844,390]]){
+ test('Built-in Stories keyboard focus across navigation and Escape - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  const opener=page.locator('#screen [data-act="story"][data-val="1"]').first();
+  await opener.focus();
+  await expect(opener).toBeFocused();
+  await opener.click();
+  const story=page.locator('#layer .story-overlay');
+  await expect(story).toBeVisible();
+  await expect(story).toHaveAttribute('role','dialog');
+  await expect(story).toHaveAttribute('aria-modal','true');
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+  const first=story.locator('button:not([disabled]):visible').first();
+  const last=story.locator('button:not([disabled]):visible').last();
+  await expect(first).toBeFocused();
+  await last.focus();
+  await page.keyboard.press('Tab');
+  await expect(first).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(last).toBeFocused();
+  await story.locator('[data-act="nextStory"]').click();
+  await expect(story).toBeVisible();
+  expect(await story.evaluate(node=>node.contains(document.activeElement))).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(story).toHaveCount(0);
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+  await expect(opener).toBeFocused();
+ });
+}
