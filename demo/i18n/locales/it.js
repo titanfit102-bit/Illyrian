@@ -166,6 +166,8 @@ window.ILLYRIAN_LOCALES.it={
     "write": "Scrivi un messaggio..."
   },
   "plans": {
+    "listIntro": "Passa dal ruolo di organizzatore a quello di partecipante per provare tutto il percorso. Non ci sono persone o attività reali.",
+    "demoFootnote": "PROTOTIPO · Nessuna partecipazione, pagamento o messaggio reale.",
     "formCreate": "Crea attività",
     "formEdit": "Modifica attività",
     "formName": "Titolo",

@@ -166,6 +166,8 @@ window.ILLYRIAN_LOCALES.en={
     "write": "Write a message..."
   },
   "plans": {
+    "listIntro": "Switch between organizer and participant to explore the full workflow. No real people or activities are involved.",
+    "demoFootnote": "PROTOTYPE · No real participation, payments or messages.",
     "formCreate": "Create activity",
     "formEdit": "Edit activity",
     "formName": "Title",

@@ -166,6 +166,8 @@ window.ILLYRIAN_LOCALES.sq={
     "write": "Shkruaj mesazh..."
   },
   "plans": {
+    "listIntro": "Kalo midis organizatorit dhe pjesëmarrësit për të provuar të gjithë procesin. Nuk ka persona apo aktivitete reale.",
+    "demoFootnote": "PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.",
     "formCreate": "Krijo aktivitetin",
     "formEdit": "Redakto aktivitetin",
     "formName": "Titulli",

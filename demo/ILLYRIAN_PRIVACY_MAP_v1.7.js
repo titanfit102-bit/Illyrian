@@ -91,12 +91,12 @@
  const mapPage=()=>{
   const list=pins(),selected=list.find(p=>p.id===state.selectedPin)||list[0];
   return '<h3 data-i18n-direct>'+ui('mapHeading','Zbulo aktivitetet dhe bizneset sipas qytetit')+'</h3><p class="il4-muted"><b>'+ui('mapDisclaimer','Hartë skematike — JO hartë gjeografike.')+'</b> '+ui('mapExplanation','Pozicionet e pikave janë ilustrative; nuk tregojnë koordinata, rrugë apo distanca reale.')+'</p>'+
-  '<form id="il4-mapform"><label data-i18n-direct>'+ui('mapCity','Qyteti')+'<select name="city">'+cities.map(c=>'<option '+(c===state.city?'selected ':'')+'value="'+escaped(c)+'">'+escaped(c)+'</option>').join('')+'</select></label>'+
+  '<form id="il4-mapform"><label data-i18n-direct>'+ui('mapCity','Qyteti')+'<select name="city">'+cities.map(c=>'<option '+(c===state.city?'selected ':'')+'value="'+escaped(c)+'">'+(c===cities[0]?ui('mapAll',c):escaped(c))+'</option>').join('')+'</select></label>'+
   '<label data-i18n-direct>'+ui('mapKind','Lloji')+'<select name="kind">'+[['all',feedback('mapAll','Të gjitha')],['activity',feedback('mapActivities','Aktivitete')],['business',feedback('mapBusinesses','Biznese')]].map(([k,v])=>'<option '+(k===state.mapKind?'selected ':'')+'value="'+k+'">'+escaped(v)+'</option>').join('')+'</select></label>'+
   '<label data-i18n-direct>'+ui('mapSearch','Kërko')+'<input name="q" maxlength="60" value="'+escaped(state.search)+'" placeholder="'+ui('mapPlaceholder','P.sh. kafe, futboll, dyqan')+'"></label>'+
   '<button type="submit" data-i18n-direct>'+ui('mapFilter','Filtro')+'</button></form>'+
   '<div class="il4-map" aria-label="Skemë orientuese e rezultateve"><div class="il4-grid-lines"></div>'+
-  '<div class="il4-map-label">ILLYRIAN · DEMO · '+escaped(state.city)+'</div>'+
+  '<div class="il4-map-label" data-i18n-direct>ILLYRIAN · DEMO · '+(state.city===cities[0]?ui('mapAll',state.city):escaped(state.city))+'</div>'+
   list.slice(0,16).map((p,i)=>pin(p,i,selected?.id===p.id)).join('')+
   (list.length?'':'<p class="il4-no-pins">'+ui('mapNoResults','Nuk u gjetën shembuj për filtrat.')+'</p>')+'</div>'+
   (selected?'<article class="il4-card"><h4 data-user-content>'+escaped(selected.name)+'</h4><p>'+escaped(selected.city)+' · '+(selected.kind==='business'?ui('mapBusiness','Biznes'):ui('mapActivity','Aktivitet'))+'</p><p data-user-content>'+escaped(selected.detail)+'</p></article>':'')+

@@ -85,7 +85,7 @@
     return html+button('list','Kthehu te aktivitetet');
   };
   const content=()=>state.view==='form'?form():state.view==='detail'?detail():
-   `<p class="ilp-muted">Kalo midis organizatorit dhe pjesëmarrësit për të provuar të gjithë procesin. Nuk ka persona apo aktivitete reale.</p>
+   `<p class="ilp-muted ilp-intro" data-i18n-direct>${ui("listIntro","Kalo midis organizatorit dhe pjesëmarrësit për të provuar të gjithë procesin. Nuk ka persona apo aktivitete reale.")}</p>
    ${state.role==='organizer'?button('new','+ Krijo aktivitet'):''}
    ${state.events.filter(e=>state.role==='organizer'||e.privacy==='public').map(summary).join('')}`;
   function render(){
@@ -96,7 +96,7 @@
     <header><div><small>ILLYRIAN · PLANE</small><h2>Aktivitetet dhe organizatori</h2></div>${button('close','✕')}</header>
     <nav aria-label="${ui('role','Roli i demonstrimit')}">${button('role:organizer','Si organizator',state.role==='organizer'?'class="chosen"':'')}${button('role:participant','Si pjesëmarrës',state.role==='participant'?'class="chosen"':'')}</nav>
     ${state.notice?`<p class="ilp-notice" role="status">${escape(state.notice)}</p>`:''}
-    ${content()}<p class="ilp-muted ilp-foot">PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.</p></div>`;
+    ${content()}<p class="ilp-muted ilp-foot" data-i18n-direct>${ui("demoFootnote","PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.")}</p></div>`;
     renderedLanguage=window.IllyrianI18n?.language||'en';
     sync();
   }
@@ -182,6 +182,8 @@
     if(state.view==='list'&&!state.notice){
       root.querySelector('.ilp-panel')?.setAttribute('aria-label',feedback('title','Aktivitetet dhe organizatori'));
       root.querySelector('.ilp-panel nav')?.setAttribute('aria-label',feedback('role','Roli i demonstrimit'));
+      const intro=root.querySelector('.ilp-intro');if(intro)intro.textContent=feedback('listIntro','Kalo midis organizatorit dhe pjesëmarrësit për të provuar të gjithë procesin. Nuk ka persona apo aktivitete reale.');
+      const foot=root.querySelector('.ilp-foot');if(foot)foot.textContent=feedback('demoFootnote','PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.');
       renderedLanguage=window.IllyrianI18n?.language;
       return;
     }

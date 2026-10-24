@@ -1707,3 +1707,45 @@ test('Shop Plus category-specific save and edit strip irrelevant metadata',async
  const revised=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
  expect(revised).toMatchObject({type:'Banesa me qira',year:null,mileage:null,area:88,period:'javë'});
 });
+
+test('visual regression: Plans intro and prototype note follow sq/en/it without losing focus',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('[data-ilp-entry]').first().click();
+ const root=page.locator('#ilp-root');
+ const close=root.locator('header button[data-ilp="close"]');
+ await expect(close).toBeFocused();
+ for(const [lang,intro,foot] of [
+  ['sq','Kalo midis organizatorit','PROTOTIP'],
+  ['en','Switch between organizer and participant','PROTOTYPE'],
+  ['it','Passa dal ruolo di organizzatore','PROTOTIPO']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('html')).toHaveAttribute('lang',lang);
+  await expect(root.locator('.ilp-intro')).toContainText(intro);
+  await expect(root.locator('.ilp-foot')).toContainText(foot);
+  await expect(close).toBeFocused();
+ }
+ await close.click();
+ await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+});
+
+test('visual regression: Privacy city All caption localizes, canonical filter value and focus remain stable',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ const root=page.locator('#il4-root');
+ await root.locator('[data-il4="tab:map"]').click();
+ const city=root.locator('#il4-mapform select[name="city"]');
+ await city.focus();
+ for(const [lang,label] of [['sq','Të gjitha'],['en','All'],['it','Tutte']]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('html')).toHaveAttribute('lang',lang);
+  await expect(city).toHaveValue('Të gjitha');
+  await expect(city.locator('option').first()).toHaveText(label);
+  await expect(root.locator('.il4-map-label')).toContainText('ILLYRIAN · DEMO · '+label);
+  await expect(city).toBeFocused();
+ }
+ await root.locator('button[data-il4="close"]').click();
+ await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+});
