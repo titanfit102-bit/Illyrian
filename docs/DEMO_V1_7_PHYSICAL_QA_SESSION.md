@@ -1,0 +1,67 @@
+# ILLYRIAN DEMO v1.7 — Fleta praktike e testimit në telefon
+
+> **Status fillestar: NOT TESTED.** Kjo fletë është për të mbledhur rezultate reale. Nuk është raport testi i kryer, certifikim i aksesueshmërisë apo autorizim për release.
+> Repository: `titanfit102-bit/Illyrian` · Draft PR #1, target `demo/v1.7-illyrian-shop` · dega e autorizuar `feat/i18n-shop-feedback-20261022`.
+
+## 1. Hap versionin e saktë
+
+**Preview i pandryshueshëm i kontrolluar:** https://illyrian-demo-2wmtumank-un24.vercel.app/
+
+- Preview deployment `dpl_E85yYPXWuvWZ8t35WMTHLLGNJVKi`, HEAD i dokumentacionit `2b9c226bbd05b2ca7e9fcfced7aed2fd5d64b636`, kod/QA i fundit i verifikuar `b36708848d0b869ffa71238d81b0a35c007e82c6`. Në GitHub [Actions #40105377537](https://github.com/titanfit102-bit/Illyrian/actions/runs/40105377537), PR-triggered CI për docs HEAD është **success**; [Actions #40104667894](https://github.com/titanfit102-bit/Illyrian/actions/runs/40104667894) mbi SHA-në e kodit: **190/190 Chromium + 16/16 emulated WebKit PASS**.
+- Vercel API e shënoi Preview `READY`, dhe leximi i autorizuar i rrugës `/` ktheu **HTTP 200** me HTML-në identike si prefiks i skedarit në GitHub (plus skriptin e feedback-ut të Vercel). Kjo nuk garanton hyrje anonime nga telefoni.
+- Hape në **Android Chrome fizik**, pastaj në **iPhone Safari fizik** nëse është i disponueshëm. Nëse kërkohet identifikim Vercel, përdor llogarinë me leje; **mos** çaktivizo SSO/protection dhe mos shpërnda bypass token.
+- Mos përdor Production ose URL të një deploy-i tjetër si provë. Nëse nuk hapet, shëno **BLOCKED — Vercel access**, me status dhe screenshot pa kredenciale.
+
+## 2. Formulari i një sesioni
+
+Plotëso një kopje të këtij blloku për çdo kombinim pajisjeje/shfletuesi. **Mos regjistro numra telefoni, adresa, fjalëkalime, identitete apo të dhëna personale.**
+
+```text
+Kodi i sesionit: MOBILE-________
+Data/ora lokale: ____________
+Pajisja/modeli: ____________
+Sistemi/Versioni: ____________
+Browser/Versioni: ____________
+Orientimi: Portrait / Landscape
+Gjuha e DEMO-s: sq / en / it
+Preview deployment: dpl_E85yYPXWuvWZ8t35WMTHLLGNJVKi
+Test code SHA: b36708848d0b869ffa71238d81b0a35c007e82c6
+QA operator: ____________ (mund të përdoret pseudonim)
+Rezultati total: PASS / FAIL / BLOCKED / NOT TESTED
+Problemet e gjetura / screenshot-et: ____________
+```
+
+## 3. Rruga prioritare (rreth 10–15 minuta për sesion, pa garantuar kohë)
+
+- [ ] **P01 / M01–M02 — Hapja dhe orientimi:** hyr si vizitor, kalo turin, vizito tab-et Home/Explore/Events/Profile; ktheje telefonin landscape dhe portrait. Pa ekrane bosh, scroll horizontal të dokumentit apo butona të paarritshëm.
+- [ ] **P02 / M04 — Stories/Reels:** hap Story dhe Reel nga Home; kalo te Story/Reel tjetër, mbylli me **X**. Për Reel, testo edhe kalimin në profil/bisedë dhe **Kthehu te Reel**. Fokusi i tastierës verifikohet vetëm nëse pajisja ka tastierë të lidhur; prekja nuk e certifikon fokusin.
+- [ ] **P03 / M10–M12 — Shop + Shop Plus:** hap Shop → Shop Plus → Kërkoj… → Katalog → Krijo. Ndrysho kategorinë Produkte/Makina/Banesa me qira/Shërbime; shiko që fushat e papërshtatshme zhduken dhe butoni mbyll dialogun. Mos e publiko listimin.
+- [ ] **P04 / M06–M09 — Plans/Connections/Privacy/Governance:** hap dhe mbyll panelet, testo kthimin te tab-i i mëparshëm, ruajtjen e tekstit të draftit dhe gjuhën sq/en/it pa ndryshuar vlerat e futura. Mos dërgo raportime reale.
+- [ ] **P05 / M16–M17 — Aksesueshmëria:** aktivizo TalkBack në Android ose VoiceOver në iOS dhe lëviz në butonat e modalit. A lexohen emrat, etiketat, gabimet? A mund të dalësh nga modali? Provo madhësinë e tekstit të rritur. Nëse nuk mund të realizohet, shëno **NOT TESTED**, jo PASS.
+- [ ] **P06 / M15/M18 — Rreziku i ruajtjes:** kryeje vetëm në një sesion prove me të dhëna fiktive, duke ndjekur checklist-in e plotë për ruajtjen e dështuar dhe tab-et konkurrente. Mos e simulo fshirjen e të dhënave reale.
+
+**Ky është kontrolli fillestar; M01–M18 në [checklist-in e plotë](DEMO_V1_7_DEVICE_QA_ACCEPTANCE.md) mbeten kriteret detyruese para sign-off.** Nuk mjaftojnë vetëm P01–P06 për release.
+
+## 4. Regjistrimi i rezultateve për çdo rast
+
+Kopjo rreshtin dhe plotëso për çdo test. Statuset e lejuara: `PASS`, `FAIL`, `BLOCKED`, `NOT TESTED`.
+
+| Case | Device/session | Locale | Orientation | Status | Sjellja reale / problemi | Evidenca |
+| --- | --- | --- | --- | --- | --- | --- |
+| P01 | — | — | — | NOT TESTED | — | — |
+| P02 | — | — | — | NOT TESTED | — | — |
+| P03 | — | — | — | NOT TESTED | — | — |
+| P04 | — | — | — | NOT TESTED | — | — |
+| P05 | — | — | — | NOT TESTED | — | — |
+| P06 | — | — | — | NOT TESTED | — | — |
+
+Foto/video të problemit: emri `MOBILE-<session>-<case>-<portrait-or-landscape>-<01>.png`. Shëno hapat që e riprodhojnë. Për P0/P1 (të dhëna të humbura, veprim i bllokuar, sukses i rremë, gabim serioz privatësie), mos vazhdo me miratimin; regjistro issue në degën e autorizuar. Mos dërgo screenshot-e me të dhëna personale apo token-e Vercel.
+
+## 5. Kur konsiderohet plotësuar
+
+- Android Chrome fizik: **NOT TESTED** derisa të dorëzohet sesioni dhe provat.
+- iPhone Safari fizik: **NOT TESTED** derisa të dorëzohet sesioni dhe provat.
+- TalkBack / VoiceOver: **NOT TESTED** derisa të provohen praktikisht.
+- F05: kontrollet e rrugës HTTP dhe integritetit të Preview janë të verifikuara; **jo** funksionaliteti fizik ose akses anonim universal.
+- F06: `browser-smoke-pull_request` dhe `webkit-smoke-pull_request` janë checks të suksesshme, por dega integruese mbetet e pambrojtur. Shiko [propozimin F06](F06_REQUIRED_CHECKS_DECISION.md); zbatimi kërkon miratim të qartë.
+- **Release HOLD**: asnjë merge, Production, APK ose deklarim "gati" pa rezultatin manual M01–M18, zgjidhjen e defekteve reale, vendimin F06 dhe sign-off e pronarit.
