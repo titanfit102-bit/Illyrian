@@ -1,11 +1,11 @@
 name: ILLYRIAN v1.7 Chromium QA
 # Runner outage resolved: Playwright passed 10/10 on real ubuntu-latest runner.
-# Restrict automatic runs to changes that can affect the demo or QA harness.
+# Feature-branch commits are covered by the open PR's required-check candidates.
+# Avoid duplicate Chromium runs for a single PR update; preserve integration push QA.
 on:
   push:
     branches:
       - demo/v1.7-illyrian-shop
-      - 'feat/i18n-*' # Isolated QA before promoting into the demo branch
     paths:
       - 'demo/**/*.html'
       - 'demo/**/*.css'
