@@ -422,3 +422,59 @@ for(const [width,height] of [[390,844],[844,390]]){
   });
  }
 }
+
+
+// M17 pre-device probe only: 200% document font scaling in desktop Chromium.
+// This catches modal-control reachability regressions but does NOT certify
+// Android/iPhone OS text-size settings, browser pinch zoom or screen readers.
+for(const [width,height] of [[390,844],[844,390]]){
+ test('M17 emulated 200% root text size keeps Shop Plus and Plans reachable - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await expect(page.locator('#v7-auth.visible')).toHaveCount(0);
+  // Force a CSS root-font-scale probe; do not claim this changes all px-based
+  // styles or reproduces the physical phone accessibility setting.
+  const scaled=await page.evaluate(()=>{
+   document.documentElement.style.setProperty('font-size','200%','important');
+   return parseFloat(getComputedStyle(document.documentElement).fontSize);
+  });
+  expect(scaled).toBeGreaterThanOrEqual(30);
+
+  await page.locator('[data-ilshop-open]').first().click();
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  const root=page.locator('#isp-root');
+  await expect(root.locator('[role="dialog"][aria-modal="true"]')).toBeVisible();
+  await root.locator('[data-isp="create"]').click();
+  const form=root.locator('#isp-create');
+  await expect(form).toBeVisible();
+  await form.locator('select[name="type"]').selectOption('Makina');
+  await expect(form.locator('[name="year"]')).toBeVisible();
+  await expect(form.locator('[name="quantity"]')).toBeHidden();
+  // The visible close control must remain genuinely clickable at increased size.
+  await root.locator('header button[data-isp="close"]').click();
+  await expect(root).toHaveCount(0);
+  await page.locator('#illyrian-shop-layer [data-ils="back"]').click();
+  await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
+
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('[data-ilp-entry]').first().click();
+  const plans=page.locator('#ilp-root');
+  await expect(plans).toBeVisible();
+  await plans.locator('button[data-ilp="close"]').click();
+  await expect(plans).toBeHidden();
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+  // Document-wide sideways scroll is not a legitimate replacement for
+  // independently scrollable tabs inside an overlay.
+  const bounds=await page.evaluate(()=>({
+   scroll:document.documentElement.scrollWidth,
+   client:document.documentElement.clientWidth
+  }));
+  expect(bounds.scroll,'document overflows horizontally after closing dialogs').toBeLessThanOrEqual(bounds.client+4);
+ });
+}
