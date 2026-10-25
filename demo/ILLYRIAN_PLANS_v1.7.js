@@ -35,7 +35,16 @@
   const visibilityKey=code=>({public:'visibilityPublic',private:'visibilityPrivate'}[code]||null);
   const storedData=()=>({events:state.events,requests:state.requests,messages:state.messages,attendance:state.attendance});
   let lastSaved=JSON.stringify(storedData());
-  const save=()=>{try{const value=JSON.stringify(storedData());localStorage.setItem(KEY,value);lastSaved=value;return true}catch{
+  // Snapshot observed on load. Sequential writes from an old second tab are rejected.
+  let lastPersistedRaw=null;try{lastPersistedRaw=localStorage.getItem(KEY)}catch{}
+  const save=()=>{try{
+    if(localStorage.getItem(KEY)!==lastPersistedRaw){
+      Object.assign(state,JSON.parse(lastSaved));
+      state.notice=feedback('storageConflict','Plans u ndryshua në një skedë tjetër. Rifresko faqen dhe provo përsëri.');
+      return false;
+    }
+    const value=JSON.stringify(storedData());localStorage.setItem(KEY,value);lastSaved=value;lastPersistedRaw=value;return true;
+  }catch{
     Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('localStorageError','Nuk mund të ruhej ndryshimi në pajisje.');return false}};
   const button=(a,label,extra='')=>`<button type="button" data-ilp="${escape(a)}" ${extra}>${escape(label)}</button>`;
   const choose=(values,current,keyOf=()=>null)=>values.map(v=>`<option data-i18n-direct ${v===current?'selected':''} value="${escape(v)}">${keyOf(v)?ui(keyOf(v),v):escape(v)}</option>`).join('');

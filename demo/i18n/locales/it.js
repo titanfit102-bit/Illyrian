@@ -167,6 +167,7 @@ window.ILLYRIAN_LOCALES.it={
     "write": "Scrivi un messaggio..."
   },
   "plans": {
+    "storageConflict": "I piani sono cambiati in un'altra scheda. Ricarica la pagina e riprova.",
     "listIntro": "Passa dal ruolo di organizzatore a quello di partecipante per provare tutto il percorso. Non ci sono persone o attività reali.",
     "demoFootnote": "PROTOTIPO · Nessuna partecipazione, pagamento o messaggio reale.",
     "formCreate": "Crea attività",

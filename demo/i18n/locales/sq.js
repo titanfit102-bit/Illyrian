@@ -167,6 +167,7 @@ window.ILLYRIAN_LOCALES.sq={
     "write": "Shkruaj mesazh..."
   },
   "plans": {
+    "storageConflict": "Plans u ndryshua në një skedë tjetër. Rifresko faqen dhe provo përsëri.",
     "listIntro": "Kalo midis organizatorit dhe pjesëmarrësit për të provuar të gjithë procesin. Nuk ka persona apo aktivitete reale.",
     "demoFootnote": "PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.",
     "formCreate": "Krijo aktivitetin",

@@ -1885,3 +1885,28 @@ for(const [lang,error] of [
   expect(messages.filter(x=>x==='Unsent hello '+lang)).toHaveLength(1);
  });
 }
+
+
+test('audit A1-03 rejects Plans stale writes across two browser tabs and permits retry after reload',async({browser})=>{
+ const ctx=await browser.newContext(),first=await ctx.newPage(),second=await ctx.newPage();
+ async function openDetail(page){
+  await ready(page);
+  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('[data-ilp-entry]').first().click();
+  await page.locator('#ilp-root [data-ilp="detail:demo-football"]').click();
+ }
+ await openDetail(first);await openDetail(second);
+ await first.locator('#ilp-root [data-ilp="accept:arta"]').click();
+ const afterFirst=await first.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+ expect(JSON.parse(afterFirst).requests.find(x=>x.id==='arta').status).toBe('accepted');
+ await second.locator('#ilp-root [data-ilp="decline:leon"]').click();
+ await expect(second.locator('#ilp-root .ilp-notice')).toContainText('changed in another tab');
+ expect(await second.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(afterFirst);
+ await openDetail(second);
+ await second.locator('#ilp-root [data-ilp="decline:leon"]').click();
+ const stored=await second.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_plans')));
+ expect(stored.requests.find(x=>x.id==='arta').status).toBe('accepted');
+ expect(stored.requests.find(x=>x.id==='leon').status).toBe('declined');
+ await ctx.close();
+});

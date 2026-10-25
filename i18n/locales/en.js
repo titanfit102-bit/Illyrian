@@ -167,6 +167,7 @@ window.ILLYRIAN_LOCALES.en={
     "write": "Write a message..."
   },
   "plans": {
+    "storageConflict": "Plans changed in another tab. Reload this page and try again.",
     "listIntro": "Switch between organizer and participant to explore the full workflow. No real people or activities are involved.",
     "demoFootnote": "PROTOTYPE · No real participation, payments or messages.",
     "formCreate": "Create activity",
