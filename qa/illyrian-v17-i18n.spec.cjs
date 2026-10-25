@@ -2169,3 +2169,164 @@ for(const locale of ['sq','en','it']){
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_governance'))).toBe(before);
  });
 }
+
+// Phase 3: shared social state must never claim success after a failed write.
+async function p3FailCoreWrites(page,fail=true){await page.evaluate(fail=>{
+ window.p3OriginalSet ||= Storage.prototype.setItem;
+ Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state'&&fail)throw new DOMException('Synthetic quota','QuotaExceededError');return window.p3OriginalSet.call(this,k,v)};
+},fail)}
+async function p3Community(page,id='c1'){
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#screen [data-act="category"][data-val="Komunitete"]').click();
+ await page.locator('#screen [data-act="v11-community-open"][data-id="'+id+'"]').first().click();
+}
+for(const lang of ['sq','en','it']){
+ test('Phase3 membership quota rollback and single retry '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);await p3Community(page);
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  const caption=await page.locator('#layer [data-act="v11-community-toggle"]').textContent();
+  await p3FailCoreWrites(page);
+  await page.locator('#layer [data-act="v11-community-toggle"]').click();
+  await expect(page.locator('#layer [data-act="v11-community-toggle"]')).toHaveText(caption);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+  await expect(page.locator('#toast-area')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('common:storageSaveFailed')));
+  await p3FailCoreWrites(page,false);await page.locator('#layer [data-act="v11-community-toggle"]').click();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).joinedCommunities.filter(x=>x==='c1').length)).toBe(1);
+ });
+ test('Phase3 comment quota preserves text and retries once '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#screen [data-act="comments"][data-id="p1"]').first().click();
+  const text='Mbyll <b> & sq/en/it '+lang;await page.locator('#comment-input').fill(text);
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await p3FailCoreWrites(page);await page.locator('#layer [data-act="send-comment"]').click();
+  await expect(page.locator('#comment-input')).toHaveValue(text);
+  await expect(page.locator('#layer .bubble.me')).toHaveCount(0);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+  await p3FailCoreWrites(page,false);await page.locator('#layer [data-act="send-comment"]').click();
+  expect(await page.evaluate(t=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).comments.p1.filter(x=>x===t).length,text)).toBe(1);
+  await page.reload();expect(await page.evaluate(t=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).comments.p1.filter(x=>x===t).length,text)).toBe(1);
+ });
+}
+test('Phase3 manual city failed save restores previous city',async({page})=>{
+ await ready(page);await page.locator('#screen [data-act="feed"][data-val="Afër teje"]').click();
+ const select=page.locator('#v9-near-city'),before=await select.inputValue();
+ await p3FailCoreWrites(page);await select.selectOption(before==='Romë'?'Milano':'Romë');
+ await expect(select).toHaveValue(before);
+});
+
+test('Phase3 Plans status uses event city time rather than viewer timezone',async({browser})=>{
+ for(const timezoneId of ['America/New_York','Asia/Tokyo']){
+  const context=await browser.newContext({timezoneId}),page=await context.newPage();
+  await page.clock.install({time:new Date('2026-12-01T18:00:00Z')});
+  await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','en');localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({events:[{id:'berlin-evening',title:'Berlin event',city:'Berlin',kind:'Sport',date:'2026-12-01',time:'18:00',place:'Public hall',capacity:8,privacy:'public'}],requests:[]}))});
+  await ready(page);await page.locator('.head [data-act="tab"][data-val="events"]').click();await page.locator('[data-ilp-entry]').click();
+  await expect(page.locator('#ilp-root .ilp-card .ilp-muted')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('plans:statusClosed')));
+  await context.close();
+ }
+});
+for(const date of ['2027-03-28','2027-10-31']){
+ test('Phase3 Plans rejects nonexistent or ambiguous Berlin time '+date,async({page})=>{
+  await ready(page);await page.locator('.head [data-act="tab"][data-val="events"]').click();await page.locator('[data-ilp-entry]').click();await page.locator('[data-ilp="new"]').click();
+  await page.locator('#ilp-form [name="title"]').fill('DST boundary activity');await page.locator('#ilp-form [name="place"]').fill('Public library');
+  await page.locator('#ilp-form [name="city"]').selectOption('Berlin');await page.locator('#ilp-form [name="date"]').fill(date);await page.locator('#ilp-form [name="time"]').fill('02:30');
+  const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+  await page.locator('#ilp-form [type="submit"]').click();await expect(page.locator('#ilp-form')).toBeVisible();
+  await expect(page.locator('#ilp-error')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('plans:timeZoneError')));
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(raw);
+ });
+}
+for(const lang of ['sq','en','it']){
+ test('Phase3 education community reuses Feed/Profile comments and moderation '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await p3Community(page,'c4');
+  await expect(page.locator('#layer .modalhead h2')).toHaveText({sq:'Shkolla & Universiteti',en:'School & University',it:'Scuola e Università'}[lang]);
+  await page.locator('#layer [data-act="v11-community-toggle"]').click();
+  await page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]').click();
+  await page.locator('#layer [data-act="community-compose"]').click();
+  const text='Mbyll <script>window.p3Xss=1</script> diskutim '+lang;
+  await page.locator('#v5-text').fill(text);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l==='it'?'en':'it'),lang);await expect(page.locator('#v5-text')).toHaveValue(text);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await p3FailCoreWrites(page);await page.locator('#layer [data-act="v5-publish"]').click();await expect(page.locator('#v5-text')).toHaveValue(text);
+  await p3FailCoreWrites(page,false);await page.locator('#layer [data-act="v5-publish"]').click();
+  await expect(page.locator('#layer .post-copy')).toContainText(text);
+  const postId=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts[0].id);
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts[0].communityId)).toBe('c4');expect(await page.evaluate(()=>window.p3Xss)).toBeUndefined();
+  await page.locator('#layer [data-act="community-search"]').fill('no matching result');
+  await expect(page.locator('#layer .post')).toHaveCount(0);
+  await page.locator('#layer [data-act="community-search"]').fill('diskutim');await expect(page.locator('#layer .post')).toHaveCount(1);
+  await page.locator('#layer .post [data-act="comments"]').click();await page.locator('#comment-input').fill('Përgjigje '+lang);await page.locator('#layer [data-act="send-comment"]').click();
+  await expect(page.locator('#layer .bubble.me')).toHaveText('Përgjigje '+lang);
+  await page.locator('#layer [data-act="v11-community-open"]').click();await expect(page.locator('#layer .modal')).toBeVisible();
+  await page.keyboard.press('Escape');await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await expect(page.locator('#screen .post-copy').filter({hasText:text})).toHaveCount(1);
+  await page.locator('#screen .post [data-act="v11-community-open"][data-id="c4"]').click();await expect(page.locator('#layer .modalhead h2')).toHaveText({sq:'Shkolla & Universiteti',en:'School & University',it:'Scuola e Università'}[lang]);await page.keyboard.press('Escape');
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('#screen .post-copy').filter({hasText:text})).toHaveCount(1);
+  await page.locator('#screen [data-act="postmore"][data-id="'+postId+'"]').click();await page.locator('#layer [data-act="report-post"]').click();expect(await page.evaluate(id=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).reports.includes(id),postId)).toBe(true);
+  await page.reload();expect(await page.evaluate(id=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts.find(p=>p.id===id).communityId,postId)).toBe('c4');
+ });
+}
+test('Phase3 GPS denied unavailable and revoked leaves manual social flows usable',async({page})=>{
+ await page.addInitScript(()=>{window.p3GeoCalls=0;Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(){window.p3GeoCalls++;throw Error('GPS denied')},watchPosition(){window.p3GeoCalls++;throw Error('GPS denied')}}})});
+ await ready(page);await page.locator('#screen [data-act="feed"][data-val="Afër teje"]').click();await page.locator('#v9-near-city').selectOption('Milano');
+ await page.reload();await expect(page.locator('#v9-near-city')).toHaveValue('Milano');
+ await page.evaluate(()=>Object.defineProperty(navigator,'geolocation',{configurable:true,value:undefined}));
+ await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();await expect(page.locator('#layer .modal')).toBeVisible();await page.keyboard.press('Escape');
+ await page.locator('[data-ilshop-open]').first().click();await expect(page.locator('#illyrian-shop-layer')).toBeVisible();await page.keyboard.press('Escape');
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();await page.locator('[data-ilc-entry]').click();await page.locator('[data-ilc="view:cities"]').click();
+ await page.locator('#ilc-cities [name="home"]').selectOption('Berlin');await page.locator('#ilc-cities [type="submit"]').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_connections')).home)).toBe('Berlin');expect(await page.evaluate(()=>window.p3GeoCalls)).toBe(0);
+});
+test('Phase3 community activity draft uses canonical Plans without auto publish',async({page})=>{
+ await ready(page);await p3Community(page,'c1');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+ await page.locator('#layer [data-act="community-plan-draft"]').click();
+ await expect(page.locator('#layer .modal')).toHaveCount(0);await expect(page.locator('#ilp-form')).toBeVisible();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
+ await expect(page.locator('#ilp-form [name="date"]')).toHaveValue('');
+ await page.locator('#ilp-form [name="title"]').fill('Komuniteti plan test');await page.locator('#ilp-form [name="place"]').fill('Public library');
+ await page.locator('#ilp-form [name="date"]').fill('2027-06-01');await page.locator('#ilp-form [name="time"]').fill('17:30');await page.locator('#ilp-form [type="submit"]').click();
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_plans')).events[0]);expect(saved.communityId).toBe('c1');expect(saved.timeZone).toBe('Europe/Rome');
+ await page.keyboard.press('Escape');await p3Community(page,'c1');await page.locator('#layer [data-act="community-plan-open"][data-id="'+saved.id+'"]').click();
+ await expect(page.locator('#ilp-root h3')).toContainText('Komuniteti plan test');await expect(page.locator('#layer .modal')).toHaveCount(0);
+});
+test('Phase3 activity calendar and midnight remain independent of viewer zone',async({page})=>{
+ await ready(page);
+ const result=await page.evaluate(()=>{const r=(date,time,city='Berlin')=>window.IllyrianActivityTime.resolve({date,time,city});return {midnight:r('2027-01-01','00:15'),leap:r('2028-02-29','12:00'),invalid:r('2027-02-29','12:00'),unknown:r('2027-01-01','12:00','Unknown')}});
+ expect(new Date(result.midnight).toISOString()).toBe('2026-12-31T23:15:00.000Z');expect(new Date(result.leap).toISOString()).toBe('2028-02-29T11:00:00.000Z');expect(result.invalid).toBeNull();expect(result.unknown).toBeNull();
+});
+test('Phase3 leaving a community composer does not redirect a later Feed post',async({page})=>{
+ await ready(page);await p3Community(page,'c4');await page.locator('#layer [data-act="v11-community-toggle"]').click();await page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]').click();await page.locator('#layer [data-act="community-compose"]').click();await page.keyboard.press('Escape');
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();await page.locator('#screen [data-act="modal"][data-val="compose"]').first().click();await page.locator('#v5-text').fill('A normal Feed post');await page.locator('#layer [data-act="v5-publish"]').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts[0].communityId)).toBeUndefined();await expect(page.locator('#layer .modal')).toHaveCount(0);
+});
+test('Phase3 education search matches the displayed en and it name',async({page})=>{
+ await ready(page);await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();await page.locator('#screen [data-act="category"][data-val="Komunitete"]').click();
+ for(const [lang,query] of [['en','School'],['it','Scuola']]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);await page.locator('#finder').fill(query);await expect(page.locator('#screen [data-act="v11-community-open"][data-id="c4"]').first()).toBeVisible();
+ }
+});
+test('Phase3 a stale comment draft cannot overwrite another tab membership',async({page,context})=>{
+ await ready(page);const second=await context.newPage();await ready(second);await second.locator('#screen [data-act="comments"][data-id="p1"]').first().click();
+ await p3Community(page,'c1');await page.locator('#layer [data-act="v11-community-toggle"]').click();
+ const confirmed=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await second.locator('#comment-input').fill('Keep this unsent draft');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(confirmed);
+ await second.locator('#layer [data-act="send-comment"]').click();await expect(second.locator('#comment-input')).toHaveValue('Keep this unsent draft');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(confirmed);
+ await second.close();
+});
+for(const expires of ['2026-11-01T12:00:00.000Z','not-a-date']){
+ test('Phase3 expired or invalid interest never exposes a matched draft '+expires,async({page})=>{
+  await page.clock.setFixedTime(new Date('2026-11-01T12:00:00Z'));
+  await page.addInitScript(expires=>localStorage.setItem('illyrian_demo_v17_connections',JSON.stringify({home:'Tiranë',origin:'Milano',choice:{topic:'football',city:'Tiranë',slot:'Të shtunën 17:00',expires}})),expires);
+  await ready(page);await page.locator('.head [data-act="tab"][data-val="events"]').click();await page.locator('[data-ilc-entry]').click();await page.locator('[data-ilc="view:interest"]').click();
+  await expect(page.locator('#ilc-root [data-ilc^="draft-topic:"]')).toHaveCount(0);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBeNull();
+ });
+}
+test('Phase3 repeat activity only prepares a blank-date draft with no invitations',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({events:[{id:'old-meet',title:'Old Berlin meeting',city:'Berlin',kind:'Sport',date:'2026-01-01',time:'17:00',place:'Old private venue',capacity:2,privacy:'public',conditions:'Mbyll original'}],requests:[{id:'old-person',eventId:'old-meet',status:'accepted',name:'Old guest'}]})));
+ await ready(page);await page.locator('.head [data-act="tab"][data-val="events"]').click();await page.locator('[data-ilc-entry]').click();await page.locator('[data-ilc="view:repeat"]').click();const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+ await page.locator('[data-ilc="repeat:old-meet"]').click();await expect(page.locator('#ilp-form [name="date"]')).toHaveValue('');await expect(page.locator('#ilp-form [name="place"]')).toHaveValue('');await expect(page.locator('#ilp-form [name="title"]')).toHaveValue('Old Berlin meeting');await expect(page.locator('#ilp-form [name="capacity"]')).toHaveValue('8');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
+});

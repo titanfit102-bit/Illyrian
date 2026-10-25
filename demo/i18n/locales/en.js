@@ -146,7 +146,20 @@ window.ILLYRIAN_LOCALES.en={
     "follow": "Follow",
     "following": "✓ Following",
     "view": "View",
-    "disclaimer": "Demo search contains only sample profiles and businesses."
+    "disclaimer": "Demo search contains only sample profiles and businesses.",
+    "educationTitle": "School & University",
+    "discussionSearch": "Search discussions",
+    "discussionCreate": "Create discussion (demo)",
+    "discussionEmpty": "No discussions match this search yet.",
+    "membershipRequired": "Join the community before publishing.",
+    "discussionIn": "Community discussion",
+    "backCommunity": "Back to community",
+    "communityPlanDraft": "Prepare activity (demo)",
+    "educationDescription": "A space for learning, students and alumni · demo.",
+    "educationIntro": "A demo space for school pupils, university students and alumni. No directory of minors or real school records.",
+    "educationLearning": "Learning",
+    "educationStudents": "Students",
+    "educationAlumni": "Alumni"
   },
   "reels": {
     "createPlus": "＋ Create Reel",
@@ -282,11 +295,12 @@ window.ILLYRIAN_LOCALES.en={
     "groupMessage": "Group message",
     "readOnly": "Conversation is read-only.",
     "access": "Chat is available only after acceptance.",
-    "localStorageError": "Could not save the change on this device."
+    "localStorageError": "Could not save the change on this device.",
+    "timeZoneError": "The date/time is invalid or ambiguous in the city time zone. Choose another time.",
+    "timeZoneUnknown": "Unknown time zone"
   },
   "shop": {
     "storageFull": "Could not save: local storage is full.",
-
     "addedCartNotice": "The product was added to the demo cart.",
     "confirmDelete": "Delete this demo listing?",
     "invalidListing": "Check the category, item name, shop, city and price.",

@@ -35,7 +35,7 @@
   let lastSaved=JSON.stringify(persisted());
   const persist=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
    Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Hapësira lokale është plot; ndryshimi nuk u ruajt.');return false}};
-  const eventData=()=>{const doc=read(PLAN_KEY),values=Array.isArray(doc.events)?doc.events:[];return values.filter(e=>e&&e.privacy==='public'&&!e.cancelled&&typeof e.title==='string'&&!Number.isNaN(Date.parse(e.date+'T'+e.time))&&Date.parse(e.date+'T'+e.time)>Date.now()).slice(0,24)};
+  const eventData=()=>{const doc=read(PLAN_KEY),values=Array.isArray(doc.events)?doc.events:[];return values.filter(e=>e&&e.privacy==='public'&&!e.cancelled&&typeof e.title==='string'&&window.IllyrianActivityTime.resolve(e)!==null&&window.IllyrianActivityTime.resolve(e)>Date.now()).slice(0,24)};
   const button=(action,label)=>'<button type="button" data-ilc="'+h(action)+'">'+h(label)+'</button>';
   const cities=(current)=>CITIES.map(c=>'<option value="'+h(c)+'"'+(c===current?' selected':'')+'>'+h(c)+'</option>').join('');
   const header='<div class="ilc-title"><b>ILLYRIAN · LIDHJET REALE</b><h2>Nga interesi te takimi</h2><p>Katër rrugë për të gjetur njerëz dhe për të organizuar aktivitete.</p></div>';
@@ -60,7 +60,7 @@
       '</div><p class="ilc-muted">Nuk përdorim GPS; qytetet e zgjedhura nuk publikohen te profilet e të tjerëve.</p>'+button('overview','Kthehu te zgjedhjet');
   }
   const interestView=()=>{
-    const expired=state.choice?.expires&&new Date(state.choice.expires).getTime()<=Date.now();
+    const expired=!!state.choice&&(!Number.isFinite(Date.parse(state.choice.expires))||Date.parse(state.choice.expires)<=Date.now());
     const current=!expired?state.choice:null;
     return '<h3>Nga interesi te plani</h3><p>Shëno një interes dhe një interval. Kur ka interes të mjaftueshëm demonstrues, mund t\'i përgatisësh organizatorit një draft — pa publikim automatik.</p>'+
       (expired?'<p class="ilc-note">Interesi i mëparshëm ka skaduar dhe nuk përdoret më.</p>':'')+
@@ -78,7 +78,7 @@
   };
   function interestMatches(){
     const current=state.choice;
-    if(!current||Date.parse(current.expires)<Date.now())return '<p class="ilc-muted">Ruaj një interes për të parë nëse mund të krijohet një plan.</p>';
+    if(!current||!Number.isFinite(Date.parse(current.expires))||Date.parse(current.expires)<=Date.now())return '<p class="ilc-muted">Ruaj një interes për të parë nëse mund të krijohet një plan.</p>';
     const topic=TOPICS.find(t=>t.id===current.topic);
     if(!topic)return '';
     const sameCity=topic.city===current.city;

@@ -146,7 +146,20 @@ window.ILLYRIAN_LOCALES.it={
     "follow": "Segui",
     "following": "✓ Segui già",
     "view": "Vedi",
-    "disclaimer": "La ricerca dimostrativa contiene solo profili e attività di esempio."
+    "disclaimer": "La ricerca dimostrativa contiene solo profili e attività di esempio.",
+    "educationTitle": "Scuola e Università",
+    "discussionSearch": "Cerca nelle discussioni",
+    "discussionCreate": "Crea discussione (demo)",
+    "discussionEmpty": "Nessuna discussione corrisponde alla ricerca.",
+    "membershipRequired": "Unisciti alla comunità prima di pubblicare.",
+    "discussionIn": "Discussione nella comunità",
+    "backCommunity": "Torna alla comunità",
+    "communityPlanDraft": "Prepara attività (demo)",
+    "educationDescription": "Uno spazio per studio, studenti e alumni · demo.",
+    "educationIntro": "Spazio dimostrativo per alunni, universitari ed ex studenti. Nessun elenco di minori o dato scolastico reale.",
+    "educationLearning": "Studio",
+    "educationStudents": "Studenti",
+    "educationAlumni": "Alumni"
   },
   "reels": {
     "createPlus": "＋ Crea Reel",
@@ -282,11 +295,12 @@ window.ILLYRIAN_LOCALES.it={
     "groupMessage": "Messaggio di gruppo",
     "readOnly": "La conversazione è di sola lettura.",
     "access": "La chat è disponibile solo dopo l'accettazione.",
-    "localStorageError": "Impossibile salvare la modifica sul dispositivo."
+    "localStorageError": "Impossibile salvare la modifica sul dispositivo.",
+    "timeZoneError": "Data/ora non valida o ambigua nel fuso orario della città. Scegli un altro orario.",
+    "timeZoneUnknown": "Fuso orario sconosciuto"
   },
   "shop": {
     "storageFull": "Salvataggio non riuscito: lo spazio di archiviazione locale è esaurito.",
-
     "addedCartNotice": "Il prodotto è stato aggiunto al carrello dimostrativo.",
     "confirmDelete": "Eliminare questo annuncio dimostrativo?",
     "invalidListing": "Controlla categoria, nome dell'articolo, negozio, città e prezzo.",

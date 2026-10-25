@@ -28,7 +28,7 @@
   const waiting=id=>requests(id).filter(r=>r.status==='waitlist');
   const free=e=>Math.max(0,e.capacity-accepted(e.id).length);
   const self=id=>requests(id).find(r=>r.name==='Profili im'&&['pending','accepted','waitlist'].includes(r.status));
-  const closed=e=>e.cancelled||new Date(e.date+'T'+e.time).getTime()<Date.now();
+  const closed=e=>{const instant=window.IllyrianActivityTime.resolve(e);return e.cancelled||instant===null||instant<=Date.now()};
   const feedback=(key,fallback)=>window.IllyrianI18n?.t('plans:'+key)||fallback;
   const ui=(key,fallback)=>escape(feedback(key,fallback));
   const typeKey=code=>({Sport:'kindSport','Miqësi dhe komunitet':'kindSocial',Kulturë:'kindCulture',Alumni:'kindAlumni',Bashkëpunim:'kindCollaboration'}[code]||null);
@@ -48,7 +48,8 @@
     Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('localStorageError','Nuk mund të ruhej ndryshimi në pajisje.');return false}};
   const button=(a,label,extra='')=>`<button type="button" data-ilp="${escape(a)}" ${extra}>${escape(label)}</button>`;
   const choose=(values,current,keyOf=()=>null)=>values.map(v=>`<option data-i18n-direct ${v===current?'selected':''} value="${escape(v)}">${keyOf(v)?ui(keyOf(v),v):escape(v)}</option>`).join('');
-  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${typeKey(e.kind)?ui(typeKey(e.kind),e.kind):escape(e.kind)} · ${escape(e.city)} · ${ui(closed(e)?'statusClosed':free(e)===0?'statusFull':'statusActive',closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv')}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · <span data-user-content>${escape(e.place)}</span></p><p>${accepted(e.id).length}/${e.capacity} ${ui('accepted','të pranuar')} · ${pending(e.id).length} ${ui('waiting','në pritje')}</p>${button('detail:'+e.id,feedback('detail','Hap aktivitetin →'))}</article>`;
+  const eventZone=e=>escape(window.IllyrianActivityTime.zone(e)||feedback('timeZoneUnknown','Zona kohore e panjohur'));
+  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${typeKey(e.kind)?ui(typeKey(e.kind),e.kind):escape(e.kind)} · ${escape(e.city)} · ${ui(closed(e)?'statusClosed':free(e)===0?'statusFull':'statusActive',closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv')}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} (${eventZone(e)}) · <span data-user-content>${escape(e.place)}</span></p><p>${accepted(e.id).length}/${e.capacity} ${ui('accepted','të pranuar')} · ${pending(e.id).length} ${ui('waiting','në pritje')}</p>${button('detail:'+e.id,feedback('detail','Hap aktivitetin →'))}</article>`;
   const form=()=>{
     const e=state.edit?event(state.edit):null;
     const v=e||(draft||{title:'',kind:kinds[0],city:cities[0],place:'',date:after(7),time:'17:00',capacity:8,price:0,privacy:'public',conditions:''});
@@ -69,7 +70,7 @@
     const e=event(state.id);if(!e)return button('list','Kthehu');
     const my=self(e.id),owner=state.role==='organizer',ended=closed(e);
     let html=`<div class="ilp-muted">${typeKey(e.kind)?ui(typeKey(e.kind),e.kind):escape(e.kind)} · ${escape(e.city)} · ${ui(ended?'statusCancelledOrPast':free(e)===0?'statusSeatsFull':'statusActive',ended?'I anuluar ose i kaluar':free(e)===0?'Vendet plot':'Aktiv')}</div>
-    <h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · <span data-user-content>${escape(e.place)}</span></p>
+    <h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} (${eventZone(e)}) · <span data-user-content>${escape(e.place)}</span></p>
     <p><b>${accepted(e.id).length}/${e.capacity}</b> ${ui('seats','vende')} · ${pending(e.id).length} ${ui('requestsCount','kërkesa')} · ${waiting(e.id).length} ${ui('waitlistCount','në listë pritjeje')}</p>
     <p data-user-content>${escape(e.conditions||feedback('noConditions','Nuk ka kushte shtesë.'))}</p><p class="ilp-muted">${ui(e.privacy==='public'?'visibilityPublic':'visibilityPrivate',e.privacy==='public'?'Publik':'Privat')} · ${Number(e.price)||0} € · ${ui('demoOnly','Vetëm demonstrim')}</p>`;
     if(owner){
@@ -157,10 +158,15 @@
     if(form.id!=='ilp-form'||state.role!=='organizer')return;
     const data=new FormData(form);
     const v={title:String(data.get('title')||'').trim().slice(0,90),kind:String(data.get('kind')),city:String(data.get('city')),place:String(data.get('place')||'').trim().slice(0,100),date:String(data.get('date')),time:String(data.get('time')),capacity:Number(data.get('capacity')),price:Number(data.get('price')),privacy:String(data.get('privacy')),conditions:String(data.get('conditions')||'').trim().slice(0,240)};
+    const sourceCommunity=state.edit?event(state.edit)?.communityId:draft?.communityId;
+    if(['c1','c2','c3','c4'].includes(sourceCommunity))v.communityId=sourceCommunity;
     const error=s=>{const el=root.querySelector('#ilp-error');if(el)el.textContent=s};
     if(v.title.length<5||v.place.length<3)return error(feedback('titlePlaceError','Titulli ose vendi janë tepër të shkurtër.'));
     if(!cities.includes(v.city)||!kinds.includes(v.kind)||!['public','private'].includes(v.privacy))return error(feedback('codesError','Qyteti, kategoria ose dukshmëria nuk njihen.'));
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(v.date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(v.time)||!Number.isFinite(Date.parse(v.date+'T'+v.time))||Date.parse(v.date+'T'+v.time)<=Date.now())return error(feedback('dateError','Zgjidh datë dhe orë në të ardhmen.'));
+    const instant=window.IllyrianActivityTime.resolve(v);
+    if(instant===null)return error(feedback('timeZoneError','Data/ora nuk është e vlefshme ose është e dykuptimtë në zonën kohore të qytetit. Zgjidh një orë tjetër.'));
+    if(instant<=Date.now())return error(feedback('dateError','Zgjidh datë dhe orë në të ardhmen.'));
+    v.timeZone=window.IllyrianActivityTime.zone(v);
     if(!Number.isInteger(v.capacity)||v.capacity<1||v.capacity>100||!Number.isFinite(v.price)||v.price<0||v.price>10000)return error(feedback('capacityError','Kapaciteti 1–100 dhe kontributi 0–10000 €.'));
     let e=state.edit?event(state.edit):null;
     if(e){if(closed(e)||v.capacity<accepted(e.id).length)return error(feedback('belowAcceptedError','Kapaciteti nuk mbulon pjesëmarrësit e pranuar.'));Object.assign(e,v);}
@@ -266,12 +272,13 @@
       if(e.shiftKey&&(document.activeElement===items[0]||!root.contains(document.activeElement))){e.preventDefault();items.at(-1).focus()}
       if(!e.shiftKey&&(document.activeElement===items.at(-1)||!root.contains(document.activeElement))){e.preventDefault();items[0].focus()}
     },true);
+    window.addEventListener('illyrian:plans:open',ev=>{const id=ev.detail?.id;if(typeof id==='string'&&event(id))open(id)});
     window.addEventListener('illyrian:plans:draft',ev=>{
       const d=ev.detail||{};
       const title=String(d.title||'Takim komuniteti').slice(0,90);
       const kind=kinds.includes(d.kind)?d.kind:kinds[0];
       const city=cities.includes(d.city)?d.city:cities[0];
-      draft={title,kind,city,place:'',date:'',time:'17:00',capacity:8,price:0,privacy:'public',conditions:String(d.conditions||'').slice(0,240)};
+      draft={...(['c1','c2','c3','c4'].includes(d.communityId)?{communityId:d.communityId}:{}),title,kind,city,place:'',date:'',time:'17:00',capacity:8,price:0,privacy:'public',conditions:String(d.conditions||'').slice(0,240)};
       state.edit=null;
       state.role='organizer';
       open();

@@ -146,7 +146,20 @@ window.ILLYRIAN_LOCALES.sq={
     "follow": "Ndiq",
     "following": "✓ Ndjek",
     "view": "Shiko",
-    "disclaimer": "Kërkimi është demonstrues dhe përmban vetëm profile dhe biznese shembull."
+    "disclaimer": "Kërkimi është demonstrues dhe përmban vetëm profile dhe biznese shembull.",
+    "educationTitle": "Shkolla & Universiteti",
+    "discussionSearch": "Kërko në diskutime",
+    "discussionCreate": "Krijo diskutim (demo)",
+    "discussionEmpty": "Ende pa diskutime për këtë kërkim.",
+    "membershipRequired": "Bashkohu me komunitetin përpara publikimit.",
+    "discussionIn": "Diskutim në komunitet",
+    "backCommunity": "Kthehu te komuniteti",
+    "communityPlanDraft": "Përgatit aktivitet (demo)",
+    "educationDescription": "Hapësirë për mësim, studentë dhe alumni · demo.",
+    "educationIntro": "Hapësirë demonstrimi për nxënës, studentë dhe ish-nxënës. Nuk ka direktori të të miturve ose të dhëna shkollore reale.",
+    "educationLearning": "Mësim",
+    "educationStudents": "Studentë",
+    "educationAlumni": "Alumni"
   },
   "reels": {
     "createPlus": "＋ Krijo Reel",
@@ -282,11 +295,12 @@ window.ILLYRIAN_LOCALES.sq={
     "groupMessage": "Mesazhi në grup",
     "readOnly": "Biseda është vetëm për lexim.",
     "access": "Biseda është e disponueshme vetëm pas pranimit.",
-    "localStorageError": "Nuk mund të ruhej ndryshimi në pajisje."
+    "localStorageError": "Nuk mund të ruhej ndryshimi në pajisje.",
+    "timeZoneError": "Data/ora nuk është e vlefshme ose është e dykuptimtë në zonën kohore të qytetit. Zgjidh një orë tjetër.",
+    "timeZoneUnknown": "Zona kohore e panjohur"
   },
   "shop": {
     "storageFull": "Nuk u ruajt: hapësira lokale është plot.",
-
     "addedCartNotice": "Produkti u shtua në shportën demonstrative.",
     "confirmDelete": "Ta fshijmë këtë listim demonstrues?",
     "invalidListing": "Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.",

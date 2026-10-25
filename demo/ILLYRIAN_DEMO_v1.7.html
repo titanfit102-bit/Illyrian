@@ -295,7 +295,7 @@ if(k==='edit')return drawer('Ndrysho profilin',`<div class="fieldwrap"><label cl
 if(k==='notifications')return drawer('Njoftimet',`<div class="message">${tinyAvatar('a2')}<div class="txt"><b>Arta K. pëlqeu postimin tënd</b><p>Para 5 minutash · Demonstrim</p></div></div><div class="message">${tinyAvatar('a3')}<div class="txt"><b>Leon M. të dërgoi një mesazh</b><p>Para 1 ore · Demonstrim</p></div></div><div class="message">${tinyAvatar('a4')}<div class="txt"><b>Aktivitet i ri në komunitet</b><p>Sot · Demonstrim</p></div></div>`);
 if(k==='inbox')return drawer('Mesazhet',`<p class="small" style="margin-bottom:14px">${tag()} Biseda shembull. Mesazhet ruhen vetëm në shfletues.</p>${[['leon','a3','Leon M.','Përshëndetje! Si po shkon?'],['arta','a2','Arta K.','Shihemi në event!'],['besa','a4','Besa H.','Faleminderit për ftesën.']].map(([id,a,n,s])=>`<button class="message" data-act="openchat" data-id="${id}">${tinyAvatar(a)}<div class="txt"><b>${n}</b><p>${s}</p></div>${svg('arrow',17)}</button>`).join('')}`);
 if(k==='chat'){const id=m.id||'leon', p=people.find(x=>x.id===id)||people[1];const initial={leon:'Përshëndetje! Si po shkon?',arta:'Shihemi në event!',besa:'Faleminderit për ftesën.'}[id]||'Përshëndetje!';return drawer('Bisedë me '+p.name,`<div class="chatbox" id="chatbox"><div class="bubble">${esc(initial)}</div>${(state.messages[id]||[]).map(s=>`<div class="bubble me">${esc(s)}</div>`).join('')}</div><div class="chatbar"><input class="field" id="msg-input" maxlength="280" placeholder="Shkruaj një mesazh..."><button class="button" data-act="send-message" data-id="${id}" aria-label="Dërgo">${svg('send',18)}</button></div><p class="small">Bisedë demonstrimi — nuk dërgohen mesazhe reale.</p>`)}
-if(k==='comments'){const p=getPost(m.id)||seedPosts[0];const custom=state.comments[p.id]||[];return drawer('Komentet',`<div class="small" style="margin-bottom:12px"><b>${esc(p.name)}</b> · ${esc(p.text.slice(0,80))}</div><div class="chatbox" style="max-height:260px;min-height:120px"><div class="bubble">Shumë bukur! ❤️</div>${custom.map(x=>`<div class="bubble me">${esc(x)}</div>`).join('')}</div><div class="chatbar"><input class="field" id="comment-input" maxlength="240" placeholder="Shkruaj një koment..."><button class="button" data-act="send-comment" data-id="${esc(p.id)}">${svg('send',18)}</button></div>`)}
+if(k==='comments'){const p=getPost(m.id)||seedPosts[0];const custom=state.comments[p.id]||[];return drawer('Komentet',`<div class="small" style="margin-bottom:12px"><b>${esc(p.name)}</b> · ${esc(p.text.slice(0,80))}</div><div class="chatbox" style="max-height:260px;min-height:120px"><div class="bubble">Shumë bukur! ❤️</div>${custom.map(x=>`<div class="bubble me">${esc(x)}</div>`).join('')}</div><div class="chatbar"><input class="field" id="comment-input" maxlength="240" placeholder="Shkruaj një koment..."><button class="button" data-act="send-comment" data-id="${esc(p.id)}">${svg('send',18)}</button></div>${p.communityId?`<button class="button soft full" data-act="v11-community-open" data-id="${esc(p.communityId)}" data-i18n-direct>${esc(socialText('backCommunity','Kthehu te komuniteti'))}</button>`:''}`)}
 if(k==='event'){const e=events.find(x=>x.id===m.id)||events[0], requested=state.requests.includes(e.id);return drawer(e.title,`<div class="event-art" style="border-radius:13px;margin-bottom:14px"><span class="pictogram">${e.emoji}</span></div><div class="small" style="margin-bottom:12px">${esc(e.city)} · ${esc(e.day)} · ${esc(e.members)}</div><p style="font-size:13px;line-height:1.6">${esc(e.desc)}</p><div class="switch-info">Organizatori duhet të pranojë kërkesën tënde për pjesëmarrje. Në këtë demo kërkesa regjistrohet vetëm lokalisht.</div><button class="button full ${requested?'soft':''}" data-act="request" data-id="${e.id}" style="margin-top:18px">${requested?'Anulo kërkesën':'Kërko të bashkohesh'}</button>`)}
 if(k==='detail'){let job=jobs.find(x=>x.id===m.id)||jobs[0];return drawer(job.name,`<p class="small">${esc(job.sub)}</p><p style="font-size:13px;line-height:1.6">Ky pozicion pune është pjesë e demonstrimit. Në aplikacionin real do të mund të shikosh kushtet dhe të aplikosh.</p><button class="button full" data-act="demo-job">Provo aplikimin</button>`)}
 if(k==='postmenu'){return drawer('Opsionet e postimit',`<button class="button soft full" data-act="save" data-id="${esc(m.id)}">${state.bookmarks.includes(m.id)?'Hiq nga të ruajturat':'Ruaj postimin'}</button><button class="button soft full" data-act="report" style="margin-top:10px">Raporto përmbajtjen (demo)</button>`)}
@@ -318,7 +318,8 @@ Object.assign(state,{
 const communities=[
  {id:'c1',name:'Shqiptarët në Milano',city:'Milano',members:1840,emoji:'🌆',desc:'Komunitet për aktivitete, miqësi dhe informacione të dobishme.'},
  {id:'c2',name:'Krijuesit shqiptarë',city:'Global',members:625,emoji:'✦',desc:'Dizajn, art, video, fotografi dhe bashkëpunime.'},
- {id:'c3',name:'Shqiptarët në Romë',city:'Romë',members:932,emoji:'🏛️',desc:'Njohje, iniciativa dhe lidhje me diasporën.'}
+ {id:'c3',name:'Shqiptarët në Romë',city:'Romë',members:932,emoji:'🏛️',desc:'Njohje, iniciativa dhe lidhje me diasporën.'},
+ {id:'c4',name:'Shkolla & Universiteti',city:'Global',members:0,emoji:'🎓',desc:'Hapësirë për mësim, studentë dhe alumni · demo.'}
 ];
 const market=[
  {id:'m1',name:'Fotografi eventi',category:'Shërbime',price:'Nga €75',city:'Milano',emoji:'📷',business:'Studio Arbër'},
@@ -328,6 +329,22 @@ const market=[
 const schools=[{id:'a1',name:'Universiteti i Tiranës',sub:'Alumni · Tiranë',emoji:'🎓'},{id:'a2',name:'Universiteti i Prishtinës',sub:'Alumni · Prishtinë',emoji:'🎓'}];
 const legacyHome=home,legacyProfile=profile,legacyModal=modalContent,legacyStory=storyContent,legacyPost=post;
 function safeMark(t){return esc(String(t||''))}
+function socialText(key,fallback){return window.IllyrianI18n?.t('discover:'+key)||fallback}
+function communityTitle(c){return c.id==='c4'?socialText('educationTitle',c.name):c.name}
+function communityDescription(c){return c.id==='c4'?socialText('educationDescription',c.desc):c.desc}
+state.communityQuery='';
+function communityPosts(id){const seedLinks={p1:'c2',p2:'c1',p3:'c3'};return allPosts().filter(p=>!state.hiddenPosts.includes(String(p.id))&&(p.communityId===id||seedLinks[p.id]===id))}
+function communityActivities(c){
+ let stored;try{stored=JSON.parse(localStorage.getItem('illyrian_demo_v17_plans')||'{}')}catch{stored={}}
+ const plans=Array.isArray(stored?.events)?stored.events.filter(e=>e&&e.communityId===c.id&&e.privacy==='public'&&!e.cancelled&&typeof e.id==='string'&&typeof e.title==='string').slice(0,24):[];
+ return `<div class="v11-community-buttonrow"><button class="button soft" data-act="community-plan-draft" data-id="${c.id}" data-i18n-direct>${esc(socialText('communityPlanDraft','Përgatit aktivitet (demo)'))}</button></div>${plans.map(e=>`<button class="button soft full" data-act="community-plan-open" data-id="${esc(e.id)}"><span data-user-content>${esc(e.title)}</span></button>`).join('')}`;
+}
+function communityDiscussions(c){
+ const query=state.communityQuery.trim().toLocaleLowerCase();
+ const posts=communityPosts(c.id).filter(p=>(p.text+' '+p.name).toLocaleLowerCase().includes(query));
+ return `<label class="formlabel" for="community-search" data-i18n-direct>${esc(socialText('discussionSearch','Kërko në diskutime'))}</label><input class="field" id="community-search" data-act="community-search" value="${esc(state.communityQuery)}" maxlength="100"><div class="v11-community-buttonrow">${state.joinedCommunities.includes(c.id)?`<button class="button" data-act="community-compose" data-id="${c.id}" data-i18n-direct>${esc(socialText('discussionCreate','Krijo diskutim (demo)'))}</button>`:''}</div>${posts.map(post).join('')||`<p data-i18n-direct>${esc(socialText('discussionEmpty','Ende pa diskutime për këtë kërkim.'))}</p>`}`;
+}
+
 function notice(message){state.activityLog.unshift({id:Date.now()+Math.random(),text:message,time:'Tani'});state.activityLog=state.activityLog.slice(0,15);persist()}
 function sectionsTitle(title,sub){return `<div class="section-header"><h2>${safeMark(title)}</h2><p>${safeMark(sub)}</p></div>`}
 function demoNotice(){return `<div class="demo-notice"><span class="demo-notice-dot"></span><span>DEMO v1.2 · Persona, biznese, oferta dhe aktivitetet janë shembuj fiktivë.</span></div>`}
@@ -335,16 +352,16 @@ function quickAction(icon,label,action,v){return `<button class="v3-quick" data-
 function intentPreview(){const expired=state.intentExpiry&&Date.now()>new Date(state.intentExpiry).getTime();return `<div class="intent-strip"><div><span class="micro">ÇFARË KËRKOJ TANI?</span><strong>${safeMark(expired?'Qëllimi skadoi':state.intent)}</strong><small>${state.intent==='Pa zgjedhur'?'Zgjidh interesin tënd, pa zbuluar vendndodhjen.':expired?'Zgjidh një periudhë të re':'Vullnetare · e ndryshueshme · pa GPS'}</small></div><button class="intent-edit" data-act="modal" data-val="intent">Ndrysho ↗</button></div>`}
 function v3Home(){return `${v8WelcomeCard()}${intentPreview()}<div class="v3-shortcuts">${quickAction('⚡','Plane','tab','events')}${quickAction('🏪','Biznese','go-category','Biznese')}${quickAction('💼','Punë','go-category','Punë')}${quickAction('♧','Komunitete','go-category','Komunitete')}</div>${legacyHome()}<div class="v3-note">Dizajni i këtij ekrani është prototip për miratim, jo vendim përfundimtar mbi MVP.</div>`}
 home=v3Home;
-function v3Post(p){if(state.hiddenPosts.includes(String(p.id)))return '';const postHtml=legacyPost(p);if(p.id==='p3')return postHtml.replace('</article>',`<div class="post-context"><div><b>⚽ Nga postimi te aktiviteti</b><span>Shiko planin dhe kërko të bashkohesh.</span></div><button data-act="event" data-id="e2">Shiko planin →</button></div></article>`);return postHtml}
+function v3Post(p){if(state.hiddenPosts.includes(String(p.id)))return '';let postHtml=legacyPost(p);const community=communities.find(c=>c.id===p.communityId);if(community)postHtml=postHtml.replace('</article>',`<div class="post-context"><button data-act="v11-community-open" data-id="${community.id}">${safeMark(communityTitle(community))} →</button></div></article>`);if(p.id==='p3')return postHtml.replace('</article>',`<div class="post-context"><div><b>⚽ Nga postimi te aktiviteti</b><span>Shiko planin dhe kërko të bashkohesh.</span></div><button data-act="event" data-id="e2">Shiko planin →</button></div></article>`);return postHtml}
 post=v3Post;
-function communityCard(c){const is=state.joinedCommunities.includes(c.id);return `<article class="directory-card"><div class="directory-symbol">${c.emoji}</div><div class="directory-info"><strong>${safeMark(c.name)}</strong><p>${safeMark(c.city)} · ${c.members.toLocaleString('it-IT')} anëtarë (demo)</p><small>${safeMark(c.desc)}</small></div><button class="button tiny ${is?'soft':''}" data-act="join-community" data-id="${c.id}">${is?'✓ Anëtar':'Bashkohu'}</button></article>`}
+function communityCard(c){const is=state.joinedCommunities.includes(c.id);return `<article class="directory-card"><div class="directory-symbol">${c.emoji}</div><div class="directory-info"><strong>${safeMark(communityTitle(c))}</strong><p>${safeMark(c.city)} · ${c.members.toLocaleString('it-IT')} anëtarë (demo)</p><small>${safeMark(communityDescription(c))}</small></div><button class="button tiny ${is?'soft':''}" data-act="join-community" data-id="${c.id}">${is?'✓ Anëtar':'Bashkohu'}</button></article>`}
 function marketCard(m){return `<article class="directory-card"><div class="directory-symbol market-symbol">${m.emoji}</div><div class="directory-info"><strong>${safeMark(m.name)}</strong><p>${safeMark(m.business)} · ${safeMark(m.city)}</p><small>${safeMark(m.price)} · Ofertë shembull</small></div><button class="button tiny" data-act="market-detail" data-id="${m.id}">Shiko</button></article>`}
 function v3ResultItem(r){if(r.type==='Biznese')return `<article class="directory-card"><div class="directory-symbol">${r.emoji}</div><div class="directory-info"><strong>${safeMark(r.name)}</strong><p>${safeMark(r.sub)}</p><small>Profil biznesi · të dhëna demonstrimi</small></div><button class="button tiny" data-act="business-detail" data-id="${r.id}">Shiko</button></article>`;
 if(r.type==='Punë')return `<article class="directory-card"><div class="directory-symbol">${r.emoji}</div><div class="directory-info"><strong>${safeMark(r.name)}</strong><p>${safeMark(r.sub)}</p><small>Oferta e punës është shembull, jo pozicion real.</small></div><button class="button tiny ${state.applications.includes(r.id)?'soft':''}" data-act="job-detail" data-id="${r.id}">${state.applications.includes(r.id)?'✓ Aplikuar':'Shiko'}</button></article>`;
 return resultItem(r)}
 function v3Explore(){const cats=['Të gjitha','Njerëz','Biznese','Punë','Komunitete','Tregu','Alumni'];const query=state.search.trim().toLocaleLowerCase('sq');
 let found=[];if(['Të gjitha','Njerëz','Biznese','Punë'].includes(state.category))found=[...people,...businesses,...jobs].filter(x=>(state.category==='Të gjitha'||state.category===x.type)&&(`${x.name} ${x.sub}`).toLocaleLowerCase('sq').includes(query)).map(v3ResultItem);
-if(['Të gjitha','Komunitete'].includes(state.category))found.push(...communities.filter(c=>(c.name+' '+c.city+' '+c.desc).toLocaleLowerCase('sq').includes(query)).map(communityCard));
+if(['Të gjitha','Komunitete'].includes(state.category))found.push(...communities.filter(c=>(communityTitle(c)+' '+c.name+' '+c.city+' '+communityDescription(c)).toLocaleLowerCase('sq').includes(query)).map(communityCard));
 if(['Të gjitha','Tregu'].includes(state.category))found.push(...market.filter(m=>(m.name+' '+m.city+' '+m.category).toLocaleLowerCase('sq').includes(query)).map(marketCard));
 if(['Të gjitha','Alumni'].includes(state.category))found.push(...schools.filter(a=>(a.name+' '+a.sub).toLocaleLowerCase('sq').includes(query)).map(a=>`<article class="directory-card"><div class="directory-symbol">${a.emoji}</div><div class="directory-info"><strong>${safeMark(a.name)}</strong><p>${safeMark(a.sub)}</p><small>Vetëm alumni të rritur · zbulim vullnetar</small></div><button class="button tiny soft" data-act="alumni-info">Shiko</button></article>`));
 return `${sectionsTitle('Zbulo komunitetin','Nga përmbajtja te njerëzit, planet dhe mundësitë.') }<label class="searchwrap">${svg('search',19)}<input id="finder" autocomplete="off" placeholder="Kërko në ILLYRIAN..." value="${safeMark(state.search)}"></label>${pills(cats,state.category,'category')}<div class="directory-status">${found.length} rezultate demonstrimi <span>· ${safeMark(state.category)}</span></div>${found.join('')||`<div class="empty">Nuk ka rezultate. Provo një emër ose kategori tjetër.</div>`}${demoNotice()}`}
@@ -477,8 +494,9 @@ modalContent=function(){
  if(type==='compose'){
  const d=state.v5Draft;
  const source=d.photoData||IMAGES[d.sample]||'';
+ const community=communities.find(c=>c.id===d.communityId);
  const plans=`<option value="">Pa aktivitet të lidhur</option>`+events.map(e=>`<option value="${e.id}" ${d.plan===e.id?'selected':''}>${esc(e.emoji+' '+e.title+' · '+e.city)}</option>`).join('');
- return drawer('Krijo postim',`<div class="v5-compose-intro">${tinyAvatar(state.v5AvatarChoice,'avatar')}<div><strong>${esc(state.profile.name)}</strong><small>Publikim lokal · Vetëm simulim</small></div><span style="margin-left:auto;color:var(--red);font-size:11px;font-weight:800">✦ v0.9</span></div>
+ return drawer('Krijo postim',`${community?`<p data-i18n-direct>${esc(socialText('discussionIn','Diskutim në komunitet'))}: ${safeMark(communityTitle(community))}</p>`:''}<div class="v5-compose-intro">${tinyAvatar(state.v5AvatarChoice,'avatar')}<div><strong>${esc(state.profile.name)}</strong><small>Publikim lokal · Vetëm simulim</small></div><span style="margin-left:auto;color:var(--red);font-size:11px;font-weight:800">✦ v0.9</span></div>
  <label class="v5-compose-label" for="v5-text">Çfarë dëshiron të ndash?</label><textarea class="field v5-compose-text" id="v5-text" maxlength="700" placeholder="Një moment nga qyteti yt, një ide apo një plan i ri...">${esc(d.text)}</textarea>
  <div class="v5-media-actions"><label class="v5-photo-label">▧ Foto nga pajisja<input type="file" id="v5-file" accept="image/jpeg,image/png,image/webp" aria-label="Zgjidh fotografi"/></label><button class="v5-media-btn" data-act="v5-sample" data-id="arta">◈ Foto shembull</button><button class="v5-media-btn" data-act="v5-sample" data-id="cafe">☕ Kafe</button></div>
  ${source?`<div class="v5-compose-preview"><img src="${source}" alt="Parapamja e fotografisë"><button data-act="v5-clearphoto">✕ Hiq</button></div>`:`<div class="v5-permissions">◎ Foto opsionale · Kompresohen në pajisjen tënde</div>`}
@@ -509,14 +527,17 @@ function v5Action(action,id,v){
   v5DraftFromFields();const d=state.v5Draft;
   if(!d.text.trim()&&!d.photoData&&!d.sample){toast('Shto një tekst ose fotografi');$('#v5-text')?.focus();return true}
   if(d.text.length>700){toast('Teksti është shumë i gjatë');return true}
-  const p={id:'my'+Date.now(),name:state.profile.name,ava:state.v5AvatarChoice,city:d.city,when:'Tani',text:d.text.trim(),img:d.sample||null,photoData:d.photoData||'',audience:d.audience,plan:d.plan||'',likes:0,comments:0,share:0,verified:false};
+  const communityId=communities.some(c=>c.id===d.communityId)&&state.joinedCommunities.includes(d.communityId)?d.communityId:null;
+  if(d.communityId&&!communityId){toast(socialText('membershipRequired','Bashkohu me komunitetin përpara publikimit.'));return true}
+  if(!coreMessageFresh($('#v5-text')))return true;
+  const p={...(communityId?{communityId}:{}),id:'my'+Date.now(),name:state.profile.name,ava:state.v5AvatarChoice,city:d.city,when:'Tani',text:d.text.trim(),img:d.sample||null,photoData:d.photoData||'',audience:d.audience,plan:d.plan||'',likes:0,comments:0,share:0,verified:false};
   state.posts.unshift(p);
   if(!persist()){
    state.posts.shift();
    toast('Postimi nuk u ruajt në këtë pajisje. Provo përsëri.');
    return true;
   }
-  state.tab='home';state.feed='Për ty';state.modal=null;
+  state.tab='home';state.feed='Për ty';state.modal=communityId?{type:'v11-community',id:communityId}:null;if(communityId){state.v11CommunityTab='posts';state.communityQuery=''}
   state.v5Draft={text:'',city:d.city,audience:'Publik',plan:'',photoData:'',sample:''};
   render();toast('Postimi u publikua vetëm në këtë demo');return true;
  }
@@ -889,20 +910,30 @@ v8Action=function(action,id,v){
   state.search='';state.category='Të gjitha';render({scroll:true});$('#finder')?.focus();return true;
  }
  if(action==='send-comment'){
-  const text=$('#comment-input')?.value.trim();
-  if(text)delete state.v9CommentDrafts[String(id)];
+  const input=$('#comment-input'),text=input?.value.trim();if(!text)return true;
+  if(!coreMessageFresh(input))return true;
+  const old=state.comments[id],oldDraft=state.v9CommentDrafts[String(id)];
+  state.comments[id]=[...(old||[]),text];delete state.v9CommentDrafts[String(id)];
+  if(persist()===false){if(old===undefined)delete state.comments[id];else state.comments[id]=old;state.v9CommentDrafts[String(id)]=oldDraft??input.value;toast(window.IllyrianI18n?.t('common:storageSaveFailed')||'Not saved. Try again.');input?.focus();return true}
+  render({scroll:true});return true;
  }
  return v9BaseV8Action(action,id,v);
 };
 document.addEventListener('change',e=>{
  if(e.target.id==='v9-near-city'){
-  state.v9NearCity=e.target.value;persist();render({scroll:true});toast('Qyteti i demonstrimit u ndryshua');
+  const previous=state.v9NearCity,next=e.target.value;
+  if(!['Milano','Romë','Tiranë','Prishtinë'].includes(next)||!coreMessageFresh(e.target)){e.target.value=previous;return}
+  state.v9NearCity=next;if(persist()===false){state.v9NearCity=previous;e.target.value=previous;toast(window.IllyrianI18n?.t('common:storageSaveFailed')||'Not saved. Try again.');return}
+  render({scroll:true});toast('Qyteti i demonstrimit u ndryshua');
  }
 });
 document.addEventListener('input',e=>{
+ if(e.target.id==='community-search'){
+  const start=e.target.selectionStart,end=e.target.selectionEnd;state.communityQuery=e.target.value.slice(0,100);render({scroll:true});const next=$('#community-search');next?.focus();next?.setSelectionRange(start,end);return;
+ }
  if(e.target.id==='comment-input'&&state.modal?.type==='comments'){
   state.v9CommentDrafts[String(state.modal.id)]=e.target.value.slice(0,240);
-  persist();
+  if(coreMessageFresh(e.target))persist();
  }
 });
 document.addEventListener('keydown',e=>{
@@ -1048,6 +1079,7 @@ document.head.appendChild(v10Style);
 const v11CommunityDetails={
  c1:{theme:'Biseda, sport dhe takime',topics:['Miqësi','Milano','Aktivitete'],intro:'Një hapësirë demonstrimi për shqiptarët që jetojnë në Milano dhe duan të krijojnë njohje.',posts:[['Arta K.','Po planifikojmë një aktivitet të vogël javën tjetër. Kush ka dëshirë të bashkohet?','Sot'],['Leon M.','Një ide për kafe dhe njohje të reja në fundjavë.','Dje']],event:'e1'},
  c2:{theme:'Ide, art dhe bashkëpunime',topics:['Krijim','Dizajn','Bashkëpunim'],intro:'Për dizajn, fotografi, video dhe ide të reja nga komuniteti krijues shqiptar.',posts:[['Arta K.','Çfarë projektesh kreative po përgatisni këtë muaj?','Sot'],['Leon M.','Një ide e mirë fillon me njerëzit e duhur.','Dje']],event:null},
+ c4:{theme:'Shkolla & Universiteti',topics:['Mësim','Studentë','Alumni'],intro:'Hapësirë demonstrimi për nxënës, studentë dhe ish-nxënës. Nuk ka direktori të të miturve ose të dhëna shkollore reale.',posts:[],event:null},
  c3:{theme:'Miqësi dhe komunitet',topics:['Romë','Kulturë','Njohje'],intro:'Për shqiptarë në Romë që dëshirojnë të njihen dhe të marrin pjesë në aktivitete.',posts:[['Besa H.','Kemi një takim të vogël këtë fundjavë!','Sot'],['Arta K.','Më pëlqejnë komunitetet ku njerëzit takohen vërtet.','Dje']],event:'e2'}
 };
 const v11PeopleDetails={
@@ -1061,7 +1093,7 @@ state.v11CommunityTab='overview';
 const v11CommunityCards=communityCard;
 communityCard=function(c){
  const joined=state.joinedCommunities.includes(c.id);
- return `<article class="directory-card v11-community-card"><div class="directory-symbol">${c.emoji}</div><div class="directory-info"><button type="button" class="v11-titlelink" data-act="v11-community-open" data-id="${c.id}">${safeMark(c.name)}</button><p>${safeMark(c.city)} · ${(c.members+(joined?1:0)).toLocaleString('it-IT')} anëtarë (demo)</p><small>${safeMark(c.desc)}</small><div class="v11-community-actions"><button type="button" class="v11-inline" data-act="v11-community-open" data-id="${c.id}">Shiko komunitetin →</button><button type="button" class="button tiny ${joined?'soft':''}" data-act="v11-community-toggle" data-id="${c.id}">${joined?'✓ Anëtar':'Bashkohu'}</button></div></div></article>`;
+ return `<article class="directory-card v11-community-card"><div class="directory-symbol">${c.emoji}</div><div class="directory-info"><button type="button" class="v11-titlelink" data-act="v11-community-open" data-id="${c.id}">${safeMark(communityTitle(c))}</button><p>${safeMark(c.city)} · ${(c.members+(joined?1:0)).toLocaleString('it-IT')} anëtarë (demo)</p><small>${safeMark(communityDescription(c))}</small><div class="v11-community-actions"><button type="button" class="v11-inline" data-act="v11-community-open" data-id="${c.id}">Shiko komunitetin →</button><button type="button" class="button tiny ${joined?'soft':''}" data-act="v11-community-toggle" data-id="${c.id}">${joined?'✓ Anëtar':'Bashkohu'}</button></div></div></article>`;
 };
 const v11OldProfile=profile;
 profile=function(){
@@ -1069,7 +1101,7 @@ profile=function(){
  const followed=people.filter(p=>state.follows.includes(p.id)&&!state.blocked.includes(p.id));
  const joined=communities.filter(c=>state.joinedCommunities.includes(c.id));
  const personRows=followed.length?followed.map(p=>`<button type="button" class="v11-minirow" data-act="v11-profile-open" data-id="${p.id}">${tinyAvatar(p.ava,'avatar')}<span><strong>${safeMark(p.name)}</strong><small>${safeMark(p.sub)}</small></span><span class="v11-chevron">›</span></button>`).join(''):'<p class="v11-noitems">Nuk ndjek ende persona në këtë demonstrim. Zbulo profilet dhe provo ndjekjen.</p>';
- const communityRows=joined.length?joined.map(c=>`<button type="button" class="v11-minirow" data-act="v11-community-open" data-id="${c.id}"><span class="v11-emblem">${c.emoji}</span><span><strong>${safeMark(c.name)}</strong><small>${safeMark(c.city)} · komunitet demo</small></span><span class="v11-chevron">›</span></button>`).join(''):'<p class="v11-noitems">Ende nuk je bashkuar me komunitete. Ato i gjen te Zbulo.</p>';
+ const communityRows=joined.length?joined.map(c=>`<button type="button" class="v11-minirow" data-act="v11-community-open" data-id="${c.id}"><span class="v11-emblem">${c.emoji}</span><span><strong>${safeMark(communityTitle(c))}</strong><small>${safeMark(c.city)} · komunitet demo</small></span><span class="v11-chevron">›</span></button>`).join(''):'<p class="v11-noitems">Ende nuk je bashkuar me komunitete. Ato i gjen te Zbulo.</p>';
  const panel=`<section class="v11-your-network" aria-label="Lidhjet e mia"><div class="v11-section-top"><div><span class="v11-kicker">RRJETI YT</span><h3>Njerëzit dhe komunitetet</h3><p>Ndjekjet dhe anëtarësimet ruhen vetëm në këtë shfletues.</p></div></div><div class="v11-network-grid"><div class="v11-network-col"><div class="v11-network-head"><strong>Ndjek ${followed.length}</strong><button data-act="go-category" data-val="Njerëz">Zbulo njerëz →</button></div>${personRows}</div><div class="v11-network-col"><div class="v11-network-head"><strong>Komunitetet e mia · ${joined.length}</strong><button data-act="go-category" data-val="Komunitete">Zbulo →</button></div>${communityRows}</div></div></section>`;
  return html.replace('<div class="filters">',panel+'<div class="filters">');
 };
@@ -1080,9 +1112,9 @@ modalContent=function(){
  if(m.type==='v11-community'){
   const c=communities.find(x=>x.id===m.id);if(!c)return drawer('Komuniteti nuk u gjet','<p class="small">Provo një komunitet tjetër.</p>');
   const d=v11CommunityDetails[c.id];const joined=state.joinedCommunities.includes(c.id);
-  const content=state.v11CommunityTab==='posts'?`<div class="v11-subsection-title">Nga komuniteti · shembuj</div>${d.posts.map(([name,text,when])=>`<div class="v11-community-post"><div><strong>${safeMark(name)}</strong><small>${safeMark(when)} · postim demonstrues</small></div><p>${safeMark(text)}</p></div>`).join('')}`:
-  `<p class="v11-community-intro">${safeMark(d.intro)}</p><div class="v11-topicrow">${d.topics.map(x=>`<span>${safeMark(x)}</span>`).join('')}</div><div class="v11-info-item"><span>Zona</span><strong>${safeMark(c.city)}</strong></div><div class="v11-info-item"><span>Anëtarë</span><strong>${(c.members+(joined?1:0)).toLocaleString('it-IT')} (demo)</strong></div>${d.event?`<button type="button" class="v11-plan-link" data-act="v11-community-event" data-id="${d.event}"><span>⚡</span><span><strong>Aktivitet i lidhur</strong><small>${safeMark(events.find(e=>e.id===d.event)?.title||'Shiko planin')}</small></span><b>Shiko →</b></button>`:'<p class="v11-muted">Aktivitetet e këtij komuniteti do të specifikohen më vonë.</p>'}`;
-  return drawer(c.name,`<div class="v11-community-hero"><span>${c.emoji}</span><div><small>KOMUNITET · VETËM DEMO</small><h3>${safeMark(c.name)}</h3><p>${safeMark(d.theme)}</p></div></div><div class="v11-community-buttonrow"><button type="button" class="button ${joined?'soft':''}" data-act="v11-community-toggle" data-id="${c.id}">${joined?'✓ Anëtar · Dil nga komuniteti':'＋ Bashkohu në komunitet'}</button></div><div class="v11-modal-tabs" role="group" aria-label="Seksionet e komunitetit"><button type="button" class="${state.v11CommunityTab==='overview'?'selected':''}" data-act="v11-community-tab" data-id="${c.id}" data-val="overview">Rreth komunitetit</button><button type="button" class="${state.v11CommunityTab==='posts'?'selected':''}" data-act="v11-community-tab" data-id="${c.id}" data-val="posts">Postime shembull</button></div>${content}<p class="v11-disclaimer">Anëtarësimi, anëtarët dhe postimet janë simuluar. Nuk ka komunikim me përdorues të tjerë.</p>`);
+  const content=state.v11CommunityTab==='posts'?communityDiscussions(c):
+  `<p class="v11-community-intro">${safeMark(c.id==='c4'?socialText('educationIntro',d.intro):d.intro)}</p><div class="v11-topicrow">${d.topics.map((x,i)=>`<span>${safeMark(c.id==='c4'?socialText(['educationLearning','educationStudents','educationAlumni'][i],x):x)}</span>`).join('')}</div><div class="v11-info-item"><span>Zona</span><strong>${safeMark(c.city)}</strong></div><div class="v11-info-item"><span>Anëtarë</span><strong>${(c.members+(joined?1:0)).toLocaleString('it-IT')} (demo)</strong></div>${d.event?`<button type="button" class="v11-plan-link" data-act="v11-community-event" data-id="${d.event}"><span>⚡</span><span><strong>Aktivitet i lidhur</strong><small>${safeMark(events.find(e=>e.id===d.event)?.title||'Shiko planin')}</small></span><b>Shiko →</b></button>`:'<p class="v11-muted">Aktivitetet e këtij komuniteti do të specifikohen më vonë.</p>'}`;
+  return drawer(communityTitle(c),`<div class="v11-community-hero"><span>${c.emoji}</span><div><small>KOMUNITET · VETËM DEMO</small><h3>${safeMark(communityTitle(c))}</h3><p>${safeMark(c.id==='c4'?communityTitle(c):d.theme)}</p></div></div><div class="v11-community-buttonrow"><button type="button" class="button ${joined?'soft':''}" data-act="v11-community-toggle" data-id="${c.id}">${joined?'✓ Anëtar · Dil nga komuniteti':'＋ Bashkohu në komunitet'}</button></div><div class="v11-modal-tabs" role="group" aria-label="Seksionet e komunitetit"><button type="button" class="${state.v11CommunityTab==='overview'?'selected':''}" data-act="v11-community-tab" data-id="${c.id}" data-val="overview">Rreth komunitetit</button><button type="button" class="${state.v11CommunityTab==='posts'?'selected':''}" data-act="v11-community-tab" data-id="${c.id}" data-val="posts">Postime shembull</button></div>${content}${communityActivities(c)}<p class="v11-disclaimer">Anëtarësimi, anëtarët dhe postimet janë simuluar. Nuk ka komunikim me përdorues të tjerë.</p>`);
  }
  if(m.type==='user-profile'){
   const p=people.find(x=>x.id===m.id);if(!p)return v11PreviousModal();
@@ -1096,12 +1128,24 @@ modalContent=function(){
 };
 const v11PreviousAction=v8Action;
 v8Action=function(action,id,v){
- if(action==='v11-community-open'){state.v11CommunityTab='overview';openModal('v11-community',id);return true}
+ if(action==='modal'&&v==='compose')delete state.v5Draft.communityId;
+  if(action==='community-plan-draft'){
+   const c=communities.find(x=>x.id===id);if(!c)return true;
+   close();window.dispatchEvent(new CustomEvent('illyrian:plans:draft',{detail:{title:communityTitle(c),city:c.city==='Global'?'Tiranë':c.city,kind:c.id==='c4'?'Alumni':'Miqësi dhe komunitet',communityId:c.id,source:'community'}}));return true;
+  }
+  if(action==='community-plan-open'){close();window.dispatchEvent(new CustomEvent('illyrian:plans:open',{detail:{id}}));return true}
+  if(action==='community-compose'){
+   const c=communities.find(x=>x.id===id);if(!c||!state.joinedCommunities.includes(id))return true;
+   v5DraftFromFields();state.v5Draft.communityId=id;openModal('compose');return true;
+  }
+  if(action==='v11-community-open'){state.communityQuery='';state.v11CommunityTab='overview';openModal('v11-community',id);return true}
  if(action==='v11-community-tab'){state.v11CommunityTab=v==='posts'?'posts':'overview';openModal('v11-community',id);return true}
  if(action==='v11-community-toggle'){
    const c=communities.find(x=>x.id===id);if(!c)return true;
-   state.joinedCommunities=toggle(state.joinedCommunities,id);
-   notice(state.joinedCommunities.includes(id)?'U bashkove me '+c.name+' (demo)':'U largove nga '+c.name+' (demo)');
+   if(!coreMessageFresh())return true;
+   const previous=state.joinedCommunities;
+   state.joinedCommunities=toggle(previous,id);
+   if(persist()===false){state.joinedCommunities=previous;toast(window.IllyrianI18n?.t('common:storageSaveFailed')||'Not saved. Try again.');return true}
    openModal('v11-community',id);toast(state.joinedCommunities.includes(id)?'Komuniteti u shtua te Profili yt':'U largove nga komuniteti');return true;
  }
  if(action==='v11-community-event'){state.tab='events';openModal('event',id);return true}
@@ -1245,7 +1289,7 @@ const v13BaseEventCard=eventCard;
 eventCard=function(e){
  const html=v13BaseEventCard(e),c=v13PlanCommunity(e.id);
  if(!c||!html)return html;
- return html.replace('</article>',`<div class="v13-card-community"><span>${c.emoji} Nga komuniteti</span><button type="button" data-act="v13-community" data-id="${c.id}">${safeMark(c.name)} →</button></div></article>`);
+ return html.replace('</article>',`<div class="v13-card-community"><span>${c.emoji} Nga komuniteti</span><button type="button" data-act="v13-community" data-id="${c.id}">${safeMark(communityTitle(c))} →</button></div></article>`);
 };
 const v13BaseModal=modalContent;
 modalContent=function(){
@@ -1258,7 +1302,7 @@ modalContent=function(){
   let html=v13BaseModal();
   const related=`<section class="v13-detail" aria-label="Detajet e komunitetit dhe pjesëmarrësve">
    <div class="v13-topline"><span class="v13-overline">PËRVOJA ILLYRIAN · DEMO</span><span class="v13-status">${v13Status(e.id)}</span></div>
-   <button class="v13-related" type="button" data-act="v13-community" data-id="${esc(c.id)}"><span class="v13-related-symbol">${c.emoji}</span><span><strong>${safeMark(c.name)}</strong><small>Komuniteti që organizon planin</small></span><span>›</span></button>
+   <button class="v13-related" type="button" data-act="v13-community" data-id="${esc(c.id)}"><span class="v13-related-symbol">${c.emoji}</span><span><strong>${safeMark(communityTitle(c))}</strong><small>Komuniteti që organizon planin</small></span><span>›</span></button>
    <div class="v13-organizer"><span>Organizatori · simulim</span><button type="button" data-act="v13-person" data-id="${esc(org.id)}">${tinyAvatar(org.ava,'v13-avatar')}<strong>${safeMark(org.name)}</strong><span>Shiko profilin →</span></button></div>
    <div class="v13-attendees"><div class="v13-section-header"><strong>Personat në këtë plan</strong><small>Profile demonstrimi</small></div><div class="v13-peoplerow">${v13People(e.id)}</div><div class="v13-capacity">${esc(e.members)} · ${safeMark(cfg.category)}</div></div>
   </section>`;
@@ -2093,4 +2137,4 @@ document.head.appendChild(v15Style);
 render();
 v7Render();
 })();
-</script><script src="./i18n/vendor/i18next.min.js"></script><script src="./i18n/locales/en.js"></script><script src="./i18n/locales/sq.js"></script><script src="./i18n/locales/it.js"></script><script src="./i18n/illyrian-i18n.js"></script><script src="./ILLYRIAN_SHOP_v1.7.js"></script><script src="./ILLYRIAN_PLANS_v1.7.js"></script><script src="./ILLYRIAN_CONNECTIONS_v1.7.js"></script><script src="./ILLYRIAN_PRIVACY_MAP_v1.7.js"></script><script src="./ILLYRIAN_SHOP_PLUS_v1.7.js"></script><script src="./ILLYRIAN_GOVERNANCE_v1.7.js"></script></body></html>
+</script><script src="./i18n/vendor/i18next.min.js"></script><script src="./i18n/locales/en.js"></script><script src="./i18n/locales/sq.js"></script><script src="./i18n/locales/it.js"></script><script src="./i18n/illyrian-i18n.js"></script><script src="./ILLYRIAN_SHOP_v1.7.js"></script><script src="./ILLYRIAN_ACTIVITY_TIME_v1.7.js"></script><script src="./ILLYRIAN_PLANS_v1.7.js"></script><script src="./ILLYRIAN_CONNECTIONS_v1.7.js"></script><script src="./ILLYRIAN_PRIVACY_MAP_v1.7.js"></script><script src="./ILLYRIAN_SHOP_PLUS_v1.7.js"></script><script src="./ILLYRIAN_GOVERNANCE_v1.7.js"></script></body></html>
