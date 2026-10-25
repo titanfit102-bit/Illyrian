@@ -85,3 +85,8 @@ Foto/video të problemit: emri `MOBILE-<session>-<case>-<portrait-or-landscape>-
 - F05: kontrollet e rrugës HTTP dhe integritetit të Preview janë të verifikuara; **jo** funksionaliteti fizik ose akses anonim universal.
 - F06: `browser-smoke-pull_request` dhe `webkit-smoke-pull_request` janë checks të suksesshme, por dega integruese mbetet e pambrojtur. Shiko [propozimin F06](F06_REQUIRED_CHECKS_DECISION.md); zbatimi kërkon miratim të qartë.
 - **Release HOLD**: asnjë merge, Production, APK ose deklarim "gati" pa rezultatin manual M01–M18, zgjidhjen e defekteve reale, vendimin F06 dhe sign-off e pronarit.
+
+## Phase 1 supplement — 2026-10-25 (NOT TESTED physically)
+Canonical current report: [PHASE1_QA_HANDOFF.md](PHASE1_QA_HANDOFF.md). Baseline Preview `dpl_4Fr38nkGv4YE7Yw12hFN8g5o259c` / `183a802…` has protected HTTP root and 16/16 asset parity evidence. It predates Governance fix `00fdf019…`; **do not mark it as the final candidate**. Replace session URL/deployment/source together after the free Preview limit allows a verified new candidate.
+
+Additional observations to record with M04/M15/M16/M18: type a Story reply and wait beyond 8 seconds; confirm draft/focus and explicit resume, storage failure/retry/reload without duplicates; compare two-tab Messages/Plans/Shop Plus behavior, copying drafts before a required reload. Check the light-mode Home Reels button contrast finding from the report. For performance, record device/build, cold/warm entry, keyboard/scroll response and interruptions using repeatable fictional content; numeric budgets are unapproved until baselines are selected. These instructions do not record a test result.
