@@ -2,6 +2,7 @@
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.en={
   "common": {
+    "storageSaveFailed": "The change was not saved on this device. Try again.",
     "notificationsShort": "Notifications",
     "close": "Close",
     "closeCross": "✕ Close",

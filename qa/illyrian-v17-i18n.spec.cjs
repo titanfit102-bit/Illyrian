@@ -1802,3 +1802,85 @@ for(const [label,fixture] of [
   }
  });
 }
+
+
+async function denyCoreStorage(page){
+ await page.evaluate(()=>{
+  const old=Storage.prototype.setItem;
+  window.__restoreCoreSetItem=()=>{Storage.prototype.setItem=old};
+  Storage.prototype.setItem=function(k,v){
+   if(k==='illyrian_demo_v09_state')throw new DOMException('Simulated quota','QuotaExceededError');
+   return old.call(this,k,v);
+  };
+ });
+}
+async function restoreCoreStorage(page){
+ await page.evaluate(()=>{window.__restoreCoreSetItem?.();delete window.__restoreCoreSetItem});
+}
+for(const [lang,error] of [
+ ['sq','Ndryshimi nuk u ruajt në këtë pajisje. Provo përsëri.'],
+ ['en','The change was not saved on this device. Try again.'],
+ ['it','La modifica non è stata salvata su questo dispositivo. Riprova.']
+]){
+ test('audit A1-02 Settings quota rollback and retry - '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+  await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
+  await page.locator('#layer [data-act="v6-settings-section"][data-val="privacy"]').click();
+  const check=page.locator('#layer [data-v6-pref="privateProfile"]');
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await expect(check).not.toBeChecked();
+  await denyCoreStorage(page);
+  await check.check();
+  await expect(check).not.toBeChecked();
+  await expect(page.locator('#toast-area')).toContainText(error);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+  await restoreCoreStorage(page);
+  await check.check();
+  await expect(check).toBeChecked();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).v6Prefs.privateProfile)).toBe(true);
+ });
+
+ test('audit A1-02 Profile quota preserves draft then retries - '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+  await page.locator('#screen [data-act="modal"][data-val="edit"]').click();
+  const name=page.locator('#edit-name'),bio=page.locator('#edit-bio');
+  await name.fill('Test Profile '+lang);
+  await bio.fill('Unsent biography draft '+lang);
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await denyCoreStorage(page);
+  await page.locator('#layer [data-act="edit-save"]').click();
+  await expect(name).toHaveValue('Test Profile '+lang);
+  await expect(bio).toHaveValue('Unsent biography draft '+lang);
+  await expect(name).toBeFocused();
+  await expect(page.locator('#toast-area')).toContainText(error);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+  await restoreCoreStorage(page);
+  await page.locator('#layer [data-act="edit-save"]').click();
+  const profile=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile);
+  expect(profile).toMatchObject({name:'Test Profile '+lang,bio:'Unsent biography draft '+lang});
+ });
+
+ test('audit A1-02 Messages quota preserves text then retries once - '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();
+  await page.locator('#v6-inbox-list [data-act="v6-openchat"][data-id="leon"]').click();
+  const form=page.locator('#v6-chat-form'),input=form.locator('#v6-msg-input');
+  await input.fill('Unsent hello '+lang);
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await denyCoreStorage(page);
+  await form.locator('button[type="submit"]').click();
+  await expect(input).toHaveValue('Unsent hello '+lang);
+  await expect(input).toBeFocused();
+  await expect(page.locator('#toast-area')).toContainText(error);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+  await restoreCoreStorage(page);
+  await form.locator('button[type="submit"]').click();
+  const messages=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).messages.leon);
+  expect(messages.filter(x=>x==='Unsent hello '+lang)).toHaveLength(1);
+ });
+}

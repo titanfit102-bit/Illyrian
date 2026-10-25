@@ -2,6 +2,7 @@
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.sq={
   "common": {
+    "storageSaveFailed": "Ndryshimi nuk u ruajt në këtë pajisje. Provo përsëri.",
     "notificationsShort": "Njoftime",
     "close": "Mbyll",
     "closeCross": "✕ Mbyll",
