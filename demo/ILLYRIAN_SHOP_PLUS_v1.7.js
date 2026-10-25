@@ -23,9 +23,14 @@
  // Preserve the initial persisted version for cross-tab optimistic checks.
  const initialRaw=(()=>{try{return localStorage.getItem(KEY)}catch{return null}})();
  const saved=(()=>{try{const v=JSON.parse(initialRaw||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{return{}}})();
- const filterList=(arr,max)=>Array.isArray(arr)?arr.filter(x=>x&&typeof x==='object'&&!Array.isArray(x)).slice(0,max):[];
+ // Reject structurally incomplete demo listings in memory; never rewrite the user's raw storage on load.
+ const validListing=x=>typeof x.id==='string'&&x.id.length>0&&TYPES.slice(1).includes(x.type)&&
+  typeof x.name==='string'&&x.name.trim().length>0&&typeof x.store==='string'&&x.store.trim().length>0&&
+  typeof x.city==='string'&&(typeof x.price==='number'||typeof x.price==='string'&&x.price.trim()!=='')&&
+  Number.isFinite(Number(x.price))&&Number(x.price)>=0;
+ const filterList=(arr,max,valid=()=>true)=>Array.isArray(arr)?arr.filter(x=>x&&typeof x==='object'&&!Array.isArray(x)&&valid(x)).slice(0,max):[];
  const state={
-  items:filterList(saved.items,30),needs:filterList(saved.needs,25),answers:filterList(saved.answers,50),
+  items:filterList(saved.items,30,validListing),needs:filterList(saved.needs,25),answers:filterList(saved.answers,50),
   flags:filterList(saved.flags,40),sampleOrders:filterList(saved.sampleOrders,20),
   tab:'catalog',open:false,query:'',type:'Të gjitha',city:'Të gjitha',min:'',max:'',stockOnly:false,
   yearMin:'',maxKm:'',areaMin:'',sort:'relevance',selected:'k1',shop:'',

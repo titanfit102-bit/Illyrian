@@ -2038,3 +2038,32 @@ for(const [lang,warning,confirm] of [
   await expect(page.locator('html')).toHaveAttribute('lang',lang);
  });
 }
+
+test('Shop Plus malformed persisted listing does not crash catalog/stores or rewrite raw data',async({page})=>{
+ const errors=[];
+ page.on('pageerror',err=>errors.push(err.message));
+ await ready(page);
+ const raw=JSON.stringify({items:[
+  {},
+  {id:'bad-store',type:'Produkte',name:'Broken missing seller',city:'Tiranë',price:2},
+  {id:'bad-name',type:'Produkte',name:42,store:'Bad Seller',city:'Tiranë',price:2},
+  {id:'bad-price',type:'Produkte',name:'Broken price',store:'Bad Seller',city:'Tiranë',price:{value:3}},
+  {id:'fixture-good',type:'Produkte',name:'Fixture valid coffee',store:'Fixture Seller',city:'Tiranë',price:10,quantity:4,owned:true}
+ ],needs:[],answers:[],flags:[],sampleOrders:[]});
+ await page.evaluate(raw=>localStorage.setItem('illyrian_demo_v17_shop_plus',raw),raw);
+ await page.reload({waitUntil:'load'});
+ await expect(page.locator('#phone')).toBeVisible();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('[data-isp-open]').first().click();
+ const root=page.locator('#isp-root');
+ await expect(root.locator('.isp-card:has-text("Fixture valid coffee")')).toHaveCount(1);
+ await expect(root.locator('.isp-card:has-text("Broken missing seller")')).toHaveCount(0);
+ await root.locator('[data-isp="tab:stores"]').click();
+ await expect(root).toContainText('Fixture Seller');
+ await root.locator('[data-isp="tab:catalog"]').click();
+ await root.locator('#isp-filters select[name="sort"]').selectOption('name');
+ await root.locator('#isp-filters button[type="submit"]').click();
+ await expect(root.locator('.isp-card:has-text("Fixture valid coffee")')).toHaveCount(1);
+ expect(errors).toEqual([]);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
+});
