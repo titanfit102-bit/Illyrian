@@ -132,3 +132,53 @@ test('F06 PR status check names are unambiguous across events',async()=>{
  }
  expect(yaml).toMatch(/^  webkit-smoke:\s*\n(?:.*\n){0,4}    if: .*github\.event_name == 'pull_request'/m);
 });
+
+
+// Mobile precision: verify the actual DOM/geometry, not just screenshot capture.
+// Desktop retains its simulated device status bars; mobile relies on OS chrome.
+// Visual PNG/JPEG evidence is captured by the existing visual-review suite.
+for(const [width,height] of [[320,568],[390,844],[844,390]]){
+ test('Mobile feed/story/nav geometry and accessible five actions - '+width+'x'+height,async({page})=>{
+  await openDemo(page,width,height);
+  const nav=page.locator('#navbar .v12-tab');
+  await expect(nav).toHaveCount(5);
+  const ids=await nav.evaluateAll(items=>items.map(el=>el.dataset.act==='open-reels'?'reels':el.dataset.val));
+  expect(ids).toEqual(['home','reels','inbox','explore','profile']);
+  const rail=page.locator('#screen > .stories');
+  await expect(rail).toBeVisible();
+  expect(await rail.evaluate(el=>el===el.parentElement.firstElementChild)).toBe(true);
+  const firstRing=rail.locator('.ring').first(),navBar=page.locator('#navbar');
+  const ringSize=await firstRing.boundingBox();
+  expect(ringSize.width).toBeGreaterThanOrEqual(60);
+  expect(ringSize.width).toBeLessThanOrEqual(76);
+  await expect(page.locator('#phone > .statusbar')).toBeHidden();
+  await expect(page.locator('#phone > .homebar')).toBeHidden();
+  const header=await page.locator('#phone > .head').boundingBox();
+  const stories=await rail.boundingBox();
+  expect(stories.y).toBeGreaterThanOrEqual(header.y+header.height-1);
+  for(const btn of await nav.all()){
+   const box=await btn.boundingBox();
+   expect(box.width).toBeGreaterThanOrEqual(44);
+   expect(box.height).toBeGreaterThanOrEqual(44);
+   expect(await btn.getAttribute('aria-label')).toBeTruthy();
+   await expect(btn.locator('.v12-nav-label')).toBeHidden();
+  }
+  const bottom=await navBar.boundingBox();
+  expect(bottom.y+bottom.height).toBeLessThanOrEqual(height+1);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
+  expect(overflow).toBe(false);
+  await nav.nth(2).click();
+  await expect(page.locator('#layer')).toContainText(/Mesazhe|Messages|Messaggi/i);
+  await page.locator('#navbar [data-val="explore"]').click();
+  await expect(page.locator('#navbar [data-val="explore"]')).toHaveAttribute('aria-current','page');
+  await page.locator('#navbar [data-val="home"]').click();
+  await expect(page.locator('#screen > .stories')).toBeVisible();
+ });
+}
+test('Desktop phone mockup preserves explicit demo chrome and visible nav labels',async({page})=>{
+ await openDemo(page,1280,800);
+ await expect(page.locator('#phone > .statusbar')).toBeVisible();
+ await expect(page.locator('#phone > .homebar')).toBeVisible();
+ await expect(page.locator('#navbar .v12-nav-label').first()).toBeVisible();
+ await expect(page.locator('#screen > .stories')).toBeVisible();
+});

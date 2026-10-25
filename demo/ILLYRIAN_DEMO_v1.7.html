@@ -650,7 +650,7 @@ let v6StoryTimer=null;
 const v6PreviousRender=render;
 render=function(opts={}){if(v6StoryTimer)clearTimeout(v6StoryTimer);v6StoryTimer=null;v6PreviousRender(opts);v6RenderBadge();if(state.modal?.type==='inbox')v6FilterInbox();const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;if(state.story&&!state.v6StoryPaused&&!reduced){v6StoryTimer=setTimeout(()=>{if(!state.story||state.modal||state.reelOpen||state.v6StoryPaused)return;state.story=state.story===4?0:state.story+1;if(state.story===0){state.v6StoryPaused=false}render({scroll:true})},8000)}};
 
-function render({scroll=false}={}){const screen=$('#screen'),old=screen.scrollTop;screen.innerHTML=state.tab==='home'?home():state.tab==='explore'?explore():state.tab==='events'?eventPage():profile();$('#navbar').innerHTML=nav();$('#layer').innerHTML=state.reelOpen?reelContent():state.story?storyContent():modalContent();screen.scrollTop=scroll?old:0;theme()}
+function render({scroll=false}={}){const screen=$('#screen'),old=screen.scrollTop;screen.innerHTML=state.tab==='home'?home():state.tab==='explore'?explore():state.tab==='events'?eventPage():profile();if(state.tab==='home'){const rail=screen.querySelector(':scope > .stories');if(rail&&rail!==screen.firstElementChild)screen.prepend(rail)}$('#navbar').innerHTML=nav();$('#layer').innerHTML=state.reelOpen?reelContent():state.story?storyContent():modalContent();screen.scrollTop=scroll?old:0;theme()}
 let toastTimer;function toast(s){const el=$('#toast-area');el.innerHTML=`<div class="toast">${esc(s)}</div>`;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.innerHTML='',2400)}
 function tab(id){state.tab=id;state.modal=null;state.story=0;state.reelOpen=false;render()}
 function close(){state.modal=null;state.story=0;state.reelOpen=false;render({scroll:true})}
@@ -1200,7 +1200,7 @@ const v12Icon=(name)=>{
  return `<svg class="v12-vector" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[name]||''}</svg>`;
 };
 nav=function(){
- return [['home','Kryefaqja','home'],['explore','Zbulo','search'],['reels','Reels','reels'],['messages','Mesazhe','messages'],['profile','Profili','avatar']].map(([id,label,ico])=>{
+ return [['home','Kryefaqja','home'],['reels','Reels','reels'],['messages','Mesazhe','messages'],['explore','Zbulo','search'],['profile','Profili','avatar']].map(([id,label,ico])=>{
   const selected=id==='reels'?Boolean(state.reelOpen):id==='messages'?state.modal?.type==='inbox':state.tab===id&&!state.reelOpen;
   const action=id==='reels'?'open-reels':id==='messages'?'modal':'tab';
   const value=id==='messages'?'inbox':id;
