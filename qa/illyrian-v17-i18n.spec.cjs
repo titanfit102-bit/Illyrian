@@ -1924,14 +1924,14 @@ test('audit A1-04 Connections preserves authored title and notes across sq/en/it
  const root=page.locator('#ilc-root');
  for(const [view,selector] of [
   ['cities','.ilc-results strong[data-user-content]'],
-  ['first','.ilc-first strong[data-user-content]'],
+  ['welcome','.ilc-first strong[data-user-content]'],
   ['repeat','.ilc-repeat strong[data-user-content]']
  ]){
   await root.locator('[data-ilc="view:'+view+'"]').click();
   for(const lang of ['sq','en','it']){
    await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
    await expect(root.locator(selector).filter({hasText:'Mbyll'})).toHaveText('Mbyll');
-   if(view==='first'){
+   if(view==='welcome'){
     await expect(root.locator('.ilc-first [data-user-content]').filter({hasText:'Mbyll'})).toHaveCount(3);
    }
   }
@@ -1951,7 +1951,7 @@ test('audit A1-06 map pin ARIA decodes special characters exactly once in all lo
  await page.locator('#il4-entry [data-il4-entry]').click();
  const root=page.locator('#il4-root');
  await root.locator('[data-il4="tab:map"]').click();
- const pin=root.locator('[data-il4="pin:plan-0"]');
+ const pin=root.locator('.il4-pin[data-il4="pin:plan-0"]');
  await expect(pin).toBeVisible();
  for(const [lang,label] of [
   ['sq','Shfaq A & "B" <C> në Tiranë'],
