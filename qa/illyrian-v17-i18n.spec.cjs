@@ -2156,3 +2156,16 @@ test('Messages reject an observed stale tab without losing its draft or another 
  expect(await b.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
  await ctx.close();
 });
+
+for(const locale of ['sq','en','it']){
+ test('Governance preserves unknown historical status without claiming pending '+locale,async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_governance',JSON.stringify({cases:[{id:'unknown-phase1',target:'Historical status fixture',reason:'Test reason',status:'Mbyll'}],appeals:[],audits:[],drafts:[]})));
+  await ready(page);await page.evaluate(l=>IllyrianI18n.changeLanguage(l),locale);
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_governance'));
+  await page.locator('#navbar [data-val="profile"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();
+  await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
+  const card=page.locator('#ig6-root article').filter({has:page.getByText('Historical status fixture',{exact:true})});
+  await expect(card).toContainText('Mbyll');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_governance'))).toBe(before);
+ });
+}

@@ -54,13 +54,16 @@
   '<label>Arsyeja<select name="reason"><option value="Informacion i pasaktë">Informacion i pasaktë</option><option value="Mashtrim i dyshuar">Mashtrim i dyshuar</option><option value="Spam">Spam</option><option value="Shkelje privatësie">Shkelje privatësie</option><option value="Përmbajtje e papërshtatshme">Përmbajtje e papërshtatshme</option></select></label>'+
   '<label>Shpjegim<textarea name="detail" maxlength="240" rows="2" placeholder="Çfarë ndodhi?"></textarea></label>'+
   '<button type="submit">Ruaj raportimin lokal</button></form>';
- const statusName=s=>({pending:'Në pritje',restricted:'Kufizuar (demo)',dismissed:'Mbyllur pa masë',more:'Duhet sqarim',reinstated:'Kufizimi u hoq'})[s]||'Në pritje';
+ const statusLabels={pending:'Në pritje',restricted:'Kufizuar (demo)',dismissed:'Mbyllur pa masë',more:'Duhet sqarim',reinstated:'Kufizimi u hoq'};
+ const knownStatus=s=>Object.prototype.hasOwnProperty.call(statusLabels,s);
+ const statusName=s=>knownStatus(s)?statusLabels[s]:(typeof s==='string'&&s?s:statusLabels.pending);
+ const statusMarkup=s=>'<span'+(!knownStatus(s)&&typeof s==='string'&&s?' data-user-content':'')+'>'+clean(statusName(s))+'</span>';
  const caseCards=()=>{
   const role=state.role==='moderator';
   return allCases().map(c=>'<article class="ig6-card"><h4 data-user-content>'+clean(c.target)+'</h4>'+
    '<p>'+clean(c.reason)+' · '+clean(c.source||'Raport demonstrues')+'</p>'+
    (c.detail?'<p data-user-content>'+clean(c.detail)+'</p>':'')+
-   '<p><b>Status:</b> '+clean(statusName(c.status))+'</p>'+
+   '<p><b>Status:</b> '+statusMarkup(c.status)+'</p>'+
    (c.reasonNote?'<p><b>Arsye vendimi:</b> <span data-user-content>'+clean(c.reasonNote)+'</span></p>':'')+
    (role?b('review:'+c.id,'Shqyrto si moderator'):b('appeal:'+c.id,'Apelo / kundërshto vendimin'))+'</article>').join('');
  };
@@ -76,7 +79,7 @@
   if(!c)return b('tab:reports','Kthehu')+'<p>Raportimi nuk u gjet.</p>';
   const mod=state.role==='moderator';
   return b('tab:reports','← Te raportimet')+'<h3>'+clean(c.target)+'</h3>'+
-    '<p><b>Arsyeja:</b> '+clean(c.reason)+'</p><p><b>Statusi:</b> '+clean(statusName(c.status))+'</p>'+
+    '<p><b>Arsyeja:</b> '+clean(c.reason)+'</p><p><b>Statusi:</b> '+statusMarkup(c.status)+'</p>'+
     '<p>'+clean(c.detail||'Nuk ka shpjegim shtesë.')+'</p>'+
    (mod?'<form id="ig6-decision" class="ig6-form"><label>Vendimi<select name="decision">'+
       '<option value="more">Kërko sqarim</option><option value="restricted">Kufizo në demo</option>'+
