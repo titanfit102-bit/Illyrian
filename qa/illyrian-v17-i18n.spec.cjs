@@ -1832,7 +1832,8 @@ for(const [lang,error] of [
   const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
   await expect(check).not.toBeChecked();
   await denyCoreStorage(page);
-  await check.check();
+  // Click rather than Playwright check(): a failed save intentionally restores unchecked.
+  await check.click();
   await expect(check).not.toBeChecked();
   await expect(page.locator('#toast-area')).toContainText(error);
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
