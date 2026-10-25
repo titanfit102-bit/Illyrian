@@ -1143,9 +1143,11 @@ v8Action=function(action,id,v){
  if(action==='v11-community-toggle'){
    const c=communities.find(x=>x.id===id);if(!c)return true;
    if(!coreMessageFresh())return true;
-   const previous=state.joinedCommunities;
+   const previous=state.joinedCommunities,previousLog=state.activityLog;
    state.joinedCommunities=toggle(previous,id);
-   if(persist()===false){state.joinedCommunities=previous;toast(window.IllyrianI18n?.t('common:storageSaveFailed')||'Not saved. Try again.');return true}
+   const message=state.joinedCommunities.includes(id)?'U bashkove me '+c.name+' (demo)':'U largove nga '+c.name+' (demo)';
+   state.activityLog=[{id:Date.now()+Math.random(),text:message,time:'Tani'},...previousLog].slice(0,15);
+   if(persist()===false){state.joinedCommunities=previous;state.activityLog=previousLog;toast(window.IllyrianI18n?.t('common:storageSaveFailed')||'Not saved. Try again.');return true}
    openModal('v11-community',id);toast(state.joinedCommunities.includes(id)?'Komuniteti u shtua te Profili yt':'U largove nga komuniteti');return true;
  }
  if(action==='v11-community-event'){state.tab='events';openModal('event',id);return true}

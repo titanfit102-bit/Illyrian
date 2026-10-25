@@ -2192,6 +2192,7 @@ for(const lang of ['sq','en','it']){
   await expect(page.locator('#toast-area')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('common:storageSaveFailed')));
   await p3FailCoreWrites(page,false);await page.locator('#layer [data-act="v11-community-toggle"]').click();
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).joinedCommunities.filter(x=>x==='c1').length)).toBe(1);
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).activityLog.filter(x=>x.text.includes('Shqiptarët në Milano')).length)).toBe(1);
  });
  test('Phase3 comment quota preserves text and retries once '+lang,async({page})=>{
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
