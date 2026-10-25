@@ -246,22 +246,22 @@
     overscroll-behavior-x:contain;
   }
   #phone #screen .story-btn{
-    width:72px;
-    min-height:89px;
+    width:clamp(78px,22vw,88px);
+    min-height:105px;
     gap:5px;
     align-content:start;
     font-size:.74rem;
     line-height:1.25;
   }
   #phone #screen .ring{
-    width:66px;
-    height:66px;
+    width:clamp(74px,21vw,82px);
+    height:clamp(74px,21vw,82px);
     padding:2.5px;
     flex:none;
   }
   #phone #screen .ring img{border-width:2px}
   #phone #screen .storyname{
-    max-width:70px;
+    max-width:86px;
     font-size:inherit;
     line-height:1.3;
   }
@@ -286,5 +286,5 @@
 @media (max-width:355px){
   #phone .head .brand{font-size:1rem;letter-spacing:1px}
   #phone #screen .stories{gap:8px}
-  #phone #screen .story-btn{width:69px}
+  #phone #screen .story-btn{width:78px}
 }

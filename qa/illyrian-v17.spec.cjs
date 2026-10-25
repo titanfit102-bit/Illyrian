@@ -149,8 +149,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   expect(await rail.evaluate(el=>el===el.parentElement.firstElementChild)).toBe(true);
   const firstRing=rail.locator('.ring').first(),navBar=page.locator('#navbar');
   const ringSize=await firstRing.boundingBox();
-  expect(ringSize.width).toBeGreaterThanOrEqual(60);
-  expect(ringSize.width).toBeLessThanOrEqual(76);
+  expect(ringSize.width).toBeGreaterThanOrEqual(73);
+  expect(ringSize.width).toBeLessThanOrEqual(83);
   await expect(page.locator('#phone > .statusbar')).toBeHidden();
   await expect(page.locator('#phone > .homebar')).toBeHidden();
   const header=await page.locator('#phone > .head').boundingBox();
