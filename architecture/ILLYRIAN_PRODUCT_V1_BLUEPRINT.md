@@ -48,6 +48,22 @@ Invariants: IDs are opaque; timestamp is server-generated; ownership never comes
 
 ## 5. API, privacy and trust controls
 
+### Minimum threat model — current DEMO vs future real product (2026-10-25)
+
+This table classifies requirements only; it does **not** claim deployed protection for server-side threats.
+
+| Threat / trust boundary | CURRENT DEMO — verifiable scope | FUTURE REAL APP — prerequisite, NOT IMPLEMENTED |
+| --- | --- | --- |
+| Fake identity, cross-account access, seller/organizer role spoofing | Browser guest/session and role UI are simulated; localStorage gives **no** server authorization | Authenticated server session; per-resource membership and ownership checks; negative tests using two distinct accounts |
+| User-authored content and stored data | Browser QA covers selected encoding and malformed localStorage failures; complete media/HTML injection audit not certified | Validated inputs/outputs and uploads, ownership, size/type limits, abuse reporting, moderation and audit trail |
+| Sensitive location, private groups, messages | Illustrative controls with fictional data, not a privacy guarantee | Least-privilege access, location minimization, per-conversation membership, retention/export/deletion rights and applicable legal review |
+| Stale updates, double booking and inventory | Browser localStorage sequential conflict tests only, **not atomic distributed transactions** | Server transactions, idempotency, capacity/inventory constraints and concurrency regression tests |
+| Supply chain, signed packages, incident recovery | Static repo with PR browser workflow; no native release build or app signing | Pinned/reviewed dependencies, least-privilege CI, release signing, secrets isolation, backup/restore and incident runbooks |
+| Commercial abuse / refunds / payments | Only fictional Shop UI. No legitimate checkout/settlement | Separate business/legal/owner decision, vetted payment provider, disputes/refunds, fraud controls; NOT NOW |
+
+**Decision boundary:** the future technical stack, payments, legal obligations and release scope remain subject to owner approval. An external protocol cannot authorize them.
+
+
 - API authentication/session issuance by a real identity service; short-lived credential rotation and revocation; server-side authorization by ownership and membership.
 - Explicit privacy for public/private profiles, follow requests, group membership, plan venue visibility; no publishing precise member GPS coordinates.
 - Signed, access-checked media upload; content-type and byte limits; malware/abuse screening where appropriate; deletion and media retention workflow.
@@ -58,6 +74,18 @@ Invariants: IDs are opaque; timestamp is server-generated; ownership never comes
 - Operational observability: server request IDs, redacted structured logs, alerting, error budgets and incident/rollback procedures.
 
 ## 6. MVP sequencing, proof gates and out-of-scope
+
+### Foundation gate crosswalk (design vs evidence — 2026-10-25)
+
+These are **labels for the existing M0–M5 gates**, not permission to begin a native build. A browser DEMO can pass browser QA while all native/backend release gates remain open.
+
+| Foundation gate | Existing ILLYRIAN gate | Current evidence and boundary |
+| --- | --- | --- |
+| G0 — product ready to build | M0 → approved M1 scope | **PARTIAL / DECISION REQUIRED**: product thesis and draft blueprint exist; target geography, MVP scope, platform/provider and user validation need owner decisions |
+| G1 — real engineering baseline | M1–M2 | **NOT IMPLEMENTED for real app**: no native AAB/APK, real API/auth, backend tests, signing plan or real mobile security checks; static DEMO Chromium/WebKit CI does not count |
+| G2 — safe integration/change | DEMO Phase 7 / F06 | **PARTIAL**: GitHub Actions PR checks pass; `demo/v1.7-illyrian-shop` has no required-check enforcement; F06 needs explicit owner authorization |
+| G3 — physical-device release | M5 | **NOT TESTED / RELEASE HOLD**: M01–M18 on Android/iPhone, actual screenreaders, real-app performance/privacy/security/store checks and owner sign-off outstanding |
+
 
 **Gate M0 — validate demand:** interviews/pilots with real buyers, local businesses and community hosts; collect evidence of repeat use, inventory supply and moderation workload. Confirm primary launch geography and data requirements. No live payment obligations.
 **Gate M1 — product foundation:** approved PRD, threat model, accounts/profiles, access matrix, public content, reports/blocks, admin audit, privacy/deletion; integration tests prove that one user cannot read or mutate another user's private resources.
@@ -75,6 +103,14 @@ Treat current screen flows and 25 Playwright cases as acceptance references, not
 Recommended build order: authentication/privacy first -> content/media -> plans/requests -> messaging -> Shop discovery and seller identity -> moderation/support -> optional financial flows.
 
 ## 8. Measurable acceptance and open decisions
+
+### Performance evidence and candidate budgets — no claimed pass (2026-10-25)
+
+- **CURRENT DEMO:** QA Lab displays browser Navigation Timing as **INFO**, not a measured device performance budget. Automated tests cover screen reachability and some 200% CSS scaling; they do not certify battery, memory pressure, startup time on actual phones, or real network latency. Avoid changing code just to satisfy speculative benchmarks.
+- **FUTURE REAL APP:** before implementing a native/client/backend performance gate, select and record **two benchmark devices, OS/browser/app build versions, network profile, content fixture, measurement tool, baseline and repetitions**. Measure cold/warm start, first useful screen, p95 tap feedback, scroll-jank rate, memory peak, MB per media session, battery/background cost, package size, crash-free sessions/ANR and API p95 after backend exists.
+- **Candidate pilot targets — PROPOSED, NOT APPROVED, NOT TESTED:** useful first screen p75 ≤3 s on the selected midrange device/profile; tap-feedback p95 ≤100 ms; crash-free sessions ≥99.5% once meaningful sessions are available. These are initial hypotheses for measurement **only**; confirm feasibility, device conditions and targets with the owner before enforcing CI/release gates. Do not pretend p95 API, AAB size or network-use budgets exist before their baselines.
+- **Change review:** whenever DEMO code adds large assets or expensive UI work, compare identical-browser/same-fixture baselines before/after and report relative change. A documentation change alone does not constitute a benchmark. Native release needs recorded physical measurements and an agreed fail threshold before M5 sign-off.
+
 
 Success criteria for initial pilot: >90% completion of one meaningful first-session action among test participants; no unauthorized API read/write in security test suite; 100% seller ownership isolation in regression tests; no unhandled critical accessibility blocker in tested journeys; backups successfully restored in a non-production exercise. These are **proposed gates, not achieved metrics**.
 
