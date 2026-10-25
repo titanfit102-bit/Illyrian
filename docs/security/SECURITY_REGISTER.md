@@ -23,3 +23,6 @@ Implementation belongs to PR #1; source commit is discoverable with `git log -- 
 - Locked npm install with scripts disabled PASS; `npm audit --prefix security --audit-level=high`: **0 vulnerabilities** at execution. Advisory database changes over time.
 - First-party JS/inline syntax and exact served-vendor/npm equality PASS; locale mirrors PASS; staged diff whitespace check PASS. Runtime code unchanged, existing browser CI reused.
 - Remote security job: UNKNOWN until this commit is pushed and run observed. Weekly execution inactive on feature-only workflow. Comprehensive SAST/history scanning and private reporting channel remain open.
+
+### Verified remote security baseline
+Source `598628f25a514d6190c5dfee18a1c75eaeae10b9`; [run 40206194367](https://github.com/titanfit102-bit/Illyrian/actions/runs/40206194367), job 121207531799 completed/success, log inspected: 7 negative detector fixtures, 78-file scan, JS syntax/vendor parity, locked install and npm audit 0 vulnerabilities all PASS. SEC-01/02 remain PARTIAL by coverage; SEC-03 VERIFIED only at this execution. Remote browser run 40206194257 IN PROGRESS at checkpoint. No full SAST/history/private-disclosure/physical-device claim.
