@@ -5,7 +5,13 @@
 
 ## 1. Hap versionin e saktë
 
-### Kandidati aktual — Connections feedback (JO QA fizike)
+### Kandidati aktual — Mobile UI precision (JO QA fizike)
+- **Source/test SHA:** `08d773cca9398f7d454abb6ada2aed7b14cd2201`; [Chromium + WebKit #40246035137](https://github.com/titanfit102-bit/Illyrian/actions/runs/40246035137) **267/267 + 16/16 PASS**; [security #40246035149](https://github.com/titanfit102-bit/Illyrian/actions/runs/40246035149) PASS. Kodet e Fazës 3/Connections përfshihen.
+- **Preview immutable:** https://illyrian-demo-2gv5m563l-un24.vercel.app/ · `dpl_8RPq5bLRA8CwGQApSiCgDZJgjEJh`, READY, target Preview null, root HTML / responsive CSS / Shop JS HTTP 200, përputhje me GitHub në SHA.
+- **Para/pas:** [screenshots para](https://github.com/titanfit102-bit/Illyrian/actions/runs/40241438045/artifacts/12617440183) dhe [screenshots pas](https://github.com/titanfit102-bit/Illyrian/actions/runs/40246035137/artifacts/12618099658). Duhet krahasim vizual manual me screenshot-et e Instagramit/ILLYRIAN; ende **JO** pixel-diff i certifikuar.
+- **M01/M02/M04/M16/M17:** në Android Chrome/iPhone Safari fizik verifiko renditjen Stories → Shop → Feed, unazat/etiketat, 5 tabs pa tekst të dukshëm por me emra te TalkBack/VoiceOver, 44+ px touch, header, portrait/landscape, 200% OS text; dallo homebar/statusbar e kodit (hidden) nga navigation bar-i real i sistemit dhe nga Vercel Preview wrapper. Shëno zonën e bardhë poshtë, model/OS/browser, screenshot-e pa të dhëna personale dhe hapat e riprodhimit. **Të gjitha rastet fizike mbeten NOT TESTED.**
+
+### Kandidati historik — Connections feedback (para UI precision, JO QA fizike)
 - Source/test `7418636ee271f305c4438600b03a8a63209914fd`; [CI](https://github.com/titanfit102-bit/Illyrian/actions/runs/40241438045): **263/263 Chromium + 16/16 Linux WebKit PASS**; [siguria](https://github.com/titanfit102-bit/Illyrian/actions/runs/40241438043) PASS.
 - Preview immutable https://illyrian-demo-7n59yu29j-un24.vercel.app/ · `dpl_4SV68fRckbeJkPbmNdG7zBmWskfL`, READY/target null, projekt `illyrian-demo`, team `un24`, SHA e njëjtë. Root HTTP200/source-prefix +163 dhe Connections JS HTTP200/identik; 16 asete të tjera të pandryshuara nga prova e mëparshme.
 - Për M16: te Connections/Hera e parë, testo njoftimin e ruajtjes/heqjes/gabimit me TalkBack/VoiceOver, fokusin dhe riprovimin. Provat browser nuk vërtetojnë njoftimin real të screenreader-it. M01–M18 mbeten NOT TESTED. Përdor këtë URL/deployment/SHA bashkë; referencat më poshtë janë histori. [Detajet](PHASE3_INTEGRATION_QA.md#follow-up-first-attendee-feedback).
