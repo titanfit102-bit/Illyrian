@@ -478,3 +478,50 @@ for(const [width,height] of [[390,844],[844,390]]){
   expect(bounds.scroll,'document overflows horizontally after closing dialogs').toBeLessThanOrEqual(bounds.client+4);
  });
 }
+
+
+// M17 200% text-size probe includes Connections, Privacy, Governance. This is a browser CSS-font probe, NOT
+// actual OS text scaling, physical device QA or real TalkBack/VoiceOver.
+for(const [width,height] of [[320,568],[844,390]]){
+ test('M17 200% text size keeps Connections Privacy Governance close and navigation reachable - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await expect(page.locator('#v7-auth.visible')).toHaveCount(0);
+  const px=await page.evaluate(()=>{
+   document.documentElement.style.setProperty('font-size','200%','important');
+   return parseFloat(getComputedStyle(document.documentElement).fontSize);
+  });
+  expect(px).toBeGreaterThanOrEqual(30);
+  const cases=[
+   {name:'Connections',tab:'events',entry:'[data-ilc-entry]',root:'#ilc-root',panel:'.ilc-sheet',close:'button[data-ilc="close"]'},
+   {name:'Privacy/Map',tab:'explore',entry:'#il4-entry [data-il4-entry]',root:'#il4-root',panel:'.il4-panel',close:'button[data-il4="close"]'},
+   {name:'Governance',tab:'explore',entry:'#ig6-entry [data-ig6="open"]',root:'#ig6-root',panel:'.ig6-panel',close:'button[data-ig6="close"]'}
+  ];
+  for(const item of cases){
+   if(item.tab==='events')await page.locator('.head [data-act="tab"][data-val="events"]').click();
+   else await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+   await page.locator(item.entry).first().click();
+   const root=page.locator(item.root),panel=root.locator(item.panel);
+   await expect(panel,item.name+' modal opens at 200%').toBeVisible();
+   await expect(panel).toHaveAttribute('role','dialog');
+   await expect(panel).toHaveAttribute('aria-modal','true');
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+   const close=root.locator(item.close);
+   await expect(close).toBeVisible();
+   await close.scrollIntoViewIfNeeded();
+   await close.click();
+   await expect(root).toBeHidden();
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+  }
+  const bounds=await page.evaluate(()=>({
+   client:document.documentElement.clientWidth,
+   scroll:document.documentElement.scrollWidth
+  }));
+  expect(bounds.scroll,'no document-wide sideways overflow after scaled overlays').toBeLessThanOrEqual(bounds.client+4);
+ });
+}
