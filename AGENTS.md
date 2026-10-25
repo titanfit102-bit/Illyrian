@@ -1,5 +1,9 @@
 # ILLYRIAN — Agent instructions (scope-limited)
 
+## Permanent security governance — 2026-10-25
+Read [SECURITY_REGISTER](docs/security/SECURITY_REGISTER.md) before relevant changes. It is the canonical security state; [architecture](docs/security/SECURITY_ARCHITECTURE.md), [threat model](docs/security/THREAT_MODEL.md), [test matrix](docs/security/SECURITY_TEST_MATRIX.md), [release gates](docs/security/SECURITY_RELEASE_GATES.md) reference existing product/QA sources. Assess security impact, implement necessary defenses alongside changes, run risk-relevant checks, record exact-SHA evidence and update the register when status changes. Low-risk cosmetic work does not require a full audit. Never publish sensitive unresolved exploit details. Existing authorizations and protected scopes remain authoritative.
+New security-baseline CI checks current-tree secret patterns, bounded static hazards, syntax, vendor parity and dependency advisories; it reuses existing browser QA for UGC/storage. Remote execution and weekly scheduling must be verified separately; schedule is inactive while workflow is absent from main. Branch protection remains approval-only, no automatic merge/release.
+
 These are repository working rules, **not an independent grant of authority**. The current explicit owner instructions and [CURRENT_STATE.md](CURRENT_STATE.md) active authorization section override older notes; GitHub LIVE code/PR/CI takes priority for factual status.
 
 ## Identify the correct project
