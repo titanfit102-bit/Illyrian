@@ -5,7 +5,13 @@
 
 ## 1. Hap versionin e saktë
 
-### Kandidati aktual i verifikuar automatikisht — 2026-10-25 (JO QA fizike)
+### M16 i fundit — kandidat automatik për t'u verifikuar para QA fizike (2026-10-25)
+- **HEAD i kodit:** `ec70a92c56b207a4bd5ccaa79f01d73f38bd36ac` ([PR Actions #40204447922](https://github.com/titanfit102-bit/Illyrian/actions/runs/40204447922)). **Chromium 227/227 PASS**; **WebKit IN PROGRESS**, kërko verifikim final të të dy job-eve përpara sesionit fizik.
+- **Immutable Preview i po këtij SHA:** https://illyrian-demo-oezeqy5pq-un24.vercel.app/ · `dpl_3T57pMTAdvcCQs1cJRFyWP8poxVn` READY / Preview target null. Authenticated GET `/` HTTP 200 me HTML identik prefiks (+163 karaktere Vercel), Shop Plus JS HTTP 200 përputhje e saktë me GitHub.
+- **M16 vetëm automatik:** u testua lidhja e gabimit të fushës me `aria-invalid`/`aria-describedby`, sq/en/it; **asnjë test TalkBack/VoiceOver në telefon real nuk është bërë**. Shëno të 18 rastet M01–M18 si NOT TESTED derisa të ketë rezultate reale.
+- Nëse WebKit nuk përfundon PASS, ky version **nuk** është kandidat i miratuar sipas portës automatike. Mos e ngatërroni 227/227 browser PASS me QA fizike.
+
+### Kandidati i mëparshëm i verifikuar automatikisht — 2026-10-25 (JO QA fizike)
 - **Exact tested QA HEAD:** `54ae36cedbfdd894927ec18df96b2284eed3f518`, [PR Actions #40199056375](https://github.com/titanfit102-bit/Illyrian/actions/runs/40199056375): **224/224 Chromium + 16/16 Linux WebKit PASS**, job logs verified. The final commit changes **QA only**; last changed Shop Plus runtime was `898cb6c7deb928f8aaee97129e1418de9597b77a`.
 - **Immutable same-SHA Vercel Preview:** https://illyrian-demo-jnumthype-un24.vercel.app/ · `dpl_3tnpupHeNS1fTSThTJ5KAt6Fi1CR` · `READY`, `target:null`, source SHA exactly `54ae36cedbfdd894927ec18df96b2284eed3f518`. Authenticated protected GET `/` HTTP 200: full committed DEMO HTML prefix +163-character Vercel feedback append. Shop Plus JavaScript GET 200 exact GitHub source match.
 - **Not physical certification:** Android Chrome, iPhone Safari, TalkBack, VoiceOver and all M01–M18 remain `NOT TESTED`. A protected Preview can require authorized Vercel login; never disable SSO or disclose bypass credentials. Record device, software, language, orientation and failures using the blank session form below. Re-check current branch HEAD/CI/Preview if another commit is pushed.
