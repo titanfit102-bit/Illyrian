@@ -1980,7 +1980,7 @@ test('audit A1-05 Plans detail uses semantic labels for organizer and participan
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang.code);
   await expect(root.locator('.ilp-panel header h2')).toHaveText(lang.heading);
   await expect(root.locator('.ilp-panel > .ilp-muted').first()).toContainText(lang.active);
-  await expect(root.locator('.ilp-panel > p').filter({hasText:'3'}).first()).toContainText(lang.seats);
+  await expect(root.locator('.ilp-panel > p:has(> b)').first()).toContainText(lang.seats);
   await expect(root.locator('.ilp-panel h4').first()).toHaveText(lang.manage);
   await expect(root.locator('[data-ilp="accept:arta"]')).toHaveText(lang.accept);
   await expect(root.locator('.ilp-request').first()).toContainText(lang.pending);
