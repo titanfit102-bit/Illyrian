@@ -60,6 +60,12 @@ window.ILLYRIAN_LOCALES.en={
     "photo": "Add photo"
   },
   "settings": {
+    "resetSocialButton": "Reset social data only",
+    "resetSocialTitle": "Reset social data",
+    "resetSocialWarning": "This resets only the profile, posts, comments, messages and social-module preferences in this browser. Shop, Shop Plus, Plans, Connections and your chosen language are not deleted.",
+    "resetSocialQuestion": "Do you want to continue?",
+    "resetSocialScope": "Saved social data may be lost. No server data is deleted.",
+    "resetSocialConfirm": "Yes, reset social data",
     "title": "Settings",
     "notice": "Demo preferences are stored only in this browser, when permitted.",
     "appearance": "Appearance",

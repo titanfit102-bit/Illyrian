@@ -60,6 +60,12 @@ window.ILLYRIAN_LOCALES.it={
     "photo": "Aggiungi foto"
   },
   "settings": {
+    "resetSocialButton": "Reimposta solo i dati social",
+    "resetSocialTitle": "Reimposta i dati social",
+    "resetSocialWarning": "Questa azione reimposta solo profilo, post, commenti, messaggi e preferenze del modulo social in questo browser. Shop, Shop Plus, Plans, Connections e la lingua scelta non vengono eliminati.",
+    "resetSocialQuestion": "Vuoi continuare?",
+    "resetSocialScope": "I dati social salvati potrebbero andare persi. Nessun dato viene eliminato dal server.",
+    "resetSocialConfirm": "Sì, reimposta i dati social",
     "title": "Impostazioni",
     "notice": "Le preferenze della demo sono salvate solo in questo browser, quando consentito.",
     "appearance": "Aspetto",

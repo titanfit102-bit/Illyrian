@@ -60,6 +60,12 @@ window.ILLYRIAN_LOCALES.sq={
     "photo": "Shto fotografi"
   },
   "settings": {
+    "resetSocialButton": "Rivendos vetëm të dhënat sociale",
+    "resetSocialTitle": "Rivendos të dhënat sociale",
+    "resetSocialWarning": "Ky veprim rivendos vetëm profilin, postimet, komentet, mesazhet dhe preferencat e modulit social në këtë shfletues. Nuk fshin Shop, Shop Plus, Plans, Connections apo gjuhën e zgjedhur.",
+    "resetSocialQuestion": "Dëshiron të vazhdosh?",
+    "resetSocialScope": "Të dhënat sociale të ruajtura mund të humbasin. Nuk kryhet asnjë fshirje në server.",
+    "resetSocialConfirm": "Po, rivendos pjesën sociale",
     "title": "Cilësimet",
     "notice": "Preferencat e kësaj demoje ruhen vetëm në shfletues, kur lejohet.",
     "appearance": "Pamja",

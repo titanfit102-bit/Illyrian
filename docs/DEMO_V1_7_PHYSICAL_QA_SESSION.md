@@ -5,7 +5,9 @@
 
 ## 1. Hap versionin e saktë
 
-**Preview i pandryshueshëm i kontrolluar:** https://illyrian-demo-2wmtumank-un24.vercel.app/
+**Shembull historik i Preview-it të kontrolluar më 2026-10-24 (JO domosdoshmërisht kandidati aktual):** https://illyrian-demo-2wmtumank-un24.vercel.app/
+
+**Për çdo sesion të ri fizik:** verifiko HEAD-in LIVE të `feat/i18n-shop-feedback-20261022`, commit-in e fundit të kodit me **Chromium + WebKit PASS**, deployment-in **Preview READY** të atij commit-i dhe përputhjen e përmbajtjes së shërbyer me GitHub. Regjistro URL-në e pandryshueshme, `dpl_...` dhe SHA-në e **atij kandidati** në formularin e sesionit. Mos i përdor identifikuesit historikë më poshtë për të certifikuar një kandidat më të ri.
 
 - Preview deployment `dpl_E85yYPXWuvWZ8t35WMTHLLGNJVKi`, HEAD i dokumentacionit `2b9c226bbd05b2ca7e9fcfced7aed2fd5d64b636`, kod/QA i fundit i verifikuar `b36708848d0b869ffa71238d81b0a35c007e82c6`. Në GitHub [Actions #40105377537](https://github.com/titanfit102-bit/Illyrian/actions/runs/40105377537), PR-triggered CI për docs HEAD është **success**; [Actions #40104667894](https://github.com/titanfit102-bit/Illyrian/actions/runs/40104667894) mbi SHA-në e kodit: **190/190 Chromium + 16/16 emulated WebKit PASS**.
 - Vercel API e shënoi Preview `READY`, dhe leximi i autorizuar i rrugës `/` ktheu **HTTP 200** me HTML-në identike si prefiks i skedarit në GitHub (plus skriptin e feedback-ut të Vercel). Kjo nuk garanton hyrje anonime nga telefoni.
@@ -24,8 +26,10 @@ Sistemi/Versioni: ____________
 Browser/Versioni: ____________
 Orientimi: Portrait / Landscape
 Gjuha e DEMO-s: sq / en / it
-Preview deployment: dpl_E85yYPXWuvWZ8t35WMTHLLGNJVKi
-Test code SHA: b36708848d0b869ffa71238d81b0a35c007e82c6
+Preview deployment (kandidati LIVE): dpl_________________
+Preview URL e pandryshueshme: https://________________
+Test code SHA (exact-SHA CI PASS): ________________________________
+Chromium + WebKit run ID: __________________
 QA operator: ____________ (mund të përdoret pseudonim)
 Rezultati total: PASS / FAIL / BLOCKED / NOT TESTED
 Problemet e gjetura / screenshot-et: ____________

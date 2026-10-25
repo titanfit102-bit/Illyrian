@@ -1996,3 +1996,45 @@ test('audit A1-05 Plans detail uses semantic labels for organizer and participan
  }
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
 });
+
+
+for(const [lang,warning,confirm] of [
+ ['sq','Nuk fshin Shop, Shop Plus, Plans, Connections','Po, rivendos pjesën sociale'],
+ ['en','Shop, Shop Plus, Plans, Connections','Yes, reset social data'],
+ ['it','Shop, Shop Plus, Plans, Connections','Sì, reimposta i dati social']
+]){
+ test('audit A1-07 scoped social reset preserves module stores and handles quota - '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  const keys={core:'illyrian_demo_v09_state',shop:'illyrian_demo_v17_shop',plans:'illyrian_demo_v17_plans',connections:'illyrian_demo_v17_connections'};
+  const raw=await page.evaluate(keys=>{
+   const data={
+    [keys.core]:JSON.stringify({profile:{name:'Social fixture',bio:'Saved'},posts:[{id:'myfixture',name:'Social fixture',text:'Social text',city:'Tiranë'}]}),
+    [keys.shop]:'{"fixture":"shop"}',
+    [keys.plans]:'{"fixture":"plans"}',
+    [keys.connections]:'{"fixture":"connections"}'
+   };
+   for(const [k,v] of Object.entries(data))localStorage.setItem(k,v);
+   return data;
+  },keys);
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+  await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
+  await page.locator('#layer [data-act="v6-settings-section"][data-val="about"]').click();
+  await expect(page.locator('#layer')).toContainText('ILLYRIAN Demo v1.7');
+  await page.locator('#layer [data-act="v6-reset-confirm"]').click();
+  await expect(page.locator('#layer .v6-alert-banner')).toContainText(warning);
+  await expect(page.locator('#layer [data-act="v6-reset-now"]')).toHaveText(confirm);
+  await denyCoreStorage(page);
+  await page.locator('#layer [data-act="v6-reset-now"]').click();
+  await expect(page.locator('#toast-area')).not.toBeEmpty();
+  expect(await page.evaluate(k=>localStorage.getItem(k),keys.core)).toBe(raw[keys.core]);
+  await expect(page.locator('#layer [data-act="v6-reset-now"]')).toBeVisible();
+  await restoreCoreStorage(page);
+  await Promise.all([page.waitForEvent('load'),page.locator('#layer [data-act="v6-reset-now"]').click()]);
+  await expect.poll(()=>page.evaluate(k=>localStorage.getItem(k),keys.core)).toBe('{}');
+  for(const key of [keys.shop,keys.plans,keys.connections]){
+   expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(raw[key]);
+  }
+  await expect(page.locator('html')).toHaveAttribute('lang',lang);
+ });
+}

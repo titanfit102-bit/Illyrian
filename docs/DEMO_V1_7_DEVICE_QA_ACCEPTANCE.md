@@ -2,10 +2,10 @@
 
 > Operative acceptance checklist — 2026-10-24. Status: **UNEXECUTED / NOT RELEASE APPROVED**. This is a verification plan for the existing DEMO, **not** a new product scope or authorization to release, merge or change Production.
 
-**Practical owner test worksheet:** [`DEMO_V1_7_PHYSICAL_QA_SESSION.md`](DEMO_V1_7_PHYSICAL_QA_SESSION.md). This document supplies the immutable verified Preview link, short on-device steps, evidence recording fields, and clearly marks every physical-device case NOT TESTED. It does **not** replace M01–M18 below.
+**Practical owner test worksheet:** [`DEMO_V1_7_PHYSICAL_QA_SESSION.md`](DEMO_V1_7_PHYSICAL_QA_SESSION.md). This document provides a historically verified immutable Preview example and instructions to record a **new same-SHA candidate**, short on-device steps, evidence fields, and clearly marks physical-device cases NOT TESTED. It does **not** replace M01–M18 below.
 
 ## 0. Preconditions: avoid testing the wrong build
-- Verify repository `titanfit102-bit/Illyrian`, exact tested **code commit SHA**, open **Draft PR #1**, and target `demo/v1.7-illyrian-shop`. Check matching `push` and `pull_request` Chromium runs.
+- Verify repository `titanfit102-bit/Illyrian`, exact tested **code commit SHA**, open **Draft PR #1**, and target `demo/v1.7-illyrian-shop`. Verify the **exact-SHA `pull_request` Chromium + Linux WebKit** GitHub Actions runs for the selected feature-branch candidate. The duplicate feature-branch `push` trigger was intentionally removed; do not require a redundant push run.
 - Obtain an **immutable Vercel Preview deployment URL** for that SHA; confirm `READY`, Preview target (not Production), branch and Git metadata. Open `/` through authorized HTTP access and check that it actually renders `ILLYRIAN_DEMO_v1.7.html`. A `READY` API response or static `vercel.json` rewrite alone does **not** satisfy F05.
 - If access is denied (403/SSO) or build is rate limited, mark **BLOCKED** and do not treat an older preview as the current source. Never disable global SSO, expose a token, or use a Production URL as a substitute. Team access and temporary sharing need owner approval.
 - Use **fictional test inputs only**: no identity documents, real phone numbers, addresses, card data, or payments. LocalStorage-backed DEMO state is not server authorization.
