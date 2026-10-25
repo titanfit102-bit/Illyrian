@@ -169,6 +169,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   expect(overflow).toBe(false);
   await nav.nth(2).click();
   await expect(page.locator('#layer')).toContainText(/Mesazhe|Messages|Messaggi/i);
+  // The inbox is modal: dismiss it before exercising the next navigation tab.
+  await page.keyboard.press('Escape');
   await page.locator('#navbar [data-val="explore"]').click();
   await expect(page.locator('#navbar [data-val="explore"]')).toHaveAttribute('aria-current','page');
   await page.locator('#navbar [data-val="home"]').click();
