@@ -163,6 +163,7 @@ window.ILLYRIAN_LOCALES.it={
     "reply": "Rispondi alla storia..."
   },
   "messages": {
+    "storageConflict": "I dati locali sono cambiati o non sono leggibili. Copia la bozza e ricarica prima di riprovare.",
     "title": "Messaggi",
     "conversations": "Le tue conversazioni",
     "search": "Cerca conversazioni...",

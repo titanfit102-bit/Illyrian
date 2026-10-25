@@ -2121,3 +2121,38 @@ for(const lang of ['sq','en','it']){
   expect(saved).toMatchObject({type:'Makina',name:'Mbyll accessible vehicle',year:2026,mileage:0});
  });
 }
+
+for(const lang of ['sq','en','it']){
+ test('Story reply quota retry preserves draft and stores once '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#screen [data-act="story"]').first().click();
+  const input=page.locator('#v6-story-message');await input.fill('Story reply '+lang);
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await denyCoreStorage(page);
+  await page.locator('[data-act="v6-story-send"]').click();
+  await expect(input).toHaveValue('Story reply '+lang);await expect(input).toBeFocused();
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+  await restoreCoreStorage(page);await page.locator('[data-act="v6-story-send"]').click();
+  const messages=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).messages);
+  expect(Object.values(messages).flat().filter(x=>x==='↪ Story: Story reply '+lang)).toHaveLength(1);
+  await page.reload();expect(await page.evaluate(l=>Object.values(JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).messages).flat().filter(x=>x==='↪ Story: Story reply '+l).length,lang)).toBe(1);
+ });
+}
+test('Story timer preserves an unsent reply while writing',async({page})=>{
+ await page.clock.install();await ready(page);
+ await page.locator('#screen [data-act="story"]').first().click();
+ await page.locator('#v6-story-message').fill('Keep this draft');
+ await page.clock.fastForward(9000);
+ await expect(page.locator('#v6-story-message')).toHaveValue('Keep this draft');
+});
+
+test('Messages reject an observed stale tab without losing its draft or another message',async({browser})=>{
+ const ctx=await browser.newContext();const a=await ctx.newPage(),b=await ctx.newPage();
+ for(const p of [a,b]){await ready(p);await p.locator('[data-act="modal"][data-val="inbox"]').first().click();await p.locator('[data-act="v6-openchat"][data-id="leon"]').first().click()}
+ await a.locator('#v6-msg-input').fill('Confirmed A');await a.locator('#v6-chat-form button[type="submit"]').click();
+ const raw=await a.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await b.locator('#v6-msg-input').fill('Unsent B');await b.locator('#v6-chat-form button[type="submit"]').click();
+ await expect(b.locator('#v6-msg-input')).toHaveValue('Unsent B');
+ expect(await b.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ await ctx.close();
+});

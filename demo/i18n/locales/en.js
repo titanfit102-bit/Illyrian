@@ -163,6 +163,7 @@ window.ILLYRIAN_LOCALES.en={
     "reply": "Reply to Story..."
   },
   "messages": {
+    "storageConflict": "Local data changed or cannot be read. Copy your draft and reload before retrying.",
     "title": "Messages",
     "conversations": "Your conversations",
     "search": "Search conversations...",

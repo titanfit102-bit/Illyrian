@@ -163,6 +163,7 @@ window.ILLYRIAN_LOCALES.sq={
     "reply": "Përgjigju Story..."
   },
   "messages": {
+    "storageConflict": "Të dhënat lokale ndryshuan ose nuk lexohen. Kopjo draftin dhe rifresko faqen para riprovimit.",
     "title": "Mesazhet",
     "conversations": "Bisedat e tua",
     "search": "Kërko biseda...",
