@@ -2,7 +2,17 @@
 
 > 2026-10-24. **PROPOSAL ONLY, NOT APPLIED**. Applies ONLY to `titanfit102-bit/Illyrian`, target branch `demo/v1.7-illyrian-shop`. Explicit owner authorization is required before changing GitHub branch protection or rulesets. No merges or Production actions authorized by this document.
 
-## Verified current facts
+## LIVE F06 preflight — 2026-10-25 [READ-ONLY / APPROVAL REQUIRED]
+
+- **Exact current feature branch HEAD:** `8a345a7d4b9f44d434ea4c4114c3e8c009257ad5` (documentation-only), [PR Actions #40192722927](https://github.com/titanfit102-bit/Illyrian/actions/runs/40192722927) **221/221 Chromium PASS + 16/16 Linux WebKit PASS**, both job logs checked. Latest source/test commit `11bdf46b7e9736475a1081444b1a7bcaccad8aac` passed the same **221 + 16** in [Actions #40188067150](https://github.com/titanfit102-bit/Illyrian/actions/runs/40188067150). Neither run is a real phone or screenreader certification.
+- **Draft PR #1** remains **open / Draft / unmerged** from `feat/i18n-shop-feedback-20261022` into **exactly** `demo/v1.7-illyrian-shop`. The integration branch remains at `015ce439e7c6d736149c6c300391586517664f62` with `protected:false`; repository rulesets query returns **[]**. Passing checks therefore **DO NOT block an unauthorized merge automatically**.
+- The current `.github/workflows/illyrian-v17-browser-qa.yml` generates successful PR-context job names **`browser-smoke-pull_request`** and **`webkit-smoke-pull_request`**. Its feature-branch `push` duplicate trigger was removed; `push` only targets the integration branch, and the `pull_request` event is deliberately **not path-filtered**. Do **not** require a nonexistent feature-push check, the skipped WebKit push variant, or a Vercel comments check.
+- **Unapproved administrative decision:** owner must explicitly authorize the targeted integration-only required-check rule and choose whether to demand strict up-to-date branches. Never mutate `main`, Production, global organization rules, SSO, aliases or paid services to enforce this draft rule.
+- **Approval-independent HOLD:** even successful enforcement must not trigger a merge. Physical Android Chrome/iPhone Safari M01–M18, real TalkBack/VoiceOver and owner release sign-off are still **NOT TESTED**.
+- **Scope:** no branch protection, rulesets, PR merge, or secrets/Production settings changed by this read-only preflight.
+
+## Historical verification — 2026-10-24 (preserved for context)
+
 - [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1): source `feat/i18n-shop-feedback-20261022`, target `demo/v1.7-illyrian-shop`; unmerged.
 - Integration branch GitHub branch-list API: `protected:false`. Repository rulesets API returned an empty list at the audited checkpoint; refresh both before making changes.
 - At exact source/test SHA [`5a066164dbe794effea3b17eb241a70046d3949a`](https://github.com/titanfit102-bit/Illyrian/commit/5a066164dbe794effea3b17eb241a70046d3949a), [Actions #40099906942](https://github.com/titanfit102-bit/Illyrian/actions/runs/40099906942) shows these **successful PR checks from GitHub Actions**: `browser-smoke-pull_request` (190/190 Chromium) and `webkit-smoke-pull_request` (12/12 bounded WebKit). The separate push check `browser-smoke-push` also passed but must **not** be chosen as the PR merge gate.
@@ -25,7 +35,7 @@
 - If checks become permanently pending, undo only the new rule/configuration with the owner's authorization; preserve evidence and do not bypass the gate using a merge.
 
 ## Cost and scope guard
-- Current workflow runs Chromium on source feature push **and** PR, adding duplicate CI minutes; the WebKit engine probe runs only on PR and only after Chromium succeeds. Consider reducing redundant feature-branch push runs in a later, separately verified CI optimization; **never add a PR path filter** that can skip required checks.
+- **Updated 2026-10-25:** feature-branch Chromium runs are now triggered by PR only; the redundant feature-push event was removed and verified. Integration push retains its own scoped Chromium run. The WebKit engine probe runs on PR after Chromium success. **Never add PR path filters** that can leave required checks pending.
 - Required automated checks complement but **do not substitute for** physical Android/iPhone QA, real VoiceOver/TalkBack, privacy/security audit, and explicit owner sign-off.
 
 ## Evidence
