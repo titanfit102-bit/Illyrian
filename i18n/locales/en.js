@@ -159,7 +159,18 @@ window.ILLYRIAN_LOCALES.en={
     "educationIntro": "A demo space for school pupils, university students and alumni. No directory of minors or real school records.",
     "educationLearning": "Learning",
     "educationStudents": "Students",
-    "educationAlumni": "Alumni"
+    "educationAlumni": "Alumni",
+    "communityDemoLabel": "COMMUNITY · DEMO ONLY",
+    "communityJoinedLeave": "✓ Member · Leave community",
+    "communityJoinButton": "＋ Join community",
+    "communitySectionsAria": "Community sections",
+    "communityAboutTab": "About community",
+    "communityPostsTab": "Posts and discussions",
+    "communityZoneLabel": "Area",
+    "communityMembersLabel": "Members",
+    "communityRelatedActivity": "Related activity",
+    "communityNoActivities": "Prepare a new activity using the button below.",
+    "communityDisclaimer": "Membership and posts are local demo data. No communication with other users."
   },
   "reels": {
     "createPlus": "＋ Create Reel",

@@ -159,7 +159,18 @@ window.ILLYRIAN_LOCALES.it={
     "educationIntro": "Spazio dimostrativo per alunni, universitari ed ex studenti. Nessun elenco di minori o dato scolastico reale.",
     "educationLearning": "Studio",
     "educationStudents": "Studenti",
-    "educationAlumni": "Alumni"
+    "educationAlumni": "Alumni",
+    "communityDemoLabel": "COMUNITÀ · SOLO DEMO",
+    "communityJoinedLeave": "✓ Membro · Esci dalla comunità",
+    "communityJoinButton": "＋ Unisciti alla comunità",
+    "communitySectionsAria": "Sezioni della comunità",
+    "communityAboutTab": "Informazioni",
+    "communityPostsTab": "Post e discussioni",
+    "communityZoneLabel": "Zona",
+    "communityMembersLabel": "Membri",
+    "communityRelatedActivity": "Attività collegata",
+    "communityNoActivities": "Prepara una nuova attività con il pulsante qui sotto.",
+    "communityDisclaimer": "Iscrizioni e post sono dati locali dimostrativi. Nessuna comunicazione con altri utenti."
   },
   "reels": {
     "createPlus": "＋ Crea Reel",

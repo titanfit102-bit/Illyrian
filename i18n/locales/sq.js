@@ -159,7 +159,18 @@ window.ILLYRIAN_LOCALES.sq={
     "educationIntro": "Hapësirë demonstrimi për nxënës, studentë dhe ish-nxënës. Nuk ka direktori të të miturve ose të dhëna shkollore reale.",
     "educationLearning": "Mësim",
     "educationStudents": "Studentë",
-    "educationAlumni": "Alumni"
+    "educationAlumni": "Alumni",
+    "communityDemoLabel": "KOMUNITET · VETËM DEMO",
+    "communityJoinedLeave": "✓ Anëtar · Dil nga komuniteti",
+    "communityJoinButton": "＋ Bashkohu në komunitet",
+    "communitySectionsAria": "Seksionet e komunitetit",
+    "communityAboutTab": "Rreth komunitetit",
+    "communityPostsTab": "Postime dhe diskutime",
+    "communityZoneLabel": "Zona",
+    "communityMembersLabel": "Anëtarë",
+    "communityRelatedActivity": "Aktivitet i lidhur",
+    "communityNoActivities": "Përgatit një aktivitet të ri me butonin më poshtë.",
+    "communityDisclaimer": "Anëtarësimi dhe postimet janë të dhëna lokale demonstrimi. Nuk ka komunikim me përdorues të tjerë."
   },
   "reels": {
     "createPlus": "＋ Krijo Reel",

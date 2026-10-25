@@ -2241,6 +2241,8 @@ for(const lang of ['sq','en','it']){
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await p3Community(page,'c4');
   await expect(page.locator('#layer .modalhead h2')).toHaveText({sq:'Shkolla & Universiteti',en:'School & University',it:'Scuola e Università'}[lang]);
+  await expect(page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]')).toHaveText({sq:'Postime dhe diskutime',en:'Posts and discussions',it:'Post e discussioni'}[lang]);
+  await expect(page.locator('#layer [data-act="v11-community-toggle"]')).toHaveText({sq:'＋ Bashkohu në komunitet',en:'＋ Join community',it:'＋ Unisciti alla comunità'}[lang]);
   await page.locator('#layer [data-act="v11-community-toggle"]').click();
   await page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]').click();
   await page.locator('#layer [data-act="community-compose"]').click();
