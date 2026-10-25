@@ -5,6 +5,11 @@
 
 ## 1. Hap versionin e saktë
 
+### Kandidati i fundit i verifikuar automatikisht — 2026-10-25 (JO QA fizike)
+- **Source/QA SHA:** `11bdf46b7e9736475a1081444b1a7bcaccad8aac`, [GitHub Actions #40188067150](https://github.com/titanfit102-bit/Illyrian/actions/runs/40188067150): **221/221 Chromium + 16/16 WebKit PASS**.
+- **Immutable Preview:** https://illyrian-demo-hhqz5t4tp-un24.vercel.app/ · deployment `dpl_HAHRA1wQgwH7wjWDmiFyXdoTvGaD`, `READY`, target Preview, same code SHA. Authorized GET `/` HTTP 200 with source prefix + feedback script; Plans JS and `sq/en/it` locale assets exact source match.
+- **Ky kandidat është referencë testimi vetëm nëse mbetet HEAD i fundit i testuar në fillim të sesionit.** Nëse dega avancon, verifiko dhe regjistro kandidatin e ri. Android Chrome/iPhone Safari/TalkBack/VoiceOver **NOT TESTED**. Protected/SSO preview mund të kërkojë identifikim; mos ul sigurinë.
+
 **Shembull historik i Preview-it të kontrolluar më 2026-10-24 (JO domosdoshmërisht kandidati aktual):** https://illyrian-demo-2wmtumank-un24.vercel.app/
 
 **Për çdo sesion të ri fizik:** verifiko HEAD-in LIVE të `feat/i18n-shop-feedback-20261022`, commit-in e fundit të kodit me **Chromium + WebKit PASS**, deployment-in **Preview READY** të atij commit-i dhe përputhjen e përmbajtjes së shërbyer me GitHub. Regjistro URL-në e pandryshueshme, `dpl_...` dhe SHA-në e **atij kandidati** në formularin e sesionit. Mos i përdor identifikuesit historikë më poshtë për të certifikuar një kandidat më të ri.
