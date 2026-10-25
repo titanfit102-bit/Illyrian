@@ -1963,3 +1963,36 @@ test('audit A1-06 map pin ARIA decodes special characters exactly once in all lo
   await expect(root.locator('.il4-pin[data-il4="pin:plan-0"]')).toHaveCount(1);
  }
 });
+
+
+test('audit A1-05 Plans detail uses semantic labels for organizer and participant across sq/en/it',async({page})=>{
+ await ready(page);
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('[data-ilp-entry]').first().click();
+ const root=page.locator('#ilp-root');
+ await root.locator('[data-ilp="detail:demo-football"]').click();
+ for(const lang of [
+  {code:'sq',heading:'Aktivitetet dhe organizatori',active:'Aktiv',seats:'vende',manage:'Menaxho kërkesat',accept:'Prano',pending:'në pritje',chat:'Biseda e grupit — demo',empty:'Ende pa mesazhe.',participant:'Si pjesëmarrës',status:'Statusi yt: Pa kërkesë'},
+  {code:'en',heading:'Activities and organizer',active:'Active',seats:'seats',manage:'Manage requests',accept:'Accept',pending:'pending',chat:'Group chat — demo',empty:'No messages yet.',participant:'As participant',status:'Your status: No request'},
+  {code:'it',heading:'Attività e organizzatore',active:'Attivo',seats:'posti',manage:'Gestisci le richieste',accept:'Accetta',pending:'in attesa',chat:'Chat di gruppo — demo',empty:'Nessun messaggio.',participant:'Come partecipante',status:'Il tuo stato: Nessuna richiesta'}
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang.code);
+  await expect(root.locator('.ilp-panel header h2')).toHaveText(lang.heading);
+  await expect(root.locator('.ilp-panel > .ilp-muted').first()).toContainText(lang.active);
+  await expect(root.locator('.ilp-panel > p').filter({hasText:'3'}).first()).toContainText(lang.seats);
+  await expect(root.locator('.ilp-panel h4').first()).toHaveText(lang.manage);
+  await expect(root.locator('[data-ilp="accept:arta"]')).toHaveText(lang.accept);
+  await expect(root.locator('.ilp-request').first()).toContainText(lang.pending);
+  await expect(root.locator('.ilp-panel h4').last()).toHaveText(lang.chat);
+  await expect(root.locator('.ilp-chat')).toContainText(lang.empty);
+  await expect(root.locator('h3[data-user-content]')).toHaveText('Futboll dhe njohje të reja');
+  await root.locator('[data-ilp="role:participant"]').click();
+  await expect(root.locator('[data-ilp="role:participant"]')).toHaveText(lang.participant);
+  await root.locator('[data-ilp="detail:demo-football"]').click();
+  await expect(root.locator('.ilp-panel')).toContainText(lang.status);
+  await root.locator('[data-ilp="role:organizer"]').click();
+  await root.locator('[data-ilp="detail:demo-football"]').click();
+ }
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
+});

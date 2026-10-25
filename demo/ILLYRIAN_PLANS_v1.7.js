@@ -48,7 +48,7 @@
     Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('localStorageError','Nuk mund të ruhej ndryshimi në pajisje.');return false}};
   const button=(a,label,extra='')=>`<button type="button" data-ilp="${escape(a)}" ${extra}>${escape(label)}</button>`;
   const choose=(values,current,keyOf=()=>null)=>values.map(v=>`<option data-i18n-direct ${v===current?'selected':''} value="${escape(v)}">${keyOf(v)?ui(keyOf(v),v):escape(v)}</option>`).join('');
-  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv'}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · <span data-user-content>${escape(e.place)}</span></p><p>${accepted(e.id).length}/${e.capacity} të pranuar · ${pending(e.id).length} në pritje</p>${button('detail:'+e.id,'Hap aktivitetin →')}</article>`;
+  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${typeKey(e.kind)?ui(typeKey(e.kind),e.kind):escape(e.kind)} · ${escape(e.city)} · ${ui(closed(e)?'statusClosed':free(e)===0?'statusFull':'statusActive',closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv')}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · <span data-user-content>${escape(e.place)}</span></p><p>${accepted(e.id).length}/${e.capacity} ${ui('accepted','të pranuar')} · ${pending(e.id).length} ${ui('waiting','në pritje')}</p>${button('detail:'+e.id,feedback('detail','Hap aktivitetin →'))}</article>`;
   const form=()=>{
     const e=state.edit?event(state.edit):null;
     const v=e||(draft||{title:'',kind:kinds[0],city:cities[0],place:'',date:after(7),time:'17:00',capacity:8,price:0,privacy:'public',conditions:''});
@@ -64,46 +64,47 @@
     <p class="ilp-muted" data-i18n-direct>${ui('formInfo','Aktiviteti është vetëm provë. Nuk publikohen vendndodhje personale apo kërkesa reale.')}</p>
     <p id="ilp-error" role="alert"></p><button type="submit" data-i18n-direct>${e?ui('formSave','Ruaj ndryshimet'):ui('formPublish','Publiko aktivitetin (demo)')}</button>${button('list',feedback('formBack','Kthehu'),'data-i18n-direct')}</form>`;
   };
+  const requestStatus=code=>feedback(({pending:'requestPending',accepted:'requestAccepted',declined:'requestDeclined',waitlist:'requestWaitlist',withdrawn:'requestWithdrawn'})[code]||'requestUnknown',String(code||''));
   const detail=()=>{
     const e=event(state.id);if(!e)return button('list','Kthehu');
     const my=self(e.id),owner=state.role==='organizer',ended=closed(e);
-    let html=`<div class="ilp-muted">${escape(e.kind)} · ${escape(e.city)} · ${ended?'I anuluar ose i kaluar':free(e)===0?'Vendet plot':'Aktiv'}</div>
+    let html=`<div class="ilp-muted">${typeKey(e.kind)?ui(typeKey(e.kind),e.kind):escape(e.kind)} · ${escape(e.city)} · ${ui(ended?'statusCancelledOrPast':free(e)===0?'statusSeatsFull':'statusActive',ended?'I anuluar ose i kaluar':free(e)===0?'Vendet plot':'Aktiv')}</div>
     <h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} · <span data-user-content>${escape(e.place)}</span></p>
-    <p><b>${accepted(e.id).length}/${e.capacity}</b> vende · ${pending(e.id).length} kërkesa · ${waiting(e.id).length} në listë pritjeje</p>
-    <p data-user-content>${escape(e.conditions||'Nuk ka kushte shtesë.')}</p><p class="ilp-muted">${e.privacy==='public'?'Publik':'Privat'} · ${Number(e.price)||0} € · Vetëm demonstrim</p>`;
+    <p><b>${accepted(e.id).length}/${e.capacity}</b> ${ui('seats','vende')} · ${pending(e.id).length} ${ui('requestsCount','kërkesa')} · ${waiting(e.id).length} ${ui('waitlistCount','në listë pritjeje')}</p>
+    <p data-user-content>${escape(e.conditions||feedback('noConditions','Nuk ka kushte shtesë.'))}</p><p class="ilp-muted">${ui(e.privacy==='public'?'visibilityPublic':'visibilityPrivate',e.privacy==='public'?'Publik':'Privat')} · ${Number(e.price)||0} € · ${ui('demoOnly','Vetëm demonstrim')}</p>`;
     if(owner){
-      if(!ended)html+=button('edit','Redakto')+button('cancel','Anulo aktivitetin');
-      html+=`<h4>Menaxho kërkesat</h4>`;
+      if(!ended)html+=button('edit',feedback('editAction','Redakto'))+button('cancel',feedback('cancelAction','Anulo aktivitetin'));
+      html+=`<h4>${ui('manageRequests','Menaxho kërkesat')}</h4>`;
       for(const r of requests(e.id)){
-        html+=`<div class="ilp-request"><span>${escape(r.name)} — ${escape(r.status)}</span><div>`;
-        if(!ended&&r.status==='pending')html+=button('accept:'+r.id,'Prano',free(e)===0?'disabled':'')+button('decline:'+r.id,'Refuzo');
-        if(!ended&&r.status==='waitlist'&&free(e)>0)html+=button('promote:'+r.id,'Kalo në pritje');
-        if(r.status==='accepted')html+=button('attendance:'+r.id,state.attendance.includes(r.id)?'✓ Erdhi':'Shëno ardhjen');
+        html+=`<div class="ilp-request"><span><span data-user-content>${escape(r.name)}</span> — ${escape(requestStatus(r.status))}</span><div>`;
+        if(!ended&&r.status==='pending')html+=button('accept:'+r.id,feedback('acceptAction','Prano'),free(e)===0?'disabled':'')+button('decline:'+r.id,feedback('declineAction','Refuzo'));
+        if(!ended&&r.status==='waitlist'&&free(e)>0)html+=button('promote:'+r.id,feedback('promoteAction','Kalo në pritje'));
+        if(r.status==='accepted')html+=button('attendance:'+r.id,state.attendance.includes(r.id)?feedback('attendanceDone','✓ Erdhi'):feedback('attendanceAction','Shëno ardhjen'));
         html+='</div></div>';
       }
     }else{
-      if(!ended)html+=my?button('withdraw','Tërhiq kërkesën'):button('join',free(e)?'Kërko të bashkohesh':'Hyr në listë pritjeje');
-      html+=`<p class="ilp-muted">Statusi yt: ${my?escape(my.status):'Pa kërkesë'}.</p>`;
+      if(!ended)html+=my?button('withdraw',feedback('withdrawAction','Tërhiq kërkesën')):button('join',free(e)?feedback('joinAction','Kërko të bashkohesh'):feedback('joinWaitlist','Hyr në listë pritjeje'));
+      html+=`<p class="ilp-muted">${ui('yourStatus','Statusi yt')}: ${escape(my?requestStatus(my.status):feedback('noRequest','Pa kërkesë'))}.</p>`;
     }
     const mayChat=owner||my?.status==='accepted';
     if(mayChat){
-      html+='<h4>Biseda e grupit — demo</h4><div class="ilp-chat">'+(state.messages.filter(m=>m.eventId===e.id).slice(-15).map(m=>'<p><b data-user-content>'+escape(m.name)+':</b> <span data-user-content>'+escape(m.text)+'</span></p>').join('')||'<p>Ende pa mesazhe.</p>')+'</div>';
-      if(!ended)html+='<form id="ilp-chat-form"><input name="message" maxlength="280" placeholder="Shkruaj në grup..." aria-label="Mesazhi në grup" required><button type="submit">Dërgo</button></form>';
-      else html+='<p class="ilp-muted">Biseda është vetëm për lexim.</p>';
-    }else html+='<p class="ilp-muted">Biseda është e disponueshme vetëm pas pranimit.</p>';
-    return html+button('list','Kthehu te aktivitetet');
+      html+='<h4>'+ui('groupChat','Biseda e grupit — demo')+'</h4><div class="ilp-chat">'+(state.messages.filter(m=>m.eventId===e.id).slice(-15).map(m=>'<p><b data-user-content>'+escape(m.name)+':</b> <span data-user-content>'+escape(m.text)+'</span></p>').join('')||'<p>'+ui('noMessages','Ende pa mesazhe.')+'</p>')+'</div>';
+      if(!ended)html+='<form id="ilp-chat-form"><input name="message" maxlength="280" placeholder="'+ui('writeGroup','Shkruaj në grup...')+'" aria-label="'+ui('groupMessage','Mesazhi në grup')+'" required><button type="submit">'+ui('sendAction','Dërgo')+'</button></form>';
+      else html+='<p class="ilp-muted">'+ui('readOnly','Biseda është vetëm për lexim.')+'</p>';
+    }else html+='<p class="ilp-muted">'+ui('access','Biseda është e disponueshme vetëm pas pranimit.')+'</p>';
+    return html+button('list',feedback('back','Kthehu te aktivitetet'));
   };
   const content=()=>state.view==='form'?form():state.view==='detail'?detail():
    `<p class="ilp-muted ilp-intro" data-i18n-direct>${ui("listIntro","Kalo midis organizatorit dhe pjesëmarrësit për të provuar të gjithë procesin. Nuk ka persona apo aktivitete reale.")}</p>
-   ${state.role==='organizer'?button('new','+ Krijo aktivitet'):''}
+   ${state.role==='organizer'?button('new',feedback('create','+ Krijo aktivitet')):''}
    ${state.events.filter(e=>state.role==='organizer'||e.privacy==='public').map(summary).join('')}`;
   function render(){
     if(!root)return;
     root.hidden=!state.open;
     if(!state.open){sync();return}
     root.innerHTML=`<div class="ilp-shade" data-ilp="close"></div><div class="ilp-panel" role="dialog" aria-modal="true" aria-label="${ui('title','Aktivitetet dhe organizatori')}">
-    <header><div><small>ILLYRIAN · PLANE</small><h2>Aktivitetet dhe organizatori</h2></div>${button('close','✕')}</header>
-    <nav aria-label="${ui('role','Roli i demonstrimit')}">${button('role:organizer','Si organizator',state.role==='organizer'?'class="chosen"':'')}${button('role:participant','Si pjesëmarrës',state.role==='participant'?'class="chosen"':'')}</nav>
+    <header><div><small>${ui('heading','ILLYRIAN · PLANE')}</small><h2 data-i18n-direct>${ui('title','Aktivitetet dhe organizatori')}</h2></div>${button('close','✕')}</header>
+    <nav aria-label="${ui('role','Roli i demonstrimit')}">${button('role:organizer',feedback('organizer','Si organizator'),state.role==='organizer'?'class="chosen"':'')}${button('role:participant',feedback('participant','Si pjesëmarrës'),state.role==='participant'?'class="chosen"':'')}</nav>
     ${state.notice?`<p class="ilp-notice" role="status">${escape(state.notice)}</p>`:''}
     ${content()}<p class="ilp-muted ilp-foot" data-i18n-direct>${ui("demoFootnote","PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.")}</p></div>`;
     renderedLanguage=window.IllyrianI18n?.language||'en';
