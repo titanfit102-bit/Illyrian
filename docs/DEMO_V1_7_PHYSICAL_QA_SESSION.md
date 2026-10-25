@@ -5,7 +5,12 @@
 
 ## 1. Hap versionin e saktë
 
-### Kandidati i fundit i verifikuar automatikisht — 2026-10-25 (JO QA fizike)
+### Kandidati aktual i verifikuar automatikisht — 2026-10-25 (JO QA fizike)
+- **Exact tested QA HEAD:** `54ae36cedbfdd894927ec18df96b2284eed3f518`, [PR Actions #40199056375](https://github.com/titanfit102-bit/Illyrian/actions/runs/40199056375): **224/224 Chromium + 16/16 Linux WebKit PASS**, job logs verified. The final commit changes **QA only**; last changed Shop Plus runtime was `898cb6c7deb928f8aaee97129e1418de9597b77a`.
+- **Immutable same-SHA Vercel Preview:** https://illyrian-demo-jnumthype-un24.vercel.app/ · `dpl_3tnpupHeNS1fTSThTJ5KAt6Fi1CR` · `READY`, `target:null`, source SHA exactly `54ae36cedbfdd894927ec18df96b2284eed3f518`. Authenticated protected GET `/` HTTP 200: full committed DEMO HTML prefix +163-character Vercel feedback append. Shop Plus JavaScript GET 200 exact GitHub source match.
+- **Not physical certification:** Android Chrome, iPhone Safari, TalkBack, VoiceOver and all M01–M18 remain `NOT TESTED`. A protected Preview can require authorized Vercel login; never disable SSO or disclose bypass credentials. Record device, software, language, orientation and failures using the blank session form below. Re-check current branch HEAD/CI/Preview if another commit is pushed.
+
+### Kandidati historik i verifikuar automatikisht — 2026-10-25 (JO kandidati aktual)
 - **Source/QA SHA:** `11bdf46b7e9736475a1081444b1a7bcaccad8aac`, [GitHub Actions #40188067150](https://github.com/titanfit102-bit/Illyrian/actions/runs/40188067150): **221/221 Chromium + 16/16 WebKit PASS**.
 - **Immutable Preview:** https://illyrian-demo-hhqz5t4tp-un24.vercel.app/ · deployment `dpl_HAHRA1wQgwH7wjWDmiFyXdoTvGaD`, `READY`, target Preview, same code SHA. Authorized GET `/` HTTP 200 with source prefix + feedback script; Plans JS and `sq/en/it` locale assets exact source match.
 - **Ky kandidat është referencë testimi vetëm nëse mbetet HEAD i fundit i testuar në fillim të sesionit.** Nëse dega avancon, verifiko dhe regjistro kandidatin e ri. Android Chrome/iPhone Safari/TalkBack/VoiceOver **NOT TESTED**. Protected/SSO preview mund të kërkojë identifikim; mos ul sigurinë.
