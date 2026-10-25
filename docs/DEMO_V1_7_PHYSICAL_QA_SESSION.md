@@ -5,7 +5,12 @@
 
 ## 1. Hap versionin e saktë
 
-### M16 i fundit — kandidat automatik për t'u verifikuar para QA fizike (2026-10-25)
+### Kandidati aktual — Connections feedback (JO QA fizike)
+- Source/test `7418636ee271f305c4438600b03a8a63209914fd`; [CI](https://github.com/titanfit102-bit/Illyrian/actions/runs/40241438045): **263/263 Chromium + 16/16 Linux WebKit PASS**; [siguria](https://github.com/titanfit102-bit/Illyrian/actions/runs/40241438043) PASS.
+- Preview immutable https://illyrian-demo-7n59yu29j-un24.vercel.app/ · `dpl_4SV68fRckbeJkPbmNdG7zBmWskfL`, READY/target null, projekt `illyrian-demo`, team `un24`, SHA e njëjtë. Root HTTP200/source-prefix +163 dhe Connections JS HTTP200/identik; 16 asete të tjera të pandryshuara nga prova e mëparshme.
+- Për M16: te Connections/Hera e parë, testo njoftimin e ruajtjes/heqjes/gabimit me TalkBack/VoiceOver, fokusin dhe riprovimin. Provat browser nuk vërtetojnë njoftimin real të screenreader-it. M01–M18 mbeten NOT TESTED. Përdor këtë URL/deployment/SHA bashkë; referencat më poshtë janë histori. [Detajet](PHASE3_INTEGRATION_QA.md#follow-up-first-attendee-feedback).
+
+### M16 historik — gjendja e regjistruar atëherë (2026-10-25)
 - **HEAD i kodit:** `ec70a92c56b207a4bd5ccaa79f01d73f38bd36ac` ([PR Actions #40204447922](https://github.com/titanfit102-bit/Illyrian/actions/runs/40204447922)). **Chromium 227/227 PASS**; **WebKit IN PROGRESS**, kërko verifikim final të të dy job-eve përpara sesionit fizik.
 - **Immutable Preview i po këtij SHA:** https://illyrian-demo-oezeqy5pq-un24.vercel.app/ · `dpl_3T57pMTAdvcCQs1cJRFyWP8poxVn` READY / Preview target null. Authenticated GET `/` HTTP 200 me HTML identik prefiks (+163 karaktere Vercel), Shop Plus JS HTTP 200 përputhje e saktë me GitHub.
 - **M16 vetëm automatik:** u testua lidhja e gabimit të fushës me `aria-invalid`/`aria-describedby`, sq/en/it; **asnjë test TalkBack/VoiceOver në telefon real nuk është bërë**. Shëno të 18 rastet M01–M18 si NOT TESTED derisa të ketë rezultate reale.
@@ -91,7 +96,7 @@ Historical Phase 1 report: [PHASE1_QA_HANDOFF.md](PHASE1_QA_HANDOFF.md); latest 
 
 Additional observations to record with M04/M15/M16/M18: type a Story reply and wait beyond 8 seconds; confirm draft/focus and explicit resume, storage failure/retry/reload without duplicates; compare two-tab Messages/Plans/Shop Plus behavior, copying drafts before a required reload. Check the light-mode Home Reels button contrast finding from the report. For performance, record device/build, cold/warm entry, keyboard/scroll response and interruptions using repeatable fictional content; numeric budgets are unapproved until baselines are selected. These instructions do not record a test result.
 
-### Current immutable Phase 3 device candidate (NOT TESTED physically)
+### Historical initial Phase 3 device candidate (superseded by the candidate above)
 Use https://illyrian-demo-hwa3rchfw-un24.vercel.app/ ; deployment `dpl_12TbBhUTKxeWYY6EWUKNPb3R2fM1`, source/test SHA `a9a380cfa570a2a07c3c7b0ae814817e630e8e99`, [CI 40234873355](https://github.com/titanfit102-bit/Illyrian/actions/runs/40234873355): **257/257 Chromium + 16/16 Linux WebKit PASS**. READY/Preview; protected root HTTP200 and exact source prefix; 3 updated locale catalogs were fetched HTTP200/exact parity; the other 14 referenced assets are unchanged from the verified 17/17 HTTP200/parity at initial Phase 3 source `27da842`. Replace the session deployment/URL/source fields together before testing. The prior `a789357` candidate remains historical evidence in [Phase 1 report](PHASE1_QA_HANDOFF.md); it lacks Phase 3 integration. All physical PASS/FAIL rows remain NOT TESTED; never record temporary authentication tokens.
 
 Add Phase 3 scenarios from [integration QA](PHASE3_INTEGRATION_QA.md): School & University community → discussion → comment → Feed/Profile/report; quota rollback/Retry and single activity log; manual city with location denied/revoked; city-time/DST boundaries, expired interests and repeat-as-draft. Browser results do not fill these physical rows.

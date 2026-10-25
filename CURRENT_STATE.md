@@ -10,13 +10,13 @@ Përditësuar: 25 tetor 2026 (Europe/Rome). **Faza 1: PARTIAL / RELEASE HOLD; Fa
 | Dega e autorizuar | `feat/i18n-shop-feedback-20261022` |
 | PR | [#1](https://github.com/titanfit102-bit/Illyrian/pull/1) OPEN / DRAFT / UNMERGED → `demo/v1.7-illyrian-shop` |
 | Bazë para Fazës 3 | `d32a7c57692b5a2f20b2faa0b4c02ec39c373e9f`; historia para konsolidimit ruhet në arkiv. Ky checkpoint dokumenton integrimin pasues të Fazës 3. HEAD-i i ri merret nga GitHub, jo nga një SHA historike. |
-| Kodi/testet | `a9a380cfa570a2a07c3c7b0ae814817e630e8e99`; [QA 40234873355](https://github.com/titanfit102-bit/Illyrian/actions/runs/40234873355): **257/257 Chromium + 16/16 Linux WebKit PASS** |
-| Siguria | [40234873350](https://github.com/titanfit102-bit/Illyrian/actions/runs/40234873350) PASS; npm audit 0 në atë ekzekutim. Mbulim i kufizuar, jo SAST/audit global. [Regjistri kanonik](docs/security/SECURITY_REGISTER.md). |
+| Kodi/testet | `7418636ee271f305c4438600b03a8a63209914fd`; [QA 40241438045](https://github.com/titanfit102-bit/Illyrian/actions/runs/40241438045): **263/263 Chromium + 16/16 Linux WebKit PASS** |
+| Siguria | [40241438043](https://github.com/titanfit102-bit/Illyrian/actions/runs/40241438043) PASS; npm audit 0 në atë ekzekutim. Mbulim i kufizuar, jo SAST/audit global. [Regjistri kanonik](docs/security/SECURITY_REGISTER.md). |
 | Kontrollet | `browser-smoke-pull_request`, `webkit-smoke-pull_request`, `security-baseline`: completed/success mbi source SHA; logjet e të tri job-eve u inspektuan. Kontrollo veçmas CI-në e çdo HEAD-i të ri. |
-| Preview për QA fizik | [Kandidati immutable](https://illyrian-demo-hwa3rchfw-un24.vercel.app/), source `a9a380cfa570a2a07c3c7b0ae814817e630e8e99`; READY / target null, HTTP/asete të verifikuara |
+| Preview për QA fizik | [Kandidati immutable](https://illyrian-demo-7n59yu29j-un24.vercel.app/), source `7418636ee271f305c4438600b03a8a63209914fd`; READY / target null, HTTP/asete të verifikuara |
 | Izolimi | Integrimi `015ce439e7c6d736149c6c300391586517664f62`; `main` `9f91b5c083b4482a70a2149483cc799360e6102c`; pa merge/Production |
 
-Preview i Fazës 3: protected root HTTP 200, HTML prefix identik (+163 karaktere feedback), **17/17 asete HTTP 200/identike me SHA-në e burimit**. Zëvendëson kandidatin e mëparshëm vetëm për këtë kod të ri. Aksesi anonim, telefoni fizik dhe screenreader nuk janë certifikuar. Detajet: [Phase 3 QA](docs/PHASE3_INTEGRATION_QA.md); [Phase 1 historik](docs/PHASE1_QA_HANDOFF.md) mbetet provë për checkpoint-in e vet.
+Preview aktual: protected root HTTP 200, HTML prefix identik (+163 karaktere feedback), Connections JS i ndryshuar HTTP 200/identik me burimin; 16 asetet e tjera mbeten të pandryshuara nga prova e mëparshme 17/17. Zëvendëson kandidatin e mëparshëm vetëm për këtë kod të ri. Aksesi anonim, telefoni fizik dhe screenreader nuk janë certifikuar. Detajet: [Phase 3 QA](docs/PHASE3_INTEGRATION_QA.md); [Phase 1 historik](docs/PHASE1_QA_HANDOFF.md) mbetet provë për checkpoint-in e vet.
 
 ## Progresi i implementuar, në kufijtë e provave
 
@@ -25,6 +25,7 @@ Preview i Fazës 3: protected root HTTP 200, HTML prefix identik (+163 karaktere
 - A1-01–A1-07 janë korrigjuar në skenarët e verifikuar; [indeksi i provave](MASTER_HANDOFF.md#evidence) ruan SHA/CI. Mos i rihap nga raportet e vjetra. A1-08 metadata u rifreskua; përshkrimi i PR-së ka ende checkpoint historik dhe nuk është burimi i statusit aktual.
 - Messages/Stories: quota failure, ruajtje draft-i, Retry pa dublim/reload dhe stale-tab të vrojtuar janë testuar; input-i ndalon Story clock. Governance ruan statuset historike të panjohura si tekst origjinal të escape-uar. Mbrojtjet lokale **nuk janë atomic CAS** ose mbulim global i çdo writer-i.
 - Faza 3: Communities ripërdor postime/komente/Feed/Profile dhe raportime ekzistuese; shtohet `c4` Shkolla & Universiteti, kërkim sq/en/it dhe lidhje draft/objekt me Plans. U korrigjuan quota/stale-comment, anëtarësimi dhe qyteti manual; oraret përdorin zonën e qytetit, jo shfletuesit. GPS nuk kërkohet. 22/22 teste të reja lokale +6 prova responsive/fokus PASS; [raporti](docs/PHASE3_INTEGRATION_QA.md). Intereset me skadim të saktë/të pavlefshëm nuk japin match; repeat mbetet draft manual.
+- Connections → Hera e parë: u korrigjua mungesa e njoftimit të parë të ruajtjes/gabimit; checkbox-i dhe fokusi ruhen, quota rikthehet pa sukses të rremë. 6 teste të reja sq/en/it +4 regresione ekzistuese lokale PASS; jo provë TalkBack/VoiceOver.
 - Kontratat e backend-it social/activities/notification/timezone/recurrence janë te [blueprint §13](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#13-social-community-and-activity-api-contracts--phase-3-design), **BACKEND/design**, jo implementim. Nuk u gjet checkpoint i veçantë 3.2 në bazën e verifikuar.
 - CI PR dhe security-baseline funksionojnë. F06 automatizimi i kontrolleve ekziston, por **enforcement administrativ mungon**. Detajet funksionale/testuese mbeten te [raporti i Fazës 1](docs/PHASE1_QA_HANDOFF.md).
 
