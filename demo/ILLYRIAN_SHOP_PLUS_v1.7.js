@@ -291,8 +291,21 @@
  const validationError=(form,key,fallback,field)=>{
   state.notice=feedback(key,fallback);
   showStorageError();
+  const notice=overlay?.querySelector('.isp-notice');
+  if(notice){notice.id='isp-validation-feedback';notice.setAttribute('role','alert')}
+  // Link the failed control to its spoken error. Preserve other aria-describedby IDs.
+  form.querySelectorAll('[aria-describedby~="isp-validation-feedback"]').forEach(el=>{
+   el.removeAttribute('aria-invalid');
+   const ids=(el.getAttribute('aria-describedby')||'').split(/\s+/).filter(x=>x&&x!=='isp-validation-feedback');
+   if(ids.length)el.setAttribute('aria-describedby',ids.join(' '));else el.removeAttribute('aria-describedby');
+  });
   const control=field?form.elements.namedItem(field):null;
-  if(control?.focus)control.focus();
+  if(control?.focus){
+   control.setAttribute('aria-invalid','true');
+   const ids=(control.getAttribute('aria-describedby')||'').split(/\s+/).filter(Boolean);
+   if(!ids.includes('isp-validation-feedback'))control.setAttribute('aria-describedby',[...ids,'isp-validation-feedback'].join(' '));
+   control.focus();
+  }
  };
  const message=(m,onSaved)=>{
   if(!save()){showStorageError();return false}
@@ -378,8 +391,19 @@
   const form=overlay.querySelector('form');
   const fields=form?[...form.elements].filter(e=>e.name).map(e=>({name:e.name,value:e.value,checked:e.type==='checkbox'?e.checked:null})):null;
   const active=document.activeElement,focusedName=active?.name,action=active?.dataset?.isp;
+  const invalidName=form?.querySelector('[aria-invalid="true"][aria-describedby~="isp-validation-feedback"]')?.name;
+  const hadValidation=!!overlay.querySelector('#isp-validation-feedback[role="alert"]');
   render();
   const target=overlay.querySelector('form');
+  if(hadValidation){
+   const notice=overlay.querySelector('.isp-notice');
+   if(notice){notice.id='isp-validation-feedback';notice.setAttribute('role','alert')}
+   const invalid=invalidName?target?.elements.namedItem(invalidName):null;
+   if(invalid){
+    invalid.setAttribute('aria-invalid','true');
+    invalid.setAttribute('aria-describedby','isp-validation-feedback');
+   }
+  }
   if(fields&&target){
    for(const item of fields){const el=target.elements.namedItem(item.name);if(!el)continue;el.value=item.value;if(item.checked!==null)el.checked=item.checked}
   }
@@ -418,6 +442,16 @@
   phone.addEventListener('change',e=>{
    if(!state.open||!overlay?.contains(e.target))return;
    if(e.target.matches('#isp-create select[name="type"]'))syncCreateType(e.target.form);
+  });
+  phone.addEventListener('input',e=>{
+   if(!state.open||!overlay?.contains(e.target))return;
+   const control=e.target;
+   const ids=(control.getAttribute('aria-describedby')||'').split(/\s+/).filter(Boolean);
+   if(!ids.includes('isp-validation-feedback'))return;
+   control.removeAttribute('aria-invalid');
+   const rest=ids.filter(id=>id!=='isp-validation-feedback');
+   if(rest.length)control.setAttribute('aria-describedby',rest.join(' '));
+   else control.removeAttribute('aria-describedby');
   });
   phone.addEventListener('submit',e=>{
    if(!state.open||!overlay?.contains(e.target))return;

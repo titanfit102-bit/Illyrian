@@ -1368,7 +1368,7 @@ for(const lang of ['sq','en','it']){
   await f.locator('textarea[name="details"]').fill('Mbyll retained text');
   const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
   await f.locator('button[type="submit"]').click();
-  await expect(page.locator('#isp-root .isp-notice[role="status"]')).toBeVisible();
+  await expect(page.locator('#isp-root .isp-notice[role="alert"]')).toBeVisible();
   await expect(f.locator('select[name="type"]')).toHaveValue('Makina');
   await expect(f.locator('input[name="name"]')).toHaveValue('Mbyll vehicle draft');
   await expect(f.locator('textarea[name="details"]')).toHaveValue('Mbyll retained text');
@@ -2067,3 +2067,57 @@ test('Shop Plus malformed persisted listing does not crash catalog/stores or rew
  expect(errors).toEqual([]);
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
 });
+
+
+// M16 pre-device accessibility probe: invalid fields must expose a live error
+// association, preserve unsaved values, recover cleanly and never write invalid
+// drafts. This is browser semantics only, NOT a screenreader/device certification.
+for(const lang of ['sq','en','it']){
+ test('M16 Shop Plus validation announces and associates vehicle errors - '+lang,async({page})=>{
+  await ready(page);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="create"]').click();
+  const form=page.locator('#isp-create');
+  await form.locator('select[name="type"]').selectOption('Makina');
+  await form.locator('input[name="name"]').fill('Mbyll accessible vehicle');
+  await form.locator('input[name="store"]').fill('Mbyll test seller');
+  await form.locator('input[name="price"]').fill('8000');
+  const original=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+  await form.locator('button[type="submit"]').click();
+  const notice=page.locator('#isp-root #isp-validation-feedback[role="alert"]');
+  await expect(notice).toHaveText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:vehicleInvalid')));
+  const year=form.locator('input[name="year"]'),mileage=form.locator('input[name="mileage"]');
+  await expect(year).toBeFocused();
+  await expect(year).toHaveAttribute('aria-invalid','true');
+  await expect(year).toHaveAttribute('aria-describedby','isp-validation-feedback');
+  await expect(mileage).not.toHaveAttribute('aria-invalid','true');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(original);
+  // Correcting the field clears its stale invalid flag without losing the draft.
+  await year.fill('2026');
+  await expect(year).not.toHaveAttribute('aria-invalid','true');
+  await form.locator('button[type="submit"]').click();
+  await expect(mileage).toBeFocused();
+  await expect(mileage).toHaveAttribute('aria-invalid','true');
+  await expect(mileage).toHaveAttribute('aria-describedby','isp-validation-feedback');
+  await expect(year).not.toHaveAttribute('aria-invalid','true');
+  await expect(form.locator('input[name="name"]')).toHaveValue('Mbyll accessible vehicle');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(original);
+  // Locale rerender must retain the validation relation and the pending values.
+  const other=lang==='it'?'en':'it';
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),other);
+  await expect(mileage).toBeFocused();
+  await expect(mileage).toHaveAttribute('aria-invalid','true');
+  await expect(mileage).toHaveAttribute('aria-describedby','isp-validation-feedback');
+  await expect(page.locator('#isp-validation-feedback')).toHaveAttribute('role','alert');
+  await expect(form.locator('input[name="name"]')).toHaveValue('Mbyll accessible vehicle');
+  await mileage.fill('0');
+  await form.locator('button[type="submit"]').click();
+  await expect(page.locator('#isp-root .isp-focus')).toContainText('Mbyll accessible vehicle');
+  await expect(page.locator('#isp-validation-feedback')).toHaveCount(0);
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+  expect(saved).toMatchObject({type:'Makina',name:'Mbyll accessible vehicle',year:2026,mileage:0});
+ });
+}
