@@ -2333,3 +2333,48 @@ test('Phase3 repeat activity only prepares a blank-date draft with no invitation
  await page.locator('[data-ilc="repeat:old-meet"]').click();await expect(page.locator('#ilp-form [name="date"]')).toHaveValue('');await expect(page.locator('#ilp-form [name="place"]')).toHaveValue('');await expect(page.locator('#ilp-form [name="title"]')).toHaveValue('Old Berlin meeting');await expect(page.locator('#ilp-form [name="capacity"]')).toHaveValue('8');
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
 });
+
+
+for(const [lang,copy] of Object.entries({
+ sq:{saved:'Shënimi privat u ruajt në pajisje. Organizatori nuk u njoftua.',removed:'Shënimi privat u hoq.',failed:'Hapësira lokale është plot; ndryshimi nuk u ruajt.'},
+ en:{saved:'Private note saved on this device. The organizer was not notified.',removed:'Private note removed.',failed:'Local storage is full; the change was not saved.'},
+ it:{saved:"Nota privata salvata sul dispositivo. L'organizzatore non è stato avvisato.",removed:'Nota privata rimossa.',failed:'Lo spazio di archiviazione locale è esaurito; la modifica non è stata salvata.'}
+})){
+ for(const refused of [false,true]){
+  test('Phase3 followup first-attendee feedback '+(refused?'quota and retry ':'save and remove ')+lang,async({page})=>{
+   await ready(page);
+   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+   await page.locator('.head [data-act="tab"][data-val="events"]').click();
+   await page.locator('[data-ilc-entry]').click();
+   await page.locator('[data-ilc="view:welcome"]').click();
+   const checkbox=page.locator('[data-ilc-first="city-1"]');
+   const status=page.locator('#ilc-root [role="status"]');
+   const key='illyrian_demo_v17_connections';
+   if(refused){
+    const before=await page.evaluate(k=>localStorage.getItem(k),key);
+    await rejectModuleWrites(page,key);
+    await checkbox.click();
+    await expect(checkbox).not.toBeChecked();
+    expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+    await expect(status).toBeVisible();
+    await expect(status).toHaveText(copy.failed);
+    await expect(checkbox).toBeFocused();
+    await allowModuleWrites(page);
+   }
+   await checkbox.check();
+   expect(await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).welcome['city-1'],key)).toBe(true);
+   await expect(status).toBeVisible();
+   await expect(status).toHaveText(copy.saved);
+   await expect(checkbox).toBeFocused();
+   await checkbox.uncheck();
+   await expect(status).toHaveText(copy.removed);
+   expect(await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).welcome['city-1'],key)).toBe(false);
+   await checkbox.check();
+   await page.reload();
+   await page.locator('.head [data-act="tab"][data-val="events"]').click();
+   await page.locator('[data-ilc-entry]').click();
+   await page.locator('[data-ilc="view:welcome"]').click();
+   await expect(page.locator('[data-ilc-first="city-1"]')).toBeChecked();
+  });
+ }
+}

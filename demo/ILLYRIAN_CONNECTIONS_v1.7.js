@@ -39,7 +39,7 @@
   const button=(action,label)=>'<button type="button" data-ilc="'+h(action)+'">'+h(label)+'</button>';
   const cities=(current)=>CITIES.map(c=>'<option value="'+h(c)+'"'+(c===current?' selected':'')+'>'+h(c)+'</option>').join('');
   const header='<div class="ilc-title"><b>ILLYRIAN · LIDHJET REALE</b><h2>Nga interesi te takimi</h2><p>Katër rrugë për të gjetur njerëz dhe për të organizuar aktivitete.</p></div>';
-  const notice=()=>state.notice?'<p class="ilc-note" role="status">'+h(state.notice)+'</p>':'';
+  const notice=()=>'<p class="ilc-note" role="status" aria-atomic="true"'+(state.notice?'':' hidden')+'>'+h(state.notice)+'</p>';
   const overview=()=>header+notice()+
     '<div class="ilc-grid">'+[
       ['cities','🌍','Dy vendet e mia','Shiko përmbajtje nga dy qytete të zgjedhura.'],
@@ -263,7 +263,7 @@
       if(persist())state.notice=item.checked?feedback('privateNoteSaved','Shënimi privat u ruajt në pajisje. Organizatori nuk u njoftua.'):feedback('privateNoteRemoved','Shënimi privat u hoq.');
       else item.checked=Boolean(state.welcome[item.dataset.ilcFirst]);
       const status=root.querySelector('.ilc-note[role="status"]');
-      if(status)status.textContent=state.notice;
+      if(status){status.textContent=state.notice;status.hidden=!state.notice;}
     });
     root.addEventListener('submit',e=>{e.preventDefault();onSubmit(e.target)});
     document.addEventListener('keydown',e=>{
