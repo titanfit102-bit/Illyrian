@@ -56,7 +56,7 @@
       '<label>Qyteti i dytë / vendlindja<select name="origin">'+cities(state.origin)+'</select></label>'+
       '<button type="submit">Ruaj qytetet</button></form>'+notice()+
       '<h4>Mundësi nga dy zonat e tua</h4><div class="ilc-results">'+
-      (matched.length?matched.map(e=>'<article><strong>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p>'+button('welcome:'+e.id,'Si do të më presin?')+'</article>').join(''):'<p>Nuk ka ende shembuj aktivitetesh në këto dy qytete.</p>')+
+      (matched.length?matched.map(e=>'<article><strong data-user-content>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p>'+button('welcome:'+e.id,'Si do të më presin?')+'</article>').join(''):'<p>Nuk ka ende shembuj aktivitetesh në këto dy qytete.</p>')+
       '</div><p class="ilc-muted">Nuk përdorim GPS; qytetet e zgjedhura nuk publikohen te profilet e të tjerëve.</p>'+button('overview','Kthehu te zgjedhjet');
   }
   const interestView=()=>{
@@ -93,14 +93,14 @@
   const firstView=()=>{
     const list=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:'Organizatori demonstrues',meet:e.place,guide:e.conditions,first:true}))].slice(0,20);
     return '<h3>Hera e parë</h3><p>Informacion i qartë për personat që nuk njohin askënd në një aktivitet. Deklarimi që vjen për herë të parë është privat në këtë demo.</p>'+
-      list.map(e=>'<article class="ilc-first"><strong>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p><p><b>Personi pritës:</b> '+h(e.host)+'</p>'+
-      '<p><b>Ku takohemi:</b> '+h(e.meet)+'</p><p>'+h(e.guide)+'</p>'+
+      list.map(e=>'<article class="ilc-first"><strong data-user-content>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p><p><b>Personi pritës:</b> '+h(e.host)+'</p>'+
+      '<p><b>Ku takohemi:</b> <span data-user-content>'+h(e.meet)+'</span></p><p data-user-content>'+h(e.guide)+'</p>'+
       '<label class="ilc-check"><input type="checkbox" data-ilc-first="'+h(e.id)+'"'+(state.welcome[e.id]?' checked':'')+'/> Dua udhëzim si pjesëmarrës i ri (ruhet vetëm në këtë pajisje)</label></article>').join('')+notice()+button('overview','Kthehu te zgjedhjet');
   };
   const repeatView=()=>{
     const values=read(PLAN_KEY),events=Array.isArray(values.events)?values.events.filter(e=>e&&!e.cancelled).slice(0,24):[];
     return '<h3>Organizo sërish</h3><p>Përdor një aktivitet të mëparshëm vetëm si pikënisje. Data, vendi, ora dhe kapaciteti duhen konfirmuar përpara publikimit; asnjë pjesëmarrës nuk ftohet automatikisht.</p>'+
-      (events.length?events.map(e=>'<article class="ilc-repeat"><strong>'+h(e.title)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p>'+
+      (events.length?events.map(e=>'<article class="ilc-repeat"><strong data-user-content>'+h(e.title)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p>'+
       button('repeat:'+e.id,'Përgatit draftin')+'</article>').join(''):'<p>Krijo fillimisht një aktivitet në panelin e organizatorit.</p>')+
       notice()+button('overview','Kthehu te zgjedhjet');
   };

@@ -87,7 +87,7 @@
   const query=state.search.trim().toLocaleLowerCase('sq');
   return all.filter(p=>(state.city==='Të gjitha'||p.city===state.city)&&(state.mapKind==='all'||p.kind===state.mapKind)&&(!query||[p.name,p.city,p.detail].join(' ').toLocaleLowerCase('sq').includes(query)));
  };
- const pinLabel=p=>escaped(window.IllyrianI18n?.t("privacy:pinAria",{name:p.name,city:p.city})||("Shfaq "+p.name+" në "+p.city));
+ const pinLabel=p=>escaped(window.IllyrianI18n?.t("privacy:pinAria",{name:p.name,city:p.city,interpolation:{escapeValue:false}})||("Shfaq "+p.name+" në "+p.city));
  const pin=(p,i,sel)=>'<button type="button" class="il4-pin '+(sel?'selected':'')+'" data-il4="pin:'+escaped(p.id)+'" style="left:'+((21+(i*37)%63))+'%;top:'+((18+(i*23)%62))+'%" aria-label="'+pinLabel(p)+'">'+(p.kind==='business'?'▣':'●')+'</button>';
  const mapPage=()=>{
   const list=pins(),selected=list.find(p=>p.id===state.selectedPin)||list[0];

@@ -1910,3 +1910,56 @@ test('audit A1-03 rejects Plans stale writes across two browser tabs and permits
  expect(stored.requests.find(x=>x.id==='leon').status).toBe('declined');
  await ctx.close();
 });
+
+
+test('audit A1-04 Connections preserves authored title and notes across sq/en/it',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({
+  events:[{id:'user-mbyll',title:'Mbyll',kind:'Sport',city:'Tiranë',place:'Mbyll',conditions:'Mbyll',date:'2027-10-23',time:'17:00',capacity:8,privacy:'public',cancelled:false}],
+  requests:[],messages:[],attendance:[]
+ })));
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('[data-ilc-entry]').first().click();
+ const root=page.locator('#ilc-root');
+ for(const [view,selector] of [
+  ['cities','.ilc-results strong[data-user-content]'],
+  ['first','.ilc-first strong[data-user-content]'],
+  ['repeat','.ilc-repeat strong[data-user-content]']
+ ]){
+  await root.locator('[data-ilc="view:'+view+'"]').click();
+  for(const lang of ['sq','en','it']){
+   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+   await expect(root.locator(selector).filter({hasText:'Mbyll'})).toHaveText('Mbyll');
+   if(view==='first'){
+    await expect(root.locator('.ilc-first [data-user-content]').filter({hasText:'Mbyll'})).toHaveCount(3);
+   }
+  }
+  await root.locator('[data-ilc="overview"]').first().click();
+ }
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
+});
+
+test('audit A1-06 map pin ARIA decodes special characters exactly once in all locales',async({page})=>{
+ await ready(page);
+ const title='A & "B" <C>';
+ await page.evaluate(t=>localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({
+  events:[{id:'special-pin',title:t,city:'Tiranë',kind:'Sport',date:'2027-10-23',time:'17:00',privacy:'public',cancelled:false}],
+  requests:[],messages:[],attendance:[]
+ })),title);
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ const root=page.locator('#il4-root');
+ await root.locator('[data-il4="tab:map"]').click();
+ const pin=root.locator('[data-il4="pin:plan-0"]');
+ await expect(pin).toBeVisible();
+ for(const [lang,label] of [
+  ['sq','Shfaq A & "B" <C> në Tiranë'],
+  ['en','Show A & "B" <C> in Tiranë'],
+  ['it','Mostra A & "B" <C> a Tiranë']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(pin).toHaveAttribute('aria-label',label);
+  await expect(root.locator('.il4-pin[data-il4="pin:plan-0"]')).toHaveCount(1);
+ }
+});
