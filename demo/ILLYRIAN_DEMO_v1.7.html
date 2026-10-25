@@ -257,7 +257,16 @@ const businesses=[{id:'b1',name:'Alba Coffee',type:'Biznese',sub:'Milano · Kafe
 const jobs=[{id:'j1',name:'Front-end Developer',type:'Punë',sub:'Remote · Full-time · Oferta demo',emoji:'⌘'},{id:'j2',name:'Asistent Marketingu',type:'Punë',sub:'Milano · Kontratë · Oferta demo',emoji:'↗'}];
 const events=[{id:'e1',title:'Futboll me shqiptarët',city:'Milano',day:'E shtunë · 18:00',members:'7/12 vende',label:'Sport',emoji:'⚽',tone:'sport',desc:'Një ndeshje miqësore për t’u njohur dhe për të luajtur së bashku.'},{id:'e2',title:'Kafe dhe njohje të reja',city:'Romë',day:'E diel · 16:00',members:'5/10 vende',label:'Social',emoji:'☕',tone:'social',desc:'Një pasdite për biseda, njohje dhe ide të reja.'},{id:'e3',title:'Mbrëmje komunitare',city:'Tiranë',day:'E premte · 19:30',members:'12/24 vende',label:'Kulturë',emoji:'🎶',tone:'culture',desc:'Muzikë, biseda dhe komuniteti ynë, në një ambient të këndshëm.'}];
 const KEY='illyrian_demo_v09_state';let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem('illyrian_demo_v08_state')||localStorage.getItem('illyrian_demo_v07_state')||localStorage.getItem('illyrian_demo_v06_state')||localStorage.getItem('illyrian_demo_v05_state')||localStorage.getItem('illyrian_demo_v04_state')||localStorage.getItem('illyrian_demo_v03_state')||localStorage.getItem('illyrian_demo_v02_state')||'{}')||{}}catch{}
-const state={tab:'home',feed:['Për ty','Të ndjekur','Më të rejat','Afër teje'].includes(saved.feed)?saved.feed:'Për ty',category:'Të gjitha',search:'',theme:['auto','dark','light'].includes(saved.theme)?saved.theme:'auto',likes:saved.likes||[],bookmarks:saved.bookmarks||[],follows:saved.follows||['arta'],requests:saved.requests||[],posts:saved.posts||[],comments:saved.comments||{},messages:saved.messages||{},profile:saved.profile||{name:'Profili yt',bio:'Pjesë e komunitetit ILLYRIAN. Njohje, përvoja dhe mundësi të reja.'},profileTab:'posts',modal:null,story:0};
+// A1-01: tolerate corrupt and older local-state shapes WITHOUT rewriting raw storage.
+// The invalid original value remains inspectable and recoverable until a real user edit.
+const isRecord=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
+if(!isRecord(saved))saved={};
+const safeIds=(value,fallback=[])=>Array.isArray(value)?value.filter(x=>typeof x==='string'||typeof x==='number'):fallback;
+const safePosts=value=>Array.isArray(value)?value.filter(p=>isRecord(p)&&(typeof p.id==='string'||typeof p.id==='number')&&typeof p.text==='string'): [];
+const safeTextMap=value=>Object.fromEntries(Object.entries(isRecord(value)?value:{}).filter(([k,v])=>k!=='__proto__'&&Array.isArray(v)).map(([k,v])=>[k,v.filter(x=>typeof x==='string')]));
+const defaultProfile={name:'Profili yt',bio:'Pjesë e komunitetit ILLYRIAN. Njohje, përvoja dhe mundësi të reja.'};
+const safeProfile=isRecord(saved.profile)?{...saved.profile,name:typeof saved.profile.name==='string'?saved.profile.name:defaultProfile.name,bio:typeof saved.profile.bio==='string'?saved.profile.bio:defaultProfile.bio}:defaultProfile;
+const state={tab:'home',feed:['Për ty','Të ndjekur','Më të rejat','Afër teje'].includes(saved.feed)?saved.feed:'Për ty',category:'Të gjitha',search:'',theme:['auto','dark','light'].includes(saved.theme)?saved.theme:'auto',likes:safeIds(saved.likes),bookmarks:safeIds(saved.bookmarks),follows:safeIds(saved.follows,['arta']),requests:safeIds(saved.requests),posts:safePosts(saved.posts),comments:safeTextMap(saved.comments),messages:safeTextMap(saved.messages),profile:safeProfile,profileTab:'posts',modal:null,story:0};
 function persist(){try{localStorage.setItem(KEY,JSON.stringify({theme:state.theme,feed:state.feed,v9NearCity:state.v9NearCity,v9RecentQueries:state.v9RecentQueries,v9CommentDrafts:state.v9CommentDrafts,v10PlansView:state.v10PlansView,likes:state.likes,bookmarks:state.bookmarks,follows:state.follows,requests:state.requests,posts:state.posts,comments:state.comments,messages:state.messages,profile:state.profile, intent:state.intent,intentExpiry:state.intentExpiry, joinedCommunities:state.joinedCommunities,applications:state.applications,marketSaved:state.marketSaved,acceptedPlans:state.acceptedPlans,groupMessages:state.groupMessages,blocked:state.blocked,alumniOptIn:state.alumniOptIn,activityLog:state.activityLog, hiddenPosts:state.hiddenPosts, reports:state.reports,v8EventStatuses:state.v8EventStatuses,reelLikes:state.reelLikes,reelSaved:state.reelSaved,v5AvatarChoice:state.v5AvatarChoice,v6ReadChats:state.v6ReadChats,v6ReadAlerts:state.v6ReadAlerts,v6Prefs:state.v6Prefs,v6StoryLikes:state.v6StoryLikes}));return true}catch{return false}}
 const allPosts=()=>[...state.posts,...seedPosts];const getPost=id=>allPosts().find(p=>String(p.id)===String(id));const toggle=(arr,id)=>arr.includes(id)?arr.filter(x=>x!==id):[...arr,id];const fmt=n=>n>=1000?(n/1000).toFixed(1).replace('.0','')+'K':String(n);
 function theme(){const auto=window.matchMedia?.('(prefers-color-scheme: dark)').matches||false;$('#phone').classList.toggle('dark',state.theme==='dark'||state.theme==='auto'&&auto)}
@@ -297,7 +306,7 @@ Object.assign(state,{
  applications:Array.isArray(saved.applications)?saved.applications:[],
  marketSaved:Array.isArray(saved.marketSaved)?saved.marketSaved:[],
  acceptedPlans:Array.isArray(saved.acceptedPlans)?saved.acceptedPlans:[],
- groupMessages:saved.groupMessages||{},blocked:Array.isArray(saved.blocked)?saved.blocked:[],
+ groupMessages:safeTextMap(saved.groupMessages),blocked:Array.isArray(saved.blocked)?saved.blocked:[],
  alumniOptIn:!!saved.alumniOptIn,activityLog:Array.isArray(saved.activityLog)?saved.activityLog:[],
  hiddenPosts:Array.isArray(saved.hiddenPosts)?saved.hiddenPosts:[],reports:Array.isArray(saved.reports)?saved.reports:[],
  eventFilter:'Të gjitha'
@@ -540,7 +549,7 @@ Object.assign(state,{
  v6ReadAlerts:Array.isArray(saved.v6ReadAlerts)?saved.v6ReadAlerts:[],
  v6StoryLikes:Array.isArray(saved.v6StoryLikes)?saved.v6StoryLikes:[],
  v6StoryPaused:false,
- v6Prefs:{privateProfile:false,contactPolicy:'everyone',activityInvites:true,alertMessages:true,alertActivities:true,...(saved.v6Prefs||{})}
+ v6Prefs:{privateProfile:false,contactPolicy:'everyone',activityInvites:true,alertMessages:true,alertActivities:true,...(isRecord(saved.v6Prefs)?saved.v6Prefs:{})}
 });
 const v6SeedAlerts=[
  {id:'welcome',symbol:'✦',title:'Mirë se erdhe në ILLYRIAN',description:'Zbulo njerëz dhe komunitete shqiptare.',when:'Sot',target:'explore'},

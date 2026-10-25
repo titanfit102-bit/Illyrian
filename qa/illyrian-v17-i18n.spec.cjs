@@ -1776,3 +1776,29 @@ test('Privacy map pin ARIA localization preserves focus and user-origin names ac
  await root.locator('button[data-il4="close"]').click();
  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
 });
+
+
+// Audit A1-01: corrupted/legacy core storage must not crash, auto-erase,
+// or hide an otherwise valid saved post. This remains browser-local DEMO state.
+for(const [label,fixture] of [
+ ['posts object',{posts:{unexpected:true}}],
+ ['posts null with broken maps',{posts:null,likes:{oops:true},comments:'broken',messages:[],profile:'invalid'}],
+ ['posts mixed entries',{posts:[null,42,{},'broken',{id:'ok',name:'Fixture',text:'Legitimate draft',city:'Tiranë'}],comments:{ok:[null,'Valid reply']}}],
+ ['root non-object',['not','a','record']]
+]){
+ test('audit A1-01 corrupted core state recovers without deleting raw data - '+label,async({page})=>{
+  await ready(page);
+  const original=JSON.stringify(fixture);
+  await page.evaluate(raw=>localStorage.setItem('illyrian_demo_v09_state',raw),original);
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.reload({waitUntil:'load'});
+  await expect(page.locator('#screen')).not.toBeEmpty();
+  await expect(page.locator('#navbar')).toBeVisible();
+  expect(errors).toEqual([]);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(original);
+  if(label==='posts mixed entries'){
+   await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+   await expect(page.locator('#screen')).toContainText('Legitimate draft');
+  }
+ });
+}
