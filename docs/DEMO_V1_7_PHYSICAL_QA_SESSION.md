@@ -3,13 +3,20 @@
 > **Status fillestar: NOT TESTED.** Kjo fletë është për të mbledhur rezultate reale. Nuk është raport testi i kryer, certifikim i aksesueshmërisë apo autorizim për release.
 > Repository: `titanfit102-bit/Illyrian` · Draft PR #1, target `demo/v1.7-illyrian-shop` · dega e autorizuar `feat/i18n-shop-feedback-20261022`.
 
+### Kandidati për testim fizik — 26 tetor 2026 (LIVE Preview i kontrolluar)
+
+- **Kodi/testet:** [`15f3a0e`](https://github.com/titanfit102-bit/Illyrian/commit/15f3a0ee6c5c1039ad0c4588a2fd5be828f111f0), [291/291 Chromium +16/16 Linux WebKit PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40319869757), [security-baseline PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40319869770). Shiko gjithmonë GitHub LIVE para sesionit nëse HEAD ka ndryshuar.
+- **Lidhja fikse për telefon:** [Vercel Preview i degës](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/). Immutable candidate [`illyrian-demo-nadkghjhk-un24.vercel.app`](https://illyrian-demo-nadkghjhk-un24.vercel.app/), deployment `dpl_DEQv4DbWDqBZ4oepQEjbjTPupWJ5`, READY / `target:null` / source SHA `15f3a0e` sipas metadata Vercel. HTTP/asset parity pas auth-wall **NOT VERIFIED**; nëse kërkon login, përdor vetëm hyrje të autorizuar.
+- **Fokusi manual për auditin:** Home header me katër hyrje dhe njoftime sq/en/it; Plans me data provë; Shop listime historike; Connections me skeda të ndryshme (vetëm të dhëna fiktive); Governance formular me Retry; butoni Reels Light/Dark. Kontrollo safe areas, 200% OS text scaling, tastierën virtuale, TalkBack/VoiceOver dhe navigimin Android/iOS.
+- **Gjendja:** M01–M18, testimi fizik i kontrastit dhe miratimi vizual **NOT TESTED** derisa të mblidhen prova reale. F06/required-check enforcement është **OPEN** dhe kërkon miratim administrativ. Testet e browser-it nuk zëvendësojnë këtë.
+
 ### Kontroll shtesë i Home header-it (26 tetor 2026; JO QA fizike)
 - Për testim manual përdor [Preview-in automatik](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) dhe verifiko `ILLYRIAN | Kalendari | Mundësi | Njoftime`. Hap Mundësi dhe testo katër hyrjet **Biznese → Explore**, **Tregu → Shop**, **Punë → Explore**, **Shërbime → Shop (filtri Shërbime)**. Testo fokusin/Back/Escape, mbylljen e menusë me Njoftimet, ndërrimin e gjuhës sq/en/it, krijimin e postimit nga Feed, portrait/landscape, zoom, tastierën virtuale dhe safe areas. Raporto version/OS/screenshot pa të dhëna personale.
 - Kandidat code/test SHA `785a582`; [CI #40300249782](https://github.com/titanfit102-bit/Illyrian/actions/runs/40300249782) **273/273 Chromium PASS; 16/16 WebKit PASS**; [security #40300249776](https://github.com/titanfit102-bit/Illyrian/actions/runs/40300249776) PASS. Preview immutable https://illyrian-demo-m9nct6u05-un24.vercel.app/ READY, jo Production. **Asnjë sesion fizik nuk është kryer këtu.**
 
 ## 1. Hap versionin e saktë
 
-### Kandidati aktual — Mobile UI precision (JO QA fizike)
+### Kandidat historik — Mobile UI precision (JO QA fizike; jo versioni aktual)
 - **Source/test SHA:** `08d773cca9398f7d454abb6ada2aed7b14cd2201`; [Chromium + WebKit #40246035137](https://github.com/titanfit102-bit/Illyrian/actions/runs/40246035137) **267/267 + 16/16 PASS**; [security #40246035149](https://github.com/titanfit102-bit/Illyrian/actions/runs/40246035149) PASS. Kodet e Fazës 3/Connections përfshihen.
 - **Preview immutable:** https://illyrian-demo-2gv5m563l-un24.vercel.app/ · `dpl_8RPq5bLRA8CwGQApSiCgDZJgjEJh`, READY, target Preview null, root HTML / responsive CSS / Shop JS HTTP 200, përputhje me GitHub në SHA.
 - **Para/pas:** [screenshots para](https://github.com/titanfit102-bit/Illyrian/actions/runs/40241438045/artifacts/12617440183) dhe [screenshots pas](https://github.com/titanfit102-bit/Illyrian/actions/runs/40246035137/artifacts/12618099658). Duhet krahasim vizual manual me screenshot-et e Instagramit/ILLYRIAN; ende **JO** pixel-diff i certifikuar.

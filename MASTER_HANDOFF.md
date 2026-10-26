@@ -4,9 +4,9 @@
 
 26 tetor 2026 (Europe/Rome). Për progres, CI, Preview, bllokues dhe hapin e radhës lexo [CURRENT_STATE](CURRENT_STATE.md). Ky dokument ruan kontekstin afatgjatë; faktet LIVE dhe udhëzimi më i ri eksplicit i pronarit kanë përparësi. Historiku i plotë është [i arkivuar](docs/archive/continuity/README.md), jo i fshirë.
 
-### Përgjigjja ndaj auditit të pavarur (26 tetor, source i kodit `2716216`)
+### Përgjigjja ndaj auditit të pavarur (26 tetor; scope DEMO)
 
-Auditimi në `399ef0b` identifikoi IA-01–IA-09. IA-05 u mbyll më herët te Home header; IA-01 dhe IA-04 janë korrigjuar me [275 Chromium +16 WebKit PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40315582660) në source `f0e4912`. IA-02/03, IA-06 dhe kontrasti IA-09 kanë korrigjime/teste në degën e autorizuar; **verifiko PASS në source aktual** te [CURRENT_STATE](CURRENT_STATE.md#audit-i-pavarur--korrigjimet-e-26-tetorit), mos interpreto vetëm praninë e kodit si PASS. IA-07/F06 është OPEN (miratim administrativ). QA fizike M01–M18, kontrasti vizual dhe release sign-off janë OPEN; pa merge/Production.
+Auditimi në `399ef0b` identifikoi IA-01–IA-09. **IA-01/02/03/04/05/06 dhe IA-09 janë korrigjuar në rrugët e testuara**, pa certifikim absolut: [source `15f3a0e`](https://github.com/titanfit102-bit/Illyrian/commit/15f3a0ee6c5c1039ad0c4588a2fd5be828f111f0), [291/291 Chromium +16/16 WebKit PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40319869757), [security-baseline PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40319869770). **IA-08** checkpoint-i u harmonizua në [CURRENT_STATE](CURRENT_STATE.md#audit-i-pavarur--26-tetor-2026-status-final-i-korrigjimeve); ndryshimet në dokumentacion pas këtij source nuk e zëvendësojnë provën e kodit. **IA-07/F06 OPEN**: mungon enforcement administrativ i required checks, i cili kërkon autorizim të veçantë. QA fizike M01–M18, TalkBack/VoiceOver, review vizual dhe sign-off të pronarit mbeten OPEN. Pa merge/Production/APK reale.
 
 <a id="authorization"></a>
 ## Autorizimet dhe kufijtë aktivë
