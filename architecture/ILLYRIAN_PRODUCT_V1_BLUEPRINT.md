@@ -228,3 +228,35 @@ Idempotency keys are scoped by authenticated actor + operation + payload digest,
 - Manual cities in Feed, Shop, Plans and Connections are presently separate scoped filters; do not silently overwrite one from another or publish them to profiles. A future shared preference is a product decision with versioned compatibility, not a destructive DEMO merge.
 
 Implementation reference for explicit timezone formatting: [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat). This specification does not certify GDPR/store compliance, mobile hardware performance or real authorization. Those remain separate release gates.
+
+## 14. Knowledge preservation and DEMO/APK boundary — 26 October 2026
+
+**Owner policy; documentation only.** ILLYRIAN DEMO is a prototype for the owner's private testing of design, navigation and functions. The GitHub repository is currently PUBLIC; “private prototype” does not mean confidential source or secure storage. Keep fictional data and no secrets. [AGENTS policy](../AGENTS.md#demo-vs-apk--permanent-owner-policy) governs subsequent agents until an explicit phase change.
+
+### Information map established before simplification
+
+| Information | Canonical destination / original evidence |
+|---|---|
+| Active state, blockers, next action | [CURRENT_STATE](../CURRENT_STATE.md); superseded text preserved at the immutable source in the [archive index](../docs/archive/continuity/README.md#consolidation-2026-10-26) |
+| Owner decisions, permissions, stable keys and continuity | [MASTER_HANDOFF](../MASTER_HANDOFF.md); original text at the same archive source |
+| Functional journeys and migration | This blueprint §7/§12 and the source-to-journey map below; runtime code remains the behavioral reference |
+| Data/API/roles/privacy and acceptance | This blueprint §2–6/§8/§10/§12–13; [security architecture](../docs/security/SECURITY_ARCHITECTURE.md), [test matrix](../docs/security/SECURITY_TEST_MATRIX.md) and [device matrix](../docs/DEMO_V1_7_DEVICE_QA_ACCEPTANCE.md) remain authoritative in their scopes |
+| Priority / sequence | [Existing roadmap](../demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md), Phase 7/8 and M0–M5; no new roadmap |
+| Verified tests / findings / historical authorizations | Existing Phase 1/3 reports, SECURITY_REGISTER, Git commits/Actions and archive; no history deleted |
+
+### Existing screen/action references for future specification
+
+All runtime rows are **DEMO**, with bounded **VERIFIED** browser scenarios, not implemented server capabilities. Paths below are relative to this file. Preserve existing buttons/fields through these sources; expand a screen→action→API/error/permission acceptance matrix for the approved real slice before implementing it. This is traceability, not a claim that every button already has a complete signed-off APK specification.
+
+| Screens / actions to preserve | Existing source / verification | Future status and existing contract |
+|---|---|---|
+| Home/Feed: Stories → existing composer → Shop → Feed; text/media creation and social actions | [Core HTML](../demo/ILLYRIAN_DEMO_v1.7.html), [flow QA](../qa/illyrian-v17-flows.spec.cjs) | BACKEND: content/visibility/media, §3/§5/§12 |
+| Header: Calendar→Events; Opportunities: Businesses/Jobs→Explore, Marketplace/Services→Shop, Interest→intent, Activities→v10-my-plans, Plans→Events, Communities→Explore | Core HTML handler `data-ily-op-category`, [header QA](../qa/illyrian-v17.spec.cjs); eight entries | DEMO decisions preserved; BACKEND per referenced object, no parallel module |
+| Onboarding/Profile/Settings: guest demo, profile fields, locale/theme, scoped reset | Core HTML, [i18n QA](../qa/illyrian-v17-i18n.spec.cjs) | BACKEND: identity/recovery/privacy/deletion, §2/§5/§12 |
+| Stories/Reels/Messages: viewers, replies, send/draft/retry and return paths | Core HTML, [focus QA](../qa/illyrian-v17-focus.spec.cjs), i18n QA | BACKEND: authorized conversations/outbox/media lifecycle, §12 |
+| Communities/Search: posts/comments/member links, School & University c4 and Plan drafts | Core HTML, [Phase 3 evidence](../docs/PHASE3_INTEGRATION_QA.md) | BACKEND: membership/visibility/post/communityId, §13; no separate Forum |
+| Events/Plans/Connections: request/accept/withdraw/waitlist/chat, manual cities, expiring interest, repeat-as-draft | [Plans](../demo/ILLYRIAN_PLANS_v1.7.js), [Connections](../demo/ILLYRIAN_CONNECTIONS_v1.7.js), [time helper](../demo/ILLYRIAN_ACTIVITY_TIME_v1.7.js), i18n QA | BACKEND: canonical Activity/Participation/Invitation/Outbox and recurrence, §13; GPS optional |
+| Shop/Shop Plus: category-specific listing forms, filters, cart/inquiry, needs and seller workflows | [Shop](../demo/ILLYRIAN_SHOP_v1.7.js), [Shop Plus](../demo/ILLYRIAN_SHOP_PLUS_v1.7.js), i18n/flow QA | BACKEND: canonical Seller→Shop→Listing, §3/§10/§12; payments PLANNED and separately gated |
+| Privacy/Map/Governance/Notifications: visibility/block/report/appeal and local status | [Privacy](../demo/ILLYRIAN_PRIVACY_MAP_v1.7.js), [Governance](../demo/ILLYRIAN_GOVERNANCE_v1.7.js), core HTML | BACKEND: authorization/moderation/privacy lifecycle, §2/§5/§13 |
+
+MVP/exclusions, platform/provider, complete field/API schemas, operational ownership and device acceptance remain open decisions/design work. Do not invent them, migrate fixtures into real accounts, or describe PLANNED/BACKEND as real implementation. Existing UGC, IDs, domain codes and storage shapes stay unchanged. Advanced native security, server transactions, load/restore/store requirements are documented now and implemented only in their approved phase.

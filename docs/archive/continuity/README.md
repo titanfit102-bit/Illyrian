@@ -26,3 +26,21 @@ Kopjet përmbajnë gjithë tekstin origjinal, me një notice historik dhe vetëm
 U verifikuan ekzistenca e destinacioneve relative dhe anchors të dokumenteve të ndryshuara, mungesa e referencave hyrëse me anchor drejt seksioneve të hequra nga dy dokumentet aktive, rikthimi identik i burimeve, dhe diff vetëm dokumentues. Integrimi/main mbeten referencat e verifikuara në CURRENT_STATE; PR #1 mbetet Draft/unmerged. Nuk u ripërsërit QA funksional manual për këtë riorganizim pa ndryshim runtime; CI e HEAD-it të ri kontrollohet në GitHub pas ruajtjes. Lidhjet historike të jashtme ruhen si prova; nuk pretendohet rikontroll HTTP i çdo Preview/burimi të vjetër.
 
 Përditësime të ardhshme: mbaj përmbledhjet aktive të shkurtra, provat në raportin/regjistrin kanonik dhe Git history; mos krijo një snapshot të ri të plotë pas çdo ndryshimi të vogël.
+
+<a id="consolidation-2026-10-26"></a>
+## Consolidation 2026-10-26
+
+Before editing, the information/destination map was established in blueprint §14. Complete pre-change files remain in immutable commit `f76ebda50020ef1851db119a249e53c1bf68ce1f`; no new full snapshot copies are needed. The links below retain every unique decision, intermediate PASS/FAIL/pending result, source SHA, Preview and original wording. Historical notes do not override the current owner policy or LIVE state.
+
+| Complete original source | Original UTF-8 SHA-256 |
+|---|---|
+| [AGENTS.md](https://github.com/titanfit102-bit/Illyrian/blob/f76ebda50020ef1851db119a249e53c1bf68ce1f/AGENTS.md) | `1bec89fdcb4c66c21896eef1181ec6b30627088fb56663dd924ace3e4f106313` |
+| [CURRENT_STATE.md](https://github.com/titanfit102-bit/Illyrian/blob/f76ebda50020ef1851db119a249e53c1bf68ce1f/CURRENT_STATE.md) | `0bcfc305d78d729c8a9d775bb14133e003247842a9fc444917686125fce50a84` |
+| [MASTER_HANDOFF.md](https://github.com/titanfit102-bit/Illyrian/blob/f76ebda50020ef1851db119a249e53c1bf68ce1f/MASTER_HANDOFF.md) | `d004b6644948b30c3d109e2374fec8a8a38cad6a90c496c334922840b8b45e3c` |
+| [architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md](https://github.com/titanfit102-bit/Illyrian/blob/f76ebda50020ef1851db119a249e53c1bf68ce1f/architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md) | `adb82802c46c4e4c383951da9674e04e90fd54073b9d7259cefa5b1e21c03c80` |
+| [demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md](https://github.com/titanfit102-bit/Illyrian/blob/f76ebda50020ef1851db119a249e53c1bf68ce1f/demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md) | `5bcc5765117d9363a978db3968df7c83807d975a274cd95291c9595f98144a33` |
+| [docs/archive/continuity/README.md](https://github.com/titanfit102-bit/Illyrian/blob/f76ebda50020ef1851db119a249e53c1bf68ce1f/docs/archive/continuity/README.md) | `8c51517340151e184dbe50e06fdabbe555d2fa212edc17ef1327a8dd97c4b745` |
+| [docs/security/SECURITY_REGISTER.md](https://github.com/titanfit102-bit/Illyrian/blob/f76ebda50020ef1851db119a249e53c1bf68ce1f/docs/security/SECURITY_REGISTER.md) | `baec120d141a26440a56c00b885fef6e58f7f0ecf0d48cf08b89b60c7878e27d` |
+| [docs/F06_REQUIRED_CHECKS_DECISION.md](https://github.com/titanfit102-bit/Illyrian/blob/f76ebda50020ef1851db119a249e53c1bf68ce1f/docs/F06_REQUIRED_CHECKS_DECISION.md) | `9e8a8117fd453e2c940660e44167c16e2fecac300f9954fb5aee6fb4f58bf7bd` |
+
+Active summaries now link to canonical sources: state/next step in CURRENT_STATE, decisions/stable contracts in MASTER_HANDOFF, APK specifications in blueprint, phases in roadmap, security evidence in SECURITY_REGISTER. Workflow/runtime/tests and existing release gates were not edited. F06's latest owner deferral supersedes older administrative-action reminders, without changing GitHub settings.

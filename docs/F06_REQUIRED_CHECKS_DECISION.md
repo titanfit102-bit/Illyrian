@@ -1,5 +1,8 @@
 # ILLYRIAN F06 — Proposed Integration Branch Protection (approval required)
 
+> **Active owner decision — 26 October 2026:** administrative F06 enforcement is deferred to the real APK phase; it is not required for development of the owner's DEMO. CI remains active and no merge is authorized. The proposal and preflight below are historical/design references, not a current instruction to activate rules. Revisit only after explicit phase/settings authorization. [Permanent policy](../AGENTS.md#demo-vs-apk--permanent-owner-policy).
+
+
 > 2026-10-24. **PROPOSAL ONLY, NOT APPLIED**. Applies ONLY to `titanfit102-bit/Illyrian`, target branch `demo/v1.7-illyrian-shop`. Explicit owner authorization is required before changing GitHub branch protection or rulesets. No merges or Production actions authorized by this document.
 
 ## LIVE F06 preflight — 2026-10-25 [READ-ONLY / APPROVAL REQUIRED]

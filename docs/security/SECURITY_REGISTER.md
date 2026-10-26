@@ -8,7 +8,7 @@ Statuses: VERIFIED (bounded evidence), PARTIAL (incomplete), FAILED, UNKNOWN, NO
 | SEC-02 high / DOM and UGC | PARTIAL | Escaping/semantic exclusions and existing A1 browser regressions; bounded eval/write detector | Review changed sinks; comprehensive SAST remains unimplemented |
 | SEC-03 high / supply chain | VERIFIED | Locked i18next/Playwright inventory, vendor SHA/parity, npm audit at high threshold | Record actual audit result below; no suppressed advisories |
 | SEC-04 high / local state | PARTIAL | Existing A1 recovery/quota/stale-write tests and continuity evidence | Local data is mutable; no server transaction guarantee |
-| SEC-05 high / merge policy | PARTIAL | PR QA already exists; new security-baseline proposed check | F06 administrative enforcement needs approval; no rules changed |
+| SEC-05 high / merge policy | PARTIAL | PR QA already exists; new security-baseline proposed check | Owner deferred F06 to real-app phase; revalidate/approve before activation; no rules changed |
 | SEC-06 critical / real account/API/DB/DM/payment | NOT APPLICABLE | No real backend/native/auth/payment in this repository | Mandatory real-release gate; UNKNOWN until implemented and negatively tested |
 | SEC-07 high / device/accessibility | UNKNOWN | DOM/emulated browser evidence only | Real M01–M18 Android/iPhone, TalkBack/VoiceOver and owner signoff |
 | SEC-08 high / scheduled monitoring | PARTIAL | Weekly schedule defined | Inactive until workflow authorized on default branch; no background monitoring claim |
@@ -58,3 +58,7 @@ Independent audit baseline `399ef0b`, current verified feature source [`15f3a0e`
 - IA-09 Reels Home Light AA contrast adjustment has Chromium regression PASS and keeps Dark style; physical visual/accessibility review remains OPEN.
 - IA-07/F06 **OPEN**: main currently `protected:false`, rulesets `[]`. No administrative enforcement/branch-protection changes approved or executed.
 - IA-08 continuation snapshot/Preview refreshed; history remains archived. Device M01–M18/TalkBack/VoiceOver, product-wide SAST, private incident route, backend authorization and release sign-off remain **OPEN/UNKNOWN**. Repository remains a public DEMO; do not publish unresolved sensitive exploit details.
+
+### 2026-10-26 — DEMO/APK scope clarification (documentation only)
+
+Owner policy is canonical in [AGENTS](../../AGENTS.md#demo-vs-apk--permanent-owner-policy); the [blueprint information map](../../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#14-knowledge-preservation-and-demoapk-boundary--26-october-2026) preserves real-app requirements. SEC-01–09 control statuses are unchanged. SEC-05 remains PARTIAL: administrative enforcement is absent and deferred for the real app, not a DEMO development blocker. Existing scanner/dependency/vendor/browser regressions and release-gate mechanisms remain untouched. No new native/server security implementation or monitoring is claimed; historical findings/CI evidence above remain intact.

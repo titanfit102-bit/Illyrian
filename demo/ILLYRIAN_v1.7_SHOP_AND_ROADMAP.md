@@ -1,5 +1,8 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+> **Active scope — 26 October 2026:** owner-private DEMO testing; source repository PUBLIC. Follow [permanent DEMO/APK policy](../AGENTS.md#demo-vs-apk--permanent-owner-policy) and [knowledge map](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#14-knowledge-preservation-and-demoapk-boundary--26-october-2026). Phase 7/8 and M0–M5 remain; historical checkpoints below are not current tasks. F06 enforcement is deferred to the real-app phase, not a DEMO development blocker. Advanced backend/native requirements are documented, not implemented in DEMO. Existing tests, CI and release gates are unchanged.
+
+
 **Data e nisjes:** 21 tetor 2026  
 **Burimi:** kërkesa eksplicite e përdoruesit për t'i ndërtuar të gjitha funksionet e mbetura të demos, plus ILLYRIAN Shop (produkte, dyqane të vogla, makina, banesa me qira dhe kërkim ndër-dyqanesh), me vazhdim fazë pas faze.  
 **Status i përditësuar më 22 tetor 2026:** Paketat 1–6 janë implementuar si DEMO; Paketa 7 ka kaluar kriterin funksional automatik në Chromium (32/32 skenarë Playwright, ku 2 suita përmbajnë 126/126 + 147/147 kontrolle QA). Janë prodhuar 42 pamje për evidencë vizuale, por kontrolli fizik/manual në telefon dhe miratimi i dizajnit mbeten HAPUR. Për Paketën 8 ekziston blueprint arkitekturor v0.1, jo backend apo produkt real i implementuar. Historiku i fazave më poshtë mbetet i pandryshuar.  
