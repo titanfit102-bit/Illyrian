@@ -4,8 +4,8 @@
 > Repository: `titanfit102-bit/Illyrian` · Draft PR #1, target `demo/v1.7-illyrian-shop` · dega e autorizuar `feat/i18n-shop-feedback-20261022`.
 
 ### Kontroll shtesë i Home header-it (26 tetor 2026; JO QA fizike)
-- Për testim manual përdor [Preview-in automatik](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) dhe verifiko në krye `ILLYRIAN | Kalendari | Mundësi | Njoftime`; prekje e Kalendarit, menuja Mundësi (Biznese/Punë/Të gjitha), Escape/Back/fokus, Njoftimet, krijimin e postimeve nga Feed, zoom/landscape dhe safe areas. Raporto version/OS/screenshot pa të dhëna personale.
-- Code/test SHA `870013e`; [CI #40252574685](https://github.com/titanfit102-bit/Illyrian/actions/runs/40252574685) ishte IN PROGRESS gjatë dokumentimit. **Asnjë sesion fizik nuk është kryer këtu.**
+- Për testim manual përdor [Preview-in automatik](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) dhe verifiko `ILLYRIAN | Kalendari | Mundësi | Njoftime`. Hap Mundësi dhe testo katër hyrjet **Biznese → Explore**, **Tregu → Shop**, **Punë → Explore**, **Shërbime → Shop (filtri Shërbime)**. Testo fokusin/Back/Escape, mbylljen e menusë me Njoftimet, ndërrimin e gjuhës sq/en/it, krijimin e postimit nga Feed, portrait/landscape, zoom, tastierën virtuale dhe safe areas. Raporto version/OS/screenshot pa të dhëna personale.
+- Kandidat code/test SHA `785a582`; [CI #40300249782](https://github.com/titanfit102-bit/Illyrian/actions/runs/40300249782) **273/273 Chromium PASS; 16/16 WebKit PASS**; [security #40300249776](https://github.com/titanfit102-bit/Illyrian/actions/runs/40300249776) PASS. Preview immutable https://illyrian-demo-m9nct6u05-un24.vercel.app/ READY, jo Production. **Asnjë sesion fizik nuk është kryer këtu.**
 
 ## 1. Hap versionin e saktë
 
