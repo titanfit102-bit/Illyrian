@@ -215,8 +215,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   await expect(toggle).toHaveAttribute('aria-expanded','true');
   const panel=head.locator('#ily-opportunities-panel');
   await expect(panel).toBeVisible();
-  await expect(panel.locator('button')).toHaveCount(4);
-  expect(await panel.locator('button').evaluateAll(items=>items.map(x=>x.dataset.ilyOpCategory))).toEqual(['Biznese','Tregu','Punë','Shërbime']);
+  await expect(panel.locator('button')).toHaveCount(8);
+  expect(await panel.locator('button').evaluateAll(items=>items.map(x=>x.dataset.ilyOpCategory))).toEqual(['Biznese','Tregu','Punë','Shërbime','Interesi','Aktivitetet','Plane','Komunitete']);
   await expect(panel.locator('[data-ily-op-category="Biznese"]')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(panel).toBeHidden();
@@ -288,7 +288,7 @@ test('Home Opportunities links Tregu and Shërbime to Shop - 390x844',async({pag
 test('Home header uses semantic sq en it labels - 390x844',async({page})=>{
  await openDemo(page,390,844);
  const head=page.locator('#phone > .head'),panel=head.locator('#ily-opportunities-panel');
- const keys=['homeBusinesses','homeMarketplace','homeJobs','homeServices'];
+ const keys=['homeBusinesses','homeMarketplace','homeJobs','homeServices','homeIntent','homeActivity','homePlans','homeCommunities'];
  for(const lang of ['sq','en','it']){
   await page.evaluate(code=>window.IllyrianI18n.changeLanguage(code),lang);
   const expected=await page.evaluate(keys=>({
@@ -323,4 +323,74 @@ test('P1-A11Y-01 Reels Home Light label meets AA 4.5 contrast, Dark keeps theme'
  expect(c.fg).toBe('rgb(220, 12, 53)');
  await page.evaluate(()=>document.querySelector('#phone').classList.add('dark'));
  await expect(button).toHaveCSS('color','rgb(229, 12, 55)');
+});
+
+
+// Home quick links moved into Mundësi; reuse existing controls and persistence.
+test('Home removes relocated panels without losing composer, Shop, or existing business/job links - 390x844',async({page})=>{
+ await openDemo(page,390,844);
+ const home=page.locator('#screen');
+ await expect(home.locator('.intent-strip')).toHaveCount(0);
+ await expect(home.locator('.v10-plan-summary')).toHaveCount(0);
+ const shortcuts=home.locator('.v3-shortcuts .v3-quick');
+ await expect(shortcuts).toHaveCount(2);
+ expect(await shortcuts.allTextContents()).toEqual(['🏪Biznese','💼Punë']);
+ await expect(home.locator(':scope > .stories + .compose')).toHaveCount(1);
+ await expect(home.locator('[data-ilshop-open]')).toHaveCount(1);
+ await expect(home.locator('.v15-studio')).toHaveCount(1);
+ await expect(page.locator('#ily-opportunities-panel [data-ily-op-category]')).toHaveCount(8);
+});
+test('Mundësi routes intent, my activities, plans and communities via original screens - 390x844',async({page})=>{
+ await openDemo(page,390,844);
+ const toggle=page.locator('#phone > .head [data-ily-op-toggle]'),panel=page.locator('#ily-opportunities-panel');
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Interesi"]').click();
+ await expect(panel).toBeHidden();
+ await expect(page.locator('#layer #intent-choice')).toBeVisible();
+ await expect(page.locator('#layer #intent-choice')).toBeFocused();
+ await page.locator('#layer #intent-choice').selectOption({label:'Sport dhe aktivitete'});
+ await page.locator('#layer [data-act="save-intent"]').click();
+ await expect(page.locator('#layer #intent-choice')).toHaveCount(0);
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Interesi"]').click();
+ await expect(page.locator('#layer #intent-choice')).toHaveValue('Sport dhe aktivitete');
+ await page.locator('#layer [data-act="close"]').click();
+
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Aktivitetet"]').click();
+ await expect(page.locator('#screen .v10-event-tabs')).toBeVisible();
+ await expect(page.locator('#navbar [data-val="events"]')).toHaveAttribute('aria-current','page');
+ await expect(panel).toBeHidden();
+ await page.locator('#navbar [data-val="home"]').click();
+
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Plane"]').click();
+ await expect(page.locator('#screen .v10-event-tabs')).toBeVisible();
+ await page.locator('#navbar [data-val="home"]').click();
+
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Komunitete"]').click();
+ await expect(page.locator('#screen [data-act="category"][data-val="Komunitete"]')).toHaveClass(/active/);
+ await expect(page.locator('#finder')).toBeFocused();
+ await expect(page.locator('#screen .directory-card')).not.toHaveCount(0);
+});
+test('Mundësi eight options stay reachable and localized in compact mobile viewport',async({page})=>{
+ await openDemo(page,320,568);
+ const panel=page.locator('#ily-opportunities-panel');
+ for(const lang of ['sq','en','it']){
+  await page.evaluate(code=>window.IllyrianI18n.changeLanguage(code),lang);
+  await page.locator('#phone > .head [data-ily-op-toggle]').click();
+  await expect(panel.locator('button')).toHaveCount(8);
+  const report=await panel.evaluate(el=>{
+   const style=getComputedStyle(el),r=el.getBoundingClientRect(),phone=document.getElementById('phone').getBoundingClientRect();
+   return {scrollable:style.overflowY,within:r.bottom<=phone.bottom+1,buttons:[...el.querySelectorAll('button')].every(b=>b.offsetHeight>=44)};
+  });
+  expect(report.scrollable).toBe('auto');
+  expect(report.within).toBe(true);
+  expect(report.buttons).toBe(true);
+  await panel.locator('[data-ily-op-category="Komunitete"]').scrollIntoViewIfNeeded();
+  await expect(panel.locator('[data-ily-op-category="Komunitete"]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+ }
 });

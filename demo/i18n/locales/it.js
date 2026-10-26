@@ -1,7 +1,7 @@
 /* ILLYRIAN IT UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.it={
-  "common": { "homeCalendar": "Calendario", "homeOpportunities": "Opportunità", "homeBusinesses": "Attività", "homeMarketplace": "Mercato", "homeJobs": "Lavoro", "homeServices": "Servizi", 
+  "common": { "homeCalendar": "Calendario", "homeOpportunities": "Opportunità", "homeBusinesses": "Attività", "homeMarketplace": "Mercato", "homeJobs": "Lavoro", "homeServices": "Servizi", "homeIntent": "Cosa cerchi ora?", "homeActivity": "Le tue attività", "homePlans": "Piani", "homeCommunities": "Comunità", 
     "storageSaveFailed": "La modifica non è stata salvata su questo dispositivo. Riprova.",
     "notificationsShort": "Notifiche",
     "close": "Chiudi",

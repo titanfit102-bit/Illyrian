@@ -1,7 +1,7 @@
 /* ILLYRIAN EN UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.en={
-  "common": { "homeCalendar": "Calendar", "homeOpportunities": "Opportunities", "homeBusinesses": "Businesses", "homeMarketplace": "Marketplace", "homeJobs": "Jobs", "homeServices": "Services", 
+  "common": { "homeCalendar": "Calendar", "homeOpportunities": "Opportunities", "homeBusinesses": "Businesses", "homeMarketplace": "Marketplace", "homeJobs": "Jobs", "homeServices": "Services", "homeIntent": "What are you looking for?", "homeActivity": "Your activities", "homePlans": "Plans", "homeCommunities": "Communities", 
     "storageSaveFailed": "The change was not saved on this device. Try again.",
     "notificationsShort": "Notifications",
     "close": "Close",
