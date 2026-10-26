@@ -3,6 +3,10 @@
 > **Status fillestar: NOT TESTED.** Kjo fletë është për të mbledhur rezultate reale. Nuk është raport testi i kryer, certifikim i aksesueshmërisë apo autorizim për release.
 > Repository: `titanfit102-bit/Illyrian` · Draft PR #1, target `demo/v1.7-illyrian-shop` · dega e autorizuar `feat/i18n-shop-feedback-20261022`.
 
+### Kontroll shtesë i Home header-it (26 tetor 2026; JO QA fizike)
+- Për testim manual përdor [Preview-in automatik](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) dhe verifiko në krye `ILLYRIAN | Kalendari | Mundësi | Njoftime`; prekje e Kalendarit, menuja Mundësi (Biznese/Punë/Të gjitha), Escape/Back/fokus, Njoftimet, krijimin e postimeve nga Feed, zoom/landscape dhe safe areas. Raporto version/OS/screenshot pa të dhëna personale.
+- Code/test SHA `9ba6fa6`; [CI #40251911500](https://github.com/titanfit102-bit/Illyrian/actions/runs/40251911500) ishte IN PROGRESS gjatë dokumentimit. **Asnjë sesion fizik nuk është kryer këtu.**
+
 ## 1. Hap versionin e saktë
 
 ### Kandidati aktual — Mobile UI precision (JO QA fizike)
