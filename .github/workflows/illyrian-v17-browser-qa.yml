@@ -55,7 +55,7 @@ jobs:
   browser-smoke:
     name: browser-smoke-${{ github.event_name }}
     needs: browser-scope
-    if: github.repository == 'titanfit102-bit/Illyrian'
+    if: always() && github.repository == 'titanfit102-bit/Illyrian'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
@@ -116,7 +116,7 @@ jobs:
   # PR-only avoids repeating WebKit work on the same feature push.
   webkit-smoke:
     name: webkit-smoke-${{ github.event_name }}
-    if: github.repository == 'titanfit102-bit/Illyrian' && github.event_name == 'pull_request'
+    if: always() && github.repository == 'titanfit102-bit/Illyrian' && github.event_name == 'pull_request' && needs.browser-smoke.result == 'success'
     needs: [browser-scope, browser-smoke]
     runs-on: ubuntu-latest
     timeout-minutes: 16
