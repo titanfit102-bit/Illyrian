@@ -26,7 +26,10 @@
   const accepted=id=>requests(id).filter(r=>r.status==='accepted');
   const pending=id=>requests(id).filter(r=>r.status==='pending');
   const waiting=id=>requests(id).filter(r=>r.status==='waitlist');
-  const free=e=>Math.max(0,e.capacity-accepted(e.id).length);
+  // Untrusted storage values cannot become seats or HTML.
+  const capacity=e=>typeof e.capacity==='number'&&Number.isInteger(e.capacity)&&e.capacity>=1&&e.capacity<=100?e.capacity:null;
+  const capacityText=e=>capacity(e)===null?'—':String(capacity(e));
+  const free=e=>capacity(e)===null?0:Math.max(0,capacity(e)-accepted(e.id).length);
   const self=id=>requests(id).find(r=>r.name==='Profili im'&&['pending','accepted','waitlist'].includes(r.status));
   const closed=e=>{const instant=window.IllyrianActivityTime.resolve(e);return e.cancelled||instant===null||instant<=Date.now()};
   const feedback=(key,fallback)=>window.IllyrianI18n?.t('plans:'+key)||fallback;
@@ -49,7 +52,7 @@
   const button=(a,label,extra='')=>`<button type="button" data-ilp="${escape(a)}" ${extra}>${escape(label)}</button>`;
   const choose=(values,current,keyOf=()=>null)=>values.map(v=>`<option data-i18n-direct ${v===current?'selected':''} value="${escape(v)}">${keyOf(v)?ui(keyOf(v),v):escape(v)}</option>`).join('');
   const eventZone=e=>escape(window.IllyrianActivityTime.zone(e)||feedback('timeZoneUnknown','Zona kohore e panjohur'));
-  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${typeKey(e.kind)?ui(typeKey(e.kind),e.kind):escape(e.kind)} · ${escape(e.city)} · ${ui(closed(e)?'statusClosed':free(e)===0?'statusFull':'statusActive',closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv')}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} (${eventZone(e)}) · <span data-user-content>${escape(e.place)}</span></p><p>${accepted(e.id).length}/${e.capacity} ${ui('accepted','të pranuar')} · ${pending(e.id).length} ${ui('waiting','në pritje')}</p>${button('detail:'+e.id,feedback('detail','Hap aktivitetin →'))}</article>`;
+  const summary=e=>`<article class="ilp-card"><div class="ilp-muted">${typeKey(e.kind)?ui(typeKey(e.kind),e.kind):escape(e.kind)} · ${escape(e.city)} · ${ui(closed(e)?'statusClosed':free(e)===0?'statusFull':'statusActive',closed(e)?'I mbyllur':free(e)===0?'Plot':'Aktiv')}</div><h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} (${eventZone(e)}) · <span data-user-content>${escape(e.place)}</span></p><p>${accepted(e.id).length}/${escape(capacityText(e))} ${ui('accepted','të pranuar')} · ${pending(e.id).length} ${ui('waiting','në pritje')}</p>${button('detail:'+e.id,feedback('detail','Hap aktivitetin →'))}</article>`;
   const form=()=>{
     const e=state.edit?event(state.edit):null;
     const v=e||(draft||{title:'',kind:kinds[0],city:cities[0],place:'',date:after(7),time:'17:00',capacity:8,price:0,privacy:'public',conditions:''});
@@ -59,7 +62,7 @@
     <label data-i18n-direct>${ui('formCity','Qyteti')}<select name="city">${choose(cities,v.city)}</select></label>
     <label data-i18n-direct>${ui('formPlace','Vendi')}<input name="place" maxlength="100" required value="${escape(v.place)}" placeholder="${ui('formPlaceHint','Vend publik takimi')}"></label>
     <div class="ilp-grid"><label data-i18n-direct>${ui('formDate','Data')}<input type="date" name="date" min="${after(0)}" value="${escape(v.date)}" required></label><label data-i18n-direct>${ui('formTime','Ora')}<input type="time" name="time" required value="${escape(v.time)}"></label></div>
-    <div class="ilp-grid"><label data-i18n-direct>${ui('formCapacity','Kapaciteti')}<input name="capacity" type="number" min="1" max="100" value="${Number(v.capacity)}"></label><label data-i18n-direct>${ui('formContribution','Kontributi €')}<input name="price" type="number" min="0" max="10000" step=".5" value="${Number(v.price)}"></label></div>
+    <div class="ilp-grid"><label data-i18n-direct>${ui('formCapacity','Kapaciteti')}<input name="capacity" type="number" min="1" max="100" value="${capacity(v)===null?'':capacity(v)}"></label><label data-i18n-direct>${ui('formContribution','Kontributi €')}<input name="price" type="number" min="0" max="10000" step=".5" value="${Number(v.price)}"></label></div>
     <label data-i18n-direct>${ui('formPrivacy','Dukshmëria')}<select name="privacy">${choose(['public','private'],v.privacy,visibilityKey)}</select></label>
     <label data-i18n-direct>${ui('formConditions','Kushtet')}<textarea name="conditions" maxlength="240">${escape(v.conditions)}</textarea></label>
     <p class="ilp-muted" data-i18n-direct>${ui('formInfo','Aktiviteti është vetëm provë. Nuk publikohen vendndodhje personale apo kërkesa reale.')}</p>
@@ -71,7 +74,7 @@
     const my=self(e.id),owner=state.role==='organizer',ended=closed(e);
     let html=`<div class="ilp-muted">${typeKey(e.kind)?ui(typeKey(e.kind),e.kind):escape(e.kind)} · ${escape(e.city)} · ${ui(ended?'statusCancelledOrPast':free(e)===0?'statusSeatsFull':'statusActive',ended?'I anuluar ose i kaluar':free(e)===0?'Vendet plot':'Aktiv')}</div>
     <h3 data-user-content>${escape(e.title)}</h3><p>${escape(e.date)} · ${escape(e.time)} (${eventZone(e)}) · <span data-user-content>${escape(e.place)}</span></p>
-    <p><b>${accepted(e.id).length}/${e.capacity}</b> ${ui('seats','vende')} · ${pending(e.id).length} ${ui('requestsCount','kërkesa')} · ${waiting(e.id).length} ${ui('waitlistCount','në listë pritjeje')}</p>
+    <p><b>${accepted(e.id).length}/${escape(capacityText(e))}</b> ${ui('seats','vende')} · ${pending(e.id).length} ${ui('requestsCount','kërkesa')} · ${waiting(e.id).length} ${ui('waitlistCount','në listë pritjeje')}</p>
     <p data-user-content>${escape(e.conditions||feedback('noConditions','Nuk ka kushte shtesë.'))}</p><p class="ilp-muted">${ui(e.privacy==='public'?'visibilityPublic':'visibilityPrivate',e.privacy==='public'?'Publik':'Privat')} · ${Number(e.price)||0} € · ${ui('demoOnly','Vetëm demonstrim')}</p>`;
     if(owner){
       if(!ended)html+=button('edit',feedback('editAction','Redakto'))+button('cancel',feedback('cancelAction','Anulo aktivitetin'));

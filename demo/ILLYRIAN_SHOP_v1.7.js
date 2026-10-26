@@ -40,9 +40,10 @@
   const text=[p.name,p.store,p.city,p.kind,p.description].join(' ').toLocaleLowerCase('sq');
   return (!q||q.split(/\s+/).every(word=>text.includes(word)))&&(state.category==='Të gjitha'||p.kind===state.category)&&(state.city==='Të gjitha'||p.city===state.city)&&(!state.store||p.store===state.store);
  };
- const visible=()=>{const x=all().filter(matches);if(state.sort==='price-low')x.sort((a,b)=>a.price-b.price);if(state.sort==='price-high')x.sort((a,b)=>b.price-a.price);if(state.sort==='store')x.sort((a,b)=>a.store.localeCompare(b.store,'sq'));return x};
- const shops=()=>[...new Set(visible().map(p=>p.store))];
- const tile=p=>`<article class="ils-card"><div class="ils-illustration" aria-hidden="true">${clean(p.emoji||'📦')}</div><div class="ils-card-main"><span class="ils-kind">${clean(p.kind)}</span><h3>${clean(p.name)}</h3><strong>${price(p)}</strong><p data-user-content>${clean(p.store)} · ${clean(p.city)}</p><button class="ils-btn ils-secondary" data-ils="detail" data-id="${clean(p.id)}">Shiko detajet</button></div></article>`;
+ const storeName=p=>typeof p.store==='string'?p.store:'';
+ const visible=()=>{const x=all().filter(matches);if(state.sort==='price-low')x.sort((a,b)=>a.price-b.price);if(state.sort==='price-high')x.sort((a,b)=>b.price-a.price);if(state.sort==='store')x.sort((a,b)=>storeName(a).localeCompare(storeName(b),'sq')||String(a.id??'').localeCompare(String(b.id??''),'sq'));return x};
+ const shops=()=>[...new Set(visible().map(storeName).filter(Boolean))];
+ const tile=p=>`<article class="ils-card"><div class="ils-illustration" aria-hidden="true">${clean(p.emoji||'📦')}</div><div class="ils-card-main"><span class="ils-kind">${clean(p.kind)}</span><h3>${clean(p.name)}</h3><strong>${price(p)}</strong><p data-user-content>${clean(storeName(p)||'Dyqan i papërcaktuar')} · ${clean(p.city)}</p><button class="ils-btn ils-secondary" data-ils="detail" data-id="${clean(p.id)}">Shiko detajet</button></div></article>`;
  const header=(sub)=>`<header class="ils-top"><button data-ils="back" class="ils-back" aria-label="Kthehu te ILLYRIAN">←</button><div><strong>ILLYRIAN <span>Shop</span></strong><small>${clean(sub||'Gjej, krahaso dhe zbulo oferta')}</small></div><button data-ils="cart" class="ils-cart" aria-label="Hap shportën">🛒 <b>${cartCount()}</b></button></header>`;
  const cartCount=()=>Object.values(state.cart).reduce((a,b)=>a+Math.min(99,Math.max(0,Number(b)||0)),0);
  const cartItems=()=>Object.entries(state.cart).map(([id,qty])=>({p:byId(id),qty:Math.min(99,Math.max(0,Number(qty)||0))})).filter(x=>x.p&&x.p.kind==='Produkte'&&x.qty>0);
@@ -63,7 +64,7 @@
    ${status()}`;
  }
  function detail(){const p=byId(state.selected);if(!p)return '<div class="ils-empty">Listimi nuk ekziston.</div>';
-  return `<button class="ils-text-link" data-ils="browse">← Kthehu te rezultatet</button><div class="ils-product-cover" aria-hidden="true">${clean(p.emoji)}</div><span class="ils-kind">${clean(p.kind)} · ${clean(p.city)}</span><h2 data-user-content>${clean(p.name)}</h2><h3 class="ils-price">${price(p)}</h3><p class="ils-description" data-user-content>${clean(p.description)}</p><div class="ils-seller"><small>Shitësi / dyqani</small><strong data-user-content>${clean(p.store)}</strong><button data-ils="store" data-value="${clean(p.store)}">Shiko listimet e këtij dyqani →</button></div>
+  return `<button class="ils-text-link" data-ils="browse">← Kthehu te rezultatet</button><div class="ils-product-cover" aria-hidden="true">${clean(p.emoji)}</div><span class="ils-kind">${clean(p.kind)} · ${clean(p.city)}</span><h2 data-user-content>${clean(p.name)}</h2><h3 class="ils-price">${price(p)}</h3><p class="ils-description" data-user-content>${clean(p.description)}</p><div class="ils-seller"><small>Shitësi / dyqani</small><strong data-user-content>${clean(storeName(p)||'Dyqan i papërcaktuar')}</strong><button data-ils="store" data-value="${clean(storeName(p))}">Shiko listimet e këtij dyqani →</button></div>
    ${p.kind==='Produkte'?btn('add','+ Shto në shportë'):btn('contact','Kërko informacion (demo)')}
    ${p.owned?btn('edit','Ndrysho listimin','ils-btn ils-secondary')+btn('delete','Fshi listimin','ils-btn ils-secondary'):''}
    <div class="ils-info"><strong>Transaksion demonstrues</strong><p>Nuk ka pagesë reale, shpërndarje të dhënash apo verifikim shitësi. Kontakto vetëm brenda simulimit.</p></div>`;

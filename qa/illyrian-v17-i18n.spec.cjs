@@ -2378,3 +2378,38 @@ for(const [lang,copy] of Object.entries({
   });
  }
 }
+
+
+test('IA-01: malformed stored Plans capacity is inert and raw data is preserved',async({page})=>{
+ const key='illyrian_demo_v17_plans';
+ await page.addInitScript(k=>localStorage.setItem(k,JSON.stringify({events:[{
+  id:'audit-capacity',title:'Capacity record',kind:'Sport',city:'Tiranë',place:'Public park',
+  date:'2099-10-12',time:'17:00',capacity:'<b data-capacity-probe="1">text</b>',price:0,privacy:'public'
+ }],requests:[],messages:[],attendance:[]})),key);
+ await ready(page);
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('#screen [data-ilp-entry]').first().click();
+ await expect(page.locator('#ilp-root .ilp-card')).toContainText('0/—');
+ await expect(page.locator('#ilp-root [data-capacity-probe]')).toHaveCount(0);
+ await page.locator('#ilp-root [data-ilp="detail:audit-capacity"]').click();
+ await expect(page.locator('#ilp-root .ilp-panel')).toContainText('0/—');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+});
+test('IA-04: sorting historical Shop listings without seller never errors',async({page})=>{
+ const key='illyrian_demo_v17_shop';
+ await page.addInitScript(k=>localStorage.setItem(k,JSON.stringify({listings:[
+  {id:'legacy-1',name:'Legacy one',kind:'Produkte',city:'Milano',price:2},
+  {id:'legacy-2',name:'Legacy two',kind:'Produkte',city:'Romë',price:4,store:null}
+ ]})),key);
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await ready(page);
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#illyrian-shop-layer #ils-sort').selectOption('store');
+ for(const name of ['Legacy one','Legacy two'])
+  await expect(page.locator('#illyrian-shop-layer .ils-card').filter({hasText:name})).toHaveCount(1);
+ expect(errors).toEqual([]);
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+});
