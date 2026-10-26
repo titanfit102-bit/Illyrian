@@ -195,7 +195,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   const head=page.locator('#phone > .head');
   const buttons=head.locator(':scope > .top-actions > button:visible');
   const labels=await buttons.evaluateAll(items=>items.map(el=>el.getAttribute('aria-label')));
-  expect(labels.slice(0,2)).toEqual(['Kalendari','Mundësi']);
+  const expected=await page.evaluate(()=>['common:homeCalendar','common:homeOpportunities'].map(k=>window.IllyrianI18n.t(k)));
+  expect(labels.slice(0,2)).toEqual(expected);
   // The existing i18n layer localizes Notifications on load.
   expect(labels[2]).toMatch(/^(Njoftime|Notifications|Notifiche)$/);
   await expect(head.locator('.ily-create-trigger')).toBeHidden();
@@ -214,7 +215,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   await expect(toggle).toHaveAttribute('aria-expanded','true');
   const panel=head.locator('#ily-opportunities-panel');
   await expect(panel).toBeVisible();
-  await expect(panel.locator('button')).toHaveCount(3);
+  await expect(panel.locator('button')).toHaveCount(4);
+  expect(await panel.locator('button').evaluateAll(items=>items.map(x=>x.dataset.ilyOpCategory))).toEqual(['Biznese','Tregu','Punë','Shërbime']);
   await expect(panel.locator('[data-ily-op-category="Biznese"]')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(panel).toBeHidden();
@@ -257,4 +259,48 @@ test('Home opportunities dismiss when Notifications opens - 390x844',async({page
  await page.keyboard.press('Escape');
  await expect(panel).toBeHidden();
  await expect(toggle).toHaveAttribute('aria-expanded','false');
+});
+
+
+// User-approved menu reuses the existing Shop and Explore; no second backend.
+test('Home Opportunities links Tregu and Shërbime to Shop - 390x844',async({page})=>{
+ await openDemo(page,390,844);
+ const panel=page.locator('#ily-opportunities-panel');
+ const toggle=page.locator('#phone > .head [data-ily-op-toggle]');
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Tregu"]').click();
+ const shop=page.locator('#illyrian-shop-layer');
+ await expect(shop).toBeVisible();
+ await expect(shop.locator('[data-ils="category"][data-value="Të gjitha"]')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('#phone > .head')).toHaveJSProperty('inert',true);
+ await shop.locator('[data-ils="back"]').click();
+ await expect(shop).toHaveCount(0);
+ await expect(page.locator('#navbar [data-val="home"]')).toBeFocused();
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Shërbime"]').click();
+ await expect(shop).toBeVisible();
+ await expect(shop.locator('[data-ils="category"][data-value="Shërbime"]')).toHaveAttribute('aria-pressed','true');
+ await expect(shop.locator('#ils-search')).toBeFocused();
+ await page.keyboard.press('Escape');
+ await expect(shop).toHaveCount(0);
+});
+
+test('Home header uses semantic sq en it labels - 390x844',async({page})=>{
+ await openDemo(page,390,844);
+ const head=page.locator('#phone > .head'),panel=head.locator('#ily-opportunities-panel');
+ const keys=['homeBusinesses','homeMarketplace','homeJobs','homeServices'];
+ for(const lang of ['sq','en','it']){
+  await page.evaluate(code=>window.IllyrianI18n.changeLanguage(code),lang);
+  const expected=await page.evaluate(keys=>({
+   calendar:window.IllyrianI18n.t('common:homeCalendar'),
+   opportunities:window.IllyrianI18n.t('common:homeOpportunities'),
+   choices:keys.map(key=>window.IllyrianI18n.t('common:'+key))
+  }),keys);
+  await expect(head.locator('[data-val="events"]')).toHaveAttribute('aria-label',expected.calendar);
+  await expect(head.locator('[data-ily-op-toggle]')).toHaveAttribute('aria-label',expected.opportunities);
+  await head.locator('[data-ily-op-toggle]').click();
+  expect(await panel.locator('button').allTextContents()).toEqual(expected.choices);
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+ }
 });

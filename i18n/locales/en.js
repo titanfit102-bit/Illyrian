@@ -1,7 +1,7 @@
 /* ILLYRIAN EN UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.en={
-  "common": {
+  "common": { "homeCalendar": "Calendar", "homeOpportunities": "Opportunities", "homeBusinesses": "Businesses", "homeMarketplace": "Marketplace", "homeJobs": "Jobs", "homeServices": "Services", 
     "storageSaveFailed": "The change was not saved on this device. Try again.",
     "notificationsShort": "Notifications",
     "close": "Close",

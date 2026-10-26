@@ -1,7 +1,7 @@
 /* ILLYRIAN SQ UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.sq={
-  "common": {
+  "common": { "homeCalendar": "Kalendari", "homeOpportunities": "Mundësi", "homeBusinesses": "Biznese", "homeMarketplace": "Tregu", "homeJobs": "Punë", "homeServices": "Shërbime", 
     "storageSaveFailed": "Ndryshimi nuk u ruajt në këtë pajisje. Provo përsëri.",
     "notificationsShort": "Njoftime",
     "close": "Mbyll",
