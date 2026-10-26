@@ -229,7 +229,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   await page.locator('#navbar [data-val="home"]').click();
   await expect(head.locator('.ily-create-trigger')).toBeHidden();
   await head.locator('[data-val="events"]').click();
-  await expect(page.locator('#screen .section-header h2')).toContainText('Plane');
+  // Use the stable Events view selector; its title is localized at runtime.
+  await expect(page.locator('#screen .v10-event-tabs')).toBeVisible();
   await expect(head.locator('.ily-create-trigger')).toBeVisible();
   await page.locator('#navbar [data-val="home"]').click();
   await head.locator('[data-val="notifications"]').click();
