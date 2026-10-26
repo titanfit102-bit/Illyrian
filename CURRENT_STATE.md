@@ -10,13 +10,13 @@ Përditësuar: 26 tetor 2026 (Europe/Rome). **Faza 1: PARTIAL / RELEASE HOLD; Fa
 | Dega e autorizuar | `feat/i18n-shop-feedback-20261022` |
 | PR | [#1](https://github.com/titanfit102-bit/Illyrian/pull/1) OPEN / DRAFT / UNMERGED → `demo/v1.7-illyrian-shop` |
 | Bazë para Fazës 3 | `d32a7c57692b5a2f20b2faa0b4c02ec39c373e9f`; historia para konsolidimit ruhet në arkiv. Ky checkpoint dokumenton integrimin pasues të Fazës 3. HEAD-i i ri merret nga GitHub, jo nga një SHA historike. |
-| Kodi/testet | Audit-remediation candidate [`15f3a0e`](https://github.com/titanfit102-bit/Illyrian/commit/15f3a0ee6c5c1039ad0c4588a2fd5be828f111f0): [QA #40319869757](https://github.com/titanfit102-bit/Illyrian/actions/runs/40319869757) **291/291 Chromium PASS** (job 121561759251, log i inspektuar) + **16/16 Linux WebKit PASS** (job 121564204718, log i inspektuar). Katër korrigjimet funksionale dhe testet e auditit janë verifikuar në këtë source brenda skenarëve të testuar. |
-| Siguria | [Security #40319869770](https://github.com/titanfit102-bit/Illyrian/actions/runs/40319869770) **completed/success** në source `15f3a0e` (kontroll bounded). [Regjistri kanonik](docs/security/SECURITY_REGISTER.md) ruan PARTIAL/UNKNOWN për mbulimin global dhe sigurinë e shërbimit real. |
-| Kontrollet | Të tre job-et te kodi `15f3a0e`: **browser-smoke-pull_request PASS (291)**, **webkit-smoke-pull_request PASS (16)**, **security-baseline PASS**. IA-06 runner-i përdor inventar të kyçur dhe Actions të fiksuara në SHA. F06 required-check *enforcement* administrativ është ende OPEN. |
-| Preview për QA fizik | [Alias-i i përhershëm i degës](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) → source `15f3a0e`, [Preview immutable READY](https://illyrian-demo-nadkghjhk-un24.vercel.app/), deployment `dpl_DEQv4DbWDqBZ4oepQEjbjTPupWJ5`, `target:null` sipas Vercel metadata. Përmbajtja HTTP/assets pas auth-wall dhe testimi fizik mbeten të paverifikuara. |
+| Kodi/testet | Renditja **Stories → composer ekzistues → Shop**: [source `fc3812b`](https://github.com/titanfit102-bit/Illyrian/commit/fc3812bd7f434087e810378d36b775768e728640), [QA #40327148783](https://github.com/titanfit102-bit/Illyrian/actions/runs/40327148783) **293/293 Chromium +16/16 Linux WebKit PASS** (logjet e të dy jobs kontrolluar). 2 teste të reja Home mobile/desktop kontrollojnë DOM, formularin e postimit dhe hyrjen Shop; 291 testet ekzistuese vazhdojnë PASS. |
+| Siguria | [Security #40327148842](https://github.com/titanfit102-bit/Illyrian/actions/runs/40327148842) **PASS** në kodin `fc3812b`; baseline i kufizuar, [regjistri kanonik](docs/security/SECURITY_REGISTER.md) ruan PARTIAL/UNKNOWN për mbulimin global. |
+| Kontrollet | `fc3812b`: browser-smoke-pull_request PASS **293**, webkit-smoke-pull_request PASS **16**, security-baseline PASS; kontrolli i kodit përfshin historikun e korrigjimeve të auditit. **F06** mbetet konfigurim opsional për DEMO sipas vendimit të përdoruesit, i planifikuar për fazën reale; nuk ka enforcement të aktivizuar. |
+| Preview për QA fizik | [Alias-i fiks për telefon](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) → kod `fc3812b`, [Preview immutable READY](https://illyrian-demo-iynt2rl2o-un24.vercel.app/), Vercel deployment `dpl_Fmew573Akk3jfoqAhLGtKEa6Tgwd`, `target:null`; autenticimi dhe parity i aseteve pas hyrjes nuk janë testuar. |
 | Izolimi | Integrimi `015ce439e7c6d736149c6c300391586517664f62`; `main` `9f91b5c083b4482a70a2149483cc799360e6102c`; pa merge/Production |
 
-Preview aktual i kandidatit pas korrigjimeve: Vercel Git integration e ka lidhur alias-in me source `15f3a0e`, READY, Preview `target:null`. Nuk ka provë të certifikuar HTTP/asset parity pas login-it, as QA reale në Android/iPhone. Historiku: [Phase 3 QA](docs/PHASE3_INTEGRATION_QA.md), [Phase 1 QA](docs/PHASE1_QA_HANDOFF.md).
+Preview aktual pas ndryshimit të Home composer: Vercel Git integration e ka lidhur alias-in me source `fc3812b`, READY, Preview `target:null`. Nuk ka provë të certifikuar HTTP/asset parity pas login-it, as QA reale në Android/iPhone. Historiku: [Phase 3 QA](docs/PHASE3_INTEGRATION_QA.md), [Phase 1 QA](docs/PHASE1_QA_HANDOFF.md).
 
 ## Progresi i implementuar, në kufijtë e provave
 
@@ -55,8 +55,15 @@ Preview aktual i kandidatit pas korrigjimeve: Vercel Git integration e ka lidhur
 ## Hapi i saktë pasues
 
 1. **Prioritet release HOLD:** testim fizik M01–M18 në Android Chrome dhe iPhone Safari (kur të jetë i disponueshëm), TalkBack/VoiceOver, safe area, keyboard/OS text scaling, orientim, scroll dhe review manual i pamjeve Light/Dark. Regjistro prova në [worksheet](docs/DEMO_V1_7_PHYSICAL_QA_SESSION.md); pa prova statusi mbetet NOT TESTED.
-2. **F06:** kërko autorizim të veçantë për required checks/branch rules dhe më pas testim administrativ jo-destruktiv. Mos blloko ose merge degët pa vendim të pronarit.
+2. **F06:** sipas vendimit më të fundit të pronarit, enforcement i branch rules **nuk është i domosdoshëm për DEMO-n dhe shtyhet për aplikacionin real**. Kontrollet CI mbeten të detyrueshme në praktikën e zhvillimit; mos bëj merge pa autorizim.
 3. **Përpara MVP-së reale:** review shtesë global i18n/UGC/a11y dhe zgjidhja e identitetit/backend/privatësisë sipas roadmap-it ekzistues. Mos e shëno DEMO-n release-ready ose të implementosh backend/native pa vendim.
+
+## Home composer — 26 tetor 2026 (ndryshim i verifikuar)
+
+- **Kërkesa:** composer-i ekzistues (avatar + `Çfarë po ndodh sot?` + ikonë media) të jetë **menjëherë poshtë Stories** në Home. Nuk krijohet composer paralel dhe nuk ndryshohet ruajtja ose navigimi i postimit.
+- **Implementimi:** render-i kryesor siguron që Stories ndiqet nga composer-i ekzistues; injektimi i kartës ILLYRIAN Shop ruhet pas composer-it, përpara filtrave të Feed. Paneli ekzistues `v15-studio` Story/Reel nuk fshihet. Për ekranet e tjera nuk ka ndryshim në përmbajtje/navigim.
+- **Provat:** commit-i i kodit/testeve [`fc3812b`](https://github.com/titanfit102-bit/Illyrian/commit/fc3812bd7f434087e810378d36b775768e728640), [CI 293 Chromium +16 WebKit PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40327148783), [security PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40327148842). QA e re kontrollon rendin, një composer, avatar/media, modalin ekzistues `v5-text`/`v5-file`, Shop dhe përkthimin sq/it pas navigimit. Pas regresioneve reale u korrigjuan pritshmëri testesh për elemente historike; **vetëm source final PASS** është provë e pranimit.
+- **Kufijtë:** testet janë në Chromium/WebKit të automatizuar, jo certifikim i telefonit fizik. Review manual, M01–M18 dhe accessibility real mbeten OPEN; Draft PR #1 nuk është bashkuar.
 
 ## Home header — 26 tetor 2026 (scope i autorizuar)
 
