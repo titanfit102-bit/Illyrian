@@ -2590,3 +2590,48 @@ test('IA-03 Governance quota failure retains keyboard focus and exact report on 
  const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
  expect(saved.cases.filter(x=>x.target==='Distinct focused draft')).toHaveLength(1);
 });
+
+
+// UX placement: keep the ONE existing composer, its handlers and media entry.
+async function assertHomeComposerOrder(page){
+ await expect(page.locator('#screen > .stories + .compose')).toHaveCount(1);
+ await expect(page.locator('#screen > .compose + .ils-entry')).toHaveCount(1);
+ await expect(page.locator('#screen > .compose')).toHaveCount(1);
+ await expect(page.locator('#screen > .compose > .avatar')).toHaveCount(1);
+ await expect(page.locator('#screen > .compose .compose-prompt')).toBeVisible();
+ await expect(page.locator('#screen > .compose [data-act="modal"][data-val="compose"].red-icon')).toHaveCount(1);
+ await expect(page.locator('#screen > .ils-entry [data-ilshop-open]')).toBeVisible();
+}
+test('Home composer directly follows Stories before Shop on mobile; post and media handlers unchanged',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await ready(page);
+ await assertHomeComposerOrder(page);
+ await page.locator('#screen > .compose .compose-prompt').click();
+ await expect(page.locator('#layer #post-input')).toBeVisible();
+ await page.locator('#layer [data-act="close"]').click();
+ await assertHomeComposerOrder(page);
+ await page.locator('#screen > .compose .red-icon').click();
+ await expect(page.locator('#layer #post-photo')).toBeVisible();
+ await page.locator('#layer [data-act="close"]').click();
+ await assertHomeComposerOrder(page);
+ await page.locator('#screen > .ils-entry [data-ilshop-open]').click();
+ await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
+ await assertHomeComposerOrder(page);
+});
+test('Home composer remains directly below Stories after navigation, filter and locale change on desktop',async({page})=>{
+ await page.setViewportSize({width:1100,height:850});
+ await ready(page);
+ await assertHomeComposerOrder(page);
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await expect(page.locator('#screen #finder')).toBeVisible();
+ await expect(page.locator('#screen [data-ilshop-open]')).toBeVisible();
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await assertHomeComposerOrder(page);
+ await page.locator('#screen .filters [data-act="feed"]').nth(1).click();
+ await assertHomeComposerOrder(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(page.locator('#screen > .compose .compose-prompt')).toHaveText('Cosa succede oggi?');
+ await assertHomeComposerOrder(page);
+});

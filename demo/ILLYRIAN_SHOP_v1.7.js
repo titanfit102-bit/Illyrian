@@ -101,7 +101,7 @@
    const home=screen.querySelector('.stories,.v15-studio');const explore=screen.querySelector('#finder');
    if(!home&&!explore)return;
    const entry=document.createElement('div');entry.className='ils-entry';entry.innerHTML=`<div><span>ILLYRIAN SHOP · DEMO v1.7</span><strong>Gjej produkte, makina dhe banesa.</strong><small>Kërko dhe krahaso listime nga dyqane të ndryshme.</small></div><button type="button" data-ilshop-open="1">Hap Shop →</button>`;
-   if(explore){const heading=screen.querySelector('.section-header');(heading||explore.parentElement).insertAdjacentElement('afterend',entry)}else{home.insertAdjacentElement('afterend',entry)}
+   if(explore){const heading=screen.querySelector('.section-header');(heading||explore.parentElement).insertAdjacentElement('afterend',entry)}else{const composer=screen.querySelector(':scope > .stories + .compose');(composer||home).insertAdjacentElement('afterend',entry)}
  }
  const screen=document.getElementById('screen');if(!screen||!document.getElementById('phone'))return;
  new MutationObserver(()=>inject()).observe(screen,{childList:true,subtree:false});inject();
