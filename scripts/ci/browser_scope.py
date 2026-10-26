@@ -25,9 +25,10 @@ def api(path):
     with urllib.request.urlopen(request, timeout=15) as response:
         return json.load(response)
 
-def proven_jobs(jobs):
+def proven_jobs(jobs, base):
     return all(any(j.get('name') == name and j.get('conclusion') == 'success' and
-        any(s.get('name') == step and s.get('conclusion') == 'success' for s in j.get('steps', []))
+        any(s.get('name') == step and s.get('conclusion') == 'success' for s in j.get('steps', [])) and
+        any(s.get('name') == 'Browser evidence base '+base and s.get('conclusion') == 'success' for s in j.get('steps', []))
         for j in jobs) for name,step in STEPS.items())
 
 def decide(event, event_name, get=api, changes=delta):
@@ -48,7 +49,7 @@ def decide(event, event_name, get=api, changes=delta):
             if not docs_only(changes(previous, head)): continue
         except (subprocess.SubprocessError, ValueError): continue
         jobs=get('actions/runs/'+str(run['id'])+'/jobs?per_page=100')['jobs']
-        if proven_jobs(jobs):
+        if proven_jobs(jobs, base):
             return True, 'documentation only; unchanged runtime already executed: '+run['html_url']+' at '+previous
     return False, 'full: no compatible successful full Chromium+WebKit execution'
 
