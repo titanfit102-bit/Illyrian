@@ -184,3 +184,54 @@ test('Desktop phone mockup preserves explicit demo chrome and visible nav labels
  await expect(page.locator('#navbar .v12-nav-label').first()).toBeVisible();
  await expect(page.locator('#screen > .stories')).toBeVisible();
 });
+
+
+// Home header order and options must be real, keyboard-accessible destinations.
+// Exercise portrait, narrow viewport and landscape without navigating away from
+// the established Discover and Events implementations.
+for(const [width,height] of [[320,568],[390,844],[844,390]]){
+ test('Home header Calendar Opportunities Notifications - '+width+'x'+height,async({page})=>{
+  await openDemo(page,width,height);
+  const head=page.locator('#phone > .head');
+  const buttons=head.locator(':scope > .top-actions > button:visible');
+  expect(await buttons.evaluateAll(items=>items.map(el=>el.getAttribute('aria-label'))))
+   .toEqual(['Kalendari','Mundësi','Njoftime']);
+  await expect(head.locator('.ily-create-trigger')).toBeHidden();
+  await expect(page.locator('#screen > .stories .story-btn').first()).toBeVisible();
+  const b=await buttons.all();
+  for(const el of b){
+   const box=await el.boundingBox();
+   expect(box.width).toBeGreaterThanOrEqual(44);
+   expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+  const brandBox=await head.locator('.brand').boundingBox();
+  const calendarBox=await b[0].boundingBox();
+  expect(brandBox.x+brandBox.width).toBeLessThanOrEqual(calendarBox.x+1);
+  const toggle=head.locator('[data-ily-op-toggle]');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded','true');
+  const panel=head.locator('#ily-opportunities-panel');
+  await expect(panel).toBeVisible();
+  await expect(panel.locator('button')).toHaveCount(3);
+  await expect(panel.locator('[data-ily-op-category="Biznese"]')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+  await expect(toggle).toBeFocused();
+  await toggle.click();
+  await panel.locator('[data-ily-op-category="Biznese"]').click();
+  await expect(page.locator('#navbar [data-val="explore"]')).toHaveAttribute('aria-current','page');
+  await expect(page.locator('#finder')).toBeFocused();
+  await expect(page.locator('#screen [data-act="category"][data-val="Biznese"]')).toHaveClass(/active/);
+  await expect(panel).toBeHidden();
+  await expect(head.locator('.ily-create-trigger')).toBeVisible();
+  await page.locator('#navbar [data-val="home"]').click();
+  await expect(head.locator('.ily-create-trigger')).toBeHidden();
+  await head.locator('[data-val="events"]').click();
+  await expect(page.locator('#screen .section-header h2')).toContainText('Plane');
+  await expect(head.locator('.ily-create-trigger')).toBeVisible();
+  await page.locator('#navbar [data-val="home"]').click();
+  await head.locator('[data-val="notifications"]').click();
+  await expect(page.locator('#layer')).toContainText(/Njoftim|Notification/i);
+  await page.keyboard.press('Escape');
+ });
+}
