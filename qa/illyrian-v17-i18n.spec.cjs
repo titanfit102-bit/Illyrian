@@ -2492,3 +2492,101 @@ test('IA-03 Governance preserves unsent report fields and retries once after sto
  const data=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
  expect(data.cases.filter(x=>x.target==='Unique unsent report text')).toHaveLength(1);
 });
+
+
+// Follow-up audit probes: stored-data schema variants, reverse tab order and form focus.
+for(const [label,invalid] of [
+ ['null',null],['object',{unexpected:'capacity'}],['negative',-1],
+ ['zero',0],['oversized',101],['fractional',1.5],['numeric-string','8']
+]){
+ test('IA-01 schema variants capacity '+label+' remains inert and raw storage untouched',async({page})=>{
+  const key='illyrian_demo_v17_plans';
+  await page.addInitScript(({key,invalid})=>localStorage.setItem(key,JSON.stringify({
+   events:[{id:'capacity-legacy',title:'Legacy capacity',kind:'Sport',city:'Tiranë',place:'Public park',date:'2099-10-12',time:'17:00',capacity:invalid,price:0,privacy:'public',conditions:''}],
+   requests:[],messages:[],attendance:[]
+  })),{key,invalid});
+  await ready(page);
+  const before=await page.evaluate(k=>localStorage.getItem(k),key);
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('#screen [data-ilp-entry]').first().click();
+  await expect(page.locator('#ilp-root .ilp-card')).toContainText('0/—');
+  await page.locator('#ilp-root [data-ilp="detail:capacity-legacy"]').click();
+  await expect(page.locator('#ilp-root .ilp-panel')).toContainText('0/—');
+  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ });
+}
+test('IA-04 Shop sorting all modes tolerates mixed missing, null, numeric and valid sellers',async({page})=>{
+ const key='illyrian_demo_v17_shop';
+ await page.addInitScript(k=>localStorage.setItem(k,JSON.stringify({listings:[
+  {id:'hist-1',name:'Historical empty seller',kind:'Produkte',city:'Milano',price:1},
+  {id:'hist-2',name:'Historical null seller',kind:'Produkte',city:'Romë',price:2,store:null},
+  {id:'hist-3',name:'Historical numeric seller',kind:'Produkte',city:'Tiranë',price:3,store:42},
+  {id:'hist-4',name:'Current named seller',kind:'Produkte',city:'Tiranë',price:4,store:'Shop Albania'}
+ ]})),key);
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await ready(page);
+ const raw=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('[data-ilshop-open]').first().click();
+ const sort=page.locator('#illyrian-shop-layer #ils-sort');
+ for(const mode of ['store','price-low','price-high','relevance','store']){
+  await sort.selectOption(mode);
+  for(const name of ['Historical empty seller','Historical null seller','Historical numeric seller','Current named seller'])
+   await expect(page.locator('#illyrian-shop-layer .ils-card').filter({hasText:name})).toHaveCount(1);
+ }
+ expect(errors).toEqual([]);
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(raw);
+});
+for(const [lang,notice] of Object.entries({
+ sq:'Të dhënat u ndryshuan në një skedë tjetër.',
+ en:'Data changed in another tab.',
+ it:"I dati sono cambiati in un'altra scheda."
+})){
+ test('IA-02 Connections reverse tab order and '+lang+' conflict notice preserve welcome',async({browser})=>{
+  const ctx=await browser.newContext(),a=await ctx.newPage(),b=await ctx.newPage(),key='illyrian_demo_v17_connections';
+  try{
+   await ready(a);await ready(b);
+   for(const p of [a,b]){
+    await p.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+    await p.locator('.head [data-act="tab"][data-val="events"]').click();
+    await p.locator('#ilc-entry [data-ilc-entry]').click();
+   }
+   await a.locator('#ilc-root [data-ilc="view:welcome"]').click();
+   await b.locator('#ilc-root [data-ilc="view:cities"]').click();
+   await a.locator('#ilc-root [data-ilc-first="city-1"]').check();
+   const committed=await a.evaluate(k=>localStorage.getItem(k),key);
+   await b.locator('#ilc-cities select[name="home"]').selectOption('Berlin');
+   await b.locator('#ilc-cities button[type="submit"]').click();
+   await expect(b.locator('#ilc-cities select[name="home"]')).toHaveValue('Berlin');
+   await expect(b.locator('#ilc-root .ilc-note[role="status"]')).toContainText(notice);
+   expect(await a.evaluate(k=>localStorage.getItem(k),key)).toBe(committed);
+   await b.reload({waitUntil:'load'});
+   await b.locator('.head [data-act="tab"][data-val="events"]').click();
+   await b.locator('#ilc-entry [data-ilc-entry]').click();
+   await b.locator('#ilc-root [data-ilc="view:cities"]').click();
+   await b.locator('#ilc-cities select[name="home"]').selectOption('Berlin');
+   await b.locator('#ilc-cities button[type="submit"]').click();
+   const data=await a.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+   expect(data.home).toBe('Berlin');
+   expect(data.welcome['city-1']).toBe(true);
+  }finally{await ctx.close()}
+ });
+}
+test('IA-03 Governance quota failure retains keyboard focus and exact report on retry',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#ig6-entry [data-ig6="open"]').click();
+ await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
+ const form=page.locator('#ig6-report'),key='illyrian_demo_v17_governance';
+ await form.locator('[name="target"]').fill('Distinct focused draft');
+ await form.locator('[name="reason"]').selectOption('Spam');
+ await form.locator('[name="detail"]').fill('This text must remain after a write failure');
+ await rejectModuleWrites(page,key);
+ const btn=form.locator('button[type="submit"]');await btn.click();
+ await expect(btn).toBeFocused();
+ await expect(form.locator('[name="target"]')).toHaveValue('Distinct focused draft');
+ await allowModuleWrites(page);
+ await btn.click();
+ const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+ expect(saved.cases.filter(x=>x.target==='Distinct focused draft')).toHaveLength(1);
+});
