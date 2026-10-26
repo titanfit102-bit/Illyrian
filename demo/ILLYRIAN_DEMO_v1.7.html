@@ -2174,7 +2174,7 @@ document.head.appendChild(v15Style);
    document.querySelector('#finder')?.focus({preventScroll:true});
    return;
   }
-  if(!panel.hidden&&!head.contains(event.target))hide();
+  if(!panel.hidden&&(!head.contains(event.target)||!panel.contains(event.target)))hide();
  },true);
  document.addEventListener('keydown',event=>{
   if(event.key==='Escape'&&!panel.hidden){

@@ -238,3 +238,23 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   await page.keyboard.press('Escape');
  });
 }
+
+
+// Closing a Home action menu before opening Notifications avoids leaving
+// aria-expanded=true and a stale popover behind the modal (browser QA only).
+test('Home opportunities dismiss when Notifications opens - 390x844',async({page})=>{
+ await openDemo(page,390,844);
+ const head=page.locator('#phone > .head');
+ const toggle=head.locator('[data-ily-op-toggle]');
+ const panel=head.locator('#ily-opportunities-panel');
+ await toggle.click();
+ await expect(panel).toBeVisible();
+ await expect(toggle).toHaveAttribute('aria-expanded','true');
+ await head.locator('[data-val="notifications"]').click();
+ await expect(page.locator('#layer')).toContainText(/Njoftim|Notification/i);
+ await expect(panel).toBeHidden();
+ await expect(toggle).toHaveAttribute('aria-expanded','false');
+ await page.keyboard.press('Escape');
+ await expect(panel).toBeHidden();
+ await expect(toggle).toHaveAttribute('aria-expanded','false');
+});
