@@ -2608,11 +2608,12 @@ test('Home composer directly follows Stories before Shop on mobile; post and med
  await ready(page);
  await assertHomeComposerOrder(page);
  await page.locator('#screen > .compose .compose-prompt').click();
- await expect(page.locator('#layer #post-input')).toBeVisible();
+ await expect(page.locator('#layer #v5-text')).toBeVisible();
  await page.locator('#layer [data-act="close"]').click();
  await assertHomeComposerOrder(page);
  await page.locator('#screen > .compose .red-icon').click();
- await expect(page.locator('#layer #post-photo')).toBeVisible();
+ await expect(page.locator('#layer .v5-photo-label')).toBeVisible();
+ await expect(page.locator('#layer #v5-file')).toHaveCount(1);
  await page.locator('#layer [data-act="close"]').click();
  await assertHomeComposerOrder(page);
  await page.locator('#screen > .ils-entry [data-ilshop-open]').click();
