@@ -170,7 +170,18 @@
   state.open=false;root?.remove();root=null;restore.forEach(({el,prior})=>{if(el.isConnected)el.inert=prior});restore=[];
   if(opener?.isConnected)opener.focus();
  };
- const message=t=>{state.notice=t;save();render()};
+ // Failed writes must not destroy unsent report fields or keyboard focus.
+ const message=t=>{
+  state.notice=t;
+  if(save()){render();return true}
+  let el=root?.querySelector('.ig6-note[role="status"]');
+  if(!el&&root){
+   el=document.createElement('p');el.className='ig6-note';el.setAttribute('role','status');
+   root.querySelector('.ig6-panel .ig6-tabs')?.after(el);
+  }
+  if(el)el.textContent=state.notice;
+  return false;
+ };
  const act=k=>{
   if(k==='close')return close();
   if(k.startsWith('tab:')){state.tab=k.slice(4);state.notice='';if(state.tab==='work')state.role='business';render();return}

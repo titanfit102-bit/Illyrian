@@ -522,6 +522,7 @@ window.ILLYRIAN_LOCALES.it={
     "footer": "Dati fittizi · Nessun pagamento, prenotazione, consegna o contatto reale."
   },
   "connections": {
+    "storageConflict": "I dati sono cambiati in un'altra scheda. Ricarica la pagina e riprova.",
     "storageFull": "Lo spazio di archiviazione locale è esaurito; la modifica non è stata salvata.",
     "citiesUnknown": "Queste città non sono riconosciute.",
     "citiesDistinct": "Scegli due città diverse per questo esempio.",

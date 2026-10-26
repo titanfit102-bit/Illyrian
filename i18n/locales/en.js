@@ -522,6 +522,7 @@ window.ILLYRIAN_LOCALES.en={
     "footer": "Fictional data · No real payments, bookings, deliveries or contacts."
   },
   "connections": {
+    "storageConflict": "Data changed in another tab. Reload this page and try again.",
     "storageFull": "Local storage is full; the change was not saved.",
     "citiesUnknown": "These cities are not recognized.",
     "citiesDistinct": "Choose two different cities for this example.",

@@ -522,6 +522,7 @@ window.ILLYRIAN_LOCALES.sq={
     "footer": "Të dhëna fiktive · Nuk ka pagesa, rezervime, dërgesa ose kontakte reale."
   },
   "connections": {
+    "storageConflict": "Të dhënat u ndryshuan në një skedë tjetër. Rifresko faqen dhe provo përsëri.",
     "storageFull": "Hapësira lokale është plot; ndryshimi nuk u ruajt.",
     "citiesUnknown": "Qytetet nuk njihen.",
     "citiesDistinct": "Zgjidh dy qytete të ndryshme për këtë shembull.",

@@ -2413,3 +2413,81 @@ test('IA-04: sorting historical Shop listings without seller never errors',async
  expect(errors).toEqual([]);
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
 });
+
+
+test('IA-02 Connections rejects stale tab writes and preserves committed cities',async({browser})=>{
+ const ctx=await browser.newContext(),a=await ctx.newPage(),b=await ctx.newPage();
+ try{
+  await ready(a);await ready(b);
+  await a.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+  await b.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+  for(const p of [a,b])await p.locator('.head [data-act="tab"][data-val="events"]').click();
+  for(const p of [a,b])await p.locator('#ilc-entry [data-ilc-entry]').click();
+  await a.locator('#ilc-root [data-ilc="view:cities"]').click();
+  await b.locator('#ilc-root [data-ilc="view:welcome"]').click();
+  await a.locator('#ilc-cities select[name="home"]').selectOption('Berlin');
+  await a.locator('#ilc-cities button[type="submit"]').click();
+  const key='illyrian_demo_v17_connections',afterA=await a.evaluate(k=>localStorage.getItem(k),key);
+  const check=b.locator('#ilc-root [data-ilc-first="city-1"]');
+  await check.check();
+  await expect(check).not.toBeChecked();
+  await expect(b.locator('#ilc-root .ilc-note[role="status"]')).toContainText('skedë tjetër');
+  expect(await a.evaluate(k=>localStorage.getItem(k),key)).toBe(afterA);
+  await b.reload({waitUntil:'load'});
+  await b.locator('.head [data-act="tab"][data-val="events"]').click();
+  await b.locator('#ilc-entry [data-ilc-entry]').click();
+  await b.locator('#ilc-root [data-ilc="view:welcome"]').click();
+  await b.locator('#ilc-root [data-ilc-first="city-1"]').check();
+  const afterB=await a.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+  expect(afterB.home).toBe('Berlin');expect(afterB.welcome['city-1']).toBe(true);
+  await a.locator('#ilc-cities select[name="home"]').selectOption('Romë');
+  await a.locator('#ilc-cities button[type="submit"]').click();
+  await expect(a.locator('#ilc-cities select[name="home"]')).toHaveValue('Romë');
+  const saved=await a.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+  expect(saved.home).toBe('Berlin');expect(saved.welcome['city-1']).toBe(true);
+ }finally{await ctx.close()}
+});
+
+test('IA-03 Connections retains unsent nondefault interest after storage quota failure',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('#ilc-entry [data-ilc-entry]').click();
+ await page.locator('#ilc-root [data-ilc="view:interest"]').click();
+ const f=page.locator('#ilc-interest');
+ await f.locator('[name="topic"]').selectOption('language');
+ await f.locator('[name="city"]').selectOption('Milano');
+ await f.locator('[name="slot"]').selectOption('Të shtunën 11:00');
+ await f.locator('[name="days"]').selectOption('7');
+ const key='illyrian_demo_v17_connections',raw=await page.evaluate(k=>localStorage.getItem(k),key);
+ await rejectModuleWrites(page,key);
+ await f.locator('button[type="submit"]').click();
+ for(const [field,v] of [['topic','language'],['city','Milano'],['slot','Të shtunën 11:00'],['days','7']])
+  await expect(f.locator('[name="'+field+'"]')).toHaveValue(v);
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(raw);
+ await allowModuleWrites(page);
+ await f.locator('button[type="submit"]').click();
+ await expect(page.locator('#ilc-root .ilc-chosen')).toHaveCount(1);
+});
+
+test('IA-03 Governance preserves unsent report fields and retries once after storage failure',async({page})=>{
+ await ready(page);
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+ await page.locator('#ig6-entry [data-ig6="open"]').click();
+ await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
+ const f=page.locator('#ig6-report'),key='illyrian_demo_v17_governance';
+ await f.locator('[name="target"]').fill('Unique unsent report text');
+ await f.locator('[name="reason"]').selectOption('Spam');
+ await f.locator('[name="detail"]').fill('Unique details of the pending report');
+ const raw=await page.evaluate(k=>localStorage.getItem(k),key);
+ await rejectModuleWrites(page,key);
+ await f.locator('button[type="submit"]').click();
+ await expect(page.locator('#ig6-root .ig6-note[role="status"]')).toBeVisible();
+ await expect(f.locator('[name="target"]')).toHaveValue('Unique unsent report text');
+ await expect(f.locator('[name="reason"]')).toHaveValue('Spam');
+ await expect(f.locator('[name="detail"]')).toHaveValue('Unique details of the pending report');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(raw);
+ await allowModuleWrites(page);
+ await f.locator('button[type="submit"]').click();
+ const data=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+ expect(data.cases.filter(x=>x.target==='Unique unsent report text')).toHaveLength(1);
+});
