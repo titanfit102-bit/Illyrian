@@ -24,7 +24,7 @@ Përditësuar: 26 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 
 ## Politika aktive dhe çështjet e hapura
 
-Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv: vetëm faza 2 e programit Shop, e autorizuar pas përfundimit të fazës 1; mekanizma të kufizuar DEMO dhe specifikime APK. NDALO përpara fazës 3. Kufizimi i mëparshëm vetëm CI/dokumentacion i përkiste detyrës së mbyllur. Pa merge, main/Production, backend/native, migrime destruktive ose shpenzime.
+Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv: vetëm faza 3 e programit Shop, e autorizuar pas përfundimit të fazës 2; staf/inbox demonstrues në panelin ekzistues dhe specifikime APK. NDALO përpara fazës 4. Kufizimi i mëparshëm vetëm CI/dokumentacion i përkiste detyrës së mbyllur. Pa merge, main/Production, backend/native, migrime destruktive ose shpenzime.
 
 | Fusha | Statusi / hapi |
 |---|---|
@@ -53,9 +53,19 @@ Kërkesa e re e pronarit “vazhdojm 2shin” autorizon vetëm fazën 2; ndalimi
 - Lokalisht **51/51 regresione relevante PASS**, përfshirë **12/12 të reja**; sintaksë/vendor, detector me 7 fixtures negative/current-tree scan, locale mirrors dhe npm audit 0 PASS. Rishikimi i pavarur gjeti një kthim fokusi të pasaktë për etiketa të përsëritura; i korrigjuar dhe mbuluar. Escape nuk mbyll më edhe viewer-in e rikthyer. Observer-i nuk zëvendëson butonin identik të fokusuar. Kontrolluar dy pamje 390px/320px; jo certifikim fizik.
 - Remote **VERIFIED** në `60bf624`: 322/322 Chromium (12 teste të reja), 16/16 Linux WebKit, 12/12 classifier dhe Security PASS; Preview READY/source parity, sipas provave sipër. Backend/ID autoritative, pronësi/privatësi/miratim/moderim dhe kriteret reale janë specifikime, jo kontrolle server-side të implementuara. Emri ekzistues lokal i biznesit është vetëm ID demonstrimi, jo identitet juridik.
 
+## Programi Shop — faza 3 (26 tetor 2026)
+
+Pronari autorizoi fazën 3 pas dorëzimit të fazës 2. [Blueprint §17](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#17-marketplace-programme--phase-3-business-team-and-shared-inbox-26-october-2026) ruan planin, matricën e lejeve dhe kontratat/API/statuset/testet reale. Faza 4–5 mbeten PLANNED.
+
+IMPLEMENTUAR DEMO, ende pa verifikim remote: Governance → Panele pune → Biznes për staf/inbox fiktiv, lidhur nga profilet ekzistuese Shop/Plus. Persona fiktivë me IDs të ndara, ftesë/pranim si vetja, role dhe revokim, zgjedhje publike vetëm për veten, caktim bisedash/përgjigje në emër të dyqanit, aktor i brendshëm dhe numër bisedash pa përgjigje. `businessTeams` është shtesë opsionale e çelësit ekzistues Governance; katalogët dhe mesazhet personale nuk bashkohen/importohen. Lejet janë vetëm simulim UI në këtë panel, jo autentikim ose autorizim real i DEMO-s.
+
+Lokalisht: 61/61 regresione relevante PASS; pas korrigjimeve të fundit, 24/24 Business/Governance PASS, përfshirë 13 testet e reja. U testuan sq/en/it, kthimi/fokusi nga Shop/Plus, ftesat/rolet/revokimi, caktimi/përgjigjja e vetme/aktor i brendshëm, opt-in publik sipas burimit, kuota/Retry, konfliktet mes skedave/me mungesë storage event, të dhëna të keqformuara/UGC literal dhe biznes i hequr. Rifreskimi i stafit publik pas opt-out/revokimit, mesazhi i saktë i konfliktit dhe drafti i rolit gjatë ndërrimit të gjuhës u korrigjuan me prova. Rishikimi i pavarur përfundoi pa gjetje të mbetura. Pamjet 390px/320px të inspektuara; në 320px pa tejkalim horizontal dhe butonat ≥44px, jo certifikim fizik.
+
+Sintaksë/vendor, 7 detector fixtures/skanim i kufizuar, locale mirrors, burimi origjinal dhe npm audit 0 PASS. Remote i fazës 3 mbetet **NOT VERIFIED** deri në inspektimin e Actions/Preview. Katalogët/IDs/çelësat, mesazhet personale dhe fazat 1–2 ruhen; asnjë backend/pagesë/abonim ose fazë 4–5 nuk është ndërtuar.
+
 ## Hapi i saktë pasues
 
-Faza 2 është përfunduar në kufirin DEMO dhe verifikuar si sipër. **NDALUAR përpara fazës 3**; vazhdo vetëm pas udhëzimit të pronarit. Fazat 3–5 mbeten PLANNED, pa implementim paraprak. Commit-i pasues është vetëm dokumentacion: kontrollo Actions për ripërdorimin e runtime-it të pandryshuar dhe Security, pa commit tjetër për rezultat të vogël CI. QA fizike dhe gates reale mbeten të hapura; mos ndërto backend/native nga specifikimet.
+Faza 2 mbetet e përfunduar në kufirin DEMO. Përfundo verifikimin lokal/remote dhe Preview të fazës 3, përditëso provat dhe **NDALO përpara fazës 4**. Fazat 4–5 mbeten PLANNED; QA fizike dhe gates reale mbeten OPEN. Mos ndërto backend/native nga specifikimet.
 
 ## Konsolidimi historik — vetëm dokumentacion
 

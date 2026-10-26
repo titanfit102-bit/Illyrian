@@ -938,3 +938,8 @@ Vazhdo nga checkpoint-i më i fundit i verifikuar dhe zbato detyrat duke ruajtur
 ### Programme phase 2 — current authorization (26 October 2026)
 
 The owner explicitly continued with phase 2 after phase 1 delivery; the prior instruction to stop before phase 2 was fulfilled, not an ongoing refusal of this new request. Only phase 2 social commerce/tags/promotions is active; stop before phase 3. The full original source above remains unchanged. Decisions, bounded plan and future contracts live in blueprint §16; exact status/tests/Preview in CURRENT_STATE. Existing activity links, Shop/Plus catalogs, data and other functions remain; no commercial activation or phase 3–5 implementation.
+
+
+### Programme phase 3 — current authorization (26 October 2026)
+
+The owner continued explicitly after phase 2 delivery. Only phase 3 business team/shared inbox is active; stop before phase 4. Original five-phase source remains unchanged. Existing Governance Work/Business is the administration integration point; no parallel admin app, personal DM import or catalog merge. DEMO flows and real contracts/permissions are separated in blueprint §17; current source/CI/Preview evidence stays in CURRENT_STATE. Phases 4–5 remain PLANNED.

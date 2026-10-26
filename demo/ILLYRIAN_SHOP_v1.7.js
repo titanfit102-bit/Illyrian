@@ -85,7 +85,7 @@
    ${p.owned?btn('edit','Ndrysho listimin','ils-btn ils-secondary')+btn('delete','Fshi listimin','ils-btn ils-secondary'):''}
    <div class="ils-info"><strong>Transaksion demonstrues</strong><p>Nuk ka pagesë reale, shpërndarje të dhënash apo verifikim shitësi. Kontakto vetëm brenda simulimit.</p></div>`;
  }
- function business(){const rows=all().filter(p=>storeName(p)===state.business);return `<button class="ils-text-link" data-ils="browse">← Kthehu te Shop</button>${businessProfile(state.business,rows)}<button class="ils-btn" data-ils="business-catalog" data-i18n-direct>${clean(shopMessage('businessCatalog','Shiko ofertat e biznesit'))}</button>${status()}`;}
+ function business(){const rows=all().filter(p=>storeName(p)===state.business);return `<button class="ils-text-link" data-ils="browse">← Kthehu te Shop</button>${businessProfile(state.business,rows)}${window.IllyrianBusinessPresentation?.staff('shop',state.business)||''}${window.IllyrianBusinessPresentation?.controls('shop',state.business)||''}<button class="ils-btn" data-ils="business-catalog" data-i18n-direct>${clean(shopMessage('businessCatalog','Shiko ofertat e biznesit'))}</button>${status()}`;}
  function syncKind(form){if(!form)return;const job=form.elements.kind.value==='Punë',input=form.elements.price;input.required=!job;input.min=job?'0':'0.5';const label=form.querySelector('[data-price-label]');if(label)label.textContent=shopMessage(job?'salaryOptional':'listingPrice',job?'Paga orientuese € (opsionale)':'Çmimi (€)');}
  function form(){const editing=state.view==='edit',p=editing?byId(state.selected):null;
  const option=(arr,value)=>arr.map(x=>`<option data-i18n-direct value="${clean(x)}" ${x===value?'selected':''}>${clean(CATEGORIES.includes(x)?categoryLabel(x):x)}</option>`).join('');
@@ -178,7 +178,7 @@
   if(type==='business'){state.business=id;state.view='business'}else{state.selected=id;state.view='detail'}
   render();layer.querySelector('[data-ils="back"]')?.focus({preventScroll:true});return true;
  }};
- document.addEventListener('keydown',event=>{if(!state.open||!layer)return;
+ document.addEventListener('keydown',event=>{if(!state.open||!layer||document.getElementById('ig6-root'))return;
   if(event.key==='Escape'){if(document.getElementById('isp-root'))return;event.stopImmediatePropagation();event.preventDefault();close();return}
   if(event.key!=='Tab')return;const focused=[...layer.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')].filter(x=>x.getClientRects().length);if(!focused.length)return;const first=focused[0],last=focused[focused.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
  },true);

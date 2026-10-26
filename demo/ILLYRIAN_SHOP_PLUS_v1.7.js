@@ -165,7 +165,7 @@
  const storeView=()=>{
   const rows=all().filter(p=>p.store===state.shop);
   return btn('stores',feedback('allShops','← Të gjitha dyqanet'),'data-i18n-direct')+'<h3 data-user-content>'+esc(state.shop)+'</h3><p>'+rows.length+' <span data-i18n-direct>'+ui('demoOffers','oferta demonstrative; identiteti tregtar nuk është verifikuar.')+'</span></p>'+
-    (window.IllyrianShopDiscovery?.businessProfile(state.shop,rows)||'')+rows.map(card).join('')+
+    (window.IllyrianShopDiscovery?.businessProfile(state.shop,rows)||'')+(window.IllyrianBusinessPresentation?.staff('shopPlus',state.shop)||'')+(window.IllyrianBusinessPresentation?.controls('shopPlus',state.shop)||'')+rows.map(card).join('')+
     '<p class="isp-muted" data-i18n-direct>'+ui('sponsoredNote','Ofertat e sponsorizuara janë të etiketuara. Nuk kemi vlerësim të besueshmërisë së shitësit.')+'</p>';
  };
  // Keep fields mounted when hiding other categories, retaining unsent input.
@@ -440,7 +440,7 @@
    if(state.open)showStorageError();
   });
   document.addEventListener('keydown',e=>{
-   if(!state.open)return;
+   if(!state.open||document.getElementById('ig6-root'))return;
    if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();return}
    if(e.key!=='Tab'||!overlay)return;
    const list=[...overlay.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')].filter(x=>x.getClientRects().length>0);
@@ -449,7 +449,7 @@
    else if(!e.shiftKey&&(document.activeElement===list.at(-1)||!overlay.contains(document.activeElement))){e.preventDefault();list[0].focus()}
   },true);
   document.addEventListener('focusin',e=>{
-   if(state.open&&!overlay?.contains(e.target))overlay.querySelector('header button')?.focus();
+   if(state.open&&!document.getElementById('ig6-root')&&!overlay?.contains(e.target))overlay.querySelector('header button')?.focus();
   },true);
   new MutationObserver(()=>{if(!state.open)queueMicrotask(inject)}).observe(phone,{subtree:true,childList:true});
   phone.addEventListener('click',e=>{

@@ -1,5 +1,142 @@
 const {test,expect}=require('@playwright/test');
 const KEY='illyrian_demo_ui_language_v1';
+const TEAM_KEY='illyrian_demo_v17_governance';
+async function businessPanel(page,lang='sq'){
+ await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#ig6-entry [data-ig6="open"]').click();
+ await page.locator('#ig6-root [data-ig6="tab:work"]').click();
+ await expect(page.locator('#ig6-business')).toBeVisible();
+}
+async function teamData(page){return page.evaluate(k=>JSON.parse(localStorage.getItem(k)||'{}'),TEAM_KEY)}
+for(const lang of ['sq','en','it']){
+ test('Business phase 3: Shop and Plus reuse administration and return focus - '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-ils="businesses"]').click();
+  await page.locator('#illyrian-shop-layer [data-ils="business"][data-value="Market Arbër"]').first().click();
+  const launch=page.locator('#illyrian-shop-layer [data-business-manage]');await launch.click();
+  await expect(page.locator('#ig6-business-shop')).toHaveValue('shop|Market%20Arb%C3%ABr');
+  await expect(page.locator('#ig6-business-actor')).toHaveValue('owner');
+  await page.keyboard.press('Escape');await expect(launch).toBeFocused();
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+  await page.locator('#illyrian-shop-layer [data-ils="browse"]').click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  await page.locator('#isp-root [data-isp="tab:stores"]').click();
+  await page.locator('#isp-root [data-isp="store:Market Arbër"]').click();
+  const plus=page.locator('#isp-root [data-business-manage]');await plus.click();
+  await expect(page.locator('#ig6-business-shop')).toHaveValue('shopPlus|Market%20Arb%C3%ABr');
+  await page.keyboard.press('Tab');await expect(page.locator('#ig6-root')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('businessTeam:demo')));
+  await page.keyboard.press('Escape');await expect(plus).toBeFocused();await expect(page.locator('#isp-root')).toBeVisible();
+ });
+}
+test('Business phase 3: personal invitation acceptance, role changes and revoke deny access',async({page})=>{
+ await businessPanel(page);
+ await expect(page.locator('[data-biz-permission="ordersRead"]')).toHaveAttribute('data-allowed','true');
+ await page.locator('#ig6-team-invite [name="user"]').selectOption('guest');
+ await page.locator('#ig6-team-invite [name="role"]').selectOption('support');
+ await page.locator('#ig6-team-invite button').click();
+ expect((await teamData(page)).businessTeams[0].members.find(m=>m.userId==='guest').status).toBe('pending');
+ await page.locator('#ig6-business-actor').selectOption('guest');
+ await expect(page.locator('#ig6-team-reply')).toHaveCount(0);
+ await page.locator('[data-ig6="biz-accept"]').click();
+ await expect(page.locator('[data-biz-permission="staff"]')).toHaveAttribute('data-allowed','false');
+ await expect(page.locator('#ig6-team-invite')).toHaveCount(0);
+ await page.locator('#ig6-business-actor').selectOption('owner');
+ await page.locator('#ig6-team-role-guest [name="role"]').selectOption('catalog');
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(page.locator('#ig6-team-role-guest [name="role"]')).toHaveValue('catalog');
+ await page.locator('#ig6-team-role-guest button').click();
+ await page.locator('#ig6-business-actor').selectOption('guest');
+ await expect(page.locator('#ig6-team-reply')).toHaveCount(0);
+ await expect(page.locator('[data-biz-permission="prices"]')).toHaveAttribute('data-allowed','true');
+ await page.locator('#ig6-business-actor').selectOption('owner');
+ await page.locator('[data-ig6="biz-revoke:guest"]').click();
+ await page.locator('#ig6-business-actor').selectOption('guest');
+ await expect(page.locator('[data-biz-denied]')).toBeVisible();
+ await expect(page.locator('[data-biz-threads]')).toHaveCount(0);
+});
+test('Business phase 3: assignment, single reply, business sender and private actor audit',async({page})=>{
+ await businessPanel(page);
+ await page.locator('#ig6-team-assignment [name="assignee"]').selectOption('support');await page.locator('#ig6-team-assignment button').click();
+ await page.locator('#ig6-business-actor').selectOption('support');
+ await page.locator('#ig6-team-reply [name="body"]').fill('Përgjigje vetëm nga biznesi');await page.locator('#ig6-team-reply button').click();
+ const preview=page.locator('[data-biz-customer-preview]');await expect(preview).toContainText('Market Arbër');await expect(preview).toContainText('Përgjigje vetëm nga biznesi');await expect(preview).not.toContainText('Drita Demo');
+ await expect(page.locator('#ig6-team-reply button')).toBeDisabled();
+ const team=(await teamData(page)).businessTeams[0];expect(team.threads[0].messages.filter(m=>m.sender==='business')).toHaveLength(1);expect(team.threads[0].messages.at(-1).actorId).toBe('support');
+ await expect(page.locator('[data-biz-audit]')).toHaveCount(0);
+ await page.locator('#ig6-business-actor').selectOption('owner');await expect(page.locator('[data-biz-audit]')).toContainText('Drita Demo');
+ await page.reload();await businessPanel(page);await expect(page.locator('[data-biz-customer-preview]')).toContainText('Përgjigje vetëm nga biznesi');
+});
+test('Business phase 3: public staff consent is self-only, source-scoped and excludes inbox',async({page})=>{
+ await businessPanel(page);await page.locator('#ig6-business-actor').selectOption('support');
+ await page.locator('#ig6-team-public [name="public"]').check();await page.locator('#ig6-team-public button').click();
+ await page.keyboard.press('Escape');
+ await page.evaluate(()=>window.IllyrianShopTargets.shop.open('business','Market Arbër'));
+ const staff=page.locator('#illyrian-shop-layer [data-business-staff]');await expect(staff).toContainText('Drita Demo');await expect(staff).not.toContainText('Arta Demo');await expect(staff).not.toContainText('Klient');
+ await page.locator('#illyrian-shop-layer [data-business-manage]').click();await page.locator('#ig6-business-actor').selectOption('support');
+ await page.locator('#ig6-team-public [name="public"]').uncheck();await page.locator('#ig6-team-public button').click();await page.keyboard.press('Escape');
+ await expect(staff).not.toContainText('Drita Demo');
+ await page.locator('#illyrian-shop-layer [data-ils="browse"]').click();
+ await page.locator('#illyrian-shop-layer [data-isp-open]').click();await page.locator('#isp-root [data-isp="tab:stores"]').click();await page.locator('#isp-root [data-isp="store:Market Arbër"]').click();
+ await expect(page.locator('#isp-root [data-business-staff]')).not.toContainText('Drita Demo');
+ await page.locator('#isp-root [data-business-manage]').click();await page.locator('#ig6-business-actor').selectOption('support');
+ await expect(page.locator('#ig6-team-public [name="public"]')).not.toBeChecked();
+});
+test('Business phase 3: quota retains invitation/reply drafts and retries once',async({page})=>{
+ await businessPanel(page);await rejectModuleWrites(page,TEAM_KEY);
+ await page.locator('#ig6-team-invite [name="user"]').selectOption('guest');await page.locator('#ig6-team-invite [name="role"]').selectOption('catalog');await page.locator('#ig6-team-invite button').click();
+ await expect(page.locator('#ig6-team-invite [name="user"]')).toHaveValue('guest');expect(await teamData(page)).not.toHaveProperty('businessTeams');
+ await allowModuleWrites(page);await page.locator('#ig6-team-invite button').click();expect((await teamData(page)).businessTeams[0].members.filter(m=>m.userId==='guest')).toHaveLength(1);
+ await page.locator('#ig6-team-assignment [name="assignee"]').selectOption('owner');await page.locator('#ig6-team-assignment button').click();
+ const body=page.locator('#ig6-team-reply [name="body"]');await body.fill('Draft për Retry');await body.focus();
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(body).toHaveValue('Draft për Retry');await expect(body).toBeFocused();
+ await rejectModuleWrites(page,TEAM_KEY);await page.locator('#ig6-team-reply button').click();await expect(body).toHaveValue('Draft për Retry');await expect(page.locator('[data-biz-customer-preview]')).not.toContainText('Draft për Retry');
+ await allowModuleWrites(page);await page.locator('#ig6-team-reply button').click();expect((await teamData(page)).businessTeams[0].threads[0].messages.filter(m=>m.text==='Draft për Retry')).toHaveLength(1);
+});
+test('Business phase 3: observed cross-tab revocation closes inbox and stale send cannot overwrite',async({page,context})=>{
+ await businessPanel(page);await page.locator('#ig6-team-assignment [name="assignee"]').selectOption('support');await page.locator('#ig6-team-assignment button').click();await page.locator('#ig6-business-actor').selectOption('support');await page.locator('#ig6-team-reply [name="body"]').fill('Must not send');
+ const other=await context.newPage();await businessPanel(other);await other.locator('[data-ig6="biz-revoke:support"]').click();
+ await expect(page.locator('[data-biz-conflict]')).toBeVisible();await expect(page.locator('#ig6-team-reply')).toHaveCount(0);await expect(page.locator('[data-biz-customer-preview]')).toHaveCount(0);
+ expect((await teamData(other)).businessTeams[0].threads[0].messages.some(m=>m.text==='Must not send')).toBe(false);
+ await page.reload();await businessPanel(page);await page.locator('#ig6-business-actor').selectOption('support');await expect(page.locator('[data-biz-denied]')).toBeVisible();
+});
+test('Business phase 3: forged actions and malformed stored rows do not grant staff access or rewrite raw',async({page})=>{
+ await businessPanel(page);await page.locator('#ig6-business-actor').selectOption('catalog');
+ await page.evaluate(()=>{const b=document.createElement('button');b.dataset.ig6='biz-revoke:owner';document.querySelector('#ig6-business').append(b);b.click()});expect(await teamData(page)).not.toHaveProperty('businessTeams');
+ const raw=JSON.stringify({cases:[],appeals:[],audits:[{action:'replied',businessSource:'shop',businessStore:'Shije Shqiptare',actorId:{toString:'bad',valueOf:'bad'},id:{toString:'bad',valueOf:'bad'},at:null}],drafts:[],businessTeams:[{source:'shop',store:'Shije Shqiptare',members:[{userId:'owner',role:'owner',status:'active'}],threads:[]},null,{source:'bad',store:'X',members:{}},{source:'shop',store:'Market Arbër',members:[{userId:'support',role:'owner',status:'garbage',public:true},{userId:{toString:'bad',valueOf:'bad'},role:'admin',status:'active'}],threads:[{id:3,messages:'bad'}]}]});
+ await page.evaluate(({k,raw})=>localStorage.setItem(k,raw),{k:TEAM_KEY,raw});await page.reload();await businessPanel(page);await page.locator('#ig6-business-shop').selectOption('shop|Shije%20Shqiptare');await expect(page.locator('[data-biz-audit]')).toBeVisible();await page.locator('#ig6-business-shop').selectOption('shop|Market%20Arb%C3%ABr');await page.locator('#ig6-business-actor').selectOption('support');await expect(page.locator('[data-biz-denied]')).toBeVisible();expect(await page.evaluate(k=>localStorage.getItem(k),TEAM_KEY)).toBe(raw);
+});
+test('Business phase 3: stale reply without a storage event is rejected before mutation',async({page})=>{
+ await businessPanel(page);await page.locator('#ig6-team-assignment [name="assignee"]').selectOption('owner');await page.locator('#ig6-team-assignment button').click();
+ await page.locator('#ig6-team-reply [name="body"]').fill('Stale reply must not persist');
+ const raw=await page.evaluate(k=>{const x=JSON.parse(localStorage.getItem(k));x.businessTeams[0].threads[0].assignedTo='support';const raw=JSON.stringify(x);localStorage.setItem(k,raw);return raw},TEAM_KEY);
+ await page.locator('#ig6-team-reply button').click();await expect(page.locator('[data-biz-conflict]')).toBeVisible();expect(await page.evaluate(k=>localStorage.getItem(k),TEAM_KEY)).toBe(raw);
+});
+test('Business phase 3: inbox text stays literal across locale changes and public projection has no messages',async({page})=>{
+ await ready(page);
+ const markup='<img src=x onerror="window.__teamInjected=1">';
+ const raw=JSON.stringify({cases:[],appeals:[],audits:[],drafts:[],businessTeams:[{source:'shop',store:'Market Arbër',members:[{userId:'owner',role:'owner',status:'active',public:false},{userId:'support',role:'support',status:'active',public:true}],threads:[{id:'t1',subject:markup,customer:'Private Customer Demo',assignedTo:'owner',status:'open',messages:[{id:'m1',sender:'customer',actorId:'',text:markup,at:'2026-10-26'}]}]}]});
+ await page.evaluate(({k,raw})=>localStorage.setItem(k,raw),{k:TEAM_KEY,raw});await page.reload();await businessPanel(page);
+ await expect(page.locator('[data-biz-customer-preview]')).toContainText(markup);await expect(page.locator('#ig6-business img')).toHaveCount(0);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(page.locator('[data-biz-customer-preview]')).toContainText(markup);expect(await page.evaluate(()=>window.__teamInjected)).toBeUndefined();
+ expect(await page.evaluate(k=>localStorage.getItem(k),TEAM_KEY)).toBe(raw);
+ await page.keyboard.press('Escape');await page.evaluate(()=>window.IllyrianShopTargets.shop.open('business','Market Arbër'));
+ const staff=page.locator('[data-business-staff]');await expect(staff).toContainText('Drita Demo');await expect(staff).not.toContainText('Private Customer Demo');await expect(staff).not.toContainText(markup);
+});
+test('Business phase 3: removed business cannot redirect a staff mutation to another shop',async({page})=>{
+ await ready(page);await page.evaluate(()=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[{id:'temp-team',kind:'Produkte',name:'Temporary fixture',store:'Temporary Business',city:'Tiranë',price:2}]})));
+ await page.reload();await page.evaluate(()=>window.IllyrianGovernance.openBusiness('shop','Temporary Business'));await expect(page.locator('#ig6-business')).toContainText('Temporary Business');
+ await page.evaluate(()=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[]})));
+ await page.locator('#ig6-team-invite button').click();await expect(page.locator('[data-biz-denied]')).toBeVisible();expect(await teamData(page)).not.toHaveProperty('businessTeams');
+});
+test('Business phase 3: old Governance report reports conflict honestly and retains its draft',async({page,context})=>{
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();await page.locator('[data-ig6="tab:reports"]').click();
+ await page.locator('#ig6-report [name="target"]').fill('Unsent report after team update');
+ const other=await context.newPage();await businessPanel(other);await other.locator('#ig6-team-public [name="public"]').check();await other.locator('#ig6-team-public button').click();
+ const saved=await other.evaluate(k=>localStorage.getItem(k),TEAM_KEY);await page.locator('#ig6-report button').click();
+ await expect(page.locator('#ig6-root .ig6-note[role="status"]')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('businessTeam:conflict')));
+ await expect(page.locator('#ig6-report [name="target"]')).toHaveValue('Unsent report after team update');expect(await page.evaluate(k=>localStorage.getItem(k),TEAM_KEY)).toBe(saved);
+});
 async function ready(page){
  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
  await expect.poll(()=>page.evaluate(()=>Boolean(window.IllyrianI18n?.t))).toBe(true);

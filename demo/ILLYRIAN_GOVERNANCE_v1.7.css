@@ -29,3 +29,13 @@
 #phone .ig6-panel footer{margin-top:18px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;line-height:1.5;color:var(--muted)}
 @media (max-width:340px){#phone #ig6-entry{flex-wrap:wrap}#phone .ig6-panel{padding:10px}#phone .ig6-panel header h2{font-size:16px}}
 @media (orientation:landscape) and (max-height:520px){#phone .ig6-panel{padding-top:7px}}
+
+/* Business workspace is part of the existing administration sheet. */
+#phone #ig6-business{border-top:1px solid var(--border);padding-top:12px;overflow-wrap:anywhere}
+#phone #ig6-business>select{display:block;width:100%;min-height:44px;border:1px solid var(--border);border-radius:9px;background:var(--card2);color:var(--ink);padding:9px;margin:5px 0 12px}
+#phone .ig6-permissions{padding-left:18px;font-size:11px;line-height:1.8}
+#phone .ig6-form .ig6-team-check{display:flex;align-items:center;gap:8px}
+#phone .ig6-team-check input{width:24px;flex:0 0 24px}
+#phone #ig6-business button:disabled,#phone #ig6-business textarea:disabled{opacity:.55;cursor:default}
+#phone [data-business-staff]{padding:10px 0;overflow-wrap:anywhere}
+#phone [data-business-manage]{min-height:44px;padding:10px 13px;border:0;border-radius:9px;background:#e50c37;color:white;cursor:pointer}
