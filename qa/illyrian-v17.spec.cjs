@@ -304,3 +304,23 @@ test('Home header uses semantic sq en it labels - 390x844',async({page})=>{
   await expect(panel).toBeHidden();
  }
 });
+
+
+test('P1-A11Y-01 Reels Home Light label meets AA 4.5 contrast, Dark keeps theme',async({page})=>{
+ await openDemo(page,390,844);
+ const button=page.locator('.v4-reels-head button[data-act="open-reels"][data-id="0"]');
+ await expect(button).toBeVisible();
+ const c=await button.evaluate(el=>{
+  const fg=getComputedStyle(el).color,bg=getComputedStyle(document.querySelector('#phone')).backgroundColor;
+  const lum=s=>{
+   const rgb=s.match(/\d+(?:\.\d+)?/g).slice(0,3).map(n=>Number(n)/255);
+   return [0.2126,0.7152,0.0722].reduce((v,w,i)=>v+w*(rgb[i]<=0.04045?rgb[i]/12.92:Math.pow((rgb[i]+0.055)/1.055,2.4)),0);
+  };
+  const a=lum(fg),b=lum(bg);
+  return {fg,bg,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
+ });
+ expect(c.ratio,'small text needs WCAG AA contrast in Light').toBeGreaterThanOrEqual(4.5);
+ expect(c.fg).toBe('rgb(220, 12, 53)');
+ await page.evaluate(()=>document.querySelector('#phone').classList.add('dark'));
+ await expect(button).toHaveCSS('color','rgb(229, 12, 55)');
+});
