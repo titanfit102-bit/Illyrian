@@ -4,6 +4,10 @@
 
 26 tetor 2026 (Europe/Rome). Për progres, CI, Preview, bllokues dhe hapin e radhës lexo [CURRENT_STATE](CURRENT_STATE.md). Ky dokument ruan kontekstin afatgjatë; faktet LIVE dhe udhëzimi më i ri eksplicit i pronarit kanë përparësi. Historiku i plotë është [i arkivuar](docs/archive/continuity/README.md), jo i fshirë.
 
+### Përgjigjja ndaj auditit të pavarur (26 tetor, source i kodit `2716216`)
+
+Auditimi në `399ef0b` identifikoi IA-01–IA-09. IA-05 u mbyll më herët te Home header; IA-01 dhe IA-04 janë korrigjuar me [275 Chromium +16 WebKit PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40315582660) në source `f0e4912`. IA-02/03, IA-06 dhe kontrasti IA-09 kanë korrigjime/teste në degën e autorizuar; **verifiko PASS në source aktual** te [CURRENT_STATE](CURRENT_STATE.md#audit-i-pavarur--korrigjimet-e-26-tetorit), mos interpreto vetëm praninë e kodit si PASS. IA-07/F06 është OPEN (miratim administrativ). QA fizike M01–M18, kontrasti vizual dhe release sign-off janë OPEN; pa merge/Production.
+
 <a id="authorization"></a>
 ## Autorizimet dhe kufijtë aktivë
 
