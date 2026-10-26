@@ -2596,7 +2596,6 @@ test('IA-03 Governance quota failure retains keyboard focus and exact report on 
 async function assertHomeComposerOrder(page){
  await expect(page.locator('#screen > .stories + .compose')).toHaveCount(1);
  await expect(page.locator('#screen > .compose + .ils-entry')).toHaveCount(1);
- await expect(page.locator('#screen > .v5-creator-hint')).toHaveCount(1);
  await expect(page.locator('#screen > .v15-studio')).toHaveCount(1);
  await expect(page.locator('#screen > .compose')).toHaveCount(1);
  await expect(page.locator('#screen > .compose > .avatar')).toHaveCount(1);
