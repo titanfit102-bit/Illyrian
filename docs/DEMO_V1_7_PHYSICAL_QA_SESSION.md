@@ -3,6 +3,13 @@
 > **Status fillestar: NOT TESTED.** Kjo fletë është për të mbledhur rezultate reale. Nuk është raport testi i kryer, certifikim i aksesueshmërisë apo autorizim për release.
 > Repository: `titanfit102-bit/Illyrian` · Draft PR #1, target `demo/v1.7-illyrian-shop` · dega e autorizuar `feat/i18n-shop-feedback-20261022`.
 
+### Kandidati më i fundit — Mundësi me 8 hyrje (26 tetor 2026)
+
+- **Source:** kodi [676a1b8](https://github.com/titanfit102-bit/Illyrian/commit/676a1b8073b995656cea90a1e6a0abd57105e5b6), testet [7b8943](https://github.com/titanfit102-bit/Illyrian/commit/7b8943147fdd7a8189866b9d62257d279d63f531), [security PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40331804826), [browser QA PASS (296 Chromium +16 WebKit)](https://github.com/titanfit102-bit/Illyrian/actions/runs/40331804926). Verifiko CI të fundit përpara sesionit.
+- **Preview:** [alias për telefon](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/); [immutable READY](https://illyrian-demo-3fbexoigq-un24.vercel.app/), deployment `dpl_3qMP5GRzQcdzJNsSmoKe3CbJ4CDE`, source `7b8943`, target Preview null sipas metadata. Shërbimi i aseteve pas auth-wall NOT VERIFIED.
+- **Testi i navigimit:** Hape Mundësi, verifiko 8 butonat dhe skrollin në telefon: Biznese, Tregu, Punë, Shërbime, Çfarë kërkon tani?, Aktivitetet e tua, Plane, Komunitete. Nga Interesi ndrysho zgjedhjen dhe kthehu pa humbje; Aktivitetet hap kërkesat/planet ekzistuese; Plane hap Events; Komunitete hap Explore të filtruar. Kontrollo fokus/Escape/Back, sq/en/it, menunë kur hapet modal Shop/intent, portrait/landscape, OS text zoom. M01–M18 mbeten NOT TESTED.
+- **Home:** Karta e interesit dhe përmbledhja e aktiviteteve, si dhe shortcuts Plane/Komunitete, janë zhvendosur në Mundësi. Stories → composer → Shop → Feed dhe shortcuts e vjetra Biznese/Punë nuk duhet të humbasin. Mos pretendo certifikim real TalkBack/VoiceOver pa sesion fizik.
+
 ### Kandidati aktual për testim fizik — Home composer (26 tetor 2026)
 
 - **Kodi/testet:** [`fc3812b`](https://github.com/titanfit102-bit/Illyrian/commit/fc3812bd7f434087e810378d36b775768e728640): [293/293 Chromium +16/16 Linux WebKit PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40327148783); [security-baseline PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40327148842). Kontrollo HEAD në GitHub përpara çdo sesioni.
@@ -12,7 +19,7 @@
 
 
 ### Kontroll shtesë i Home header-it (26 tetor 2026; JO QA fizike)
-- Për testim manual përdor [Preview-in automatik](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) dhe verifiko `ILLYRIAN | Kalendari | Mundësi | Njoftime`. Hap Mundësi dhe testo katër hyrjet **Biznese → Explore**, **Tregu → Shop**, **Punë → Explore**, **Shërbime → Shop (filtri Shërbime)**. Testo fokusin/Back/Escape, mbylljen e menusë me Njoftimet, ndërrimin e gjuhës sq/en/it, krijimin e postimit nga Feed, portrait/landscape, zoom, tastierën virtuale dhe safe areas. Raporto version/OS/screenshot pa të dhëna personale.
+- Për testim manual përdor [Preview-in automatik](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) dhe verifiko `ILLYRIAN | Kalendari | Mundësi | Njoftime`. Hap Mundësi dhe testo tetë hyrjet: Biznese → Explore, Tregu → Shop, Punë → Explore, Shërbime → Shop (filtri Shërbime), Çfarë kërkon tani? → modali i interesit, Aktivitetet e tua → planet/kërkesat, Plane → Events, Komunitete → Explore i filtruar. Testo fokusin/Back/Escape, mbylljen e menusë me Njoftimet, ndërrimin e gjuhës sq/en/it, krijimin e postimit nga Feed, portrait/landscape, zoom, tastierën virtuale dhe safe areas. Raporto version/OS/screenshot pa të dhëna personale.
 - Kandidat code/test SHA `785a582`; [CI #40300249782](https://github.com/titanfit102-bit/Illyrian/actions/runs/40300249782) **273/273 Chromium PASS; 16/16 WebKit PASS**; [security #40300249776](https://github.com/titanfit102-bit/Illyrian/actions/runs/40300249776) PASS. Preview immutable https://illyrian-demo-m9nct6u05-un24.vercel.app/ READY, jo Production. **Asnjë sesion fizik nuk është kryer këtu.**
 
 ## 1. Hap versionin e saktë
