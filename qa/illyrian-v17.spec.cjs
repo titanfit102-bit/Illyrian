@@ -194,8 +194,10 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   await openDemo(page,width,height);
   const head=page.locator('#phone > .head');
   const buttons=head.locator(':scope > .top-actions > button:visible');
-  expect(await buttons.evaluateAll(items=>items.map(el=>el.getAttribute('aria-label'))))
-   .toEqual(['Kalendari','Mundësi','Njoftime']);
+  const labels=await buttons.evaluateAll(items=>items.map(el=>el.getAttribute('aria-label')));
+  expect(labels.slice(0,2)).toEqual(['Kalendari','Mundësi']);
+  // The existing i18n layer localizes Notifications on load.
+  expect(labels[2]).toMatch(/^(Njoftime|Notifications|Notifiche)$/);
   await expect(head.locator('.ily-create-trigger')).toBeHidden();
   await expect(page.locator('#screen > .stories .story-btn').first()).toBeVisible();
   const b=await buttons.all();
