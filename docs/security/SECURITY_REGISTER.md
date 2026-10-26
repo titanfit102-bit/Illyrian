@@ -62,3 +62,7 @@ Independent audit baseline `399ef0b`, current verified feature source [`15f3a0e`
 ### 2026-10-26 — DEMO/APK scope clarification (documentation only)
 
 Owner policy is canonical in [AGENTS](../../AGENTS.md#demo-vs-apk--permanent-owner-policy); the [blueprint information map](../../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#14-knowledge-preservation-and-demoapk-boundary--26-october-2026) preserves real-app requirements. SEC-01–09 control statuses are unchanged. SEC-05 remains PARTIAL: administrative enforcement is absent and deferred for the real app, not a DEMO development blocker. Existing scanner/dependency/vendor/browser regressions and release-gate mechanisms remain untouched. No new native/server security implementation or monitoring is claimed; historical findings/CI evidence above remain intact.
+
+### Browser workflow scope control — 26 October 2026
+
+Documentation-only optimization adds read-only actions metadata access and fail-closed classification. Security-baseline, all existing browser regressions, pinned dependencies and check names remain. Reuse requires actual full successful test steps on an ancestor with unchanged relevant files and PR base; unverified/fork/security/workflow/config deltas run full QA. Local classifier tests/syntax and secret-pattern checks passed; remote workflow verification pending. Control statuses remain bounded/PARTIAL; this is not branch enforcement.

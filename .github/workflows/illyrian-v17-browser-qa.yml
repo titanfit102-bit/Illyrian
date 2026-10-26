@@ -25,6 +25,7 @@ on:
 
 permissions:
   contents: read
+  actions: read # Read prior successful browser evidence; no write access
 
 # GitHub has delivered duplicate push events for the same commit.
 # Keep one running check per commit alive instead of repeatedly cancelling it.
@@ -33,32 +34,60 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  browser-scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      docs_only: ${{ steps.scope.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test fail-closed browser classifier
+        run: python3 -m unittest discover -s scripts/ci -p 'test_*.py'
+      - name: Classify incremental PR delta against proven runtime
+        id: scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/ci/browser_scope.py
+
   browser-smoke:
     name: browser-smoke-${{ github.event_name }}
+    needs: browser-scope
     if: github.repository == 'titanfit102-bit/Illyrian'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
       NODE_PATH: ${{ github.workspace }}/security/node_modules
     steps:
+      - name: Documentation-only browser evidence reuse
+        if: needs.browser-scope.outputs.docs_only == 'true'
+        run: echo 'No browser tests executed here; classifier summary links the successful unchanged runtime.'
       - name: Checkout isolated demo branch
+        if: needs.browser-scope.outputs.docs_only != 'true'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false # Tests cannot access the checkout token
       - name: Set up Node.js
+        if: needs.browser-scope.outputs.docs_only != 'true'
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
       - name: Install locked test runner without lifecycle scripts
+        if: needs.browser-scope.outputs.docs_only != 'true'
         run: npm ci --prefix security --ignore-scripts --no-audit --no-fund
       - name: Report runner provenance from locked inventory
+        if: needs.browser-scope.outputs.docs_only != 'true'
         run: node -p "require('./security/node_modules/@playwright/test/package.json').version"
       - name: Install Chromium browser only (avoid slow apt dependency update)
+        if: needs.browser-scope.outputs.docs_only != 'true'
         run: node security/node_modules/@playwright/test/cli.js install chromium
       - name: Run ILLYRIAN module, QA Lab, keyboard, and visual evidence tests
+        if: needs.browser-scope.outputs.docs_only != 'true'
         run: node security/node_modules/@playwright/test/cli.js test
       - name: Preserve failed-case screenshots and traces
-        if: failure()
+        if: failure() && needs.browser-scope.outputs.docs_only != 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: illyrian-v17-qa-failures
@@ -66,7 +95,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
       - name: Save preview screenshots for later human review
-        if: always()
+        if: always() && needs.browser-scope.outputs.docs_only != 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: illyrian-v17-visual-review
@@ -75,7 +104,7 @@ jobs:
           retention-days: 14
 
       - name: Save localization inventory for translation audit
-        if: always()
+        if: always() && needs.browser-scope.outputs.docs_only != 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: illyrian-v17-i18n-inventory
@@ -88,30 +117,39 @@ jobs:
   webkit-smoke:
     name: webkit-smoke-${{ github.event_name }}
     if: github.repository == 'titanfit102-bit/Illyrian' && github.event_name == 'pull_request'
-    needs: browser-smoke
+    needs: [browser-scope, browser-smoke]
     runs-on: ubuntu-latest
     timeout-minutes: 16
     env:
       NODE_PATH: ${{ github.workspace }}/security/node_modules
     steps:
+      - name: Documentation-only browser evidence reuse
+        if: needs.browser-scope.outputs.docs_only == 'true'
+        run: echo 'No browser tests executed here; classifier summary links the successful unchanged runtime.'
       - name: Checkout isolated demo branch (read-only)
+        if: needs.browser-scope.outputs.docs_only != 'true'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
       - name: Set up Node.js
+        if: needs.browser-scope.outputs.docs_only != 'true'
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
       - name: Install locked Playwright test runner
+        if: needs.browser-scope.outputs.docs_only != 'true'
         run: npm ci --prefix security --ignore-scripts --no-audit --no-fund
       - name: Report runner provenance from locked inventory
+        if: needs.browser-scope.outputs.docs_only != 'true'
         run: node -p "require('./security/node_modules/@playwright/test/package.json').version"
       - name: Install WebKit and CI system libraries
+        if: needs.browser-scope.outputs.docs_only != 'true'
         run: node security/node_modules/@playwright/test/cli.js install --with-deps webkit
       - name: Run bounded WebKit Reels and Stories keyboard smoke
+        if: needs.browser-scope.outputs.docs_only != 'true'
         run: node security/node_modules/@playwright/test/cli.js test --config=playwright.webkit.config.cjs
       - name: Preserve WebKit failures for diagnosis
-        if: failure()
+        if: failure() && needs.browser-scope.outputs.docs_only != 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: illyrian-v17-webkit-failures

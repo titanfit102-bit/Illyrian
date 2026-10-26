@@ -41,3 +41,7 @@ Vazhdo testimin e pronarit dhe përmirësimet DEMO sipas kërkesës konkrete: ba
 ## Konsolidimi i kësaj detyre
 
 Vetëm dokumentacion: politikë e përhershme në AGENTS, hartë ruajtjeje në blueprint §14 dhe referenca historike në [arkivin ekzistues](docs/archive/continuity/README.md#consolidation-2026-10-26). Nuk hiqen teste/mbrojtje, nuk ndryshojnë Actions/required checks/release gates, UI ose kontratat. Verifikimi lokal: lidhje/anchors, ruajtje burimesh dhe diff vetëm Markdown; rezultati remote i këtij commit-i lexohet nga Actions, jo supozohet.
+
+## GitHub Actions — risk-based documentation path
+
+PR synchronize events use an incremental before→head delta, then require a successful full Chromium+WebKit run on an ancestor with the same PR base and only allowed Markdown changes since that tested source. Missing evidence/API errors/unknown files force full QA. Security/AGENTS/F06/workflow/test/config changes never qualify. Existing PR check names remain completed jobs on the light path; no pending path-filtered checks and no browser PASS claim for tests not executed. Security workflow is unchanged. Classifier fixtures and workflow syntax/conditions pass locally; first remote workflow change must run full suites. Verify current-SHA remote results before declaring success; no measured savings yet.

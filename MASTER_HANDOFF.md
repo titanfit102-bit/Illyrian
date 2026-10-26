@@ -96,3 +96,7 @@ Procesi: verifiko HEAD/PR/diff → riprodho problemin → korrigjim minimal bren
 - Pas ndryshimit domethënës e të verifikuar, përditëso automatikisht të dy skedarët sipas rolit: status/bllokues/hapi pasues në CURRENT_STATE; vetëm ndryshimet afatgjata të arkitekturës/vendimeve/kontratave/planit këtu. Kur një pjesë nuk ndryshon, mos shto tekst të dyfishuar vetëm për të prekur skedarin.
 - Zëvendëso përmbledhjen e vjetër aktive, mos prepend checkpoint-e të plota në të dy dokumentet. Provat e hollësishme mbeten në raportin/regjistrin përkatës dhe Git commits; arkivo vetëm histori me vlerë unike. Regjistri i sigurisë ndryshohet kur ndryshon realisht risku/kontrolli/prova.
 - [Arkivi i vazhdimësisë](docs/archive/continuity/README.md) ruan të dy dokumentet e plota para konsolidimit, integritetin dhe referencat. Lexoje sipas nevojës, jo në çdo bisedë. Nuk ka punë automatike në sfond pa mekanizëm të autorizuar.
+
+## Browser CI evidence reuse — 26 October 2026
+
+The owner authorized conservative documentation-only Actions optimization. Existing workflow triggers/check names stay; scripts/ci/browser_scope.py defaults to full QA and requires a same-base ancestor with actual successful browser test steps before documentation-only reuse. Do not use the accumulated PR diff as the incremental change or inherit a green light-only job as full test proof. Security-baseline always executes; no tests deleted or administrative policies changed. Current results belong in CURRENT_STATE/Actions.
