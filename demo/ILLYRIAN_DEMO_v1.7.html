@@ -263,6 +263,11 @@ const KEY='illyrian_demo_v09_state';let saved={};try{saved=JSON.parse(localStora
 // The invalid original value remains inspectable and recoverable until a real user edit.
 const isRecord=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 if(!isRecord(saved))saved={};
+// Optional social commerce metadata; no inventory or server permissions live here.
+const commerceRefs=items=>Array.isArray(items)?items.filter(r=>isRecord(r)&&['shop','shopPlus'].includes(r.source)&&['listing','business'].includes(r.type)&&typeof r.id==='string'&&r.id.length>0&&r.id.length<=100).slice(0,2).map(r=>({source:r.source,type:r.type,id:r.id})):[];
+const commerceAttributes=item=>({...((commerceRefs(item?.commerceRefs).length)?{commerceRefs:commerceRefs(item.commerceRefs)}:{}),...(item?.commerceSponsored===true?{commerceSponsored:true}:{})});
+function commerceCapture(prefix,draft){const api=window.IllyrianCommerce;if(!api||!document.querySelector('[data-commerce-prefix="'+prefix+'"]'))return;const data=api.read(prefix);draft.commerceRefs=data.refs;draft.commerceSponsored=data.sponsored;draft.commerceInvalid=data.invalid;}
+function commerceValid(draft){if(draft.commerceInvalid||window.IllyrianCommerce&&!window.IllyrianCommerce.validate(draft.commerceRefs)){toast(window.IllyrianI18n?.t('commerce:changed')||'The tagged offer changed. Remove it or select another.');return false}return true;}
 const safeIds=(value,fallback=[])=>Array.isArray(value)?value.filter(x=>typeof x==='string'||typeof x==='number'):fallback;
 const safePosts=value=>Array.isArray(value)?value.filter(p=>isRecord(p)&&(typeof p.id==='string'||typeof p.id==='number')&&typeof p.text==='string'): [];
 const safeTextMap=value=>Object.fromEntries(Object.entries(isRecord(value)?value:{}).filter(([k,v])=>k!=='__proto__'&&Array.isArray(v)).map(([k,v])=>[k,v.filter(x=>typeof x==='string')]));
@@ -504,7 +509,7 @@ modalContent=function(){
  ${source?`<div class="v5-compose-preview"><img src="${source}" alt="Parapamja e fotografisë"><button data-act="v5-clearphoto">✕ Hiq</button></div>`:`<div class="v5-permissions">◎ Foto opsionale · Kompresohen në pajisjen tënde</div>`}
  <div class="v5-grid-2"><div class="fieldwrap"><label class="formlabel" for="v5-city">Qyteti</label><select class="field" id="v5-city">${['Tiranë','Milano','Romë','Prishtinë','Durrës','Berlin'].map(x=>`<option ${d.city===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="fieldwrap"><label class="formlabel" for="v5-audience">Kush e sheh (demo)</label><select class="field" id="v5-audience">${['Publik','Ndjekësit'].map(x=>`<option ${d.audience===x?'selected':''}>${x}</option>`).join('')}</select></div></div>
  <div class="fieldwrap"><label class="formlabel" for="v5-plan">Lidhe me një aktivitet (opsionale)</label><select class="field" id="v5-plan">${plans}</select></div>
- <div class="v5-compose-foot"><span></span>Do të shfaqet në Feed dhe te profili yt. Nuk postohet askund në internet.</div><button class="button full v5-compose-button" data-act="v5-publish">✦ Publiko në demo</button><p class="v5-preview-foot">Fotot lokale ruhen në këtë shfletues kur hapësira e tij e lejon. Mos përdor foto private ose sensitive për testim.</p>`);
+ ${window.IllyrianCommerce?.fields('post',d)||''}<div class="v5-compose-foot"><span></span>Do të shfaqet në Feed dhe te profili yt. Nuk postohet askund në internet.</div><button class="button full v5-compose-button" data-act="v5-publish">✦ Publiko në demo</button><p class="v5-preview-foot">Fotot lokale ruhen në këtë shfletues kur hapësira e tij e lejon. Mos përdor foto private ose sensitive për testim.</p>`);
  }
  if(type==='v5-photo'){
  const p=getPost(id);if(!p||!v5PhotoSrc(p))return drawer('Fotografia','Fotografia nuk është e disponueshme.');
@@ -518,6 +523,7 @@ function v5DraftFromFields(){
  if($('#v5-city'))d.city=$('#v5-city').value;
  if($('#v5-audience'))d.audience=$('#v5-audience').value;
  if($('#v5-plan'))d.plan=$('#v5-plan').value;
+ commerceCapture('post',d);
 }
 function v5Action(action,id,v){
  if(action==='v5-profiletab'){state.v5ProfileView=v==='Fotot'?'photos':v==='Të ruajtura'?'saved':'posts';render({scroll:true});return true}
@@ -527,12 +533,13 @@ function v5Action(action,id,v){
  if(action==='v5-opencomments'){openModal('comments',id);return true}
  if(action==='v5-publish'){
   v5DraftFromFields();const d=state.v5Draft;
+  if(!commerceValid(d))return true;
   if(!d.text.trim()&&!d.photoData&&!d.sample){toast('Shto një tekst ose fotografi');$('#v5-text')?.focus();return true}
   if(d.text.length>700){toast('Teksti është shumë i gjatë');return true}
   const communityId=communities.some(c=>c.id===d.communityId)&&state.joinedCommunities.includes(d.communityId)?d.communityId:null;
   if(d.communityId&&!communityId){toast(socialText('membershipRequired','Bashkohu me komunitetin përpara publikimit.'));return true}
   if(!coreMessageFresh($('#v5-text')))return true;
-  const p={...(communityId?{communityId}:{}),id:'my'+Date.now(),name:state.profile.name,ava:state.v5AvatarChoice,city:d.city,when:'Tani',text:d.text.trim(),img:d.sample||null,photoData:d.photoData||'',audience:d.audience,plan:d.plan||'',likes:0,comments:0,share:0,verified:false};
+  const p={...commerceAttributes(d),...(communityId?{communityId}:{}),id:'my'+Date.now(),name:state.profile.name,ava:state.v5AvatarChoice,city:d.city,when:'Tani',text:d.text.trim(),img:d.sample||null,photoData:d.photoData||'',audience:d.audience,plan:d.plan||'',likes:0,comments:0,share:0,verified:false};
   state.posts.unshift(p);
   if(!persist()){
    state.posts.shift();
@@ -1483,7 +1490,7 @@ const V15_STORE='illyrian_demo_v15_creator';
 let v15Saved={};
 try{const v=JSON.parse(localStorage.getItem(V15_STORE)||'{}');v15Saved=v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{}
 const v15ValidMedia=s=>typeof s==='string'&&s.length<190000&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s);
-const v15SafeMedia=item=>({id:String(item.id||'').slice(0,50),caption:String(item.caption||'').slice(0,180),plan:events.some(e=>e.id===item.plan)?item.plan:'',photo:v15ValidMedia(item.photo)?item.photo:'',sample:['a1','a2','a3','a4','a5','arta','cafe'].includes(item.sample)?item.sample:'arta',created:Number(item.created)||0,liked:!!item.liked});
+const v15SafeMedia=item=>({...commerceAttributes(item),id:String(item.id||'').slice(0,50),caption:String(item.caption||'').slice(0,180),plan:events.some(e=>e.id===item.plan)?item.plan:'',photo:v15ValidMedia(item.photo)?item.photo:'',sample:['a1','a2','a3','a4','a5','arta','cafe'].includes(item.sample)?item.sample:'arta',created:Number(item.created)||0,liked:!!item.liked});
 const v15SafeList=arr=>Array.isArray(arr)?arr.filter(item=>item&&typeof item==='object'&&!Array.isArray(item)&&typeof item.id==='string'&&item.id.length>0).slice(0,6).map(v15SafeMedia):[];
 let v15Stories=v15SafeList(v15Saved.stories);
 let v15Reels=v15SafeList(v15Saved.reels);
@@ -1521,7 +1528,7 @@ reelContent=function(){const html=v15ReelOriginal();return html?html.replace('<d
 function v15PhotoSelect(){return `<div class="v15-media-choices"><label class="v15-upload">Shto fotografi nga pajisja<input id="v15-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="Zgjidh një fotografi"/></label><button type="button" data-act="v15-sample" data-val="arta">Foto qyteti</button><button type="button" data-act="v15-sample" data-val="cafe">Foto kafeneje</button></div>`}
 function v15Form(){
  const d=v15Draft,story=d.kind==='story';
- return drawer(story?'Krijo Story':'Krijo Reel demonstrues',`<div class="v15-editor"><p class="v15-editor-note">${story?'Story me fotografi':'Reel i simuluar nga një fotografi e animuar'} · nuk publikohet në internet.</p><div class="v15-preview ${story?'v15-preview-story':'v15-preview-reel'}"><img src="${v15Pic(d)}" alt="Pamje paraprake e medias"/><span class="v15-preview-label">${story?'STORY · DEMO':'REEL ME FOTO · DEMO'}</span><div class="v15-preview-text">${esc(d.caption)||'Momenti yt në ILLYRIAN'}</div></div>${v15PhotoSelect()}<label class="v15-label" for="v15-caption">Përshkrimi (maksimumi 180 shenja)</label><textarea class="field v15-caption" id="v15-caption" maxlength="180" placeholder="Shkruaj diçka për këtë moment...">${esc(d.caption)}</textarea><label class="v15-label" for="v15-plan">Lidhe me aktivitet (opsionale)</label><select class="field" id="v15-plan"><option value="">Pa aktivitet</option>${events.map(e=>`<option value="${esc(e.id)}" ${e.id===d.plan?'selected':''}>${esc(e.title)} · ${esc(e.city)}</option>`).join('')}</select><div class="v15-editor-actions"><button data-act="v15-preview" class="v15-secondary">Shiko paraprakisht</button><button data-act="v15-publish" class="v15-primary">Publiko në demo</button></div><p class="v15-privacy">Imazhi dhe përshkrimi mbeten vetëm në këtë shfletues. Mos ngarko foto private.</p></div>`);
+ return drawer(story?'Krijo Story':'Krijo Reel demonstrues',`<div class="v15-editor"><p class="v15-editor-note">${story?'Story me fotografi':'Reel i simuluar nga një fotografi e animuar'} · nuk publikohet në internet.</p><div class="v15-preview ${story?'v15-preview-story':'v15-preview-reel'}"><img src="${v15Pic(d)}" alt="Pamje paraprake e medias"/><span class="v15-preview-label">${story?'STORY · DEMO':'REEL ME FOTO · DEMO'}</span><div class="v15-preview-text">${esc(d.caption)||'Momenti yt në ILLYRIAN'}</div></div>${v15PhotoSelect()}<label class="v15-label" for="v15-caption">Përshkrimi (maksimumi 180 shenja)</label><textarea class="field v15-caption" id="v15-caption" maxlength="180" placeholder="Shkruaj diçka për këtë moment...">${esc(d.caption)}</textarea><label class="v15-label" for="v15-plan">Lidhe me aktivitet (opsionale)</label><select class="field" id="v15-plan"><option value="">Pa aktivitet</option>${events.map(e=>`<option value="${esc(e.id)}" ${e.id===d.plan?'selected':''}>${esc(e.title)} · ${esc(e.city)}</option>`).join('')}</select>${window.IllyrianCommerce?.fields('media',d)||''}<div class="v15-editor-actions"><button data-act="v15-preview" class="v15-secondary">Shiko paraprakisht</button><button data-act="v15-publish" class="v15-primary">Publiko në demo</button></div><p class="v15-privacy">Imazhi dhe përshkrimi mbeten vetëm në këtë shfletues. Mos ngarko foto private.</p></div>`);
 }
 function v15View(kind,id){
  const item=(kind==='story'?v15Stories:v15Reels).find(i=>i.id===id);
@@ -1542,12 +1549,12 @@ modalContent=function(){
 };
 function v15Action(action,id,val){
  if(action==='v15-open'){v15Creator(val);return true}
- if(action==='v15-sample'){v15Draft.sample=val;v15Draft.photo='';v15Draft.caption=document.querySelector('#v15-caption')?.value?.slice(0,180)||v15Draft.caption;v15Draft.plan=document.querySelector('#v15-plan')?.value||v15Draft.plan;render({scroll:true});return true}
- if(action==='v15-preview'){v15Draft.caption=document.querySelector('#v15-caption')?.value?.trim().slice(0,180)||'';v15Draft.plan=document.querySelector('#v15-plan')?.value||'';render({scroll:true});return true}
+ if(action==='v15-sample'){commerceCapture('media',v15Draft);v15Draft.sample=val;v15Draft.photo='';v15Draft.caption=document.querySelector('#v15-caption')?.value?.slice(0,180)||v15Draft.caption;v15Draft.plan=document.querySelector('#v15-plan')?.value||v15Draft.plan;render({scroll:true});return true}
+ if(action==='v15-preview'){commerceCapture('media',v15Draft);v15Draft.caption=document.querySelector('#v15-caption')?.value?.trim().slice(0,180)||'';v15Draft.plan=document.querySelector('#v15-plan')?.value||'';render({scroll:true});return true}
  if(action==='v15-publish'){
   const caption=(document.querySelector('#v15-caption')?.value||'').trim().slice(0,180);
   const plan=document.querySelector('#v15-plan')?.value||'';
-  const item={id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),created:Date.now(),caption,plan:events.some(e=>e.id===plan)?plan:'',photo:v15Draft.photo,sample:v15Draft.sample,liked:false};
+  const item={...commerceAttributes(v15Draft),id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),created:Date.now(),caption,plan:events.some(e=>e.id===plan)?plan:'',photo:v15Draft.photo,sample:v15Draft.sample,liked:false};
   const target=v15Draft.kind==='story'?v15Stories:v15Reels;
   target.unshift(item);if(target.length>6)target.length=6;
   if(!v15Store()){target.shift();return true}
@@ -1736,6 +1743,7 @@ document.head.appendChild(v15Style);
       <div class="v16-content">
         <span class="v16-label">${label} · ${idx+1}/${list.length}</span>
         <p${item.caption?' data-user-content':''}>${esc(item.caption)||'Momenti im në ILLYRIAN'}</p>
+        ${window.IllyrianCommerce?.render(item.commerceRefs,item.commerceSponsored)||''}
         ${event?`<button class="v16-plan" data-act="v16-plan" data-id="${esc(event.id)}">${esc(event.emoji)} ${esc(event.title)} →</button>`:''}
         <div class="v16-actions">
           <button data-act="v16-like" aria-pressed="${liked}" aria-label="Pëlqe">${liked?'♥':'♡'} <small>Pëlqej</small></button>
@@ -1822,11 +1830,12 @@ document.head.appendChild(v15Style);
     if(['story','nextStory','prevStory'].includes(action)){state.v6StoryPaused=false;return false;}
     if(action==='v15-view')return viewOwn(val,id);
     if(action==='v15-publish'){
+      commerceCapture('media',v15Draft);if(!commerceValid(v15Draft))return true;
       const kind=v15Draft.kind;
       if(!['story','reel'].includes(kind))return true;
       const caption=String(document.getElementById('v15-caption')?.value||'').trim().slice(0,180);
       const plan=document.getElementById('v15-plan')?.value||'';
-      const item={id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),created:Date.now(),caption,plan:events.some(e=>e.id===plan)?plan:'',photo:v15ValidMedia(v15Draft.photo)?v15Draft.photo:'',sample:v15Draft.sample,liked:false};
+      const item={...commerceAttributes(v15Draft),id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),created:Date.now(),caption,plan:events.some(e=>e.id===plan)?plan:'',photo:v15ValidMedia(v15Draft.photo)?v15Draft.photo:'',sample:v15Draft.sample,liked:false};
       const list=ownList(kind),backup=list.slice();
       list.splice(0,list.length,item,...backup.slice(0,5));
       if(!v15Store()){list.splice(0,list.length,...backup);return true;}
@@ -2241,7 +2250,35 @@ document.head.appendChild(v15Style);
  },true);
 })();
 
+// Phase 2: reuse the existing content editors, viewers and catalog overlays.
+const commercePostBase=post;
+post=function(p){const html=commercePostBase(p);return html?html.replace('<div class="post-bottom">',(window.IllyrianCommerce?.render(p.commerceRefs,p.commerceSponsored)||'')+'<div class="post-bottom">'):html;};
+const commerceExploreBase=explore;
+explore=function(){return commerceExploreBase()+(state.category==='Biznese'?(window.IllyrianCommerce?.promotion(state.search)||''):'');};
+document.addEventListener('change',event=>{
+ const prefix=event.target.closest?.('[data-commerce-prefix]')?.dataset.commercePrefix;
+ if(prefix==='post')commerceCapture('post',state.v5Draft);
+ if(prefix==='media')commerceCapture('media',v15Draft);
+});
+window.IllyrianCommerceCore=Object.freeze({notice:()=>toast(window.IllyrianI18n?.t('commerce:changed')||'The tagged offer changed. Reload and try again.'),suspend:reference=>{
+ const origin={modal:state.modal,story:state.story,reelOpen:state.reelOpen,reelIndex:state.reelIndex,tab:state.tab,scroll:$('#screen').scrollTop,
+  fields:[...document.querySelectorAll('#layer input[id]:not([type=file]),#layer textarea[id]')].map(el=>({id:el.id,value:el.value}))};
+ state.modal=null;state.story=0;state.reelOpen=false;render({scroll:true});
+ return ()=>{
+  state.modal=origin.modal;state.story=origin.story;state.reelOpen=origin.reelOpen;state.reelIndex=origin.reelIndex;state.tab=origin.tab;
+  render({scroll:true});
+  // Returning to a personal Story with an unsent reply must keep that reply usable.
+  if(origin.modal?.type==='v16-view'&&origin.modal.kind==='story'&&origin.fields.some(x=>x.id==='v16-comment'&&x.value))document.querySelector('[data-act="v16-pause"]')?.click();
+  origin.fields.forEach(f=>{const el=document.getElementById(f.id);if(el)el.value=f.value});
+  $('#screen').scrollTop=origin.scroll;
+  const region=origin.modal||origin.story||origin.reelOpen?document.getElementById('layer'):document.getElementById('screen');
+  const button=[...region.querySelectorAll('[data-ily-commerce-open]')].find(el=>el.dataset.ilyCommerceOpen===reference&&!el.disabled);
+  button?.focus({preventScroll:true});
+ };
+}});
+window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7Render();});
+
 render();
 v7Render();
 })();
-</script><script src="./i18n/vendor/i18next.min.js"></script><script src="./i18n/locales/en.js"></script><script src="./i18n/locales/sq.js"></script><script src="./i18n/locales/it.js"></script><script src="./i18n/illyrian-i18n.js"></script><script src="./ILLYRIAN_SHOP_v1.7.js"></script><script src="./ILLYRIAN_ACTIVITY_TIME_v1.7.js"></script><script src="./ILLYRIAN_PLANS_v1.7.js"></script><script src="./ILLYRIAN_CONNECTIONS_v1.7.js"></script><script src="./ILLYRIAN_PRIVACY_MAP_v1.7.js"></script><script src="./ILLYRIAN_SHOP_PLUS_v1.7.js"></script><script src="./ILLYRIAN_GOVERNANCE_v1.7.js"></script></body></html>
+</script><script src="./i18n/vendor/i18next.min.js"></script><script src="./i18n/locales/en.js"></script><script src="./i18n/locales/sq.js"></script><script src="./i18n/locales/it.js"></script><script src="./i18n/illyrian-i18n.js"></script><script src="./ILLYRIAN_SHOP_v1.7.js"></script><script src="./ILLYRIAN_ACTIVITY_TIME_v1.7.js"></script><script src="./ILLYRIAN_PLANS_v1.7.js"></script><script src="./ILLYRIAN_CONNECTIONS_v1.7.js"></script><script src="./ILLYRIAN_PRIVACY_MAP_v1.7.js"></script><script src="./ILLYRIAN_SHOP_PLUS_v1.7.js"></script><script src="./ILLYRIAN_GOVERNANCE_v1.7.js"></script><script src="./ILLYRIAN_COMMERCE_v1.7.js"></script></body></html>

@@ -287,6 +287,7 @@
   state.open=false;overlay?.remove();overlay=null;
   inertBefore.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertBefore=[];
   if(previous?.isConnected)previous.focus();
+  window.dispatchEvent(new CustomEvent('illyrian:shop:closed',{detail:{source:'shopPlus'}}));
  };
  // On failed storage writes, keep the existing form DOM (including unsaved fields) for retry.
  const showStorageError=()=>{
@@ -419,6 +420,14 @@
   if(focusedName&&target?.elements.namedItem(focusedName))target.elements.namedItem(focusedName).focus();
   else if(action)overlay.querySelector('[data-isp="'+CSS.escape(action)+'"]')?.focus();
  }
+ // Source-qualified social targets reuse this catalog, including its stock state.
+ const linkRows=()=>{try{const data=JSON.parse(localStorage.getItem(KEY)||'{}');return [...filterList(data?.items,30,validListing),...SEED]}catch{return SEED}};
+ window.IllyrianShopTargets=window.IllyrianShopTargets||{};
+ window.IllyrianShopTargets.shopPlus={listings:linkRows,open:(type,id)=>{
+  if(type==='listing'){const live=linkRows().find(p=>p.id===id);if(!live||JSON.stringify(live)!==JSON.stringify(all().find(p=>p.id===id)))return false}
+  else if(type!=='business'||!all().some(p=>p.store===id))return false;
+  open();if(type==='business'){state.shop=id;state.tab='stores'}else{state.selected=id;state.tab='item'}render();return true;
+ }};
  function init(){
   const phone=document.querySelector('#phone');if(!phone)return;
   document.addEventListener('click',e=>{const el=e.target.closest('[data-isp-open]');if(el){e.preventDefault();e.stopPropagation();open()}},true);
@@ -432,7 +441,7 @@
   });
   document.addEventListener('keydown',e=>{
    if(!state.open)return;
-   if(e.key==='Escape'){e.preventDefault();close();return}
+   if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();return}
    if(e.key!=='Tab'||!overlay)return;
    const list=[...overlay.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')].filter(x=>x.getClientRects().length>0);
    if(!list.length)return;

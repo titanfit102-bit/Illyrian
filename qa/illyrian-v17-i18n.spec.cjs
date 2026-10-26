@@ -2795,3 +2795,122 @@ test('Shop phase 1 query covers localized category, need description and manual 
  await page.locator('#isp-need [name="budget"]').fill('800');await page.locator('#isp-need button[type="submit"]').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).needs[0].type)).toBe('Punë');
 });
+
+// Marketplace programme phase 2: references point at existing catalogs, never copied offers.
+async function commercePost(page,{business='',listing='shop|listing|p1',sponsored=false}={}){
+ await page.locator('#screen .compose-prompt').click();
+ await page.locator('#v5-text').fill('Mbyll tagged social post');
+ await page.locator('#ily-commerce-post-business').selectOption(business);
+ await page.locator('#ily-commerce-post-listing').selectOption(listing);
+ await page.locator('#ily-commerce-post-sponsored').setChecked(sponsored);
+ await page.locator('[data-act="v5-publish"]').click();
+ return page.locator('#screen article.post').filter({hasText:'Mbyll tagged social post'}).first();
+}
+for(const lang of ['sq','en','it']){
+ test('Commerce phase 2 photo post tags open exact business and listing '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('#screen .compose-prompt').click();await page.locator('#v5-text').fill('Mbyll photo commerce');
+  await page.locator('[data-act="v5-sample"][data-id="cafe"]').click();
+  await page.locator('#ily-commerce-post-business').selectOption('shop|business|Market%20Arb%C3%ABr');
+  await page.locator('#ily-commerce-post-listing').selectOption('shop|listing|p1');
+  await page.locator('[data-act="v5-publish"]').click();
+  const post=page.locator('#screen article.post').filter({hasText:'Mbyll photo commerce'});
+  await expect(post.locator('img.post-photo,img.v5-media')).toBeVisible();
+  await expect(post.locator('[data-ily-commerce-open]')).toHaveCount(2);
+  await post.locator('[data-ily-commerce-open="shop|business|Market%20Arb%C3%ABr"]').click();
+  await expect(page.locator('.ils-business-profile h2')).toHaveText('Market Arbër');
+  await page.keyboard.press('Escape');await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
+  await post.locator('[data-ily-commerce-open="shop|listing|p1"]').click();
+  await expect(page.locator('#illyrian-shop-layer h2')).toHaveText('Kafe espresso 250 g');
+  await page.keyboard.press('Escape');
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts[0].commerceRefs)).toEqual([
+   {source:'shop',type:'business',id:'Market Arbër'},{source:'shop',type:'listing',id:'p1'}]);
+ });
+ test('Commerce phase 2 sponsorship stays explicit in Feed and Profile '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  const post=await commercePost(page,{sponsored:true});
+  const label=await page.evaluate(()=>window.IllyrianI18n.t('commerce:sponsored'));
+  await expect(post.locator('[data-ily-commerce-sponsored]')).toHaveText(label);
+  await expect(post.locator('[data-ily-commerce-disclosure]')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('commerce:notVerified')));
+  await page.locator('#navbar [data-val="profile"]').click();
+  await expect(page.locator('#screen [data-ily-commerce-sponsored]').first()).toHaveText(label);
+  await page.reload();await expect(page.locator('#screen [data-ily-commerce-sponsored]').first()).toHaveText(label);
+  await expect(page.locator('#screen article.post').filter({hasText:'Një tjetër ditë e bukur'}).locator('[data-ily-commerce-sponsored]')).toHaveCount(0);
+ });
+}
+for(const kind of ['story','reel']){
+ test('Commerce phase 2 '+kind+' links product and returns with reply draft',async({page})=>{
+  await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+  await commercePost(page,{listing:'shopPlus|listing|k1'});
+  await page.locator('[data-act="v15-open"][data-val="'+kind+'"]').first().click();
+  await page.locator('#v15-caption').fill('Mbyll commerce '+kind);
+  await page.locator('#v15-plan').selectOption('e2');
+  await page.locator('#ily-commerce-media-listing').selectOption('shopPlus|listing|k1');
+  await page.locator('[data-act="v15-preview"]').click();
+  await expect(page.locator('#ily-commerce-media-listing')).toHaveValue('shopPlus|listing|k1');
+  await page.locator('[data-act="v15-publish"]').click();
+  await page.locator('#v16-comment').fill('Mbyll reply draft');
+  await page.locator('.v16-viewer [data-ily-commerce-open="shopPlus|listing|k1"]').click();
+  await expect(page.locator('#isp-root .isp-focus h3')).toHaveText('Kafe espresso 250 g');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.v16-viewer')).toBeVisible();
+  await expect(page.locator('.v16-viewer [data-ily-commerce-open="shopPlus|listing|k1"]')).toBeFocused();
+  await expect(page.locator('#v16-comment')).toHaveValue('Mbyll reply draft');
+  await expect(page.locator('[data-act="v16-plan"][data-id="e2"]')).toBeVisible();
+  await page.locator('[data-act="v16-plan"]').click();await expect(page.locator('[data-act="v16-back"]')).toBeVisible();
+  await page.locator('[data-act="v16-back"]').click();await expect(page.locator('.v16-viewer')).toBeVisible();
+  const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem('illyrian_demo_v15_creator'))[k==='story'?'stories':'reels'][0],kind);
+  expect(saved.commerceRefs).toEqual([{source:'shopPlus',type:'listing',id:'k1'}]);expect(saved.plan).toBe('e2');
+ });
+}
+
+test('Commerce phase 2 missing expired unavailable refs stay bounded and literal',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify({items:[{id:'expired-ref',name:'Expired example',store:'Demo',city:'Tiranë',type:'Shërbime',price:3,expires:'2020-01-01T00:00:00Z'}]}));
+  const base={name:'Mbyll',ava:'a1',city:'Tiranë',when:'Tani',text:'Historical commerce',likes:0,comments:0,share:0};
+  localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({posts:[
+   {...base,id:'missing-commerce',commerceRefs:[{source:'shop',type:'listing',id:'gone'}]},
+   {...base,id:'expired-commerce',commerceRefs:[{source:'shopPlus',type:'listing',id:'expired-ref'}]},
+   {...base,id:'stock-commerce',commerceRefs:[{source:'shopPlus',type:'listing',id:'k3'}]},
+   {...base,id:'unsafe-commerce',commerceRefs:[{source:'javascript:alert(1)',type:'listing',id:'<img src=x onerror=alert(1)>'}]}
+  ]}));
+ });
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await expect(page.locator('#screen [data-ily-commerce-open][disabled]')).toHaveCount(3);
+ await expect(page.locator('#screen [data-ily-commerce-refs]')).toContainText(['Listing unavailable','Expired','Out of stock']);
+ expect(await page.locator('[href^="javascript:"]').count()).toBe(0);
+});
+
+test('Commerce phase 2 quota retry preserves selections and creates once',async({page})=>{
+ await ready(page);await page.locator('#screen .compose-prompt').click();await page.locator('#v5-text').fill('Mbyll retry commerce');
+ await page.locator('#ily-commerce-post-listing').selectOption('shopPlus|listing|s1');
+ await page.locator('#ily-commerce-post-sponsored').check();
+ await rejectModuleWrites(page,'illyrian_demo_v09_state');await page.locator('[data-act="v5-publish"]').click();
+ await expect(page.locator('#v5-text')).toHaveValue('Mbyll retry commerce');
+ await expect(page.locator('#ily-commerce-post-listing')).toHaveValue('shopPlus|listing|s1');
+ await expect(page.locator('#ily-commerce-post-sponsored')).toBeChecked();
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(page.locator('#ily-commerce-post-listing')).toHaveValue('shopPlus|listing|s1');
+ await allowModuleWrites(page);await page.locator('[data-act="v5-publish"]').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts.filter(p=>p.text==='Mbyll retry commerce').length)).toBe(1);
+});
+
+test('Commerce phase 2 deleted during composing rejects tag without dropping draft',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[{id:'own-ref',name:'Own referenced item',kind:'Produkte',store:'Own store',city:'Tiranë',price:3,owned:true}]})));
+ await ready(page);await page.locator('#screen .compose-prompt').click();await page.locator('#v5-text').fill('Keep commerce draft');
+ await page.locator('#ily-commerce-post-listing').selectOption('shop|listing|own-ref');
+ await page.evaluate(()=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[]})));
+ await page.locator('[data-act="v5-publish"]').click();await expect(page.locator('#v5-text')).toHaveValue('Keep commerce draft');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')||'{}').posts||[])).toHaveLength(0);
+ await page.locator('#ily-commerce-post-listing').selectOption('');await page.locator('[data-act="v5-publish"]').click();
+ await expect(page.locator('#screen article.post').filter({hasText:'Keep commerce draft'})).toHaveCount(1);
+});
+
+test('Commerce phase 2 Search promotion is labelled and opens existing offer',async({page})=>{
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('#navbar [data-val="explore"]').click();await page.locator('#screen [data-act="category"][data-val="Biznese"]').click();
+ const promo=page.locator('#screen .ily-commerce-promotion');await expect(promo.locator('[data-ily-commerce-sponsored]')).toHaveText('Sponsored · DEMO');
+ await promo.locator('[data-ily-commerce-open="shopPlus|listing|k2"]').click();
+ await expect(page.locator('#isp-root .isp-focus h3')).toHaveText('Kafe espresso 250 g');
+ await page.keyboard.press('Escape');await expect(page.locator('#screen .ily-commerce-promotion')).toBeVisible();
+});

@@ -91,3 +91,20 @@
 #phone .ils-business-profile dd{margin:2px 0 0;color:var(--muted,#706570)}
 #phone #ils-businesses button{min-height:44px;overflow-wrap:anywhere}
 #phone #ils-businesses h3{font-size:15px;margin:0;overflow-wrap:anywhere}
+/* Social commerce references share existing content and Shop views. */
+#phone .ily-commerce-form{min-width:0;border:1px solid var(--border,#ddd);border-radius:12px;padding:12px;margin:14px 0;display:grid;gap:7px;color:var(--ink)}
+#phone .ily-commerce-form legend{font-weight:750;font-size:12px;padding:0 5px}
+#phone .ily-commerce-form label{font-size:12px;font-weight:650}
+#phone .ily-commerce-form select{min-width:0;width:100%;box-sizing:border-box;min-height:44px;border-radius:8px;padding:8px;border:1px solid var(--border,#ddd);background:var(--card,#fff);color:var(--ink)}
+#phone .ily-commerce-form small{font-size:11px;line-height:1.5;color:var(--muted)}
+#phone .ily-commerce-check{display:flex;gap:8px;align-items:center;min-height:44px}
+#phone .ily-commerce-check input{width:18px;height:18px}
+#phone .ily-commerce-links{margin:8px 12px;padding:10px;border-radius:12px;border:1px solid var(--border,#ddd);background:var(--card,#fff);color:var(--ink,#0B050A);overflow-wrap:anywhere}
+#phone [data-ily-commerce-refs]{display:flex;flex-wrap:wrap;gap:7px}
+#phone [data-ily-commerce-open]{border:1px solid var(--border,#ddd);border-radius:9px;background:var(--card2,#f5f0f2);color:var(--ink,#0B050A);min-height:44px;padding:8px 10px;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:start;font-size:12px;cursor:pointer}
+#phone [data-ily-commerce-open]:disabled{color:var(--muted);cursor:default}
+#phone [data-ily-commerce-sponsored]{display:block;font-size:11px;font-weight:800;margin-bottom:4px}
+#phone [data-ily-commerce-disclosure]{display:block;font-size:11px;line-height:1.5;margin-bottom:8px;color:var(--muted)}
+#phone .ily-commerce-promotion{margin:12px}
+#phone .v16-content:has(.ily-commerce-links){max-height:calc(100% - 90px);overflow-y:auto}
+#phone .v16-content .ily-commerce-links{margin:0}

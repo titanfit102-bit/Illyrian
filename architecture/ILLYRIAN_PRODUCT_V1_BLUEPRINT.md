@@ -264,7 +264,7 @@ MVP/exclusions, platform/provider, complete field/API schemas, operational owner
 
 ## 15. Marketplace programme — phase 1 Shop (26 October 2026)
 
-**Scope:** current owner request supersedes the previous CI-only scope. Five phases are preserved verbatim in the [existing roadmap](../demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#marketplace-programme--owner-request-26-october-2026). Implement phase 1 only and stop before phase 2. This programme's numbering is independent of historical QA phases. Apply §14/AGENTS automatically. All changes are static DEMO unless explicitly BACKEND/PLANNED below.
+**Phase 1 scope at delivery (current phase 2 authorization is in §16):** that owner request superseded the previous CI-only scope. Five phases are preserved verbatim in the [existing roadmap](../demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#marketplace-programme--owner-request-26-october-2026). Implement phase 1 only and stop before phase 2. This programme's numbering is independent of historical QA phases. Apply §14/AGENTS automatically. All changes are static DEMO unless explicitly BACKEND/PLANNED below.
 
 ### Phase 1 design and bounded execution plan
 
@@ -307,9 +307,44 @@ Stable category codes proposed for the real API: `product`, `vehicle`, `property
 
 Real test matrix must cover two-account/shop isolation, denied/absent GPS, optional precise-location visibility, correct category fields, nullable salaries, stale stock/version conflicts, repeated inquiry/create idempotency, deleted/expired targets, private seller fields, malicious UGC, offline retry and Android/iOS screenreader/text scaling. Implement these only for an authorized real slice; current DEMO browser checks do not certify backend/native operation. Provider, actual taxonomy depth, real map, hiring-market policy, MVP breadth and commerce pricing remain DECISION REQUIRED.
 
-### Phases 2–5 — PLANNED, implementation not started
+### Phases 2–5 — planned at the phase 1 checkpoint
 
 The complete original requirements (including all prohibitions and common verification/documentation rules) remain in the roadmap source above. Phase 2: tagged businesses/products/services in posts/photos, Reel/Story references and transparent promotions; authoritative IDs/ownership/privacy/consent/moderation and unavailable targets; no real ad spend. Phase 3: personal-account staff roles/invites/revocation, shared business inbox, assignments/dedup/notifications, optional public staff identity with internal actor audit; reuse existing admin. Phase 4: declared/verified identity independent of paid Pro; documented real verification, expiry/revocation/appeal and anti-impersonation; Pro pricing/legal/monetization proposals only. Phase 5: unified reports/review/decision/notice/appeal across all named targets/modules, block/mute/privacy/contact/spam/vulnerable-user/age policies; no wealth/spending score; audit/evidence/response deadlines, integration with task 6B support (resolve actual existing surface before any implementation). All are deferred; no phase 2–5 functionality is added during phase 1.
 
 
 **Phase 1 delivery status:** DEMO implementation and bounded browser verification completed at `01e12709bae867d254f34be3d364c11fcaed74b3` (310 Chromium +16 Linux WebKit +12 classifier; Security PASS). Real catalog/API/permissions/Android+iOS rows above remain BACKEND specifications, not implemented services. List/Map and other listed decisions remain open; phases 2–5 remain PLANNED and were not started. Exact current evidence and Preview belong in CURRENT_STATE.
+
+## 16. Marketplace programme — phase 2 social commerce (26 October 2026)
+
+Owner now authorizes programme phase 2 only; phase 1 remains delivered. STOP before phase 3. Full original requirements remain in the roadmap; apply AGENTS DEMO→APK without expanding into real advertising, payments, subscriptions, verification, staff/inbox or moderation implementation.
+
+**Design/plan:** add a bounded `ILLYRIAN_COMMERCE_v1.7.js` presentation/reference helper; it owns no inventory/order store. Small adapters in existing Shop/Shop Plus resolve/open their own targets. Core post/photo and local Story/Reel editors retain at most one business and one listing reference plus an explicit sponsored-DEMO flag in existing content records. Reuse existing activity linking. Missing/deleted/expired/out-of-stock targets render a clear disabled state, are rechecked on navigation/publication, and never open a similarly named listing from another source. Preserve caption/media/select drafts, quota rollback/Retry, locale, keyboard focus, scroll and return to source content. No URL-based tag navigation, GPS or new dependency.
+
+- [x] Tests first: post/photo tags and source-specific business/listing navigation in sq/en/it; organic vs sponsored Feed/Profile; Story/Reel product and existing activity link, return/reply draft; missing/expired/no-stock/malformed references; quota/retry and deletion during edit; labelled Search placement.
+- [x] Implement scoped adapters/helper/core hooks and mirrored locale additions; preserve all old data/IDs/functions without catalog migration.
+- [ ] Run changed and existing Shop/creator/focus regressions, syntax/security/vendor/mirror checks, independent diff review; full remote Chromium/WebKit/Security and source-matched Preview. Update canonical continuity and stop.
+
+### Placement and transparency decisions
+
+| Surface | Safe DEMO mechanism | Real-app design, not enabled |
+|---|---|---|
+| Feed | Owner-created tagged post/photo; explicit “Sponsored · DEMO” plus paid≠verified disclosure | Sponsored insertion with advertiser identity/label, eligibility, targeting consent, placement limits/frequency, organic ranking separation and reporting |
+| Search | One clearly labelled contextual example referencing existing Shop Plus promoted offer, only in Businesses search and matching query | Relevant paid slot separate from organic results; no misleading empty-search replacement; paid rank disclosure |
+| Shop | Reuse existing promoted-DEMO listing chips/stock and catalog; no extra paid catalog | Same canonical listing and ad eligibility, no copied products/orders |
+| Profiles | Existing own-post list renders the same tag/disclosure; no second promotional profile inventory | Business-owned eligible content/campaigns with same visibility/consent checks |
+| Social photos/Story/Reel | Explicit caption-adjacent link, not inferred face/object recognition; product/service references; existing activity references retained | Optional positioned photo tags with accessible equivalent, canonical reference; invalid/deleted target never breaks media/story |
+
+No cash ad auctions, payment activation, ad accounts, pricing, tracking pixels, subscriptions or arbitrary trust scores. A sponsorship flag is a simulated content label, not approval, identity verification or product-quality guarantee. Existing trust badges are a separate phase 4 review; sponsorship never sets them.
+
+### Canonical real references / APIs / permissions — BACKEND, not deployed
+
+`ContentReference(id, content_type, content_id, target_type, target_id, target_version, creator_id, approval_state, visibility, status, created_at)` links authoritative Shop/Listing/Activity IDs. No snapshot becomes a second product. `Promotion(id, advertiser_shop_id, content_id/listing_id, placement, disclosure, eligibility_state, schedule, status, audit_actor)` is separate from business verification/subscription. Monetary/billing/provider fields remain conditional on separate approval. Proposed states: reference draft→pending-consent→approved/rejected→revoked; promotion draft→pending-review→approved→active/paused→ended/removed; target published/unavailable/expired/withdrawn/deleted remains authoritative and independently checked.
+
+| Screen / action | Proposed contract | Required permission / test |
+|---|---|---|
+| Compose/photo → select business/product/service → preview/publish | Existing content API with bounded target references; resolve through `GET /v1/reference-targets` and authoritative `POST /v1/content/{id}/references`, version/idempotency key | Content author only; check target visibility/existence, shop ownership or permitted mention, business consent where required, block/suspension and moderation both on publish and read. No client-owned role claims |
+| Tap tag → profile/listing/activity → back | `GET /v1/references/{id}/target` checks access and current availability; opaque safe IDs, allowlisted in-app routes | Denied/deleted/private/expired target yields bounded state with no private title/price leak or fallback to unrelated ID; preserve source media position/reply draft/focus on Android/iOS |
+| Story/Reel product/activity link | Same canonical reference contract and content visibility/lifecycle; references cannot extend Story expiry | Private activity/membership/consent checked before disclosure and navigation. Keep existing Activity IDs separate from legacy demo event IDs |
+| Sponsored placement/notice/report | Policy-governed campaign eligibility/review, always rendered server-authoritative disclosure; shared report/support path in phase 5/6B | Paying cannot grant verification, bypass safety review, privacy or organic limits; report/appeal/revocation audit, no public verification documents |
+
+**Android/iOS/backend acceptance before real delivery:** two-account/shop ownership isolation, forged/cross-source IDs, private/blocked/revoked consent, concurrent delete/stock/expiry between preview and publish/click, idempotent retry, unsafe deep links, literal UGC, offline retry, accessibility labels/focus/text scaling, returning to Story/Reel playback and preserving unsent replies, disclosure across every placement and organic-content exclusion. DEMO references use `{source:shop|shopPlus,type:listing|business,id}`; business IDs are the existing exact local store names, **DEMO-only**, not authoritative legal identity. Real migration requires §15's explicit source mapping; no name-based inference or fixture migration to real businesses.

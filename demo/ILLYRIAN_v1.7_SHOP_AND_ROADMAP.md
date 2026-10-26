@@ -933,3 +933,8 @@ Mos aktivizo pagesa, abonime, reklamim me para reale ose funksione komerciale pa
 Mos ndrysho vendimet e produktit jashtë autorizimeve ekzistuese.
 
 Vazhdo nga checkpoint-i më i fundit i verifikuar dhe zbato detyrat duke ruajtur arkitekturën ekzistuese, integrimin ndërmjet moduleve dhe dokumentacionin e vazhdimësisë.
+
+
+### Programme phase 2 — current authorization (26 October 2026)
+
+The owner explicitly continued with phase 2 after phase 1 delivery; the prior instruction to stop before phase 2 was fulfilled, not an ongoing refusal of this new request. Only phase 2 social commerce/tags/promotions is active; stop before phase 3. The full original source above remains unchanged. Decisions, bounded plan and future contracts live in blueprint §16; exact status/tests/Preview in CURRENT_STATE. Existing activity links, Shop/Plus catalogs, data and other functions remain; no commercial activation or phase 3–5 implementation.

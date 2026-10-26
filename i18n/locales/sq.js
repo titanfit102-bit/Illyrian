@@ -310,6 +310,21 @@ window.ILLYRIAN_LOCALES.sq={
     "timeZoneError": "Data/ora nuk është e vlefshme ose është e dykuptimtë në zonën kohore të qytetit. Zgjidh një orë tjetër.",
     "timeZoneUnknown": "Zona kohore e panjohur"
   },
+  "commerce": {
+    "tagHeading": "Etiketa dhe promovim · DEMO",
+    "business": "Biznesi",
+    "listing": "Produkti ose shërbimi",
+    "none": "Pa etiketë",
+    "markSponsored": "Shëno si të sponsorizuar (simulim)",
+    "demoOnly": "Lidhje vetëm me të dhëna fiktive. Pa pagesë ose reklamim real.",
+    "sponsored": "Sponsorizuar · DEMO",
+    "notVerified": "Sponsorizimi nuk është verifikim besueshmërie.",
+    "missing": "Listimi nuk është më i disponueshëm",
+    "expired": "I skaduar",
+    "stock": "Pa stok",
+    "unavailable": "Jo i disponueshëm",
+    "changed": "Etiketa nuk është më e vlefshme. Hiqe ose zgjidh një tjetër; drafti u ruajt."
+},
   "shop": {
     "areaMinimum": "Sipërfaqe min. m²",
     "properties": "Prona",

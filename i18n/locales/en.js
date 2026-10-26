@@ -310,6 +310,21 @@ window.ILLYRIAN_LOCALES.en={
     "timeZoneError": "The date/time is invalid or ambiguous in the city time zone. Choose another time.",
     "timeZoneUnknown": "Unknown time zone"
   },
+  "commerce": {
+    "tagHeading": "Tags and promotion · DEMO",
+    "business": "Business",
+    "listing": "Product or service",
+    "none": "No tag",
+    "markSponsored": "Mark as sponsored (simulation)",
+    "demoOnly": "Links to fictional data only. No real payments or advertising.",
+    "sponsored": "Sponsored · DEMO",
+    "notVerified": "Sponsorship is not trust verification.",
+    "missing": "Listing unavailable",
+    "expired": "Expired",
+    "stock": "Out of stock",
+    "unavailable": "Unavailable",
+    "changed": "The tag is no longer available. Remove it or choose another; your draft is retained."
+},
   "shop": {
     "areaMinimum": "Minimum area m²",
     "properties": "Properties",

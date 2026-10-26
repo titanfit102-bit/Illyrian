@@ -43,9 +43,19 @@ Kërkesa burimore për të pesë fazat është ruajtur e plotë në [roadmap](de
 - SPECIFIKUAR BACKEND, jo ndërtuar: një katalog Seller→Shop→Listing, mapping i kontrolluar i burimeve, ekranet/veprimet/statuset/lejet/API-të dhe pranimi Android/iOS. Harta reale/provider/monetizimi/MVP/politikat e punës mbeten vendime të mëvonshme.
 - Teste të reja: 14 raste browser për discovery/profile/GPS/manual city, kategori/filtra, Prona/Punë, ruajtje të ndarë, UGC dhe draft/fokus/gjuhë. Lokalisht **87/87 regresione relevante PASS**, përfshirë **14/14 të reja**. Sintaksë/vendor parity, 12 classifier tests, secret detector (7 negative fixtures), locale mirrors dhe npm audit 0 PASS. Lista e vjetër prej 4 kategorish në 6 assertions tani përfshin Prona/Punë, pa hequr kontrollet ekzistuese. Remote **VERIFIED** në `01e1270`: 310/310 Chromium, 16/16 Linux WebKit, 12/12 classifier dhe Security PASS (provat sipër). Shqyrtim i pavarur i diff-it: pa gjetje vepruese; dy pamje 390px të inspektuara, jo certifikim fizik.
 
+## Programi Shop — faza 2 (26 tetor 2026)
+
+Kërkesa e re e pronarit “vazhdojm 2shin” autorizon vetëm fazën 2; ndalimi i mëparshëm para saj është përmbushur/superseded. Fazat 3–5 mbeten PLANNED. Origjinali i pesë fazave është i pandryshuar në roadmap; [blueprint §16](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#16-marketplace-programme--phase-2-social-commerce-26-october-2026) ruan design/plan/API/statuset/lejet/Android+iOS dhe kufijtë realë.
+
+- IMPLEMENTUAR DEMO: një biznes + një produkt/shërbim si etiketa në postim/foto; produkt në Story/Reel duke ruajtur lidhjen ekzistuese me aktivitet. Referencat `{source,type,id}` hapin Shop ose Shop Plus ekzistues, pa katalog/porosi të kopjuara.
+- Sponsorizuar · DEMO me shpjegim të veçantë pagesë≠verifikim në postime dhe profil, opsion në media; një shembull i etiketuar te Search/Biznese referon ofertën promovuese ekzistuese të Shop Plus. Shop ruan etiketat/katalogun ekzistues. Pa reklamim real, pixels, pagesa, abonime ose vendime çmimi.
+- Listim i fshirë/munguar, i skaduar, status jo aktiv ose pa stok: shfaqje e kufizuar/çaktivizuar, rikontroll para publikimit dhe klikimit. Asnjë fallback sipas emrit/ID-je të burimit tjetër. Draftet, kuota/Retry, gjuha, scroll, përgjigjja e papërfunduar dhe fokusi i burimit ruhen në rrjedhat e mbuluara.
+- Lokalisht **51/51 regresione relevante PASS**, përfshirë **12/12 të reja**; sintaksë/vendor, detector me 7 fixtures negative/current-tree scan, locale mirrors dhe npm audit 0 PASS. Rishikimi i pavarur gjeti një kthim fokusi të pasaktë për etiketa të përsëritura; i korrigjuar dhe mbuluar. Escape nuk mbyll më edhe viewer-in e rikthyer. Observer-i nuk zëvendëson butonin identik të fokusuar. Kontrolluar dy pamje 390px/320px; jo certifikim fizik.
+- Remote i commit-it të fazës 2: **NOT VERIFIED deri në inspektimin e Actions**. Backend/ID autoritative, pronësi/privatësi/miratim/moderim dhe kriteret reale janë specifikime, jo kontrolle server-side të implementuara. Emri ekzistues lokal i biznesit është vetëm ID demonstrimi, jo identitet juridik.
+
 ## Hapi i saktë pasues
 
-Faza 1 e programit Shop është përfunduar dhe verifikuar në kufirin DEMO të raportuar. **NDALUAR përpara fazës 2**, sipas kërkesës së pronarit; vazhdo vetëm pas udhëzimit të radhës. Përditësimi i këtyre provave është vetëm dokumentacion: kontrollo run-in e HEAD-it për ripërdorimin e suite-s së pandryshuar dhe Security, pa commit tjetër vetëm për të regjistruar një rezultat të vogël CI. Fazat 2–5 janë PLANNED, pa implementim paraprak; ky program nuk autorizon nisjen e tyre automatikisht. QA fizike ekzistuese mbetet OPEN; mos ndërto funksione APK nga specifikimet.
+Përfundo Chromium/WebKit/Security dhe Preview të fazës 2, ruaj provat, raporto dhe **NDALO përpara fazës 3**. Mos nis multi-admin/inbox/verifikim/Business Pro/moderim. QA fizike dhe gates reale mbeten të hapura.
 
 ## Konsolidimi historik — vetëm dokumentacion
 

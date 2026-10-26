@@ -112,7 +112,7 @@
  function render(refocus){if(!layer||!state.open)return;const prev=document.activeElement;const id=prev?.id;const wasIn=prev&&layer.contains(prev);layer.innerHTML=header(state.view==='browse'?'Kërko nga të gjitha dyqanet':'Shfletim demonstrues')+`<section class="ils-body">${page()}</section>`;syncKind(layer.querySelector('#ils-sell-form'));if(refocus&&wasIn){const next=id?layer.querySelector('#'+id):null;(next||layer.querySelector('button,input,select,textarea'))?.focus({preventScroll:true})}}
  function notify(message){if(!layer)return;const old=layer.querySelector('.ils-toast');if(old)old.remove();const div=document.createElement('div');div.className='ils-toast';div.role='status';div.textContent=message;layer.appendChild(div);if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>div.remove(),3500)}
  function show(){opener=document.activeElement;state.open=true;state.view='browse';state.store='';layer=document.createElement('section');layer.id='illyrian-shop-layer';layer.className='ils-overlay';layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');layer.setAttribute('aria-label','ILLYRIAN Shop');document.querySelector('#phone')?.appendChild(layer);for(const sel of ['#screen','#navbar','.head']){const el=document.querySelector('#phone > '+sel);if(el)el.inert=true}render();layer.querySelector('#ils-search')?.focus({preventScroll:true});}
- function close(){state.open=false;layer?.remove();layer=null;for(const sel of ['#screen','#navbar','.head']){const el=document.querySelector('#phone > '+sel);if(el)el.inert=false}if(opener?.isConnected)opener.focus({preventScroll:true});else document.querySelector('[data-ilshop-open],#navbar button')?.focus({preventScroll:true});}
+ function close(){state.open=false;layer?.remove();layer=null;for(const sel of ['#screen','#navbar','.head']){const el=document.querySelector('#phone > '+sel);if(el)el.inert=false}if(opener?.isConnected)opener.focus({preventScroll:true});else document.querySelector('[data-ilshop-open],#navbar button')?.focus({preventScroll:true});window.dispatchEvent(new CustomEvent('illyrian:shop:closed',{detail:{source:'shop'}}));}
  function openFromEntry(event){event.preventDefault();event.stopPropagation();if(!state.open)show();}
  function inject(){const screen=document.getElementById('screen');if(!screen||state.open)return;
    if(screen.querySelector('[data-ilshop-open]'))return;
@@ -168,6 +168,16 @@
   if(active&&layer.contains(active))return;
   if(target)target.focus({preventScroll:true});
  });
+ // Read-only social reference adapter; its data still belongs to this Shop.
+ const linkRows=()=>{const data=read();return [...(Array.isArray(data.listings)?data.listings.filter(p=>p&&typeof p==='object'&&typeof p.name==='string'):[]),...SEED]};
+ window.IllyrianShopTargets=window.IllyrianShopTargets||{};
+ window.IllyrianShopTargets.shop={listings:linkRows,open:(type,id)=>{
+  if(type==='listing'){const live=linkRows().find(p=>p.id===id);if(!live||JSON.stringify(live)!==JSON.stringify(byId(id)))return false}
+  else if(type!=='business'||!all().some(p=>storeName(p)===id))return false;
+  if(!state.open)show();
+  if(type==='business'){state.business=id;state.view='business'}else{state.selected=id;state.view='detail'}
+  render();layer.querySelector('[data-ils="back"]')?.focus({preventScroll:true});return true;
+ }};
  document.addEventListener('keydown',event=>{if(!state.open||!layer)return;
   if(event.key==='Escape'){if(document.getElementById('isp-root'))return;event.stopImmediatePropagation();event.preventDefault();close();return}
   if(event.key!=='Tab')return;const focused=[...layer.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')].filter(x=>x.getClientRects().length);if(!focused.length)return;const first=focused[0],last=focused[focused.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}

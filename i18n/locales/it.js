@@ -310,6 +310,21 @@ window.ILLYRIAN_LOCALES.it={
     "timeZoneError": "Data/ora non valida o ambigua nel fuso orario della città. Scegli un altro orario.",
     "timeZoneUnknown": "Fuso orario sconosciuto"
   },
+  "commerce": {
+    "tagHeading": "Tag e promozione · DEMO",
+    "business": "Attività",
+    "listing": "Prodotto o servizio",
+    "none": "Nessun tag",
+    "markSponsored": "Segna come sponsorizzato (simulazione)",
+    "demoOnly": "Collegamenti solo a dati fittizi. Nessun pagamento o pubblicità reale.",
+    "sponsored": "Sponsorizzato · DEMO",
+    "notVerified": "La sponsorizzazione non è una verifica di affidabilità.",
+    "missing": "Annuncio non disponibile",
+    "expired": "Scaduto",
+    "stock": "Esaurito",
+    "unavailable": "Non disponibile",
+    "changed": "Il tag non è più disponibile. Rimuovilo o scegline un altro; la bozza è conservata."
+},
   "shop": {
     "areaMinimum": "Superficie minima m²",
     "properties": "Immobili",
