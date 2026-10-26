@@ -322,7 +322,7 @@ Owner now authorizes programme phase 2 only; phase 1 remains delivered. STOP bef
 
 - [x] Tests first: post/photo tags and source-specific business/listing navigation in sq/en/it; organic vs sponsored Feed/Profile; Story/Reel product and existing activity link, return/reply draft; missing/expired/no-stock/malformed references; quota/retry and deletion during edit; labelled Search placement.
 - [x] Implement scoped adapters/helper/core hooks and mirrored locale additions; preserve all old data/IDs/functions without catalog migration.
-- [ ] Run changed and existing Shop/creator/focus regressions, syntax/security/vendor/mirror checks, independent diff review; full remote Chromium/WebKit/Security and source-matched Preview. Update canonical continuity and stop.
+- [x] Run changed and existing Shop/creator/focus regressions (51 local PASS, including 12 new), syntax/security/vendor/mirror checks, independent diff review; full remote 322 Chromium +16 Linux WebKit +12 classifier and Security PASS on `60bf624b2e8d9b4bdc21f8afe6712cba0897232f`, source-matched Preview READY. Exact links are in CURRENT_STATE. Phase 2 delivered within DEMO scope; stopped before phase 3. Real contracts/permissions below remain BACKEND specifications, physical acceptance OPEN.
 
 ### Placement and transparency decisions
 

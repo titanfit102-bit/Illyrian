@@ -8,11 +8,11 @@ Përditësuar: 26 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 |---|---|
 | Repository / dega | `titanfit102-bit/Illyrian` / `feat/i18n-shop-feedback-20261022` |
 | PR | [#1](https://github.com/titanfit102-bit/Illyrian/pull/1), OPEN / DRAFT / UNMERGED → `demo/v1.7-illyrian-shop` |
-| Kandidati runtime i verifikuar | `01e12709bae867d254f34be3d364c11fcaed74b3`, faza 1 e programit Shop; commit-i vijues i provave është vetëm dokumentacion. HEAD LIVE kontrollohet në GitHub |
-| Browser QA | [40351708229](https://github.com/titanfit102-bit/Illyrian/actions/runs/40351708229), **310 Chromium +16 Linux WebKit PASS**, **12 classifier tests PASS** mbi `01e1270`; logjet 121673213835/121673301753/121676455825 të inspektuara. Suite e plotë e ekzekutuar, jo ripërdorim |
-| Security | [40351707783](https://github.com/titanfit102-bit/Illyrian/actions/runs/40351707783) PASS mbi `01e1270`, job 121673211281: 7 fixtures negative, 86-file bounded scan, syntax/vendor dhe npm audit 0 në atë ekzekutim; jo audit global |
+| Kandidati runtime i verifikuar | `60bf624b2e8d9b4bdc21f8afe6712cba0897232f`, faza 2 e programit Shop; commit-i vijues i provave është vetëm dokumentacion. HEAD LIVE kontrollohet në GitHub |
+| Browser QA | [40387000948](https://github.com/titanfit102-bit/Illyrian/actions/runs/40387000948), **322 Chromium +16 Linux WebKit PASS**, **12 classifier tests PASS** mbi `60bf624`; logjet 121797812360/121797903206/121801919143 të inspektuara. Suite e plotë e ekzekutuar, jo ripërdorim; përfshin 12 testet e reja të fazës 2 |
+| Security | [40387001033](https://github.com/titanfit102-bit/Illyrian/actions/runs/40387001033) PASS mbi `60bf624`, job 121797812790: 7 fixtures negative, 87-file bounded scan, syntax/vendor dhe npm audit 0 në atë ekzekutim; jo audit global |
 | Izolimi | Integrimi `015ce439e7c6d736149c6c300391586517664f62`; main `9f91b5c083b4482a70a2149483cc799360e6102c`; pa merge/Production |
-| Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/). Runtime `01e1270`: [immutable](https://illyrian-demo-jv3p4ub3z-un24.vercel.app/), `dpl_4Uy4jocsYk8A16NGeDrtaPgcWAqZ`, READY/target null dhe alias i lidhur sipas Vercel LIVE. Root HTTP200 me burimin HTML të plotë + Vercel feedback script; dy JS, CSS dhe tri locale të ndryshuara HTTP200/exact source parity. Commit-i i provave vijues ndiqet nga alias/Actions, pa redeploy manual |
+| Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/). Runtime `60bf624`: [immutable](https://illyrian-demo-bh3hsqqx3-un24.vercel.app/), `dpl_6T1aasMMm2QmD4ngfHhjBqFCkti8`, READY/target null dhe alias i lidhur sipas Vercel LIVE. Root HTTP200 me burimin HTML të plotë + Vercel feedback script; tri JS, CSS dhe tri locale të ndryshuara HTTP200/exact source parity. Commit-i i provave vijues ndiqet nga alias/Actions, pa redeploy manual |
 
 ## Funksionet dhe provat që ruhen
 
@@ -24,7 +24,7 @@ Përditësuar: 26 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 
 ## Politika aktive dhe çështjet e hapura
 
-Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv i kërkesës së re: vetëm faza 1 e programit Shop, me ndryshime të vogla DEMO dhe specifikime APK. Kufizimi i mëparshëm vetëm CI/dokumentacion i përkiste detyrës së mbyllur. Pa merge, main/Production, backend/native, migrime destruktive ose shpenzime.
+Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv: vetëm faza 2 e programit Shop, e autorizuar pas përfundimit të fazës 1; mekanizma të kufizuar DEMO dhe specifikime APK. NDALO përpara fazës 3. Kufizimi i mëparshëm vetëm CI/dokumentacion i përkiste detyrës së mbyllur. Pa merge, main/Production, backend/native, migrime destruktive ose shpenzime.
 
 | Fusha | Statusi / hapi |
 |---|---|
@@ -41,7 +41,7 @@ Kërkesa burimore për të pesë fazat është ruajtur e plotë në [roadmap](de
 - IMPLEMENTUAR DEMO: pamja Bizneset dhe profile në Shop, profile të përbashkëta si paraqitje në Shop Plus (pa kopjim katalogu), kërkim pa ë/ç dhe me kategori sq/en/it, Prona/Punë, pagë opsionale, filtra specifikë, fusha të parëndësishme të çaktivizuara duke ruajtur draftin dhe përkthimet. Stoku/oraret/kontakti mbeten fiktive ose të panjohura; GPS nuk thirret.
 - RUHEN: Shop/Shop Plus, kodet/IDs/çelësat e ruajtjes, Kërkoj/krahasimi/stoku/porositë/raportimet, rollback/Retry, funksionet sociale dhe 5% vetëm ilustrues. Nuk ka bashkim localStorage, backend, pagesë, abonim ose reklamim real.
 - SPECIFIKUAR BACKEND, jo ndërtuar: një katalog Seller→Shop→Listing, mapping i kontrolluar i burimeve, ekranet/veprimet/statuset/lejet/API-të dhe pranimi Android/iOS. Harta reale/provider/monetizimi/MVP/politikat e punës mbeten vendime të mëvonshme.
-- Teste të reja: 14 raste browser për discovery/profile/GPS/manual city, kategori/filtra, Prona/Punë, ruajtje të ndarë, UGC dhe draft/fokus/gjuhë. Lokalisht **87/87 regresione relevante PASS**, përfshirë **14/14 të reja**. Sintaksë/vendor parity, 12 classifier tests, secret detector (7 negative fixtures), locale mirrors dhe npm audit 0 PASS. Lista e vjetër prej 4 kategorish në 6 assertions tani përfshin Prona/Punë, pa hequr kontrollet ekzistuese. Remote **VERIFIED** në `01e1270`: 310/310 Chromium, 16/16 Linux WebKit, 12/12 classifier dhe Security PASS (provat sipër). Shqyrtim i pavarur i diff-it: pa gjetje vepruese; dy pamje 390px të inspektuara, jo certifikim fizik.
+- Teste të reja: 14 raste browser për discovery/profile/GPS/manual city, kategori/filtra, Prona/Punë, ruajtje të ndarë, UGC dhe draft/fokus/gjuhë. Lokalisht **87/87 regresione relevante PASS**, përfshirë **14/14 të reja**. Sintaksë/vendor parity, 12 classifier tests, secret detector (7 negative fixtures), locale mirrors dhe npm audit 0 PASS. Lista e vjetër prej 4 kategorish në 6 assertions tani përfshin Prona/Punë, pa hequr kontrollet ekzistuese. Remote **VERIFIED** në `01e1270`: 310/310 Chromium, 16/16 Linux WebKit, 12/12 classifier dhe Security PASS ([browser 40351708229](https://github.com/titanfit102-bit/Illyrian/actions/runs/40351708229), [Security 40351707783](https://github.com/titanfit102-bit/Illyrian/actions/runs/40351707783)). Shqyrtim i pavarur i diff-it: pa gjetje vepruese; dy pamje 390px të inspektuara, jo certifikim fizik.
 
 ## Programi Shop — faza 2 (26 tetor 2026)
 
@@ -51,11 +51,11 @@ Kërkesa e re e pronarit “vazhdojm 2shin” autorizon vetëm fazën 2; ndalimi
 - Sponsorizuar · DEMO me shpjegim të veçantë pagesë≠verifikim në postime dhe profil, opsion në media; një shembull i etiketuar te Search/Biznese referon ofertën promovuese ekzistuese të Shop Plus. Shop ruan etiketat/katalogun ekzistues. Pa reklamim real, pixels, pagesa, abonime ose vendime çmimi.
 - Listim i fshirë/munguar, i skaduar, status jo aktiv ose pa stok: shfaqje e kufizuar/çaktivizuar, rikontroll para publikimit dhe klikimit. Asnjë fallback sipas emrit/ID-je të burimit tjetër. Draftet, kuota/Retry, gjuha, scroll, përgjigjja e papërfunduar dhe fokusi i burimit ruhen në rrjedhat e mbuluara.
 - Lokalisht **51/51 regresione relevante PASS**, përfshirë **12/12 të reja**; sintaksë/vendor, detector me 7 fixtures negative/current-tree scan, locale mirrors dhe npm audit 0 PASS. Rishikimi i pavarur gjeti një kthim fokusi të pasaktë për etiketa të përsëritura; i korrigjuar dhe mbuluar. Escape nuk mbyll më edhe viewer-in e rikthyer. Observer-i nuk zëvendëson butonin identik të fokusuar. Kontrolluar dy pamje 390px/320px; jo certifikim fizik.
-- Remote i commit-it të fazës 2: **NOT VERIFIED deri në inspektimin e Actions**. Backend/ID autoritative, pronësi/privatësi/miratim/moderim dhe kriteret reale janë specifikime, jo kontrolle server-side të implementuara. Emri ekzistues lokal i biznesit është vetëm ID demonstrimi, jo identitet juridik.
+- Remote **VERIFIED** në `60bf624`: 322/322 Chromium (12 teste të reja), 16/16 Linux WebKit, 12/12 classifier dhe Security PASS; Preview READY/source parity, sipas provave sipër. Backend/ID autoritative, pronësi/privatësi/miratim/moderim dhe kriteret reale janë specifikime, jo kontrolle server-side të implementuara. Emri ekzistues lokal i biznesit është vetëm ID demonstrimi, jo identitet juridik.
 
 ## Hapi i saktë pasues
 
-Përfundo Chromium/WebKit/Security dhe Preview të fazës 2, ruaj provat, raporto dhe **NDALO përpara fazës 3**. Mos nis multi-admin/inbox/verifikim/Business Pro/moderim. QA fizike dhe gates reale mbeten të hapura.
+Faza 2 është përfunduar në kufirin DEMO dhe verifikuar si sipër. **NDALUAR përpara fazës 3**; vazhdo vetëm pas udhëzimit të pronarit. Fazat 3–5 mbeten PLANNED, pa implementim paraprak. Commit-i pasues është vetëm dokumentacion: kontrollo Actions për ripërdorimin e runtime-it të pandryshuar dhe Security, pa commit tjetër për rezultat të vogël CI. QA fizike dhe gates reale mbeten të hapura; mos ndërto backend/native nga specifikimet.
 
 ## Konsolidimi historik — vetëm dokumentacion
 
