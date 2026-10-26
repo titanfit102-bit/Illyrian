@@ -2429,7 +2429,8 @@ test('IA-02 Connections rejects stale tab writes and preserves committed cities'
   await a.locator('#ilc-cities button[type="submit"]').click();
   const key='illyrian_demo_v17_connections',afterA=await a.evaluate(k=>localStorage.getItem(k),key);
   const check=b.locator('#ilc-root [data-ilc-first="city-1"]');
-  await check.check();
+  // The stale write must immediately revert the checkbox; Playwright check() expects it to stay checked.
+  await check.click();
   await expect(check).not.toBeChecked();
   await expect(b.locator('#ilc-root .ilc-note[role="status"]')).toContainText('skedë tjetër');
   expect(await a.evaluate(k=>localStorage.getItem(k),key)).toBe(afterA);
