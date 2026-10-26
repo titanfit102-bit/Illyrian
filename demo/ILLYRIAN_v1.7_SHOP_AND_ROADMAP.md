@@ -692,3 +692,244 @@ The scoped CI workflow now includes root `i18n/**` changes in push path filters.
 ### Phase 3 integration checkpoint — 25 October 2026
 
 Existing IN9-02/03/04/05/07 and IL-029 were reused; no separate numbered 3.2 checkpoint was found at the pre-change HEAD. [Phase 3 QA](../docs/PHASE3_INTEGRATION_QA.md) records the new bounded source, tests, Preview and remaining gates: shared community post/comment journeys, School & University category, canonical Plans draft/reference, truthful failed-write behavior, optional GPS/manual cities, city-zone wall times and expiry boundaries. Existing stores/IDs and repeat-as-draft behavior remain; no separate Forum or recurring/notification backend. [Blueprint §13](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#13-social-community-and-activity-api-contracts--phase-3-design) extends future backend contracts only. Phase 1/manual/F06/release HOLD and the original Phase 7/8/M0–M5 sequence remain authoritative.
+
+
+## Marketplace programme — owner request, 26 October 2026
+
+New five-phase programme; do not confuse these numbers with historical Phase 1/3/7/8 above. Execute in order. Only programme phase 1 (ILLYRIAN Shop) is authorized for implementation in this session; STOP before phase 2. Phases 2–5 are PLANNED, not implemented. Shared section 6 applies to every phase. Apply AGENTS DEMO→APK classification automatically; no real backend, paid commerce or destructive Shop/Shop Plus merge. Phase 1 decisions/contracts/status are in blueprint §15 and CURRENT_STATE; this is the full source requirement record, not an implementation claim.
+
+### Original owner requirements (preserved in full)
+
+# ILLYRIAN — UNIFIED SHOP, SOCIAL COMMERCE, MULTI-ADMIN BUSINESS, VERIFICATION & TRUST SYSTEM
+
+Vazhdo projektin titanfit102-bit/Illyrian nga checkpoint-i më i fundit i verifikuar në GitHub.
+
+## OBJEKTIVI KRYESOR
+
+Zhvillo ILLYRIAN Shop si një marketplace modern, të integruar natyrshëm me rrjetin social, duke përfshirë zbulimin e bizneseve, katalogun e unifikuar, social commerce, promovimet, administrimin nga disa punonjës, verifikimin e bizneseve dhe sistemin e përbashkët të besimit, sigurisë dhe moderimit.
+
+## Ruaj funksionet ekzistuese, shmang dublimet dhe dallo gjithmonë mekanizmat demonstrues nga funksionet reale që kërkojnë backend, autorizime server-side dhe infrastrukturë përkatëse.
+
+## 1. ILLYRIAN SHOP — MARKETPLACE I UNIFIKUAR
+
+Analizo kodin ekzistues Shop/Shop Plus, raportin strategjik dhe modelet e suksesshme të social commerce. Mos përsërit funksione të implementuara.
+
+Përmirëso zbulimin e dyqaneve, bizneseve, produkteve dhe shërbimeve.
+
+Mbështet kërkimin sipas emrit, kategorisë, produktit, qytetit dhe nevojës.
+
+Krijo filtra të kuptueshëm dhe profile profesionale biznesi me orare, kontakt, vendndodhje opsionale, oferta dhe disponueshmëri.
+
+Shqyrto paraqitjen **Listë/Hartë**, pa e bërë GPS kusht përdorimi.
+
+Përcakto arkitekturën e një **ILLYRIAN Shop të vetëm**, që bashkon funksionet më të mira të Shop dhe Shop Plus, pa katalogë, produkte ose porosi të dyfishuara.
+
+Ruaj kategoritë **Produkte, Makina, Prona, Qira, Shërbime** dhe funksionin **“Kërkoj”**.
+
+Shto kategorinë **“Punë”** për shpallje pune dhe kërkim punonjësish, pa krijuar platformë të veçantë punësimi ose rekrutim kompleks pa nevojë të provuar.
+
+Thjeshto filtrat dhe formularët sipas kategorisë. Fushat e makinave/pronave nuk duhet të shfaqen te produktet e zakonshme.
+
+Përcakto modelin e katalogut të unifikuar për APK-në reale, por mos bashko mekanikisht ose në mënyrë destruktive localStorage të Shop dhe Shop Plus.
+
+Komisioni demonstrues **5% nuk është tarifë e miratuar**. Dallo qartë porositë, pagesat, kthimet dhe promovimet fiktive nga funksionet reale.
+
+Dokumento ekranet, veprimet, objektet e të dhënave, statuset, lejet dhe kriteret e testimit për APK-në reale.
+
+## 2. DETYRA — SOCIAL COMMERCE, PROMOTIONS & PRODUCT TAGGING
+
+Integro promovimin e bizneseve dhe lidhjen e produkteve me përmbajtjen sociale, duke ruajtur transparencën dhe sigurinë.
+
+Projekto vende promocioni natyrale në **Feed, Search, Shop, profile dhe përmbajtjen sociale**.
+
+Postimet e sponsorizuara duhet të dallohen qartë nga përmbajtja organike. Pagesa nuk duhet të paraqitet si verifikim besueshmërie.
+
+Shqyrto dhe implemento në DEMO, aty ku është e përshtatshme, etiketimin e një **biznesi në foto/postim** dhe etiketimin e një **produkti ose shërbimi**.
+
+Kur përdoruesi prek etiketën, duhet të hapet profili i biznesit ose listimi përkatës.
+
+Mbështet lidhjen e një **Reel/Story me produkt ose aktivitet**.
+
+Trajto rastet kur produkti fshihet, skadon ose nuk është më i disponueshëm.
+
+Për aplikacionin real përcakto referencat me **ID autoritative**, kontrollin e pronësisë, privatësinë, miratimin dhe moderimin.
+
+Implemento vetëm mekanizmat demonstrues të sigurt dhe specifikimet e sistemit real.
+
+## Mos aktivizo reklamim me para reale, pagesa ose abonime.
+
+## Testo etiketat, navigimin, disponueshmërinë, shfaqjen e reklamave dhe lidhjet me përmbajtjen sociale në GitHub Actions.
+
+## Dokumento ekranet, veprimet, objektet, statuset, lejet dhe kriteret e testimit për APK-në reale.
+
+## 3. DETYRA — MULTI-ADMIN BUSINESS & SHARED INBOX
+
+Përcakto dhe integro sistemin ku një dyqan ose biznes menaxhohet nga disa administratorë dhe punonjës, me llogari personale dhe autorizime të ndara.
+
+**Llogaritë, rolet dhe autorizimet**
+
+Pronari mund të ftojë, shtojë dhe largojë administratorë ose punonjës.
+
+**Secili përdor llogarinë e vet**, pa ndarë password-e.
+
+Përcakto role dhe autorizime për menaxhimin e produkteve, çmimeve, porosive, mesazheve dhe administrimit.
+
+Vetëm personat e autorizuar mund të menaxhojnë stafin dhe të dhënat sensitive.
+
+**Inbox i përbashkët dhe komunikimi**
+
+Personat e autorizuar mund t'u përgjigjen klientëve në emër të biznesit përmes një **Inbox-i të përbashkët**.
+
+Klienti sheh emrin e dyqanit si dërgues, jo detyrimisht profilin personal të punonjësit.
+
+Çdo administrator vendos nëse profili i tij personal shfaqet publikisht si pjesë e stafit. Kjo zgjedhje nuk fsheh identitetin nga pronari, auditimi ose detyrimet ligjore.
+
+Regjistro brenda administrimit cili punonjës dërgoi çdo përgjigje ose bëri çdo ndryshim.
+
+Parashiko caktimin e bisedave te punonjësit, shmangien e përgjigjeve të dyfishta, njoftimet dhe **revokimin e menjëhershëm të aksesit**.
+
+**Arkitektura dhe integrimi**
+
+Përcakto modelet e databazës, API-të, autorizimet server-side, rrjedhat UI dhe testet për Android/iOS.
+
+Integro këtë sistem me **ILLYRIAN Shop dhe panelin ekzistues të administrimit**, pa krijuar module paralele.
+
+Përgatit arkitekturën dhe specifikimet.
+
+Implemento vetëm rrjedha DEMO të sigurta brenda autorizimeve dhe testo çdo ndryshim në GitHub Actions.
+
+Dallo demonstrimin nga autorizimi real server-side.
+
+**Mos krijo llogari të përbashkëta, mos ekspozo mesazhe private jashtë autorizimeve dhe mos implemento backend real pa infrastrukturën përkatëse.**
+
+## 4. DETYRA — VERIFIED BUSINESS, TRUST BADGES & BUSINESS PRO
+
+Projekto një sistem profesional për identitetin dhe verifikimin e bizneseve, të ndarë qartë nga abonimet dhe promovimet me pagesë.
+
+**Identiteti dhe verifikimi**
+
+Përcakto regjistrimin e bizneseve dhe kërkesën për verifikimin e identitetit/pronësisë, me kontrolle proporcionale ndaj rrezikut.
+
+Dallo **profilin e zakonshëm, biznesin e deklaruar dhe biznesin e verifikuar**.
+
+Përcakto shenjat vizuale të verifikimit dhe kuptimin e saktë të tyre.
+
+Shenja **“Biznes i verifikuar”** jepet vetëm pas kontrolleve reale dhe të dokumentuara. Ajo nuk garanton cilësinë e produkteve, korrektësinë e çdo transaksioni ose siguri absolute.
+
+Kontrollo shenjat ekzistuese “i verifikuar” në profile, postime dhe biznese. Në DEMO statuset demonstrative duhet të dallohen qartë.
+
+Verifikimi bazë nuk duhet të kushtëzohet nga abonimi. Pagesa nuk garanton verifikim.
+
+Përcakto kontrollet periodike, skadimin, humbjen/revokimin e verifikimit dhe apelimin.
+
+Parashiko mbrojtje ndaj dokumenteve false, imitimit të bizneseve reale dhe keqpërdorimit të shenjave.
+
+Nëse shqyrtohet tarifë për kontrollin manual, ajo duhet të jetë transparente, e justifikuar dhe e pavarur nga rezultati.
+
+**ILLYRIAN Business Pro**
+
+Projekto **ILLYRIAN Business Pro**, abonim opsional me statistika, mjete menaxhimi, katalog të avancuar dhe promovime të etiketuara.
+
+Dallo qartë **statusin e verifikimit** nga **statusi i abonimit**.
+
+Analizo modelin e biznesit, përputhshmërinë ligjore, UX, kontratat teknike dhe testet.
+
+**Për Business Pro dhe monetizimin përgatit vetëm specifikime/propozime. Mos vendos çmime përfundimtare, mos aktivizo pagesa ose abonime dhe mos ndrysho vendimet e produktit pa miratim.**
+
+## Kontrollo statuset ekzistuese të demonstrimit, shmang dublimet dhe testo çdo përmirësim të autorizuar në GitHub Actions.
+
+## 5. DETYRA — TRUST, SAFETY & UNIFIED MODERATION
+
+Ndërto një model të sigurt dhe profesional për raportimet, moderimin dhe mbrojtjen e përdoruesve në të gjithë rrjetin social dhe marketplace.
+
+**Raportimi dhe moderimi**
+
+Përcakto raportimin e **profileve false, mashtrimeve në Shop, postimeve/videove abuzive, mesazheve të padëshiruara, ngacmimeve, kërcënimeve, reklamave mashtruese, komenteve dhe aktiviteteve problematike**.
+
+Organizo rrjedhën **report → review → decision → notification → appeal**.
+
+Unifiko raportimet e **Social, Communities, Plans dhe Shop**, me identifikues të qëndrueshëm, role, arsye vendimi dhe audit log.
+
+Mos lejo që raportimet ose vendimet të kenë statuse kontradiktore ndërmjet moduleve.
+
+**Siguria dhe mbrojtja e përdoruesve**
+
+Analizo dhe përmirëso **block, mute, privacy settings, kontrollet e kontaktit, kufizimin e spam-it dhe mbrojtjen e përdoruesve të cenueshëm**.
+
+Përcakto politikat e moshës dhe të sigurisë sipas funksioneve dhe kërkesave të platformës.
+
+**Mos krijo sistem arbitrar pikësh që i vlerëson njerëzit sipas pasurisë ose shpenzimeve.**
+
+**Administrimi dhe aplikacioni real**
+
+Përcakto rolet administrative, autorizimet server-side, audit log, ruajtjen/trajtimin e provave, apelimet dhe afatet e përgjigjes.
+
+Integroje me panelin e suportit të **Detyrës 6B**, pa ndërtuar sistem të dytë administrimi ose moderimi.
+
+Kontrollo funksionet ekzistuese dhe mos krijo dublime.
+
+Implemento vetëm përmirësimet e sigurta të DEMO-s brenda autorizimeve.
+
+Mos paraqit raportime apo vendime demonstrative si moderim real.
+
+Për aplikacionin real dokumento modelet e të dhënave, API-të, kontrollet e aksesit, proceset e moderimit dhe testet e sigurisë.
+
+Testo rrjedhat ekzistuese dhe ndryshimet e reja në GitHub Actions. Dallo qartë funksionet e implementuara nga planet.
+
+## 6. VERIFIKIMI, TESTIMI DHE DOKUMENTACIONI — PËR TË GJITHA DETYRAT
+
+Përpara çdo implementimi:
+
+Lexo CURRENT_STATE.md, MASTER_HANDOFF.md, arkitekturën, roadmap-in, raportin strategjik dhe dokumentacionin përkatës të Social, Shop/Shop Plus, Messages, Admin, Governance dhe Privacy.
+
+Analizo kodin ekzistues dhe gjendjen reale në GitHub.
+
+Verifiko degën aktive, HEAD, Draft PR, GitHub Actions dhe testet përkatëse.
+
+Identifiko çfarë është implementuar, çfarë është vetëm demonstrim dhe çfarë është planifikuar.
+
+Mos përsërit funksionalitete të përfunduara, mos krijo module apo dokumente paralele dhe respekto vendimet dhe autorizimet aktive.
+
+Gjatë zbatimit:
+
+Implemento vetëm ndryshimet e sigurta dhe të autorizuara.
+
+Testo funksionet ekzistuese dhe të reja, duke përfshirë rrjedhat dhe integrimet ndërmjet moduleve përkatëse.
+
+Verifiko testet në GitHub Actions.
+
+Dallo qartë DEMO-n nga APK-ja reale, autorizimet server-side, pagesat reale dhe funksionalitetet ende të paimplementuara.
+
+Për APK-në reale dokumento ekranet, veprimet, objektet/modelin e të dhënave, statuset, rolet, lejet, API-të, rrjedhat UI, kontrollet e aksesit, kriteret e testimit dhe testet përkatëse të Android/iOS dhe sigurisë, sipas kërkesave të secilës detyrë.
+
+**Dokumentacioni i vazhdimësisë**
+
+**Pas çdo ndryshimi domethënës të verifikuar, përditëso dhe ruaj në GitHub:**
+
+CURRENT_STATE.md
+
+MASTER_HANDOFF.md
+
+Dokumentacionin përkatës ekzistues të projektit.
+
+Regjistro ndryshimet dhe implementimet, testet dhe provat, commit-et, vendimet, problemet e hapura dhe hapat pasues.
+
+Dokumentacioni duhet të dallojë qartë çfarë është implementuar dhe verifikuar nga çfarë mbetet në plan.
+
+**Kufijtë e autorizimit**
+
+Respekto autorizimet aktive të projektit.
+
+Mos prek main ose Production.
+
+Mos bëj merge.
+
+Mos kryej veprime me rrezik të lartë pa miratim.
+
+Mos implemento backend real pa infrastrukturën përkatëse.
+
+Mos aktivizo pagesa, abonime, reklamim me para reale ose funksione komerciale pa miratimin përkatës.
+
+Mos ndrysho vendimet e produktit jashtë autorizimeve ekzistuese.
+
+Vazhdo nga checkpoint-i më i fundit i verifikuar dhe zbato detyrat duke ruajtur arkitekturën ekzistuese, integrimin ndërmjet moduleve dhe dokumentacionin e vazhdimësisë.

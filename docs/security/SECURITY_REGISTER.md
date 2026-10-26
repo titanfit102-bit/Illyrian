@@ -66,3 +66,8 @@ Owner policy is canonical in [AGENTS](../../AGENTS.md#demo-vs-apk--permanent-own
 ### Browser workflow scope control — 26 October 2026
 
 Documentation-only optimization adds read-only actions metadata access and fail-closed classification. Security-baseline, all existing browser regressions, pinned dependencies and check names remain. Reuse requires actual full successful test steps on an ancestor with unchanged relevant files and PR base; unverified/fork/security/workflow/config deltas run full QA. Local classifier tests/syntax and secret-pattern checks passed; remote workflow verification pending. Control statuses remain bounded/PARTIAL; this is not branch enforcement.
+
+
+### Marketplace programme phase 1 — bounded local change review, 26 October 2026
+
+Existing Shop/Shop Plus keys and IDs remain independent; no migrations/backend/auth/payments/GPS. New business presentation escapes seller/city/category strings and labels example hours, contact and availability honestly. Conditional fields are disabled without erasing drafts; optional job salary uses a DEMO 0 sentinel displayed as undisclosed, not free work (real schema uses nullable amount). Local 87 affected browser regressions PASS, including 14 new cases and stored markup/raw-storage preservation, category save/edit, locale/draft/focus and nested dialogs. JS/vendor parity, mirrored locales, 12 classifier fixtures, 7 unsafe scanner fixtures/current-tree pattern scan and npm audit 0 PASS. Read-only independent diff review found no actionable issues. SEC-02/04 remain PARTIAL, SEC-06 NOT APPLICABLE to DEMO, SEC-07 UNKNOWN for actual devices; no comprehensive/new production security claim. Exact source/remote evidence goes in CURRENT_STATE/Actions after push.

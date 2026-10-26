@@ -260,3 +260,53 @@ All runtime rows are **DEMO**, with bounded **VERIFIED** browser scenarios, not 
 | Privacy/Map/Governance/Notifications: visibility/block/report/appeal and local status | [Privacy](../demo/ILLYRIAN_PRIVACY_MAP_v1.7.js), [Governance](../demo/ILLYRIAN_GOVERNANCE_v1.7.js), core HTML | BACKEND: authorization/moderation/privacy lifecycle, §2/§5/§13 |
 
 MVP/exclusions, platform/provider, complete field/API schemas, operational ownership and device acceptance remain open decisions/design work. Do not invent them, migrate fixtures into real accounts, or describe PLANNED/BACKEND as real implementation. Existing UGC, IDs, domain codes and storage shapes stay unchanged. Advanced native security, server transactions, load/restore/store requirements are documented now and implemented only in their approved phase.
+
+
+## 15. Marketplace programme — phase 1 Shop (26 October 2026)
+
+**Scope:** current owner request supersedes the previous CI-only scope. Five phases are preserved verbatim in the [existing roadmap](../demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#marketplace-programme--owner-request-26-october-2026). Implement phase 1 only and stop before phase 2. This programme's numbering is independent of historical QA phases. Apply §14/AGENTS automatically. All changes are static DEMO unless explicitly BACKEND/PLANNED below.
+
+### Phase 1 design and bounded execution plan
+
+Keep the existing HTML/vanilla JS modules and independent storage keys. A destructive storage merge is ruled out by the owner's request; a third marketplace would duplicate existing features. Extend the two existing views with consistent category labels/search and reuse one presentation helper for business information. No new dependency, provider, GPS collection or backend.
+
+- [x] Add focused browser regressions for discovery/profile/manual city, category filters, property/job save, unknown salary, literal historical data and separate storage. Verify the failure before implementation.
+- [x] Extend `demo/ILLYRIAN_SHOP_v1.7.js`: business directory/profile, accent-insensitive multilingual category/name/product/city/description search, additive property/jobs fixtures and categories, optional job salary; preserve cart/inquiry/edit/delete/rollback.
+- [x] Extend `demo/ILLYRIAN_SHOP_PLUS_v1.7.js`: reuse business profile presentation with its own catalog, add property/jobs categories, conditional filters, property fields and optional job salary. Preserve comparison/stock/Kërkoj/reporting/orders and category draft/locale behaviour.
+- [ ] Localize additions in mirrored sq/en/it catalogs, add only scoped CSS. Run relevant old/new regressions, syntax/secret/vendor checks, then full remote Chromium/WebKit and Security. Inspect Preview metadata and canonical continuity.
+
+**List/Map assessment:** ship useful lists and manual city filtering now. No map mock, mandatory GPS, public precise address or geolocation calls. A real optional Map remains DECISION REQUIRED (provider/cost, location publication/consent, service-area-only sellers, clustered results and accessibility). List remains fully usable if permission is denied or coordinates are absent.
+
+**Prior art, consulted 26 October 2026:** [Shopify filtering](https://shopify.dev/docs/storefronts/themes/navigation-search/filtering/storefront-filtering) supports product/vendor/availability facets; [Google business representation](https://support.google.com/business/answer/3038177?hl=en) distinguishes a visitable business address from a service area. These inform the proposed UI/optional-location separation, not proof of ILLYRIAN market demand. Existing strategic review O3/O5/O7 informs need discovery, availability honesty and multilingual search; no pilot/monetization assumptions become approved facts.
+
+### Single real catalog — BACKEND specification, not deployed
+
+Extend §3/§10 rather than building another domain. `Seller/Organization → Shop → Listing` is the only authoritative real catalog. Shop/Shop Plus become discovery/advanced/management views over the same records, search index and order IDs, never two production inventories. Product identity/variant is distinct from a seller's offer: compare only canonical `product_id`/variant/condition/unit, never a loose title match. No global comparison of the two DEMO catalogs is introduced.
+
+| Record | Minimum logical fields / invariant |
+|---|---|
+| Seller/Organization | id, owner_account_id, display_name, business_state, status; existing identity/verification boundaries §2/§5; phase 4 designs verification, no verified claim now |
+| Shop | id, seller_id, name, category_codes, city_id, description, contact_policy, service_area, nullable public_location, hours + IANA zone/exceptions, status, version |
+| Listing | id, shop_id, category_code, title, description, amount_minor nullable, currency, price_basis, availability_state, declared_at, expires_at, version, status; salary absent is not free work |
+| Category attributes | product: variant/SKU, unit, inventory quantity/version; vehicle: year/mileage/fuel; property: sale, area/rooms; rental: area/rooms/period; service: scope/area/request; job: employer/title/city, terms, nullable salary, closing date, inquiry only |
+| BuyerNeed / Inquiry | id, author_id, category/city, title/details, optional budget, expires_at, state/version; inquiry references authoritative listing_id/shop_id and permitted conversation; contact is not order/payment/work completed |
+| Legacy mapping | (source_store, object_type, legacy_id) → canonical_id + migration_version; retain originals. Same name or same `h1` in separate stores never establishes identity. Fictional fixtures never become real offers/accounts |
+
+Stable category codes proposed for the real API: `product`, `vehicle`, `property_sale`, `rental`, `service`, `job`; display labels sq/en/it never become IDs. DEMO codes stay `Produkte`, `Makina`, `Prona`, `Banesa me qira`, `Shërbime`, `Punë`; existing rental records keep their old code. Additive fields/validation only; no raw rewrite on load or migration of local orders. Real offer/inventory/order records are linked by ID; views do not copy them.
+
+### Screens, actions, states, permissions and acceptance — BACKEND / Android+iOS
+
+| Screen / action | Contract and state | Access / acceptance |
+|---|---|---|
+| Discovery → search/category/city/sort → results or empty/error/retry | `GET /v1/listings?q=&category=&city_id=&shop_id=&availability=&cursor=` and `GET /v1/shops?q=&city_id=`; bounded facets/pagination, locale-independent IDs, stable results, no paid boost presented as organic | Public results include published/visible records only; manual city without GPS, literal UGC, locale/empty/offline/keyboard/screenreader on Android/iOS; unknown facets rejected |
+| Business directory → profile → offers / contact | `GET /v1/shops/{id}`; public hours, optional location/service area, offers and seller-declared availability. Unknown/stale hours or stock explicitly unknown; hours are not guaranteed availability | Read only intentionally public fields; no owner's private account/contact data; contact policy/blocks checked. Time-zone/exception hours tests; missing location never blocks catalog |
+| Listing detail → product cart or classified/service/job inquiry | `GET /v1/listings/{id}`, `POST /v1/inquiries` with idempotency key and authoritative IDs; draft→sent→answered→closed/withdrawn/expired; missing/deleted/unavailable produces clear state, preserves social link in future phase 2 | Server validates actor, target state, ownership, blocks/contact permissions and expiry. Never reservation/paid checkout for jobs/property; no CV upload/recruitment subsystem in this scope |
+| Publish/edit/withdraw listing | `POST /v1/shops/{id}/listings`, `PATCH /v1/listings/{id}` with expected version; draft→published→paused/expired/withdrawn/removed; unavailable distinct from deleted; server timestamp/version | Owner/authorized seller scoped to that shop; reject cross-shop IDs, client role claims and wrong-category fields. Preserve draft on network/validation/version error; duplicate retry creates once |
+| Kërkoj → need → permitted seller reply | `POST /v1/buyer-needs`, `POST /v1/buyer-needs/{id}/replies`; open→answered/closed/expired/withdrawn; server verifies expiry and access | Need owner edits/withdraws own need; authorized seller reply only; spam/contact restrictions enforced later with real service. Android/iOS expiry, retry and own-data access tests |
+| Existing demo cart/order/return/promotion | DEMO only; real order/payment/refund and promotion surfaces retain §3/§5/§10/M4 gates | 5% illustrative, not approved. Inquiry ≠ order; simulated return ≠ refund; promoted ≠ verified. No real subscription, payment, advertising or pricing decision |
+
+Real test matrix must cover two-account/shop isolation, denied/absent GPS, optional precise-location visibility, correct category fields, nullable salaries, stale stock/version conflicts, repeated inquiry/create idempotency, deleted/expired targets, private seller fields, malicious UGC, offline retry and Android/iOS screenreader/text scaling. Implement these only for an authorized real slice; current DEMO browser checks do not certify backend/native operation. Provider, actual taxonomy depth, real map, hiring-market policy, MVP breadth and commerce pricing remain DECISION REQUIRED.
+
+### Phases 2–5 — PLANNED, implementation not started
+
+The complete original requirements (including all prohibitions and common verification/documentation rules) remain in the roadmap source above. Phase 2: tagged businesses/products/services in posts/photos, Reel/Story references and transparent promotions; authoritative IDs/ownership/privacy/consent/moderation and unavailable targets; no real ad spend. Phase 3: personal-account staff roles/invites/revocation, shared business inbox, assignments/dedup/notifications, optional public staff identity with internal actor audit; reuse existing admin. Phase 4: declared/verified identity independent of paid Pro; documented real verification, expiry/revocation/appeal and anti-impersonation; Pro pricing/legal/monetization proposals only. Phase 5: unified reports/review/decision/notice/appeal across all named targets/modules, block/mute/privacy/contact/spam/vulnerable-user/age policies; no wealth/spending score; audit/evidence/response deadlines, integration with task 6B support (resolve actual existing surface before any implementation). All are deferred; no phase 2–5 functionality is added during phase 1.

@@ -204,7 +204,7 @@ for(const [language,expected] of Object.entries({
    cities:[...form.elements.city.options].map(o=>o.value),
    visibleCategory:form.elements.kind.options[0].textContent
   }));
-  expect(codes.categories).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  expect(codes.categories).toEqual(['Produkte','Makina','Prona','Banesa me qira','Shërbime','Punë']);
   expect(codes.cities).toEqual(['Tiranë','Durrës','Shkodër','Vlorë','Elbasan','Prishtinë']);
   expect(codes.visibleCategory).toBe({sq:'Produkte',en:'Products',it:'Prodotti'}[language]);
   await page.locator('#ils-sell-form').evaluate(form=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
@@ -344,7 +344,7 @@ for(const locale of ['en','it']){
    types:[...form.elements.type.options].map(o=>o.value),
    cities:[...form.elements.city.options].map(o=>o.value)
   }));
-  expect(plus.types).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  expect(plus.types).toEqual(['Produkte','Makina','Prona','Banesa me qira','Shërbime','Punë']);
   expect(plus.cities).toEqual(['Tiranë','Durrës','Shkodër','Vlorë','Elbasan','Prishtinë']);
   await page.locator('#isp-root header button[data-isp="close"]').click();
   await page.keyboard.press('Escape');
@@ -601,11 +601,11 @@ for(const [lang,labels] of Object.entries({
   await expect(f.locator('label:has(select[name="period"])')).toContainText(labels.period);
   const options=await f.locator('select[name="period"]').evaluate(el=>[...el.options].map(o=>({value:o.value,label:o.textContent.trim()})));
   expect(options).toEqual([{value:'muaj',label:labels.month},{value:'javë',label:labels.week}]);
-  expect(await f.locator('select[name="type"] option').evaluateAll(nodes=>nodes.map(n=>n.value))).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  expect(await f.locator('select[name="type"] option').evaluateAll(nodes=>nodes.map(n=>n.value))).toEqual(['Produkte','Makina','Prona','Banesa me qira','Shërbime','Punë']);
   await f.locator('input[name="name"]').fill('Mbyll');
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang==='it'?'en':'it');
   await expect(f.locator('input[name="name"]')).toHaveValue('Mbyll');
-  expect(await f.locator('select[name="type"] option').evaluateAll(nodes=>nodes.map(n=>n.value))).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  expect(await f.locator('select[name="type"] option').evaluateAll(nodes=>nodes.map(n=>n.value))).toEqual(['Produkte','Makina','Prona','Banesa me qira','Shërbime','Punë']);
  });
  test('Shop Plus static request form labels translate and keep deadline values: '+lang,async({page})=>{
   await ready(page);
@@ -1013,7 +1013,7 @@ for(const [lang,label] of Object.entries({
   await expect(form.locator('label:has(select[name="period"])')).toContainText(label.period);
   const types=await form.locator('select[name="type"] option').evaluateAll(a=>a.map(e=>({value:e.value,text:e.textContent.trim()})));
   expect(types[0]).toEqual({value:'Produkte',text:label.product});
-  expect(types.map(x=>x.value)).toEqual(['Produkte','Makina','Banesa me qira','Shërbime']);
+  expect(types.map(x=>x.value)).toEqual(['Produkte','Makina','Prona','Banesa me qira','Shërbime','Punë']);
   const period=await form.locator('select[name="period"] option').evaluateAll(a=>a.map(e=>({value:e.value,text:e.textContent.trim()})));
   expect(period).toEqual([{value:'muaj',text:label.month},{value:'javë',text:label.week}]);
   await expect(form.locator('button[type="submit"]')).toHaveText({sq:'Publiko në demo',en:'Publish in demo',it:'Pubblica nella demo'}[lang]);
@@ -1126,7 +1126,7 @@ for(const [lang,labels] of Object.entries({
   await expect(seeded.locator('h4[data-user-content]')).toHaveText('Kafe espresso 250 g');
   await expect(seeded.locator('span[data-user-content]')).toHaveText('Market Arbër');
   const codes=await page.locator('#isp-root .isp-kinds [data-isp^="type:"]').evaluateAll(nodes=>nodes.map(x=>x.dataset.isp));
-  expect(codes).toEqual(['type:Të gjitha','type:Produkte','type:Makina','type:Banesa me qira','type:Shërbime']);
+  expect(codes).toEqual(['type:Të gjitha','type:Produkte','type:Makina','type:Prona','type:Banesa me qira','type:Shërbime','type:Punë']);
  });
  test('Shop Plus seller directory and simulated fee labels translate in '+lang,async({page})=>{
   await ready(page);
@@ -2636,4 +2636,162 @@ test('Home composer remains directly below Stories after navigation, filter and 
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
  await expect(page.locator('#screen > .compose .compose-prompt')).toHaveText('Cosa succede oggi?');
  await assertHomeComposerOrder(page);
+});
+
+// Marketplace programme, phase 1 only: existing Shop and Shop Plus stay independent.
+for(const lang of ['sq','en','it']){
+ test('Shop phase 1 business discovery and profile without GPS '+lang,async({page})=>{
+  await page.addInitScript(()=>{
+   window.__shopGpsCalls=0;
+   navigator.geolocation.getCurrentPosition=()=>{window.__shopGpsCalls++;throw Error('GPS must be optional')};
+  });
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#ils-search').fill('kafe tirane');
+  await expect(page.locator('#illyrian-shop-layer .ils-card')).toHaveCount(2);
+  await page.locator('[data-ils="businesses"]').click();
+  await expect(page.locator('#ils-businesses article')).toHaveCount(2);
+  await page.locator('[data-ils="business"][data-value="Market Arbër"]').click();
+  const profile=page.locator('.ils-business-profile');
+  await expect(profile.locator('h2')).toHaveText('Market Arbër');
+  await expect(profile).toContainText('Tiranë');
+  await expect(profile.locator('[data-hours]')).not.toBeEmpty();
+  await expect(profile.locator('[data-contact]')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('shop:contactDemo')));
+  await page.locator('[data-ils="business-catalog"]').click();
+  await expect(page.locator('#illyrian-shop-layer .ils-card')).toHaveCount(1);
+  expect(await page.evaluate(()=>window.__shopGpsCalls)).toBe(0);
+ });
+ test('Shop phase 1 category filters show only relevant fields '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('[data-isp-open]').click();
+  const root=page.locator('#isp-root'),form=root.locator('#isp-filters');
+  await root.locator('[data-isp="type:Produkte"]').click();
+  await expect(form.locator('[name="year"]')).toHaveCount(0);
+  await expect(form.locator('[name="area"]')).toHaveCount(0);
+  await expect(form.locator('[name="stock"]')).toBeVisible();
+  await root.locator('[data-isp="type:Makina"]').click();
+  await form.locator('[name="year"]').fill('2019');
+  await form.locator('button[type="submit"]').click();
+  await expect(root.locator('.isp-cards .isp-card')).toHaveCount(1);
+  await root.locator('[data-isp="type:Produkte"]').click();
+  await form.locator('button[type="submit"]').click();
+  await expect(root.locator('.isp-cards .isp-card')).toHaveCount(5);
+  await root.locator('[data-isp="type:Prona"]').click();
+  await expect(form.locator('[name="area"]')).toBeVisible();
+  await expect(form.locator('[name="year"]')).toHaveCount(0);
+  await root.locator('[data-isp="type:Punë"]').click();
+  await expect(form.locator('[name="area"]')).toHaveCount(0);
+  await expect(form.locator('[name="stock"]')).toHaveCount(0);
+  await expect(root.locator('.isp-cards .isp-card')).toHaveCount(1);
+ });
+ test('Shop phase 1 Jobs save with undisclosed salary and preserve Plus '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('[data-ils="sell"]').click();
+  const f=page.locator('#ils-sell-form');
+  await f.locator('[name="kind"]').selectOption('Punë');
+  await f.locator('[name="name"]').fill('Mbyll job opportunity');
+  await f.locator('[name="store"]').fill('Mbyll employer');
+  await f.locator('button[type="submit"]').click();
+  await page.locator('.ils-card').filter({hasText:'Mbyll job opportunity'}).locator('[data-ils="detail"]').click();
+  await expect(page.locator('.ils-price')).toHaveText(await page.evaluate(()=>window.IllyrianI18n.t('shop:salaryUnknown')));
+  await expect(page.locator('[data-ils="add"]')).toHaveCount(0);
+  await page.locator('[data-ils="contact"]').click();
+  const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop')));
+  expect(stored.listings[0]).toMatchObject({kind:'Punë',name:'Mbyll job opportunity',price:0});
+  expect(stored.requests).toHaveLength(1);
+  expect(stored.orders).toHaveLength(0);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(before);
+ });
+}
+
+test('Shop phase 1 Plus property and job forms persist only category data',async({page})=>{
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'));
+ await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-isp-open]').click();
+ await page.locator('#isp-root [data-isp="create"]').click();
+ const f=page.locator('#isp-create');
+ await f.locator('[name="type"]').selectOption('Prona');
+ await f.locator('[name="name"]').fill('Mbyll property');await f.locator('[name="store"]').fill('Mbyll agency');
+ await f.locator('[name="price"]').fill('90000');await f.locator('[name="area"]').fill('80');
+ await expect(f.locator('[name="period"]')).toBeHidden();
+ await expect(f.locator('[name="year"]')).toBeDisabled();
+ await f.locator('button[type="submit"]').click();
+ let saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+ expect(saved).toMatchObject({type:'Prona',area:80,year:null,quantity:null});
+ await page.locator('#isp-root [data-isp^="edit:"]').click();
+ await f.locator('[name="type"]').selectOption('Punë');await f.locator('[name="price"]').fill('');
+ await expect(f.locator('[name="area"]')).toBeDisabled();
+ await f.locator('button[type="submit"]').click();
+ saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).items[0]);
+ expect(saved).toMatchObject({type:'Punë',price:0,area:null,year:null,quantity:null});
+ await expect(page.locator('#isp-root .isp-focus strong')).toHaveText('Salary not disclosed');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(before);
+ await page.reload();await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-isp-open]').click();
+ await page.locator('#isp-root [data-isp="type:Punë"]').click();
+ await expect(page.locator('#isp-root .isp-cards .isp-card').filter({hasText:'Mbyll property'})).toHaveCount(1);
+});
+
+test('Shop phase 1 business profile escapes historical data and never invents hours',async({page})=>{
+ const seller='<img src=x onerror="window.__sellerInjected=1">';
+ await page.addInitScript(s=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[{id:'legacy-profile',kind:'Produkte',name:'Historical offer',store:s,city:'Tiranë',price:5}]})),seller);
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'));
+ await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-ils="businesses"]').click();
+ await page.locator('[data-ils="business"]').filter({hasText:'View business'}).first().click();
+ const profile=page.locator('.ils-business-profile');
+ await expect(profile.locator('h2')).toHaveText(seller);
+ await expect(profile.locator('img')).toHaveCount(0);
+ await expect(profile.locator('[data-hours]')).toHaveText('Hours not provided');
+ expect(await page.evaluate(()=>window.__sellerInjected)).toBeUndefined();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(raw);
+});
+
+test('Shop phase 1 Plus business profile and mobile return preserve nested dialog',async({page})=>{
+ await page.setViewportSize({width:320,height:568});await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-isp-open]').click();
+ await page.locator('#isp-root [data-isp="tab:stores"]').click();
+ await page.locator('#isp-root [data-isp="store:Market Arbër"]').click();
+ await expect(page.locator('#isp-root .ils-business-profile h2')).toHaveText('Market Arbër');
+ await expect(page.locator('#isp-root .ils-business-profile')).toContainText('No real contact');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.keyboard.press('Escape');await expect(page.locator('#isp-root')).toHaveCount(0);
+ await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+ await page.keyboard.press('Escape');await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
+});
+
+test('Shop phase 1 locale repaint retains job draft, category label and focus',async({page})=>{
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-ils="sell"]').click();
+ const f=page.locator('#ils-sell-form');await f.locator('[name="kind"]').selectOption('Punë');
+ await f.locator('[name="name"]').fill('Mbyll user job');await f.locator('[name="store"]').fill('Mbyll user business');
+ await f.locator('[name="description"]').fill('Custom job draft');await f.locator('[name="description"]').focus();
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(f.locator('[name="description"]')).toBeFocused();
+ await expect(f.locator('[name="name"]')).toHaveValue('Mbyll user job');
+ await expect(f.locator('[name="description"]')).toHaveValue('Custom job draft');
+ await expect(f.locator('[name="kind"] option:checked')).toHaveText('Lavoro');
+ await expect(f.locator('[data-price-label]')).toContainText('facoltativa');
+ await expect(f.locator('[name="price"]')).not.toHaveAttribute('required');
+});
+
+test('Shop phase 1 query covers localized category, need description and manual city',async({page})=>{
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await page.locator('[data-ilshop-open]').first().click();
+ await page.locator('#ils-search').fill('properties');
+ await expect(page.locator('.ils-card')).toHaveCount(1);
+ await page.locator('#ils-search').fill('pastrim');await page.locator('#ils-city').selectOption('Elbasan');
+ await expect(page.locator('.ils-card')).toHaveCount(1);
+ await page.locator('#ils-city').selectOption('Tiranë');await expect(page.locator('.ils-card')).toHaveCount(0);
+ await page.locator('#ils-search').fill('');await page.locator('#ils-city').selectOption('Të gjitha');
+ await page.locator('[data-isp-open]').click();
+ await page.locator('#isp-filters [name="q"]').fill('lavoro');await page.locator('#isp-filters button[type="submit"]').click();
+ await expect(page.locator('#isp-root .isp-cards .isp-card')).toHaveCount(1);
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();await expect(page.locator('#isp-need')).toBeVisible();
+ await page.locator('#isp-need [name="type"]').selectOption('Punë');await page.locator('#isp-need [name="title"]').fill('Kërkoj punonjës demo');
+ await page.locator('#isp-need [name="budget"]').fill('800');await page.locator('#isp-need button[type="submit"]').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_shop_plus')).needs[0].type)).toBe('Punë');
 });
