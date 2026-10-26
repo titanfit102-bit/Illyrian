@@ -334,7 +334,7 @@ test('Home removes relocated panels without losing composer, Shop, or existing b
  await expect(home.locator('.v10-plan-summary')).toHaveCount(0);
  const shortcuts=home.locator('.v3-shortcuts .v3-quick');
  await expect(shortcuts).toHaveCount(2);
- expect(await shortcuts.allTextContents()).toEqual(['🏪Biznese','💼Punë']);
+ expect(await shortcuts.evaluateAll(items=>items.map(el=>el.dataset.val))).toEqual(['Biznese','Punë']);
  await expect(home.locator(':scope > .stories + .compose')).toHaveCount(1);
  await expect(home.locator('[data-ilshop-open]')).toHaveCount(1);
  await expect(home.locator('.v15-studio')).toHaveCount(1);
@@ -359,7 +359,7 @@ test('Mundësi routes intent, my activities, plans and communities via original 
  await toggle.click();
  await panel.locator('[data-ily-op-category="Aktivitetet"]').click();
  await expect(page.locator('#screen .v10-event-tabs')).toBeVisible();
- await expect(page.locator('#navbar [data-val="events"]')).toHaveAttribute('aria-current','page');
+ await expect(page.locator('#screen .v10-event-tabs button.selected')).toBeVisible();
  await expect(panel).toBeHidden();
  await page.locator('#navbar [data-val="home"]').click();
 
