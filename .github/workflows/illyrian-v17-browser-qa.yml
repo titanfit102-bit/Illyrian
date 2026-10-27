@@ -150,7 +150,19 @@ jobs:
         run: node -p "require('./security/node_modules/@playwright/test/package.json').version"
       - name: Install WebKit and CI system libraries
         if: needs.browser-scope.outputs.docs_only != 'true'
-        run: node security/node_modules/@playwright/test/cli.js install --with-deps webkit
+        run: |
+          # Azure's Ubuntu mirror timed out before tests; use Ubuntu's official archive.
+          # Existing apt signatures/keys and the locked Playwright inventory stay intact.
+          sudo python3 - <<'PYMIRROR'
+          from pathlib import Path
+          mirrors = Path('/etc/apt/apt-mirrors.txt')
+          if mirrors.exists():
+              original = mirrors.read_text()
+              updated = original.replace('http://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu').replace('https://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu')
+              if updated != original:
+                  mirrors.write_text(updated)
+          PYMIRROR
+          node security/node_modules/@playwright/test/cli.js install --with-deps webkit
       - name: Run bounded WebKit Reels and Stories keyboard smoke
         if: needs.browser-scope.outputs.docs_only != 'true'
         run: node security/node_modules/@playwright/test/cli.js test --config=playwright.webkit.config.cjs
