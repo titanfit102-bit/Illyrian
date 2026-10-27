@@ -696,801 +696,144 @@ Existing IN9-02/03/04/05/07 and IL-029 were reused; no separate numbered 3.2 che
 
 ## Marketplace programme — owner request, 26 October 2026
 
-New five-phase programme; do not confuse these numbers with historical Phase 1/3/7/8 above. Execute in order. Only programme phase 1 (ILLYRIAN Shop) is authorized for implementation in this session; STOP before phase 2. Phases 2–5 are PLANNED, not implemented. Shared section 6 applies to every phase. Apply AGENTS DEMO→APK classification automatically; no real backend, paid commerce or destructive Shop/Shop Plus merge. Phase 1 decisions/contracts/status are in blueprint §15 and CURRENT_STATE; this is the full source requirement record, not an implementation claim.
-
-### Original owner requirements (preserved in full)
-
-# ILLYRIAN — UNIFIED SHOP, SOCIAL COMMERCE, MULTI-ADMIN BUSINESS, VERIFICATION & TRUST SYSTEM
-
-Vazhdo projektin titanfit102-bit/Illyrian nga checkpoint-i më i fundit i verifikuar në GitHub.
-
-## OBJEKTIVI KRYESOR
-
-Zhvillo ILLYRIAN Shop si një marketplace modern, të integruar natyrshëm me rrjetin social, duke përfshirë zbulimin e bizneseve, katalogun e unifikuar, social commerce, promovimet, administrimin nga disa punonjës, verifikimin e bizneseve dhe sistemin e përbashkët të besimit, sigurisë dhe moderimit.
-
-## Ruaj funksionet ekzistuese, shmang dublimet dhe dallo gjithmonë mekanizmat demonstrues nga funksionet reale që kërkojnë backend, autorizime server-side dhe infrastrukturë përkatëse.
-
-## 1. ILLYRIAN SHOP — MARKETPLACE I UNIFIKUAR
-
-Analizo kodin ekzistues Shop/Shop Plus, raportin strategjik dhe modelet e suksesshme të social commerce. Mos përsërit funksione të implementuara.
-
-Përmirëso zbulimin e dyqaneve, bizneseve, produkteve dhe shërbimeve.
-
-Mbështet kërkimin sipas emrit, kategorisë, produktit, qytetit dhe nevojës.
-
-Krijo filtra të kuptueshëm dhe profile profesionale biznesi me orare, kontakt, vendndodhje opsionale, oferta dhe disponueshmëri.
-
-Shqyrto paraqitjen **Listë/Hartë**, pa e bërë GPS kusht përdorimi.
-
-Përcakto arkitekturën e një **ILLYRIAN Shop të vetëm**, që bashkon funksionet më të mira të Shop dhe Shop Plus, pa katalogë, produkte ose porosi të dyfishuara.
-
-Ruaj kategoritë **Produkte, Makina, Prona, Qira, Shërbime** dhe funksionin **“Kërkoj”**.
-
-Shto kategorinë **“Punë”** për shpallje pune dhe kërkim punonjësish, pa krijuar platformë të veçantë punësimi ose rekrutim kompleks pa nevojë të provuar.
-
-Thjeshto filtrat dhe formularët sipas kategorisë. Fushat e makinave/pronave nuk duhet të shfaqen te produktet e zakonshme.
-
-Përcakto modelin e katalogut të unifikuar për APK-në reale, por mos bashko mekanikisht ose në mënyrë destruktive localStorage të Shop dhe Shop Plus.
-
-Komisioni demonstrues **5% nuk është tarifë e miratuar**. Dallo qartë porositë, pagesat, kthimet dhe promovimet fiktive nga funksionet reale.
-
-Dokumento ekranet, veprimet, objektet e të dhënave, statuset, lejet dhe kriteret e testimit për APK-në reale.
-
-## 2. DETYRA — SOCIAL COMMERCE, PROMOTIONS & PRODUCT TAGGING
-
-Integro promovimin e bizneseve dhe lidhjen e produkteve me përmbajtjen sociale, duke ruajtur transparencën dhe sigurinë.
-
-Projekto vende promocioni natyrale në **Feed, Search, Shop, profile dhe përmbajtjen sociale**.
-
-Postimet e sponsorizuara duhet të dallohen qartë nga përmbajtja organike. Pagesa nuk duhet të paraqitet si verifikim besueshmërie.
-
-Shqyrto dhe implemento në DEMO, aty ku është e përshtatshme, etiketimin e një **biznesi në foto/postim** dhe etiketimin e një **produkti ose shërbimi**.
-
-Kur përdoruesi prek etiketën, duhet të hapet profili i biznesit ose listimi përkatës.
-
-Mbështet lidhjen e një **Reel/Story me produkt ose aktivitet**.
-
-Trajto rastet kur produkti fshihet, skadon ose nuk është më i disponueshëm.
-
-Për aplikacionin real përcakto referencat me **ID autoritative**, kontrollin e pronësisë, privatësinë, miratimin dhe moderimin.
-
-Implemento vetëm mekanizmat demonstrues të sigurt dhe specifikimet e sistemit real.
-
-## Mos aktivizo reklamim me para reale, pagesa ose abonime.
-
-## Testo etiketat, navigimin, disponueshmërinë, shfaqjen e reklamave dhe lidhjet me përmbajtjen sociale në GitHub Actions.
-
-## Dokumento ekranet, veprimet, objektet, statuset, lejet dhe kriteret e testimit për APK-në reale.
-
-## 3. DETYRA — MULTI-ADMIN BUSINESS & SHARED INBOX
-
-Përcakto dhe integro sistemin ku një dyqan ose biznes menaxhohet nga disa administratorë dhe punonjës, me llogari personale dhe autorizime të ndara.
-
-**Llogaritë, rolet dhe autorizimet**
-
-Pronari mund të ftojë, shtojë dhe largojë administratorë ose punonjës.
-
-**Secili përdor llogarinë e vet**, pa ndarë password-e.
-
-Përcakto role dhe autorizime për menaxhimin e produkteve, çmimeve, porosive, mesazheve dhe administrimit.
-
-Vetëm personat e autorizuar mund të menaxhojnë stafin dhe të dhënat sensitive.
-
-**Inbox i përbashkët dhe komunikimi**
-
-Personat e autorizuar mund t'u përgjigjen klientëve në emër të biznesit përmes një **Inbox-i të përbashkët**.
-
-Klienti sheh emrin e dyqanit si dërgues, jo detyrimisht profilin personal të punonjësit.
-
-Çdo administrator vendos nëse profili i tij personal shfaqet publikisht si pjesë e stafit. Kjo zgjedhje nuk fsheh identitetin nga pronari, auditimi ose detyrimet ligjore.
-
-Regjistro brenda administrimit cili punonjës dërgoi çdo përgjigje ose bëri çdo ndryshim.
-
-Parashiko caktimin e bisedave te punonjësit, shmangien e përgjigjeve të dyfishta, njoftimet dhe **revokimin e menjëhershëm të aksesit**.
-
-**Arkitektura dhe integrimi**
-
-Përcakto modelet e databazës, API-të, autorizimet server-side, rrjedhat UI dhe testet për Android/iOS.
-
-Integro këtë sistem me **ILLYRIAN Shop dhe panelin ekzistues të administrimit**, pa krijuar module paralele.
-
-Përgatit arkitekturën dhe specifikimet.
-
-Implemento vetëm rrjedha DEMO të sigurta brenda autorizimeve dhe testo çdo ndryshim në GitHub Actions.
-
-Dallo demonstrimin nga autorizimi real server-side.
-
-**Mos krijo llogari të përbashkëta, mos ekspozo mesazhe private jashtë autorizimeve dhe mos implemento backend real pa infrastrukturën përkatëse.**
-
-## 4. DETYRA — VERIFIED BUSINESS, TRUST BADGES & BUSINESS PRO
-
-Projekto një sistem profesional për identitetin dhe verifikimin e bizneseve, të ndarë qartë nga abonimet dhe promovimet me pagesë.
-
-**Identiteti dhe verifikimi**
-
-Përcakto regjistrimin e bizneseve dhe kërkesën për verifikimin e identitetit/pronësisë, me kontrolle proporcionale ndaj rrezikut.
-
-Dallo **profilin e zakonshëm, biznesin e deklaruar dhe biznesin e verifikuar**.
-
-Përcakto shenjat vizuale të verifikimit dhe kuptimin e saktë të tyre.
-
-Shenja **“Biznes i verifikuar”** jepet vetëm pas kontrolleve reale dhe të dokumentuara. Ajo nuk garanton cilësinë e produkteve, korrektësinë e çdo transaksioni ose siguri absolute.
-
-Kontrollo shenjat ekzistuese “i verifikuar” në profile, postime dhe biznese. Në DEMO statuset demonstrative duhet të dallohen qartë.
-
-Verifikimi bazë nuk duhet të kushtëzohet nga abonimi. Pagesa nuk garanton verifikim.
-
-Përcakto kontrollet periodike, skadimin, humbjen/revokimin e verifikimit dhe apelimin.
-
-Parashiko mbrojtje ndaj dokumenteve false, imitimit të bizneseve reale dhe keqpërdorimit të shenjave.
-
-Nëse shqyrtohet tarifë për kontrollin manual, ajo duhet të jetë transparente, e justifikuar dhe e pavarur nga rezultati.
-
-**ILLYRIAN Business Pro**
-
-Projekto **ILLYRIAN Business Pro**, abonim opsional me statistika, mjete menaxhimi, katalog të avancuar dhe promovime të etiketuara.
-
-Dallo qartë **statusin e verifikimit** nga **statusi i abonimit**.
-
-Analizo modelin e biznesit, përputhshmërinë ligjore, UX, kontratat teknike dhe testet.
-
-**Për Business Pro dhe monetizimin përgatit vetëm specifikime/propozime. Mos vendos çmime përfundimtare, mos aktivizo pagesa ose abonime dhe mos ndrysho vendimet e produktit pa miratim.**
-
-## Kontrollo statuset ekzistuese të demonstrimit, shmang dublimet dhe testo çdo përmirësim të autorizuar në GitHub Actions.
-
-## 5. DETYRA — TRUST, SAFETY & UNIFIED MODERATION
-
-Ndërto një model të sigurt dhe profesional për raportimet, moderimin dhe mbrojtjen e përdoruesve në të gjithë rrjetin social dhe marketplace.
-
-**Raportimi dhe moderimi**
-
-Përcakto raportimin e **profileve false, mashtrimeve në Shop, postimeve/videove abuzive, mesazheve të padëshiruara, ngacmimeve, kërcënimeve, reklamave mashtruese, komenteve dhe aktiviteteve problematike**.
-
-Organizo rrjedhën **report → review → decision → notification → appeal**.
-
-Unifiko raportimet e **Social, Communities, Plans dhe Shop**, me identifikues të qëndrueshëm, role, arsye vendimi dhe audit log.
-
-Mos lejo që raportimet ose vendimet të kenë statuse kontradiktore ndërmjet moduleve.
-
-**Siguria dhe mbrojtja e përdoruesve**
-
-Analizo dhe përmirëso **block, mute, privacy settings, kontrollet e kontaktit, kufizimin e spam-it dhe mbrojtjen e përdoruesve të cenueshëm**.
-
-Përcakto politikat e moshës dhe të sigurisë sipas funksioneve dhe kërkesave të platformës.
-
-**Mos krijo sistem arbitrar pikësh që i vlerëson njerëzit sipas pasurisë ose shpenzimeve.**
-
-**Administrimi dhe aplikacioni real**
-
-Përcakto rolet administrative, autorizimet server-side, audit log, ruajtjen/trajtimin e provave, apelimet dhe afatet e përgjigjes.
-
-Integroje me panelin e suportit të **Detyrës 6B**, pa ndërtuar sistem të dytë administrimi ose moderimi.
-
-Kontrollo funksionet ekzistuese dhe mos krijo dublime.
-
-Implemento vetëm përmirësimet e sigurta të DEMO-s brenda autorizimeve.
-
-Mos paraqit raportime apo vendime demonstrative si moderim real.
-
-Për aplikacionin real dokumento modelet e të dhënave, API-të, kontrollet e aksesit, proceset e moderimit dhe testet e sigurisë.
-
-Testo rrjedhat ekzistuese dhe ndryshimet e reja në GitHub Actions. Dallo qartë funksionet e implementuara nga planet.
-
-## 6. VERIFIKIMI, TESTIMI DHE DOKUMENTACIONI — PËR TË GJITHA DETYRAT
-
-Përpara çdo implementimi:
-
-Lexo CURRENT_STATE.md, MASTER_HANDOFF.md, arkitekturën, roadmap-in, raportin strategjik dhe dokumentacionin përkatës të Social, Shop/Shop Plus, Messages, Admin, Governance dhe Privacy.
-
-Analizo kodin ekzistues dhe gjendjen reale në GitHub.
-
-Verifiko degën aktive, HEAD, Draft PR, GitHub Actions dhe testet përkatëse.
-
-Identifiko çfarë është implementuar, çfarë është vetëm demonstrim dhe çfarë është planifikuar.
-
-Mos përsërit funksionalitete të përfunduara, mos krijo module apo dokumente paralele dhe respekto vendimet dhe autorizimet aktive.
-
-Gjatë zbatimit:
-
-Implemento vetëm ndryshimet e sigurta dhe të autorizuara.
-
-Testo funksionet ekzistuese dhe të reja, duke përfshirë rrjedhat dhe integrimet ndërmjet moduleve përkatëse.
-
-Verifiko testet në GitHub Actions.
-
-Dallo qartë DEMO-n nga APK-ja reale, autorizimet server-side, pagesat reale dhe funksionalitetet ende të paimplementuara.
-
-Për APK-në reale dokumento ekranet, veprimet, objektet/modelin e të dhënave, statuset, rolet, lejet, API-të, rrjedhat UI, kontrollet e aksesit, kriteret e testimit dhe testet përkatëse të Android/iOS dhe sigurisë, sipas kërkesave të secilës detyrë.
-
-**Dokumentacioni i vazhdimësisë**
-
-**Pas çdo ndryshimi domethënës të verifikuar, përditëso dhe ruaj në GitHub:**
-
-CURRENT_STATE.md
-
-MASTER_HANDOFF.md
-
-Dokumentacionin përkatës ekzistues të projektit.
-
-Regjistro ndryshimet dhe implementimet, testet dhe provat, commit-et, vendimet, problemet e hapura dhe hapat pasues.
-
-Dokumentacioni duhet të dallojë qartë çfarë është implementuar dhe verifikuar nga çfarë mbetet në plan.
-
-**Kufijtë e autorizimit**
-
-Respekto autorizimet aktive të projektit.
-
-Mos prek main ose Production.
-
-Mos bëj merge.
-
-Mos kryej veprime me rrezik të lartë pa miratim.
-
-Mos implemento backend real pa infrastrukturën përkatëse.
-
-Mos aktivizo pagesa, abonime, reklamim me para reale ose funksione komerciale pa miratimin përkatës.
-
-Mos ndrysho vendimet e produktit jashtë autorizimeve ekzistuese.
-
-Vazhdo nga checkpoint-i më i fundit i verifikuar dhe zbato detyrat duke ruajtur arkitekturën ekzistuese, integrimin ndërmjet moduleve dhe dokumentacionin e vazhdimësisë.
-
-
-### Programme phase 2 — current authorization (26 October 2026)
-
-The owner explicitly continued with phase 2 after phase 1 delivery; the prior instruction to stop before phase 2 was fulfilled, not an ongoing refusal of this new request. Only phase 2 social commerce/tags/promotions is active; stop before phase 3. The full original source above remains unchanged. Decisions, bounded plan and future contracts live in blueprint §16; exact status/tests/Preview in CURRENT_STATE. Existing activity links, Shop/Plus catalogs, data and other functions remain; no commercial activation or phase 3–5 implementation.
-
-
-### Programme phase 3 — current authorization (26 October 2026)
-
-The owner continued explicitly after phase 2 delivery. Only phase 3 business team/shared inbox is active; stop before phase 4. Original five-phase source remains unchanged. Existing Governance Work/Business is the administration integration point; no parallel admin app, personal DM import or catalog merge. DEMO flows and real contracts/permissions are separated in blueprint §17; current source/CI/Preview evidence stays in CURRENT_STATE. Phases 4–5 remain PLANNED.
-
-
-### Programme phase 4 — current authorization (27 October 2026)
-
-Owner explicitly continued after phase 3 delivery; only phase 4 identity/badges and Business Pro specifications is active. Stop before phase 5. Original full requirements above remain unchanged. Bounded DEMO badge/status clarity reuses core/Shop/Governance; no actual identity processing, subscription activation or prices. Real contracts, safeguards, business/legal/platform analysis and decisions are in blueprint §18; current CI/source/Preview evidence stays in CURRENT_STATE.
-
-
-### Programme phase 5 authorization — 27 October 2026
-
-Owner continues after phase 4 delivery. Original five-phase requirements above remain unchanged. Existing Governance is the DEMO support/review/appeal surface; the separate Task 6B historical reference remains unresolved, not fabricated. Phase 5 design, real-APK contracts/age/privacy/operations decisions and bounded tests are in blueprint §19; current verified source/CI/Preview belong in CURRENT_STATE. Stop after phase 5; no backend, paid activation or automatic release.
-
+### Kërkesat kanonike dhe gjurmueshmëria — konsolidim 27 tetor 2026
+
+Dy programet mbeten të ndara. Pesë inkrementet Shop janë dorëzuar në kufijtë DEMO; te Smart Social është përfunduar vetëm rakordimi/specifikimi 5.1 dhe regjistrimi PERFORMANCE FIRST. **5.2–5.4 mbeten PLANNED; ky konsolidim nuk autorizon implementim.** DEMO e dorëzuar nuk do të thotë backend, moderim/verifikim real, Pro, pilot ose pranim fizik i përfunduar. Gjendja/provat aktuale janë te [CURRENT_STATE](../CURRENT_STATE.md); vendimet/autorizimet afatgjata te [MASTER_HANDOFF](../MASTER_HANDOFF.md).
+
+**Burimet e verifikuara përpara redaktimit:** të dy origjinalet gjenden në commit-in `77a6d01a5079a887cb90f762b76e375009d8d794`, skedari `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`, blob `9b8a00bbc477875c024b477021de7feab865a3ec`. [S = Shop, rreshtat 697–955][source-shop]; [N = Smart Social, rreshtat 958–1496][source-social]. Origjinali rikuperohet me `git show 77a6d01a5079a887cb90f762b76e375009d8d794:demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Nuk rishkruhet histori dhe nuk krijohet kopje arkivore paralele; pjesa e roadmap-it përpara këtyre programeve ruhet e pandryshuar.
+
+Matricat burim→ID→kërkesë/destinacion më poshtë u përgatitën përpara ndryshimit dhe kontrollohen me diff pas tij. **48 zëra kanonikë mbulojnë 398 rreshtat jo bosh të pjesës së konsoliduar**; përsëritjet operative kanë një destinacion të përbashkët G1–G4/PF1. Numri i rreshtave është kontroll mbulimi, jo zëvendësim i shqyrtimit të kuptimit. Referencat e paqarta ruhen si SHQYRTIM. “SPECIFIKUAR/BACKEND” do të thotë kontratë pa shërbim të ndërtuar; “VENDIM” nuk është miratim. Kërkesat/prioriteti/pranimi ruhen këtu; kontratat ekzistuese vetëm referohen: [Shop §15][b15], [social commerce §16][b16], [staf §17][b17], [identitet/Pro §18][b18], [moderim §19][b19], [5.1 §20][b20].
+
+### Shop — qëllimi
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH0 | S:697–711 | Marketplace i integruar me rrjetin social: zbulim biznesesh, katalog i unifikuar, social commerce/promovime, staf, verifikim dhe besim/siguri/moderim. Pesë faza në rend; numërim i pavarur nga QA historike 1/3/7/8. Funksionet ekzistuese ruhen; pa dublime ose barazim DEMO=shërbim real. | Pesë inkrementet DEMO të dorëzuara brenda kufijve të provave; shih historikun H2–H5 dhe §§15–19. |
+
+### Shop 1 — marketplace
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH1-A | S:713–721 | Zbulim dyqanesh/biznesesh/produktesh/shërbimesh; kërkim sipas emrit, kategorisë, produktit, qytetit dhe nevojës; filtra të kuptueshëm dhe profile me orare, kontakt, vendndodhje opsionale, oferta/disponueshmëri. Shqyrtimi përdor Shop/Plus, raportin strategjik dhe modelet social-commerce pa ribërë funksione. | DEMO discovery/profile/search të dorëzuara; oraret/kontakti/disponueshmëria fiktive ose të panjohura. Realiteti i tyre BACKEND; §15. |
+| SH1-B | S:723–725 | Vlerësim Listë/Hartë me GPS jo të detyrueshëm; një ILLYRIAN Shop real me më të mirat e Shop/Plus, pa katalogë, produkte ose porosi të dyfishuara. | Listë DEMO; harta/provider pret VENDIM. Katalogu real i vetëm SPECIFIKUAR/BACKEND, jo bashkim DEMO; §15. |
+| SH1-C | S:727–731 | Ruaj Produkte, Makina, Prona, Qira, Shërbime dhe Kërkoj; Punë për shpallje/kërkim punonjësish, pa platformë punësimi/rekrutim kompleks pa nevojë të provuar. Filtra/formularë sipas kategorisë; fusha makine/prone jo te produktet e zakonshme. | DEMO e dorëzuar; domain codes historike ruhen. Rekrutimi real/MVP pret VENDIM; §15. |
+| SH1-D | S:733–737 | Model i unifikuar për APK, pa bashkim mekanik/destruktiv localStorage. 5% është ilustrim, jo tarifë e miratuar; porositë/pagesat/kthimet/promovimet fiktive dallohen nga realet. Dokumento kontratat dhe pranimin sipas G2. | Kufizim aktiv; katalogu/API/pranimi SPECIFIKUAR, shërbimi BACKEND dhe monetizimi VENDIM; §15. |
+
+### Shop 2 — social commerce
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH2-A | S:739–745 | Promovim transparent e i sigurt në Feed, Search, Shop, profile dhe përmbajtjen sociale; sponsorizimi dallohet nga organikja, pagesa nuk është verifikim besueshmërie. | Shembuj/disclosure DEMO të dorëzuara; reklamimi real i paaktivizuar; §16. |
+| SH2-B | S:747–753 | Etiketa biznesi në foto/postim dhe produkti/shërbimi hapin profilin/listimin përkatës; Reel/Story lidhet me produkt ose aktivitet. Trajto fshirjen, skadimin dhe padisponueshmërinë. | DEMO e dorëzuar me referenca të burimit; lidhjet ekzistuese të aktivitetit ruhen; §16. |
+| SH2-C | S:755–759 | Në aplikacionin real: ID autoritative, pronësi, privatësi, miratim dhe moderim. Në DEMO vetëm mekanizma të sigurt; pa reklamim me para, pagesa ose abonime. | SPECIFIKUAR/BACKEND; kufizimi komercial aktiv; §16. |
+| SH2-D | S:761–763 | Pranim: etiketa, navigim, disponueshmëri, shfaqje reklamash dhe lidhje me përmbajtjen sociale në GitHub Actions; kontrata ekran/veprim/objekt/status/leje/test sipas G2. | Prova DEMO te CURRENT_STATE, jo certifikim real; §16. |
+
+### Shop 3 — staf dhe inbox
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH3-A | S:765–777 | Biznesi menaxhohet nga disa persona me llogari personale, pa password/llogari të përbashkëta. Pronari fton/shton/largon; role për produkte, çmime, porosi, mesazhe dhe administrim. Vetëm të autorizuarit menaxhojnë staf/të dhëna sensitive. | Rrjedha fiktive stafi DEMO; matricë lejesh SPECIFIKUAR, identitet/ACL reale BACKEND; §17. |
+| SH3-B | S:779–787 | Inbox biznesi: të autorizuarit përgjigjen si dyqani; klienti nuk duhet të shohë detyrimisht profilin personal. Çdo administrator zgjedh dukshmërinë publike të stafit; zgjedhja nuk fsheh identitetin nga pronari, auditimi ose detyrimet ligjore. Regjistro aktorin e çdo përgjigjeje/ndryshimi. | DEMO e dorëzuar, e ndarë nga Messages personale; audit/identitet real BACKEND; §17. |
+| SH3-C | S:789–797 | Caktim bisedash, shmangie përgjigjesh të dyfishta, njoftime dhe revokim i menjëhershëm aksesi. Integro Shop me panelin ekzistues; databazë/API/ACL server-side/UI/teste Android+iOS të specifikuara, pa module paralele. | Caktim/rol/reply lokal DEMO; realtime/revoke atomik/notification delivery BACKEND; §17. |
+| SH3-D | S:799–803 | Vetëm rrjedha DEMO të autorizuara e të testuara në Actions; mos i paraqit si autorizim server-side. Pa llogari të përbashkëta, ekspozim mesazhesh private jashtë lejeve ose backend pa infrastrukturë/autorizim. | Kufizim aktiv; prova te CURRENT_STATE, kontrata §17. |
+
+### Shop 4 — identitet dhe Pro
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH4-A | S:805–819 | Regjistrim/kërkesë verifikimi identiteti e pronësie me kontrolle proporcionale. Dallo profil të zakonshëm, biznes të deklaruar dhe të verifikuar; shenja me kuptim të saktë në profile/postime/biznese. Verifikim vetëm pas kontrolleve reale të dokumentuara, pa garanci cilësie/transaksioni/sigurie absolute; shenjat DEMO shënohen si të tilla. | Sqarimi vizual DEMO i dorëzuar; regjistrim/verifikim real SPECIFIKUAR/BACKEND; §18. |
+| SH4-B | S:821–827 | Verifikimi bazë i pavarur nga abonimi/pagesa; kontrolle periodike, skadim, humbje/revokim dhe apelim; mbrojtje nga dokumente false, imitim biznesi dhe keqpërdorim shenjash. Tarifë e mundshme kontrolli manual vetëm transparente, e justifikuar dhe e pavarur nga rezultati. | SPECIFIKUAR/BACKEND; tarifë/provider/politikë reale VENDIM, pa aktivizim; §18. |
+| SH4-C | S:829–837 | Business Pro opsional: statistika, mjete menaxhimi, katalog i avancuar dhe promovime të etiketuara. Status abonimi veç verifikimit; analizë modeli biznesi, ligjore, UX, kontrata/teste. Vetëm propozime; pa çmime finale, pagesa, abonime ose ndryshim vendimesh pa miratim. | PLANNED/propozim, jo Pro i implementuar; §18. |
+| SH4-D | S:839 | Kontrollo statuset demonstrative ekzistuese, shmang dublime dhe verifiko përmirësimet e autorizuara në GitHub Actions. | Prova DEMO te CURRENT_STATE; kriteri mbetet për ndryshimet e ardhshme. |
+
+### Shop 5 — besim dhe moderim
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH5-A | S:841–853 | Raportim për profile false, mashtrime Shop, postime/video abuzive, mesazhe të padëshiruara, ngacmime, kërcënime, reklama mashtruese, komente/aktivitete problematike. Report→review→decision→notification→appeal unifikon Social, Communities, Plans, Shop: ID të qëndrueshme, role, arsye/audit dhe pa statuse kontradiktore. | Overlay/read projections DEMO i dorëzuar; jo moderim real. ID individuale/evidence/enforcement BACKEND; §19. |
+| SH5-B | S:855–861 | Block, mute, privacy settings, kontrolle kontakti, anti-spam dhe mbrojtje të cenueshmish; politika moshe/sigurie sipas funksionit/platformës. Ndalo pikëzimin arbitrar sipas pasurisë/shpenzimeve. | Block/mute/preferenca lokale DEMO; mbrojtja reale BACKEND, politikat e moshës VENDIM; §19. |
+| SH5-C | S:863–875 | Role administrative/ACL server-side, audit, ruajtje/trajtim provash, apelime/afate përgjigjeje; modele/API/procese/teste sigurie. Integro panelin e suportit të Detyrës 6B, pa admin/moderim të dytë ose dublime; vetëm DEMO e sigurt, pa pretendim vendimi real. | Governance ekzistues ripërdoret; “Detyra 6B” referencë e paidentifikuar, ruhet për SHQYRTIM. Operacionet/SLA BACKEND/VENDIM; §19. |
+| SH5-D | S:877 | Pranim: rrjedhat ekzistuese dhe ndryshimet e reja në GitHub Actions; implementimi ndahet nga plani. | Prova të kufizuara DEMO te CURRENT_STATE; funksionet reale nuk deklarohen të përfunduara. |
+
+### Rregulla të përbashkëta — referenca kanonike
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| G1 | S:879–891; N:1220; N:1426–1438 | Para ndryshimit: CURRENT_STATE, MASTER_HANDOFF, blueprint/roadmap, raporti strategjik dhe dokumentet/kodi relevant Social, Shop/Plus, Messages, Admin, Governance, Privacy; LIVE branch/HEAD/Draft PR/Actions/teste/autorizime. Klasifiko implementim, DEMO, plan dhe hipotezë; ruaj dizajn/vendime, mos përsërit punë ose dokumente/module. | Rregull kanonik: AGENTS “Identify the correct project”, “DEMO vs APK”, “Per-change engineering gate”. |
+| G2 | S:893–903; N:1440–1454 | Vetëm ndryshime të sigurta/autorizuara, me regresione dhe integrime ekzistuese/të reja në Actions, ndikim performance/siguri/privacy/a11y. DEMO nuk zëvendëson backend/validim real. APK: ekranet, veprimet, modelet/objektet, statuset, rolet/lejet, API/UI/access, kritere pranimi dhe teste Android/iOS/sigurie. | Politika në AGENTS; kontratat në blueprint §§15–20 dhe §§8/12–13, jo backend i ndërtuar. |
+| G3 | S:905–917; N:1042; N:1116; N:1246; N:1390; N:1464–1496 | Çdo inkrement domethënës i verifikuar ka gjurmë në GitHub: ndryshim/implementim, prova/teste/rezultate, SHA, vendim/arsye, kufizim/problem/hap pasues dhe matje para/pas kur relevante. Përditëso dokumentet ekzistuese sipas rolit, kontratat/APK kur preken; ruaj historikun dhe rikuperimin e PERFORMANCE FIRST. | AGENTS “Lossless documentation and traceability”; CURRENT_STATE=status/hapi, MASTER_HANDOFF=vendime/kontekst, blueprint=kontrata, roadmap=kërkesa. Udhëzimi i ri i konsolidimit zëvendëson kopjimin fjalë për fjalë, jo kërkesat. |
+| G4 | S:919–935; N:1244; N:1248; N:1392; N:1456–1462 | Dega e autorizuar/Draft PR; pa main/Production/merge, projekte të tjera, shkelje vendimesh ose ndryshime madhore/destruktive/rreziku jashtë miratimit. Backend/infrastrukturë, shërbime me pagesë, pagesa/abonime/reklama reale/funksione komerciale kërkojnë miratim e infrastrukturë përkatëse; analiza e nevojës/alternativave paraprin shpenzimin. | Kufij aktivë në AGENTS dhe autorizimet MASTER_HANDOFF; F06 i shtyrë për fazën reale. |
+
+<a id="programme-phase-2--current-authorization-26-october-2026"></a>
+<a id="programme-phase-3--current-authorization-26-october-2026"></a>
+<a id="programme-phase-4--current-authorization-27-october-2026"></a>
+<a id="programme-phase-5-authorization--27-october-2026"></a>
+
+### Historiku i autorizimeve Shop
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| H2 | S:938–940 | Pas ndalesës së fazës 1, pronari hapi vetëm fazën 2; ndalesë para 3. Ruhen lidhjet e aktiviteteve, katalogët/të dhënat dhe funksionet e tjera; pa aktivizim komercial. | HISTORIK i përmbushur, jo scope aktiv; kontrata §16, provat CURRENT_STATE. |
+| H3 | S:943–945 | Pas fazës 2, u autorizua vetëm 3; ndalesë para 4. Governance Work/Business ekzistues; pa panel paralel, import DM personale ose bashkim katalogësh. | HISTORIK i përmbushur; fazat 4–5 u hapën më pas; kontrata §17. |
+| H4 | S:948–950 | Pas fazës 3, u autorizua vetëm 4; ndalesë para 5. Qartësi e shenjave me core/Shop/Governance dhe specifikime Pro; pa përpunim real identiteti, abonime ose çmime. | HISTORIK i përmbushur; kontrata §18. |
+| H5 | S:953–955 | Pas fazës 4, u autorizua 5 dhe ndalesa pas saj. Governance si suport/review/appeal ekzistues; 6B e pazgjidhur, pa shpikje. Pa backend, aktivizim me pagesë ose release automatik. | HISTORIK i përmbushur; kontrata §19. Nuk autorizon program të ri. |
 
 ## Smart social programme — owner source 27 October 2026
 
-Separate from the delivered five-phase Shop programme. Verbatim source below; only 5.1 and minimal PERFORMANCE FIRST registration authorized now.
-
-Vazhdo ILLYRIAN nga gjendja më e fundit reale në GitHub.
-
-Lexo të gjithë dokumentin e bashkëngjitur dhe ruaj 100% të kërkesave në dokumentacionin kanonik ekzistues, pa dublime dhe pa humbur vendimet e mëparshme.
-
-Ky është program i ri zhvillimi; mos e ngatërro dhe mos e zëvendëso me programin ekzistues pesëfazor të Shop.
-
-Kontrollo varësitë dhe mbivendosjet mes dy programeve, si dhe referencat K1–K8, O1–O8/N1–N3 dhe Detyra 2. Mos shpik vendime ose miratime që nuk gjenden në dokumentacion.
-
-Zbato automatikisht politikën DEMO → APK në [AGENTS.md](http://agents.md/): implemento vetëm çfarë është e nevojshme për DEMO-n dhe dokumento pjesën tjetër për APK-në reale.
-
-Regjistro standardin e përhershëm PERFORMANCE FIRST në [AGENTS.md](http://agents.md/), duke ruajtur rregullat ekzistuese dhe duke shmangur dokumentacionin paralel.
-
-**Fillo vetëm me Detyrën 5.1**, për aq sa nuk përsërit punën e përfunduar dhe nuk ndërhyn në faza të tjera të paautorizuara. Kryej ndryshimet e sigurta, testet dhe përditësimet e nevojshme në GitHub, pastaj ndalo përpara 5.2.
-
-Mos ndrysho arkitekturën madhore, mos fshi funksione, mos bëj merge dhe mos prek Production.
-
-# KUFIRI I EKZEKUTIMIT: Të pesë fazat e programit ekzistues Shop janë dorëzuar në kufijtë e DEMO-s dhe nuk duhen përsëritur. Për këtë ekzekutim autorizohet vetëm Detyra 5.1 dhe regjistrimi minimal i standardit PERFORMANCE FIRST. Detyrat 5.2–5.4 ruhen si specifikime për më vonë, pa implementim. Përpara çdo ndryshimi, krahaso çdo kërkesë me funksionet ekzistuese dhe dokumento vetëm diferencën reale. K1–K8, O1–O8 dhe N1–N3 janë burime rekomandimesh, jo autorizim automatik. Mos bashko inbox-et personale, të biznesit dhe të moderimit në një burim të përbashkët pa kontrata të miratuara të aksesit. Mos ndrysho dizajnin aktiv mbi bazën e një reference të paidentifikuar si “Detyra 2”. Ruaj kërkesat origjinale një herë në dokumentacionin kanonik dhe përdor referenca në dokumentet e vazhdimësisë. Respekto politikën DEMO → APK, F06 të shtyrë për aplikacionin real dhe ndalimin e merge/Production.   ILLYRIAN — SMART SOCIAL INTEGRATION, PRODUCT SIMPLIFICATION, PROFESSIONAL MEDIA & MAXIMUM PERFORMANCE
-
-Vazhdo projektin titanfit102-bit/Illyrian nga checkpoint-i më i fundit i verifikuar në GitHub.
-
-## OBJEKTIVI KRYESOR
-
-Përmirëso integrimin inteligjent të funksioneve sociale, thjeshto produktin dhe arkitekturën e të dhënave, zhvillo sistemin profesional të medias dhe siguro performancë maksimale në Android, iOS dhe desktop.
-
-## Ruaj funksionalitetet e miratuara, dizajnin ekzistues dhe arkitekturën e autorizuar. Mos përsërit punë të përfunduar, mos krijo dublime dhe dallo qartë funksionet reale nga simulimet e DEMO-s dhe specifikimet për APK-në e ardhshme.
-
-## 1. DETYRA 5.1 — SMART SOCIAL INTEGRATION
-
-**Objektivi**
-
-Integro rekomandimet e miratuara pa e mbingarkuar aplikacionin. Përdoruesi duhet të kalojë natyrshëm nga një postim ose Reel te aktiviteti, biznesi, produkti, kërkesa ose biseda përkatëse.
-
-**Analiza dhe përmirësimet**
-
-Shqyrto rekomandimet **K1–K8 dhe O1–O8/N1–N3** nga raportet.
-
-Dallo qartë drejtimet e miratuara, hipotezat dhe funksionet realisht të implementuara.
-
-Analizo dhe përmirëso:
-
-**Inbox-in e përbashkët** për veprime, kërkesa dhe konfirmime.
-
-Lidhjet kontekstuale ndërmjet **Feed, Plans, Messages dhe Shop**.
-
-Statuset e kuptueshme të aktiviteteve, listimeve dhe kërkesave.
-
-Privatësinë dhe dukshmërinë e çdo veprimi.
-
-Kërkimin dhe filtrat që ndihmojnë përdoruesin të arrijë rezultatin.
-
-Ripërdorimin e funksioneve ekzistuese, pa krijuar kopje.
-
-**Implementimi dhe kufizimet**
-
-Implemento rrjedhat e përshtatshme dhe të testueshme në DEMO.
-
-Mos paraqit simulimet lokale si autorizim server-side, mesazhe realtime ose transaksione reale.
-
-Funksionet që kërkojnë validim përdoruesish ose backend real dokumentoji si **kontrata dhe skenarë pranimi për APK**, pa krijuar zgjidhje të rreme.
-
-**Verifikimi specifik**
-
-Testo:
-
-Navigimin ndërmjet moduleve.
-
-Statuset.
-
-Përmbajtjen private.
-
-Bllokimin.
-
-Gjuhët.
-
-Rikuperimin e draftit.
-
-Rastet kur përmbajtja nuk disponohet më.
-
-Mos paraqit hipoteza si vendime apo funksione të përfunduara.
-
-## Pas çdo inkrementi domethënës të verifikuar, dokumento ndryshimet, testet, vendimet, arsyet dhe hapat pasues.
-
-## 2. DETYRA 5.2 — PRODUCT SIMPLIFICATION & AUTHORITATIVE DATA MODEL
-
-**Objektivi**
-
-Thjeshto produktin, elimino dublimet dhe përcakto arkitekturën koherente të aplikacionit real, pa humbur funksionalitete të miratuara.
-
-**Analiza dhe thjeshtimi**
-
-Analizo ekranet, butonat, filtrat dhe mekanizmat e dyfishtë ose të panevojshëm.
-
-Thjeshto vetëm kur nuk humbet funksionalitet i miratuar.
-
-Identifiko dhe dokumento konfliktet e gjendjes ndërmjet **Feed, Shop, Shop Plus, Plans, Connections, Privacy/Map dhe Governance**.
-
-Përcakto funksionet që duhen bashkuar, thjeshtuar ose shtyrë, duke respektuar vendimet ekzistuese.
-
-**Modeli autoritativ i të dhënave**
-
-Për aplikacionin real përcakto **një burim autoritativ të dhënash** për çdo:
-
-Përdorues.
-
-Listim.
-
-Aktivitet.
-
-Mesazh.
-
-Raportim.
-
-Vendim moderimi.
-
-Çdo objekt duhet të ketë:
-
-**ID**.
-
-**Pronar**.
-
-**Status**.
-
-**Leje aksesi**.
-
-**Rregulla për ndryshimet e njëkohshme**.
-
-Produkti i lidhur në **Reel, Feed ose Message** duhet të referojë të njëjtin listim në **Shop**.
-
-E njëjta kërkesë zbatohet për aktivitetet e lidhura në disa module.
-
-**Kufizimet dhe vendimet**
-
-Mos transfero mekanikisht arkitekturën e DEMO-s në APK-në reale.
-
-Mos fshi funksione të dobishme.
-
-Mos ndrysho arkitekturën madhore pa miratimin përkatës.
-
-Ruaj historikun e vendimeve dhe arsyet e çdo ndryshimi.
-
-Përgatit kontratat dhe skenarët e pranimit që kërkon aplikacioni real.
-
-Dallo projektimin nga implementimi.
-
-**Verifikimi specifik**
-
-Testo ndryshimet e autorizuara në DEMO, veçanërisht:
-
-Përputhshmërinë e referencave.
-
-Përputhshmërinë e statuseve.
-
-Përputhshmërinë e të dhënave ekzistuese.
-
-Pas çdo ndryshimi domethënës të verifikuar, përditëso edhe dokumentacionin e kontratave në GitHub, duke regjistruar testet, vendimet, commit-et, problemet dhe hapat pasues.
-
-## Mos kryej ndryshime destruktive ose madhore pa miratim.
-
-## 3. DETYRA 5.3 — PROFESSIONAL MEDIA SYSTEM
-
-**Objektivi**
-
-Përmirëso shpejtësinë, cilësinë vizuale, stabilitetin dhe sigurinë e fotove, videove, Stories dhe Reels, përfshirë telefonat e dobët dhe internetin e ngadaltë.
-
-**Analiza e medias**
-
-Analizo dhe përmirëso:
-
-Ngarkimin e fotove dhe videove.
-
-Median në **Feed**.
-
-**Stories/Reels**.
-
-Fotot e profilit.
-
-Median në **Messages**.
-
-Fotot e produkteve dhe bizneseve.
-
-Etiketimin e produkteve dhe bizneseve në media.
-
-Respekto dizajnin e miratuar në **Detyrën 2**. Mos ndrysho dizajnin aktiv nëse miratimi përkatës mungon.
-
-**Optimizimi dhe funksionalitetet**
-
-Përcakto dhe zbato aty ku është e përshtatshme për DEMO-n:
-
-Kompresimin, madhësitë e imazheve, thumbnails dhe formatet moderne.
-
-Streaming dhe cilësi adaptive video kur justifikohen.
-
-Lazy loading, pagination dhe caching.
-
-Sjelljen në rrjet të dobët ose pa internet.
-
-Kufizimin e konsumit të memories dhe baterisë.
-
-Ngarkimet e ndërprera, retry dhe dështimet e ruajtjes.
-
-Kufijtë e skedarëve dhe medias për përdoruesit e bizneset.
-
-Fshirjen e medias dhe trajtimin e gabimeve.
-
-**Siguria dhe privatësia**
-
-Përcakto:
-
-Kontrollet e aksesit për median private.
-
-Validimin e skedarëve.
-
-Heqjen sipas rastit të metadata-ve sensitive.
-
-Moderimin dhe raportimet.
-
-Mos premto pamundësi absolute të kopjimit të medias private.
-
-**Arkitektura për APK-në reale**
-
-Dokumento kontratat për:
-
-Android/iOS.
-
-Backend.
-
-Storage.
-
-Përpunim video.
-
-Njoftime.
-
-Integrim me Feed/Shop.
-
-Strategjinë caching/thumbnails/compression/streaming.
-
-Dallo teknologjitë e propozuara nga ato të miratuara.
-
-**Matjet dhe kriteret e pranimit**
-
-Përcakto matje dhe kritere pranimi për:
-
-Hapjen.
-
-Ngarkimin e Feed/Stories/Reels.
-
-Madhësinë e medias.
-
-Memorien.
-
-Baterinë.
-
-Ekranet e vogla.
-
-Rrjetet e ngadalta.
-
-**Testimi dhe kufizimet**
-
-Inspekto kodin dhe dokumentacionin përpara ndryshimeve.
-
-Implemento përmirësime të kontrolluara në DEMO, pa dëmtuar funksionet ose dizajnin.
-
-Testo:
-
-Ngarkimin e medias.
-
-Gabimet.
-
-Ndërprerjet.
-
-Retry.
-
-Performancën.
-
-Aksesueshmërinë.
-
-Privatësinë.
-
-Kufijtë e medias.
-
-Fshirjen e medias.
-
-**Mos aktivizo infrastrukturë reale me pagesë pa miratim dhe pa analizuar nevojat dhe alternativat.**
-
-## Pas çdo ndryshimi domethënës të verifikuar, përditëso edhe dokumentacionin e APK-së në GitHub, me rezultatet, testet, vendimet dhe hapat pasues.
-
-## Respekto degën e autorizuar, Draft PR dhe kufijtë ekzistues për merge, Production dhe veprime të rrezikshme.
-
-## 4. DETYRA 5.4— MAXIMUM PERFORMANCE & ULTRA-SMOOTH EXPERIENCE
-
-**Objektivi**
-
-ILLYRIAN duhet të jetë jashtëzakonisht i shpejtë, i rrjedhshëm dhe reaktiv në **Android, iOS dhe desktop**, duke respektuar kufizimet reale të pajisjes dhe rrjetit.
-
-**Performanca është kërkesë themelore gjatë gjithë zhvillimit, jo optimizim vetëm në fund.**
-
-**Optimizimi i aplikacionit**
-
-Optimizo:
-
-Hapjen e aplikacionit.
-
-Navigimin.
-
-Feed.
-
-Stories/Reels.
-
-Messages.
-
-Communities.
-
-Plans.
-
-Search.
-
-Shop.
-
-Profile.
-
-Funksionet e tjera.
-
-Syno:
-
-Scroll dhe animacione të rrjedhshme.
-
-Përgjigje të menjëhershme vizuale ndaj prekjes.
-
-**60 FPS** në pajisjet përfaqësuese që e mbështesin.
-
-**Bisedat dhe menaxhimi i të dhënave**
-
-Përmirëso bisedat e gjata me:
-
-Ngarkim gradual.
-
-Sinkronizim efikas.
-
-Pa humbje të dhënash.
-
-Përdor:
-
-Lazy loading.
-
-Pagination.
-
-Caching.
-
-Preloading selektiv.
-
-Optimizim foto/video.
-
-Zbato këto teknika kur përfitimi është i matshëm.
-
-**Backend dhe arkitektura për aplikacionin real**
-
-Optimizo kërkimin, databazën, API-të dhe komunikimin backend për aplikacionin real, duke shmangur kërkesat e tepërta.
-
-Menaxho:
-
-Memorien.
-
-Baterinë.
-
-Rrjetin e dobët.
-
-Ndërprerjet.
-
-Rikuperimin pas gabimeve.
-
-Shmang renderimet dhe llogaritjet e panevojshme.
-
-Përdor lista virtuale për përmbajtje shumë të gjatë kur nevojitet.
-
-**Objektivat e matshëm**
-
-Përcakto objektiva të matshëm për:
-
-Hapjen e aplikacionit.
-
-Reagimin e UI-së.
-
-Scroll.
-
-Navigimin.
-
-Kërkimin.
-
-Dërgimin e mesazheve.
-
-**Metoda e matjes dhe optimizimit**
-
-**Së pari mat gjendjen aktuale**, identifiko ngadalësimet, pastaj optimizo sipas ndikimit.
-
-Krahaso rezultatet **para/pas** dhe testo regresionet.
-
-Vlerëso:
-
-Telefona Android mesatarë.
-
-iPhone.
-
-Rrjete të ngadalta.
-
-Lista me shumë të dhëna.
-
-Në mungesë të pajisjeve reale, shëno testet si **të papërfunduara, jo PASS**.
-
-Vlerëso DEMO-n dhe APK-në reale veçmas.
-
-Mos pretendo performancë native vetëm nga Chromium.
-
-Për APK-në ende të pandërtuar përgatit kriteret dhe planin e matjeve.
-
-**Mos sakrifiko sigurinë, privatësinë, aksesueshmërinë, saktësinë e të dhënave ose funksionalitetet për shpejtësi.**
-
-**Dokumentacioni i performancës**
-
-Për çdo modul dokumento:
-
-Objektivat e performancës.
-
-Rezultatet.
-
-Kufizimet.
-
-Testet e performancës.
-
-Pas çdo ndryshimi domethënës të verifikuar, regjistro matjet para/pas, ndryshimet, testet, commit-et, vendimet dhe hapat pasues në dokumentacionin e GitHub.
-
-## Mos ndrysho arkitekturën madhore, mos aktivizo shërbime me pagesë dhe mos prek Production jashtë autorizimeve.
-
-## 5. RREGULL I PËRHERSHËM — PERFORMANCE FIRST
-
-**Shpejtësia, efikasiteti dhe stabiliteti i ILLYRIAN janë prioritete të detyrueshme në çdo fazë zhvillimi.**
-
-Regjistro këtë standard në:
-
-CURRENT_STATE.md
-
-MASTER_HANDOFF.md
-
-Dokumentacionin përkatës të arkitekturës.
-
-Standardi duhet të rikuperohet automatikisht në çdo bisedë të ardhshme.
-
-Për çdo funksionalitet, ndryshim kodi ose përmirësim, kontrollo ndikimin në:
-
-Performancë.
-
-Përdorimin e memories.
-
-Baterinë.
-
-Rrjedhshmërinë e ndërfaqes.
-
-Kontrollet duhet të jenë proporcionale me rëndësinë e ndryshimit.
-
-## Optimizimi duhet të jetë pjesë e implementimit dhe testimit, jo një korrigjim që shtyhet për në fund.
-
-## Mos sakrifiko sigurinë, privatësinë, aksesueshmërinë ose saktësinë e funksioneve për shpejtësi.
-
-## Pas çdo ndryshimi domethënës të verifikuar, përditëso dokumentacionin e vazhdimësisë dhe regjistro rezultatet përkatëse të performancës.
-
-## 6. VERIFIKIMI, AUTORIZIMET DHE DOKUMENTACIONI — PËR TË GJITHA DETYRAT
-
-**Përpara implementimit**
-
-Lexo CURRENT_STATE.md, MASTER_HANDOFF.md, blueprint-in, raportet përkatëse, dokumentacionin e arkitekturës dhe kodin ekzistues.
-
-Verifiko gjendjen reale në GitHub, degën aktive, HEAD, Draft PR, testet dhe autorizimet aktive.
-
-Dallo funksionet e implementuara, drejtimet e miratuara, hipotezat dhe specifikimet për aplikacionin real.
-
-Mos përsërit punë të përfunduar.
-
-Respekto arkitekturën, funksionalitetet, dizajnin dhe vendimet ekzistuese.
-
-**Gjatë implementimit**
-
-Vazhdo vetëm brenda autorizimeve ekzistuese.
-
-Implemento përmirësime të sigurta, të kontrolluara dhe të testueshme në DEMO.
-
-Mos krijo zgjidhje të rreme për funksionet që kërkojnë backend real ose validim përdoruesish.
-
-Mos paraqit simulimet si funksione reale.
-
-Ruaj funksionalitetet dhe të dhënat ekzistuese.
-
-Testo ndryshimet dhe regresionet përkatëse.
-
-Vlerëso ndikimin në performancë, siguri, privatësi dhe aksesueshmëri.
-
-Mos prek mjedise të mbrojtura ose projekte të tjera.
-
-Mos kryej ndryshime destruktive, madhore ose me rrezik të lartë pa miratimin përkatës.
-
-Mos ndrysho arkitekturën madhore dhe mos aktivizo shërbime ose infrastrukturë reale me pagesë jashtë autorizimeve.
-
-Respekto kufijtë ekzistues për degën e autorizuar, Draft PR, merge dhe Production.
-
-**Dokumentacioni i vazhdimësisë**
-
-**Pas çdo ndryshimi ose inkrementi domethënës të verifikuar, përditëso dhe ruaj në GitHub:**
-
-CURRENT_STATE.md
-
-MASTER_HANDOFF.md
-
-Dokumentacionin përkatës të arkitekturës.
-
-Dokumentacionin e kontratave dhe APK-së, kur lidhet me ndryshimin.
-
-Regjistro:
-
-Ndryshimet e implementuara.
-
-Testet dhe rezultatet.
-
-Matjet para/pas të performancës, sipas rastit.
-
-Commit-et.
-
-Vendimet dhe arsyet e tyre.
-
-Kufizimet.
-
-Problemet e hapura.
-
-Hapat pasues.
-
-Ruaj historikun e vendimeve dhe siguro që çdo bisedë e ardhshme mund të rikuperojë gjendjen e projektit dhe standardin e përhershëm **PERFORMANCE FIRST**.
-
-Vazhdo nga checkpoint-i më i fundit i verifikuar, pa humbur funksionalitete të miratuara dhe pa tejkaluar autorizimet ekzistuese.
+### Smart Social — scope dhe varësi
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS0 | N:958–986 | Program i veçantë: integrim social, thjeshtim produkti/të dhënave, media profesionale dhe performancë Android/iOS/desktop. Krahaso me punën ekzistuese dhe dokumento vetëm diferencën; ruaj 100% kërkesat unike, vendimet, funksionet/dizajnin/arkitekturën. Autorizimi fillestar vetëm 5.1 + PERFORMANCE FIRST, ndalesë para 5.2; 5.2–5.4 specifikime të ardhshme, jo implementim. | 5.1 përfundoi vetëm si rakordim/specifikim, pa kod të ri; PERFORMANCE FIRST në AGENTS. Shop nuk rihapet. Kufijtë e inbox/design/rekomandimeve në SS1-A/B; kufijtë DEMO/F06/merge/Production në G1–G4. |
+
+### 5.1 — integrimi social
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS1-A | N:988–1000 | Rekomandimet K1–K8 dhe O1–O8/N1–N3 shqyrtohen pa mbingarkim: ndaji miratimet, hipotezat dhe implementimet. Postim/Reel→aktivitet, biznes, produkt, kërkesë ose bisedë përkatëse; asnjë rekomandim nuk autorizon automatikisht zbatim. | RAKORDUAR: O1–O8 kushtore, lidhje me raportin dhe hartë në §20. K1–K8/N1–N3 të paidentifikuara, SHQYRTIM, pa shpikje ose zëvendësim me kode të tjera. |
+| SS1-B | N:1002–1016 | Inbox veprimesh/kërkesash/konfirmimesh; lidhje Feed/Plans/Messages/Shop, statuse të kuptueshme aktivitet/listim/kërkesë, privatësi/dukshmëri për çdo veprim, kërkim/filtra drejt rezultatit dhe ripërdorim funksionesh. Inbox personal/biznes/moderim nuk bashkohen në një burim pa kontrata aksesi të miratuara (N978). | Rrjedhat ekzistuese DEMO ripërdoren; action-inbox mbetet PROPOZIM/VENDIM me burime/leje të ndara, jo implementim; §20. |
+| SS1-C | N:1018–1040 | Vetëm rrjedha DEMO të testueshme; pa pretendim server-side/realtime/transaksioni. Backend/validim përdoruesish ruhet në kontrata/pranim APK, jo zgjidhje të rreme. Pranim: navigim ndërmodule, statuse, përmbajtje private, block, gjuhë, rikuperim drafti, përmbajtje e padisponueshme; hipotezat nuk janë vendime/dorëzime. | Rakordimi/specifikimi i përfunduar; prova të kufizuara ekzistuese dhe pranimi real i hapur në §20/CURRENT_STATE. |
+
+### 5.2 — thjeshtimi dhe modeli autoritativ
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS2-A | N:1044–1058 | Shqyrto ekranet, butonat, filtrat/mekanizmat e panevojshëm ose të dyfishtë pa humbur funksione të miratuara; dokumento konflikte gjendjeje Feed/Shop/Shop Plus/Plans/Connections/Privacy-Map/Governance. Përcakto çfarë bashkohet, thjeshtohet ose shtyhet sipas vendimeve ekzistuese. | PLANNED; nuk zbatohet në këtë konsolidim. |
+| SS2-B | N:1060–1090 | Një burim autoritativ për çdo përdorues, listim, aktivitet, mesazh, raportim dhe vendim moderimi; secili me ID, pronar, status, leje aksesi dhe rregulla konkurrence. Produkti në Reel/Feed/Message referon të njëjtin listim Shop; i njëjti parim për aktivitete në shumë module. | PLANNED/BACKEND; përdor si varësi kontratat ekzistuese §§3/13/15–20, pa migruar apo bashkuar store-t tani. |
+| SS2-C | N:1092–1114; N:1118 | Mos kopjo mekanikisht arkitekturën DEMO në APK, mos hiq funksione të dobishme, mos bëj ndryshim madhor/destruktiv pa miratim. Ruaj vendime/arsye, kontrata/pranim dhe ndaje projektimin nga implementimi. Pranim DEMO për çdo ndryshim të autorizuar: përputhshmëri referencash, statusesh dhe të dhënash ekzistuese. | PLANNED; scope i ardhshëm kërkon vazhdimin e pronarit; G3 ruan gjurmën e kontratave/provave. |
+
+### 5.3 — sistemi profesional i medias
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS3-A | N:1120–1144 | Shpejtësi, cilësi vizuale, stabilitet/siguri foto/video edhe në telefona të dobët/internet të ngadaltë. Scope: upload, Feed, Stories/Reels, foto profili, Messages, foto produkti/biznesi dhe etiketat e tyre. Ruaj dizajnin e miratuar në “Detyrën 2”; pa ndryshim dizajni në mungesë miratimi. | PLANNED; “Detyra 2” e paidentifikuar, SHQYRTIM. Nuk supozohet si faza 2 Shop; §20. |
+| SS3-B | N:1146–1164 | Sipas nevojës DEMO: kompresim, madhësi imazhi/thumbnails/formate moderne; streaming/video adaptive kur justifikohen; lazy loading/pagination/cache; rrjet i dobët/offline; kufij memorie/baterie; upload i ndërprerë/retry/dështim ruajtjeje; kuota skedarësh/media përdoruesi e biznesi; fshirje dhe gabime. | PLANNED, teknika jo të miratuara automatikisht; pa infrastrukturë të re. |
+| SS3-C | N:1166–1178 | Media private me kontroll aksesi; validim skedarësh, heqje sipas rastit e metadata-ve sensitive, moderim/raportim. Asnjë premtim se kopjimi i medias private është absolutisht i pamundur. | PLANNED/BACKEND; privatësia nuk simulohet si garanci reale. |
+| SS3-D | N:1180–1198 | Kontrata Android/iOS, backend, storage, përpunim video, njoftime, integrim Feed/Shop dhe strategji cache/thumbnails/compression/streaming; dallo teknologji të propozuara nga të miratuara. | PLANNED/BACKEND, jo përzgjedhje provider/stack. |
+| SS3-E | N:1200–1218 | Matje/pranim për hapjen, ngarkimin Feed/Stories/Reels, madhësinë e medias, memorien, baterinë, ekranet e vogla dhe rrjetet e ngadalta. | PLANNED; baseline/buxhete/pajisje për t’u përcaktuar, pa PASS të sajuar. |
+| SS3-F | N:1222–1242 | Përmirësime të kontrolluara pa dëmtuar funksione/dizajn; pranim: ngarkim, gabime, ndërprerje, retry, performancë, aksesueshmëri, privatësi, kufij dhe fshirje media. Inspektimi paraprak G1; analizë nevoje/alternativash dhe miratim infrastrukture G4; dokumentim APK G3. | PLANNED; ruan varësitë dhe kontrollet e media/tagging ekzistuese. |
+
+### 5.4 — performanca
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS4-A | N:1250–1290 | Android/iOS/desktop të shpejtë/reaktivë brenda kufijve realë pajisje/rrjet: hapje, navigim, Feed, Stories/Reels, Messages, Communities, Plans, Search, Shop, profile dhe funksione të tjera. Scroll/animacione të rrjedhshme, feedback vizual i menjëhershëm; synim 60 FPS në pajisje përfaqësuese që e mbështesin. | PLANNED; synime, jo rezultate të arritura. PERFORMANCE FIRST vlen tashmë gjatë gjithë zhvillimit. |
+| SS4-B | N:1292–1314 | Biseda të gjata me ngarkim gradual, sinkronizim efikas dhe pa humbje të dhënash; lazy loading, pagination, cache, preloading selektiv dhe optimizim foto/video vetëm kur përfitimi është i matshëm. | PLANNED, jo refaktorim i autorizuar nga ky dokument. |
+| SS4-C | N:1316–1334 | APK real: kërkim/databazë/API/komunikim backend pa kërkesa të tepërta; menaxho memorie/bateri, rrjet të dobët, ndërprerje/rikuperim; shmang renderime/llogaritje të panevojshme, lista virtuale për përmbajtje shumë të gjatë kur nevojitet. | PLANNED/BACKEND; optimizim pas matjes, pa ndryshim arkitekture tani. |
+| SS4-D | N:1336–1376 | Objektiva të matshëm për hapjen, UI, scroll, navigim, search dhe dërgim mesazhesh. Mat baseline→ngadalësim→prioritet ndikimi→optimizim→krahasim para/pas/regresione; Android mesatar, iPhone, rrjet i ngadaltë dhe lista të mëdha. Pa pajisje: NOT RUN/OPEN, jo PASS. DEMO veç APK; Chromium nuk provon native. APK i pandërtuar merr plan/kritere, jo rezultate; pa sakrifikuar siguri/privacy/a11y/saktësi/funksione. | PLANNED/NOT RUN; §8 dhe §20 ruajnë kufijtë e provave dhe buxhetet e propozuara. |
+| SS4-E | N:1378–1388 | Për çdo modul dokumento objektivat, rezultatet, kufizimet dhe testet e performancës; matjet/commit-et/vendimet/hapat pasues sipas G3. | PLANNED; raportim vetëm me matje reale, jo dosje paralele. |
+
+### Standardi i përhershëm
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| PF1 | N:1394–1424 | Shpejtësia/efikasiteti/stabiliteti gjatë gjithë zhvillimit; çdo veçori/ndryshim vlerëson performance/UI/memorie/bateri proporcionalisht. Optimizimi është pjesë e implementimit/testimit, pa cenuar siguri/privacy/a11y/saktësi. Standardi rikuperohet në vazhdim; materialet e reja sipas rolit të dokumentit/G3. | REGJISTRUAR: AGENTS “PERFORMANCE FIRST”; CURRENT_STATE/MASTER_HANDOFF/blueprint §20 referojnë rregullin, nuk krijojnë kopje politike. |
+
+[source-shop]: https://github.com/titanfit102-bit/Illyrian/blob/77a6d01a5079a887cb90f762b76e375009d8d794/demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#L697-L955
+[source-social]: https://github.com/titanfit102-bit/Illyrian/blob/77a6d01a5079a887cb90f762b76e375009d8d794/demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#L958-L1496
+[b15]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#15-marketplace-programme--phase-1-shop-26-october-2026
+[b16]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#16-marketplace-programme--phase-2-social-commerce-26-october-2026
+[b17]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#17-marketplace-programme--phase-3-business-team-and-shared-inbox-26-october-2026
+[b18]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#18-marketplace-programme--phase-4-identity-verification-and-business-pro-27-october-2026
+[b19]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#19-marketplace-programme--phase-5-trust-safety-and-unified-moderation-27-october-2026
+[b20]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#20-smart-social-programme--task-51-and-performance-first-27-october-2026
