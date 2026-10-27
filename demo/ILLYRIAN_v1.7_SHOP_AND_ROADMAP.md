@@ -2,6 +2,8 @@
 
 > **Active scope — 26 October 2026:** owner-private DEMO testing; source repository PUBLIC. Follow [permanent DEMO/APK policy](../AGENTS.md#demo-vs-apk--permanent-owner-policy) and [knowledge map](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#14-knowledge-preservation-and-demoapk-boundary--26-october-2026). Phase 7/8 and M0–M5 remain; historical checkpoints below are not current tasks. F06 enforcement is deferred to the real-app phase, not a DEMO development blocker. Advanced backend/native requirements are documented, not implemented in DEMO. Existing tests, CI and release gates are unchanged.
 
+**Scope aktual, 27 tetor:** [Programi 6](#programme-6) për përgatitjen e produktit real; vetëm 6.1 dokumentacion është autorizuar tani. 6.2–6.5 janë të planifikuara; Shop dhe Smart Social nuk rihapen. Gjendja LIVE dhe provat: CURRENT_STATE.
+
 
 **Data e nisjes:** 21 tetor 2026  
 **Burimi:** kërkesa eksplicite e përdoruesit për t'i ndërtuar të gjitha funksionet e mbetura të demos, plus ILLYRIAN Shop (produkte, dyqane të vogla, makina, banesa me qira dhe kërkim ndër-dyqanesh), me vazhdim fazë pas faze.  
@@ -698,7 +700,7 @@ Existing IN9-02/03/04/05/07 and IL-029 were reused; no separate numbered 3.2 che
 
 ### Kërkesat kanonike dhe gjurmueshmëria — konsolidim 27 tetor 2026
 
-Dy programet mbeten të ndara. Pesë inkrementet Shop janë dorëzuar në kufijtë DEMO; te Smart Social rakordimi/specifikimi 5.1 dhe regjistrimi PERFORMANCE FIRST janë përfunduar. **5.2 u hap më pas nga pronari: analizë/model i specifikuar dhe korrigjim i kufizuar DEMO (§21). 5.3: cikli lokal i fotografisë i korrigjuar dhe kontratat reale të specifikuara (§22); 5.4 mbetet PLANNED.** DEMO e dorëzuar nuk do të thotë backend, moderim/verifikim real, Pro, pilot ose pranim fizik i përfunduar. Gjendja/provat aktuale janë te [CURRENT_STATE](../CURRENT_STATE.md); vendimet/autorizimet afatgjata te [MASTER_HANDOFF](../MASTER_HANDOFF.md).
+Dy programet mbeten të ndara. Pesë inkrementet Shop janë dorëzuar në kufijtë DEMO; te Smart Social rakordimi/specifikimi 5.1 dhe regjistrimi PERFORMANCE FIRST janë përfunduar. **5.2 u hap më pas nga pronari: analizë/model i specifikuar dhe korrigjim i kufizuar DEMO (§21). 5.3: cikli lokal i fotografisë i korrigjuar dhe kontratat reale të specifikuara (§22); 5.4: ngarkim gradual i bisedave, matje dhe kontrata reale të dorëzuara (§23).** DEMO e dorëzuar nuk do të thotë backend, moderim/verifikim real, Pro, pilot ose pranim fizik i përfunduar. Gjendja/provat aktuale janë te [CURRENT_STATE](../CURRENT_STATE.md); vendimet/autorizimet afatgjata te [MASTER_HANDOFF](../MASTER_HANDOFF.md).
 
 **Burimet e verifikuara përpara redaktimit:** të dy origjinalet gjenden në commit-in `77a6d01a5079a887cb90f762b76e375009d8d794`, skedari `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`, blob `9b8a00bbc477875c024b477021de7feab865a3ec`. [S = Shop, rreshtat 697–955][source-shop]; [N = Smart Social, rreshtat 958–1496][source-social]. Origjinali rikuperohet me `git show 77a6d01a5079a887cb90f762b76e375009d8d794:demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Nuk rishkruhet histori dhe nuk krijohet kopje arkivore paralele; pjesa e roadmap-it përpara këtyre programeve ruhet e pandryshuar.
 
@@ -790,7 +792,7 @@ Matricat burim→ID→kërkesë/destinacion më poshtë u përgatitën përpara 
 
 | ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
 |---|---|---|---|
-| SS1-A | N:988–1000 | Rekomandimet K1–K8 dhe O1–O8/N1–N3 shqyrtohen pa mbingarkim: ndaji miratimet, hipotezat dhe implementimet. Postim/Reel→aktivitet, biznes, produkt, kërkesë ose bisedë përkatëse; asnjë rekomandim nuk autorizon automatikisht zbatim. | RAKORDUAR: O1–O8 kushtore, lidhje me raportin dhe hartë në §20. K1–K8/N1–N3 të paidentifikuara, SHQYRTIM, pa shpikje ose zëvendësim me kode të tjera. |
+| SS1-A | N:988–1000 | Rekomandimet K1–K8 dhe O1–O8/N1–N3 shqyrtohen pa mbingarkim: ndaji miratimet, hipotezat dhe implementimet. Postim/Reel→aktivitet, biznes, produkt, kërkesë ose bisedë përkatëse; asnjë rekomandim nuk autorizon automatikisht zbatim. | RAKORDUAR: O1–O8 kushtore, lidhje me raportin dhe hartë në §20. K1–K8/N1–N3 u identifikuan më pas gjatë6.1 në raportin e24 tetorit (blueprint §24); rekomandime për SHQYRTIM, jo miratime ose kode të këmbyeshme me O/IN9. |
 | SS1-B | N:1002–1016 | Inbox veprimesh/kërkesash/konfirmimesh; lidhje Feed/Plans/Messages/Shop, statuse të kuptueshme aktivitet/listim/kërkesë, privatësi/dukshmëri për çdo veprim, kërkim/filtra drejt rezultatit dhe ripërdorim funksionesh. Inbox personal/biznes/moderim nuk bashkohen në një burim pa kontrata aksesi të miratuara (N978). | Rrjedhat ekzistuese DEMO ripërdoren; action-inbox mbetet PROPOZIM/VENDIM me burime/leje të ndara, jo implementim; §20. |
 | SS1-C | N:1018–1040 | Vetëm rrjedha DEMO të testueshme; pa pretendim server-side/realtime/transaksioni. Backend/validim përdoruesish ruhet në kontrata/pranim APK, jo zgjidhje të rreme. Pranim: navigim ndërmodule, statuse, përmbajtje private, block, gjuhë, rikuperim drafti, përmbajtje e padisponueshme; hipotezat nuk janë vendime/dorëzime. | Rakordimi/specifikimi i përfunduar; prova të kufizuara ekzistuese dhe pranimi real i hapur në §20/CURRENT_STATE. |
 
@@ -837,3 +839,77 @@ Matricat burim→ID→kërkesë/destinacion më poshtë u përgatitën përpara 
 [b18]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#18-marketplace-programme--phase-4-identity-verification-and-business-pro-27-october-2026
 [b19]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#19-marketplace-programme--phase-5-trust-safety-and-unified-moderation-27-october-2026
 [b20]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#20-smart-social-programme--task-51-and-performance-first-27-october-2026
+
+<a id="programme-6"></a>
+## Programi 6 — MVP, DEMO → APK dhe gatishmëria reale
+
+Burimi: kërkesa e plotë e pronarit, 27 tetor 2026, “MASTER MVP SPECIFICATION, DEMO → APK, NOTIFICATIONS, ACCOUNT RECOVERY, ADMIN PANEL & APK READINESS”, me kufizimin përfundimtar **vetëm 6.1; ndalo para 6.2**. Matrica më poshtë ruan kërkesat unike të gjithë programit; përsëritjet operative referojnë AGENTS. Krahasimi burim→destinacion u përgatit përpara redaktimit. Burimet ekzistuese mbeten të rikuperueshme në [checkpoint-in fb9ef1a](https://github.com/titanfit102-bit/Illyrian/tree/fb9ef1a8f08dbc0713ff7e647db8c855eaa9ff6f); nuk rishkruhet historiku dhe nuk kopjohen prompt-et.
+
+Program i veçantë nga Shop 1–5 dhe Smart Social 5.1–5.4; numrat 6.1–6.5 nuk zëvendësojnë Paketën historike 6 Governance ose gates Phase 7/8/M0–M5. Referencat historike “6A/6B” nuk provojnë implementim ose ekuivalencë: përmbajtja notifications/recovery/support mbulohet nga ky program, por identiteti i detyrave të vjetra mbetet OPEN.
+
+### Matrica e kërkesave dhe kufijve
+
+| ID | Kërkesa unike / kriteri i pranimit | Destinacioni dhe statusi |
+|---|---|---|
+| 6P-01 | Konsolido produktin, hartën DEMO→APK, notifications, recovery/Help, admin/support dhe kontratat/pranimin real në dokumentet ekzistuese; pa rikrijim vendimesh nga chat-e të vjetra, humbje, dublime ose fshirje historiku. Pesë faza; tani vetëm 6.1, pa kod/dizajn DEMO; ruaj 6.2–6.5 të planifikuara. | Ky seksion + blueprint §24; kufiri aktiv në CURRENT_STATE/MASTER_HANDOFF. |
+| 6P-02 | Dallo IMPLEMENTUAR NË DEMO, VERIFIKUAR, MIRATUAR PËR APK, PROPOZUAR, OPEN. DEMO/CI nuk provojnë DB/backend/native/siguri reale ose miratim MVP/platforme/arkitekture. Boshllëqet mbeten eksplicite. | Standardi në blueprint §24; i zbatueshëm në të pesë fazat. |
+| 6P-03 | Para ndryshimit verifiko repository/degë/HEAD/commit/Draft PR/CI/teste, autorizime, kod/arkitekturë, dokumente/raporte/vendime. Pas ndryshimit: diff, prova, vendime, boshllëqe/hap pasues dhe ruajtje e rilexim real në GitHub. Ruaj ndarjen e projekteve; vetëm demonstrime sintetike të izoluara kur autorizohen, pa i quajtur shërbime reale. Pa main/Production/merge, infrastrukturë/shërbime me pagesë, backend/native, akses real admin/reset/email/SMS ose veprime destruktive jashtë autorizimit; dizajni pret miratimin përkatës. | AGENTS politikat ekzistuese + autorizimet MASTER_HANDOFF; nuk krijon leje të reja. |
+| 6.1-01 | Lexo burimet ekzistuese, kodin/rrjedhat/testet dhe raportin ILLYRIAN_PRAN_MASTER_PRODUCT_INNOVATION_REVIEW nëse gjendet; plotëso vetëm boshllëqet. Mos shpik miratime ose rindërto specifikimin nga zero. | Raporti u identifikua/lexua; blueprint §24 dhe MVP më poshtë. VERIFIKUAR vetëm si analizë burimesh. |
+| 6.1-02 | MVP 1.0: përfshirje/përjashtime, role, rrjedha dhe kritere përfundimi; dallohen vendimet ekzistuese nga propozimet dhe vendimet që mungojnë. | Tabela MVP më poshtë; versioni final i scope-it OPEN, jo MIRATUAR PËR APK si paketë. |
+| 6.1-03 | Për ekran/buton/formular/veprim: ruhet/ridizajnohet/zëvendësohet/lidhet me backend; qëllim, sjellje, ekran, veprim, të dhëna, autorizim, success/error/empty/loading, teste/pranim. Mos pretendo mbulim të çdo instance nëse mungon. | Blueprint §24: hartë e familjeve, kontrata e përbashkët, burime dhe regjistër boshllëqesh. |
+| 6.1-04 | Përfshi notifications/recovery/admin si varësi të 6.2–6.4, pa i zbatuar; ruaj vendimet/testet/commit-et dhe gjendjen te dokumentet kanonike, verifiko GitHub dhe ndalo para 6.2. | Kërkesat poshtë, CURRENT_STATE; detyra 6.1 dorëzon bazën dokumentuese me OPEN. |
+| 6.2-01 | Mockup/spec: lock screen, avatar/emër/preview, pamje e zgjeruar, Quick Reply, Light/Dark dhe identitet ILLYRIAN brenda UI native; hapje/zgjerim/mbyllje/largim. | PLANIFIKUAR për 6.2; pa mockup/native/simulim të ri në 6.1. |
+| 6.2-02 | Android Chat Bubbles vetëm kur OS i mbështet dhe përdoruesi i aktivizon; grupim sipas bisedës dhe njoftime aktivitetesh, komentesh, përmendjesh e Shop. | PLANIFIKUAR; matricë platforme/versioni në 6.2. |
+| 6.2-03 | Përgjigje direkte pa hapur app vetëm kur lejohet; zhbllokim/Face ID/biometri kur kërkohet. Pa anashkalim sigurie, Accessibility Services, overlays ose mekanizma invazivë për funksione të ndaluara. | PLANIFIKUAR/kufizim detyrues; jo premtim ekuivalence Android/iOS. |
+| 6.2-04 | Ruajtje/sinkronizim mesazhesh në disa pajisje, deduplikim, status dorëzimi i dalluar nga leximi/pranimi dhe autorizim server-side. | PLANIFIKUAR; ripërdor blueprint §§13/21/23. |
+| 6.2-05 | Silent notifications, mute, quiet hours, kategori të preferuara, privatësi lock screen, grupim/deduplikim dhe anti-spam. | PLANIFIKUAR; kufijtë background/OS dhe dështimet duhen verifikuar. |
+| 6.2-06 | Verifiko dokumentacionin zyrtar aktual Android/Apple; kontrata push/API/events, token management, conversation IDs, permissions, delivery states, autorizime dhe parametra privatësie. | PLANIFIKUAR; burimet e vjetra nuk quhen verifikim i ri. |
+| 6.2-07 | Dorëzo mockup/spec, kufizime platformash, plan testesh/kritere Android+iOS dhe hapa implementimi native; verifiko kod/degë/HEAD/PR/teste dhe regjistro prova/vendime/commit/hapa. | PLANIFIKUAR; pranimi fizik/native OPEN. |
+| 6.2-08 | DEMO pa backend/native të përfunduar; vetëm pamje/spec reale dhe simulim browser i izoluar nëse autorizohet, i etiketuar qartë. Pa ndryshim dizajni pa Detyrën 2, Production ose shërbime me pagesë. | Kufiri 6P-03; PLANIFIKUAR, “Detyra 2” OPEN. |
+| 6.3-01 | Rrjedha: password/email i harruar; humbje email-i; telefon i ndryshuar/humbur; Google/Apple login; pajisje e humbur; llogari e bllokuar/komprometuar; ndryshim email-i; support ticket kur automatika dështon. | PLANIFIKUAR për 6.3; koncepti v7 recovery nuk i implementon. |
+| 6.3-02 | Verifikim pronësie, kode/lidhje njëpërdorimëshe dhe mbrojtje takeover; as Owner/stafi nuk shohin password ekzistues; pa pronësi të provuar nuk autorizohet recovery. | PLANIFIKUAR/kufizim sigurie detyrues. |
+| 6.3-03 | sq/en/it: Help Center/FAQ, password reset, kontakte të verifikuara, sesione, raportim problemesh, status ticket-i dhe komunikim suporti. | PLANIFIKUAR; artikujt dhe state copy nuk janë shkruar në 6.1. |
+| 6.3-04 | Verifiko OWASP aktual; përgjigje kundër enumeration, rate limits/anti-abuse, MFA admin, role/ACL server-side. | PLANIFIKUAR; nuk ka kontroll real të aktivizuar. |
+| 6.3-05 | Audit trail/arsye për ndryshime sensitive, njoftime pas ndryshimit të kredencialeve, akses minimal në PII dhe politika retention/fshirjeje tickets. | PLANIFIKUAR; afatet/metodat konkrete OPEN. |
+| 6.3-06 | Inspekto çfarë ekziston; dorëzo UI flows, DB/API, autorizime, procedura dhe teste sigurie. Vetëm demonstrim sintetik i autorizuar; pa recovery/reset, email/SMS ose llogari reale pa infrastrukturë/autorizim. Regjistro prova/vendime/commit/hapa. | PLANIFIKUAR; ripërdor identity/safety, jo sistem paralel. |
+| 6.4-01 | Panel privat: kërkim username/ID/identifikues të lejuar me kontakte të maskuara; tickets/histori/recovery, raporte/apele, probleme teknike/bugs. | PLANIFIKUAR për 6.4; Governance ripërdoret si referencë, jo panel i dytë. |
+| 6.4-02 | Prioritete, përgjegjës, afate, statistika suporti dhe njoftime urgjente; Owner/Support/Moderator me leje të ndryshme, audit për veprime sensitive. | PLANIFIKUAR; personeli/afatet/SLA OPEN, jo premtim 24/7. |
+| 6.4-03 | Pa impersonation/login si përdoruesi, zbulim mesazhesh private ose ndryshim identiteti jashtë procedurës së kontrolluar. Kontrollet server-side, MFA, minimizim PII, audit dhe trajtim i sigurt. | Kufizime detyruese të projektimit; PLANIFIKUAR, jo enforcement ekzistues. |
+| 6.4-04 | Në real: përdoruesi sheh vetëm funksionet e autorizuara; pa panele prove moderator/biznes/shitës/punëdhënës/organizator. Biznes/listime→Shop, organizator/aktivitete→Plans, punë→Shop/Punë. Owner/Support/Moderator privat veç UI publike, me autorizim server-side. | PLANIFIKUAR; hartë blueprint §24, jo heqje mjetesh DEMO. |
+| 6.4-05 | Integro raportimet/moderimin/panelet ekzistuese pa kopje; mos hiq mjetet e QA nga DEMO pa alternativë funksionale. | Kufizim aktiv; ruaj Governance/QA ekzistues. |
+| 6.4-06 | Inspekto kod/dokumente; dorëzo dizajn paneli, DB/API, UI flows, model lejesh, kontrolle sigurie dhe checklist ndërtimi. Vetëm demonstrime sintetike të autorizuara; jo akses real admin. Regjistro ndryshime/teste/vendime/commit/hapa. | PLANIFIKUAR; pa panel ose privilegje të reja në 6.1. |
+| 6.5-01 | Kontrollo rezultatet 6.1–6.4 pa supozuar përfundim; identitet/role/leje dhe autoritet unik për users/listings/activities/messages. | PLANIFIKUAR për 6.5; blueprint §§2/13/15/21 ripërdoren. |
+| 6.5-02 | Entitete/pronësi/statuse/tranzicione, API/transaksione/gabime/teste integriteti; ruajtje e sigurt, konkurrencë/parandalim konfliktesh. Për funksion: ekran, veprim, model, API, leje, gabime, teste; pa transferim mekanik DEMO. | PLANIFIKUAR; skema të ekzekutueshme jo të përfunduara. |
+| 6.5-03 | Data/zona kohore; dërgim/konfirmim/sync/retry mesazhesh; privatësi/dukshmëri/consent, GPS opsional/qytet manual; block/report/moderim/audit/ACL. | PLANIFIKUAR; blueprint §§13/19/21/23. |
+| 6.5-04 | Lifecycle/retention/fshirje media/të dhënash; backup/restore/migrime; fshirje dhe eksport llogarie. | PLANIFIKUAR; blueprint §§5/12/22, afate/RPO/RTO/procedura reale OPEN. |
+| 6.5-05 | Kritere të matshme performance dhe plan pranimi: funksione/rrjedha kritike, Android/iOS sipas fazave të miratuara, a11y/siguri/performance/offline/reconnect/integritet/publikim. | PLANIFIKUAR; §§8/12/23 dhe M01–M18, pa buxhete ose platforma të miratuara automatikisht. |
+| 6.5-06 | Dallo teste reale nga simulimet. Chromium PASS nuk provon APK; telefon fizik, screenreader, Preview/release të pakontrolluara mbeten OPEN deri në evidencë. Verifiko kod/dokumente/raporte/vendime/commit/PR/CI. | PLANIFIKUAR; rregull prove i zbatueshëm tani. |
+| 6.5-07 | Konsolido burimet ekzistuese dhe dorëzo raport gatishmërie APK, boshllëqe/kontrolle të papërfunduara/hapa të saktë dhe konfirmim ruajtjeje GitHub. Pa deklaruar backend/DB/siguri/APK të përfunduar pa prova ose ndryshuar çfarë kërkon miratim. | PLANIFIKUAR; raporti final i programit nuk dorëzohet si i përfunduar nga 6.1. |
+
+### MVP 1.0 — specifikim për vendim, jo scope i miratuar
+
+**MIRATUAR PËR APK si parime**, jo si listë release-i: ekosistem ILLYRIAN, një identitet me capabilities scoped, katalog i vetëm Shop/Plus, ID autoritative, privacy/server authorization, i18n/UGC, pagesa të ndara dhe gates ekzistuese (blueprint §10). Nuk u gjet miratim i MVP 1.0, platformave, stack-ut ose gjithë funksioneve të DEMO-s për publikimin e parë.
+
+| Familja / qëllimi dhe rrjedha kandidate | Roli / harta | Përfshirja në MVP 1.0 |
+|---|---|---|
+| Hyrje reale → profil minimal → preferenca/privatësi/sesione | Visitor/Member; A01–A08 | PROPOZUAR bazë; metoda auth, fusha të detyrueshme/consent dhe të drejtat e vizitorit OPEN. |
+| Zbulim përmbajtjeje/komuniteti → postim tekst/foto → koment/ndjekje | Member/staf komuniteti scoped; A09–A14/A26–A28 | PROPOZUAR minimal; audiencat/politika moshe dhe shtrirja komunitare OPEN. |
+| Zbulo Plan → kërkesë → pranim/listë pritjeje → bisedë → anulim/tërheqje | Member/Organizer; A29–A36 | PROPOZUAR si cikli i parë sipas raportit §11; zgjedhja finale kundrejt pilotit tregtar OPEN. |
+| Bisedë e autorizuar, draft/outbox/retry/history | Anëtar bisede; A22–A24 | Biseda e Planit PROPOZUAR; DM i lirë, attachments/receipts/typing OPEN. Pa kalim automatik nga UI në shërbim real. |
+| Media minimale foto, avatar dhe kontroll aksesi/fshirje | Autor/pronar; A08/A12/A15–A21 | Tekst/foto PROPOZUAR; Stories/video/Reels release scope OPEN, jo heqje nga DEMO. |
+| Shop discovery → listim → inquiry/Kërkoj; menaxhim nga Shop | Visitor/Member/Seller; A40–A46 | PROPOZUAR kushtor M0/M3; kategoritë fillestare, stoku dhe roli në pilot OPEN. |
+| Staf biznesi/inbox i përbashkët/verifikim/Pro | Business capabilities; A47–A49 | PROPOZUAR për faza pasuese; as stafi, verifikimi real, Pro apo ads nuk bëhen launch scope pa vendim. |
+| Njoftime për veprime dhe preferenca, hapje e sigurt | Marrës i autorizuar; A25/A37; 6.2 | PROPOZUAR bazë in-app; push/Quick Reply/bubbles dhe kufijtë platformash presin 6.2 + vendim release-i. |
+| Recovery/Help/ticket dhe sesione | Member/Support; A02/A52; 6.3 | Kërkesa për projektim është e autorizuar; specifikimi i hollësishëm/kanalet/metodat dhe përfshirja finale OPEN. |
+| Report/block/appeal dhe operim privat | Member/Moderator/Support/Owner; A38/A50–A53 | Parime sigurie të miratuara; minimumi i implementimit real kusht për veçoritë me UGC/private data, detajet presin 6.3–6.5. |
+| Gjuhë sq/en/it, theme, qytet manual/GPS opsional, a11y/performance | Çdo rol; A03/A06/A39/A54 | Ruaj kontratat; mbulimi final, pajisjet/OS dhe thresholds OPEN. 100+ gjuhë nuk është dorëzim MVP. |
+
+**Përjashtime/kufij të vendosur:** pa transaksione/pagesa/payouts/abonime/reklamim real pa gates M4 dhe miratim; 5% vetëm ilustrues. Pa copy fixtures→llogari/listime reale, shared passwords, privilegje nga UI, publikim koordinatash personale live ose score besimi sipas pasurisë/shpenzimit. QA switches/reset/social demo dhe role fiktive nuk shpërndahen si privilegje përdoruesi real; mjetet DEMO ruhen tani.
+
+**Përjashtime MVP të PROPOZUARA, ende jo vendime pronari:** video/recommendations të avancuara, calls/livestream, të gjitha vertikalet Shop njëkohësisht, katër dashboards të plota, hartë më vete, AI ranking, locked media/gifts/wallet/AURA/dating economics dhe zgjerim masiv. Raporti §9/§11 është rekomandim; mos e përdor këtë listë për të hequr funksione DEMO ose ndryshuar PRAN. Kufijtë ekzistues kundër wealth scoring/private tracking mbeten detyrues pavarësisht propozimeve.
+
+**Kriteri i përfundimit të specifikimit MVP:** pronari vendos familjet IN/OUT/LATER dhe tregun/audiencën/moshën; zgjedh platformën/fazat/stack/auth/operatorët/buxhetin; çdo funksion IN ka kontratën §24, leje/gjendje/teste dhe OPEN kritik të zgjidhur. **Kriteri i përfundimit të aplikacionit:** shërbimet/klienti real, testet negative/integriteti/restore, telefon/screenreader/performance/offline dhe gates M1–M5 me sign-off; jo përfundimi i kësaj analize. Asnjëri nuk është arritur vetëm nga 6.1.
+
+### 6.1 — dorëzimi dhe hapi pasues
+
+Baza MVP dhe harta e familjeve A01–A54 janë konsoliduar te ky seksion/blueprint §24; kontratat ekzistuese referohen. Boshllëqet fushë→API/rol/gjendje/test për çdo instancë mbeten në regjistrin §24; **nuk pretendohet specifikim shterues i çdo butoni/ekrani**. 34 grupet e kërkesave të burimit kanë destinacion më sipër, pa aktivizuar fazat e tjera. 6.2–6.5 mbeten PLANIFIKUAR/OPEN; pas verifikimit të dokumenteve dhe GitHub ndalo para 6.2.

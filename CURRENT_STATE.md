@@ -8,11 +8,11 @@ Përditësuar: 27 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 |---|---|
 | Repository / dega | `titanfit102-bit/Illyrian` / `feat/i18n-shop-feedback-20261022` |
 | PR | [#1](https://github.com/titanfit102-bit/Illyrian/pull/1), OPEN / DRAFT / UNMERGED → `demo/v1.7-illyrian-shop` |
-| Baseline remote para 5.4 | `400cf47231246d9d23ff7ff1def37f00bfd3f236`, 5.3 e përfunduar; HEAD LIVE ndiqet pas kandidatit 5.4 |
-| Browser QA e baseline | [40550136260](https://github.com/titanfit102-bit/Illyrian/actions/runs/40550136260), **372 Chromium +16 Linux WebKit +12 classifier PASS** mbi `400cf47`, jo ripërdorim; logjet122351390616/122356531992/122351320216 |
-| Security e baseline | [40550136208](https://github.com/titanfit102-bit/Illyrian/actions/runs/40550136208) PASS mbi `400cf47`, job122351319693; syntax/vendor,7 detector fixtures dhe npm audit0 në atë ekzekutim |
+| Burimi runtime / baseline para 6.1 | `fb9ef1a8f08dbc0713ff7e647db8c855eaa9ff6f`, 5.4 e përfunduar; 6.1 ndryshon vetëm dokumentacionin |
+| Browser QA e burimit | [40558529682](https://github.com/titanfit102-bit/Illyrian/actions/runs/40558529682), **379 Chromium +16 Linux WebKit +12 classifier PASS** mbi `fb9ef1a`; actual test steps SUCCESS, logjet122381072097/122386068408/122380975761 rilexuar në6.1. Jo prova native/fizike |
+| Security e burimit | [40558529671](https://github.com/titanfit102-bit/Illyrian/actions/runs/40558529671) PASS mbi `fb9ef1a`, job122380975094 me detector/install/syntax/vendor/audit steps SUCCESS. Kontrolli i commit-it dokumentues6.1 ndiqet veçmas në Actions |
 | Izolimi | Integrimi `015ce439e7c6d736149c6c300391586517664f62`; main `9f91b5c083b4482a70a2149483cc799360e6102c`; pa merge/Production |
-| Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/). Baseline `400cf47`: [immutable](https://illyrian-demo-i7hyn82so-un24.vercel.app/), READY/target null dhe SHA i verifikuar LIVE. Kandidati5.4 ndiqet automatikisht nga Git integration; kontrollo alias/HEAD/CI, pa redeploy manual |
+| Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/); [immutable i burimit](https://illyrian-demo-bencrmk8b-un24.vercel.app/), `dpl_9fWrbvcFwqURVFRbhDbmsRfxqxF5`, READY/target null/SHA `fb9ef1a` rilexuar LIVE në6.1. Metadata e kandidatit dokumentues verifikohet veçmas; pa test të ri ndërveprimi/telefoni ose redeploy manual |
 
 
 ## Funksionet dhe provat që ruhen
@@ -25,7 +25,7 @@ Përditësuar: 27 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 
 ## Politika aktive dhe çështjet e hapura
 
-Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv: vetëm Detyra5.4, e hapur nga pronari pas 5.3 në `400cf47`. [Blueprint §23](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#23-measured-performance--task-54) mban matjet dhe kontratat/pranimin real. Shop/5.1–5.3 nuk rihapen. Pa merge, main/Production, backend/native, migrime destruktive, refaktorim të gjerë ose shpenzime. Pas dorëzimit5.4 ndalo dhe prit drejtimin e pronarit.
+Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy) automatikisht. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope i ri: **vetëm6.1, dokumentacion për MVP/hartën DEMO→APK**; [roadmap Programi6](demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#programme-6) ruan kërkesat e pesë fazave dhe [blueprint §24](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-61) kontratat/hartën/boshllëqet. Shop/Smart Social nuk rihapen. Pa kod/dizajn/teste/arkitekturë funksionale të re, merge, main/Production, backend/native, shpenzime ose ndryshime destruktive. Ndalo para6.2.
 
 | Fusha | Statusi / hapi |
 |---|---|
@@ -107,7 +107,7 @@ IMPLEMENTUAR DEMO: lifecycle i përbashkët brenda HTML-it për fotografi postim
 
 SPECIFIKUAR/BACKEND: media asset/rendition, upload/resume/quota/processing, leje private, metadata/moderim, cache/CDN/deletion, Android/iOS dhe kriteret e matjes në §22. Provider/stack/licenca/politika/buxhete kërkojnë vendim; matje fizike memorie/bateri/native NOT RUN. “Detyra 2” mbetet e paidentifikuar; dizajni aktiv ruhet.
 
-Verifikimi5.3 është i përfunduar: lokalisht63/63 (10 të reja), remote372 Chromium+16 WebKit+12 classifier/Security PASS mbi `400cf47`, sipas tabelës sipër. Media reale dhe “Detyra2” mbeten OPEN sipas §22. Ndalesa historike para5.4 zëvendësohet nga autorizimi i ri më poshtë; mos përsërit5.3 ose konsolidimin.
+Verifikimi5.3 është i përfunduar: lokalisht63/63 (10 të reja), remote372 Chromium+16 WebKit+12 classifier/Security PASS mbi `400cf47`, në run40550136260/Security40550136208. Media reale dhe “Detyra2” mbeten OPEN sipas §22. Ndalesa historike para5.4 zëvendësohet nga autorizimi i ri më poshtë; mos përsërit5.3 ose konsolidimin.
 
 ## Smart Social 5.4 — performanca dhe hapi pasues
 
@@ -115,6 +115,16 @@ IMPLEMENTUAR DEMO: biseda personale shfaq50 mesazhet e fundit dhe ngarkon histor
 
 MATUR: krahasim AB/BA7+7, Chromium/Linux390×844/CPU4×, fixture5,000 mesazhe, kushte identike. Hapja1,653.9→183.8ms (**−88.9%**), send feedback1,578.9→180.1ms (**−88.6%**), flluska fillestare5,001→51; historiku i ruajtur nuk shkurtohet. Metoda/të gjitha modulet/kufizimet dhe kontratat e APK-së ruhen një herë te §23, jo pretendim native/60FPS/memorie/bateri/rrjet real.
 
-Verifikimi lokal: **71/71 regresione relevante PASS (1.8min)**, përfshirë **7 të reja**; sintaksë/vendor,12 classifier, locale mirrors,48 kërkesa kanonike dhe figurat e pandryshuara,7 detector fixtures/skanim i kufizuar dhe diff PASS. Pesë raste paging u vëzhguan RED→GREEN; dy kufij të historikut të shkurtër ruajnë sjelljen ekzistuese. Rishikim i pavarur i runtime/testeve/metodës: pa gjetje vepruese. Remote i kandidatit PENDING deri në Actions; baseline sipër nuk është prova e patch-it5.4. Mos bëj commit tjetër vetëm për të shënuar një rezultat të vogël CI.
+Verifikimi lokal: **71/71 regresione relevante PASS (1.8min)**, përfshirë **7 të reja**; sintaksë/vendor,12 classifier, locale mirrors,48 kërkesa kanonike dhe figurat e pandryshuara,7 detector fixtures/skanim i kufizuar dhe diff PASS. Pesë raste paging u vëzhguan RED→GREEN; dy kufij të historikut të shkurtër ruajnë sjelljen ekzistuese. Rishikim i pavarur i runtime/testeve/metodës: pa gjetje vepruese. Remote5.4 u verifikua PASS në `fb9ef1a`, me logjet dhe run-et në tabelën aktive sipër; PENDING i checkpoint-it të mëparshëm është zëvendësuar nga prova LIVE. Testet lokale historike nuk u riekzekutuan për editin dokumentues6.1.
 
-**Hapi pasues: ndalo pas5.4 dhe prit drejtimin e pronarit.** Pjesët e kufizuara DEMO të5.1–5.4 dhe specifikimet përkatëse janë dorëzuar brenda provave të raportuara, jo APK e përfunduar. Pajisjet fizike Android/iPhone, slow mobile network, memory/battery/native, API/DB/sync dhe buxhetet e miratuara mbeten NOT RUN/OPEN sipas §23/§8; ruaj të gjitha vendimet dhe gates reale. Mos ndërto fazë të re, backend/native ose optimizime të tjera pa scope të ri.
+Ndalesa pas5.4 u përmbush; pronari hapi më pas vetëm6.1. Pajisjet fizike Android/iPhone, rrjeti mobil i dobët, memory/battery/native, API/DB/sync dhe buxhetet mbeten NOT RUN/OPEN sipas blueprint §§8/23. Nuk ka5.5 në atë program.
+
+
+## Programi 6 — dorëzimi 6.1 dhe ndalesa
+
+- Konsoliduar specifikimi kandidat MVP1.0 me IN/OUT ende për vendim, rolet/rrjedhat/kriteret, standardi C0 dhe harta **54 familje ekran→veprim→APK**, pa pretendim specifikimi të çdo instance/fushe. Kërkesat **34 grupe** të6.1–6.5 janë në roadmap,6.2–6.5 vetëm PLANIFIKUAR/OPEN.
+- Raporti ILLYRIAN_PRAN_MASTER_PRODUCT_INNOVATION_REVIEW u gjet/lexua i plotë; K1–K8/N1–N3 tani kanë burim, por jo miratim. “Detyra2” dhe provenienca historike6A/6B mbeten OPEN. Politika AGENTS ishte e mjaftueshme dhe nuk ndryshoi.
+- Verifikimi dokumentues: matricë burim→destinacion34/34, hartë54/54, diff,29 lidhje/ankora të shtuara dhe ruajtja48/48 e kërkesave të mëparshme; vetëm katër dokumentet ekzistuese. Rishikim i pavarur: korrigjuar veprimi i paqenë remove-avatar, plotësuar filtri Latest/shpjegimi dhe statuset e vjetruara; pa gjetje të tjera vepruese. Runtime/teste/config identike me burimin e verifikuar sipër. Lokalisht PASS: syntax/vendor,7 detector fixtures/skanim68 skedarë të snapshot-it dhe12 classifier tests; pa riekzekutim browser. CI e commit-it të ri kontrollohet në Actions; PASS i ripërdorur nuk quhet riekzekutim379/16. Nuk krijohet commit shtesë vetëm për status CI.
+- OPEN: miratim MVP/treg/platformë/stack/auth/role të hollësishme; inventar për çdo instancë/fushë/API/gabim/test; notifications6.2, recovery/Help6.3, admin6.4, kontrata/pranim final6.5. Regjistri i plotë i boshllëqeve është vetëm te blueprint §24.
+
+**Hapi pasues: ndalo para6.2 dhe prit vazhdimin e pronarit.** Përfundoi inkrementi dokumentues6.1 me boshllëqet e deklaruara; jo MVP final i miratuar, kontratë shteruese e çdo ekrani ose APK e gatshme.
