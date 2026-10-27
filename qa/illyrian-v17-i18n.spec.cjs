@@ -1,6 +1,63 @@
 const {test,expect}=require('@playwright/test');
 const KEY='illyrian_demo_ui_language_v1';
 const TEAM_KEY='illyrian_demo_v17_governance';
+async function identityCatalog(page,plus=false){
+ await page.locator('[data-ilshop-open]').first().click();
+ if(plus){await page.locator('#illyrian-shop-layer [data-isp-open]').click();await page.locator('#isp-root [data-isp="tab:stores"]').click();await page.locator('#isp-root [data-isp="store:Market Arbër"]').click()}
+ else{await page.locator('#illyrian-shop-layer [data-ils="businesses"]').click();await page.locator('#illyrian-shop-layer [data-ils="business"][data-value="Market Arbër"]').click()}
+}
+async function identityStorage(page){return page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>key.startsWith('illyrian_')&&key!=='illyrian_demo_ui_language_v1')))}
+for(const [lang,ordinary,declared,example] of [
+ ['sq','Profil i zakonshëm','Biznes i deklaruar · DEMO','Biznes i verifikuar · shembull DEMO'],
+ ['en','Ordinary profile','Declared business · DEMO','Verified business · DEMO example'],
+ ['it','Profilo ordinario','Attività dichiarata · DEMO','Attività verificata · esempio DEMO']
+]){
+ test('Identity phase 4: truthful social badges and Shop/Plus guide - '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  const badge=page.locator('#screen [data-ily-identity-badge]').first();await expect(badge).toHaveText(/DEMO/);await expect(badge).toHaveAttribute('aria-expanded','false');
+  const before=await identityStorage(page);await badge.focus();await page.keyboard.press('Enter');await expect(badge).toHaveAttribute('aria-expanded','true');await expect(badge.locator('..').locator('[data-ily-identity-note]')).toBeVisible();await expect(badge).toBeFocused();await page.keyboard.press('Space');await expect(badge).toHaveAttribute('aria-expanded','false');expect(await identityStorage(page)).toEqual(before);
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('.profile-info [data-ily-identity-badge]')).toHaveText(/DEMO/);
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  for(const plus of [false,true]){
+   await identityCatalog(page,plus);const host=page.locator(plus?'#isp-root':'#illyrian-shop-layer');await expect(host.locator('[data-ily-business-status]')).toHaveText(declared);
+   const opener=host.locator('[data-ily-identity-guide]'),stored=await identityStorage(page);await opener.click();const guide=page.locator('#ig6-identity-guide');await expect(guide).toBeVisible();
+   await expect(guide.locator('[data-identity-state="ordinary"] h4')).toHaveText(ordinary);await expect(guide.locator('[data-identity-state="declared"] h4')).toHaveText(declared);await expect(guide.locator('[data-identity-state="verified-example"] h4')).toHaveText(example);
+   await expect(guide.locator('input,select,textarea')).toHaveCount(0);await expect(page.locator('#ig6-root input[type="file"]')).toHaveCount(0);expect(await identityStorage(page)).toEqual(stored);
+   await page.keyboard.press('Escape');await expect(opener).toBeFocused();await expect(host).toBeVisible();
+   if(plus)await page.locator('#isp-root header [data-isp="close"]').click();await page.keyboard.press('Escape');
+  }
+ });
+}
+test('Identity phase 4: live locale keeps badge disclosure focus and nested guide return',async({page})=>{
+ await ready(page);await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ const badge=page.locator('.profile-info [data-ily-identity-badge]');await badge.click();await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(badge).toBeFocused();await expect(badge).toHaveAttribute('aria-expanded','true');await expect(badge.locator('..').locator('[data-ily-identity-note]')).toContainText('Nessuna identità');
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ for(const plus of [false,true]){
+  await identityCatalog(page,plus);const host=page.locator(plus?'#isp-root':'#illyrian-shop-layer'),opener=host.locator('[data-ily-identity-guide]');await opener.click();
+  const language=plus?'en':'sq';await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);await expect(page.locator('#ig6-identity-guide [data-identity-state="verified-example"] h4')).toHaveText(plus?'Verified business · DEMO example':'Biznes i verifikuar · shembull DEMO');
+  await page.keyboard.press('Escape');await expect(opener).toBeFocused();await expect(host).toBeVisible();
+  if(plus)await page.locator('#isp-root header [data-isp="close"]').click();await page.keyboard.press('Escape');
+ }
+});
+test('Identity phase 4: historical verified flag stays DEMO and stored user text stays literal',async({page})=>{
+ await ready(page);const raw=await page.evaluate(()=>{const k='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(k)||'{}');s.posts=Array.isArray(s.posts)?s.posts:[];s.posts.unshift({id:'identity-ugc',name:'<img src=x onerror="window.__identityInjected=1">',text:'Paid does not mean verified <svg onload="window.__identityInjected=1">',verified:true,ava:'a1',likes:0,comments:0,share:0,city:'Tiranë',when:'Tani'});const raw=JSON.stringify(s);localStorage.setItem(k,raw);return raw});await page.reload();
+ const post=page.locator('#screen .post').filter({hasText:'Paid does not mean verified'});await expect(post.locator('[data-ily-identity-badge]')).toHaveText(/DEMO/);await post.locator('[data-ily-identity-badge]').click();await expect(post.locator('[data-ily-identity-note]')).toBeVisible();await expect(post.locator('.post-name')).toContainText('<img');await expect(post.locator('.post-name img,.post-copy svg')).toHaveCount(0);expect(await page.evaluate(()=>window.__identityInjected)).toBeUndefined();expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+});
+test('Identity phase 4: narrow mobile disclosures fit and sponsorship never grants a real badge',async({page})=>{
+ await page.setViewportSize({width:320,height:568});await ready(page);
+ const badge=page.locator('#screen [data-ily-identity-badge]').first();await badge.click();const dimensions=await badge.locator('..').locator('[data-ily-identity-note]').evaluate(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right}});expect(dimensions.left).toBeGreaterThanOrEqual(0);expect(dimensions.right).toBeLessThanOrEqual(320);
+ const sponsored=await commercePost(page,{sponsored:true});await expect(sponsored.locator('[data-ily-commerce-sponsored]')).toBeVisible();await expect(sponsored.locator('[data-ily-identity-badge]')).toHaveCount(0);expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts[0].verified)).toBe(false);
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();await expect(page.locator('#ig6-identity-guide')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('identity:paidSeparate')));await expect(page.locator('#ig6-identity-guide button,input,select')).toHaveCount(0);
+});
+test('Identity phase 4: guide activation without pointer focus restores its source after locale repaint',async({page})=>{
+ await page.setViewportSize({width:320,height:568});await ready(page);
+ for(const plus of [false,true]){
+  await identityCatalog(page,plus);const host=page.locator(plus?'#isp-root':'#illyrian-shop-layer');const guide=host.locator('[data-ily-identity-guide]');await guide.scrollIntoViewIfNeeded();
+  await host.locator('header button').first().focus();await guide.evaluate(el=>el.click());await expect(page.locator('#ig6-identity-guide')).toBeVisible();
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),plus?'it':'en');await page.keyboard.press('Escape');await expect(guide).toBeFocused();
+  if(plus)await page.locator('#isp-root header [data-isp="close"]').click();await page.keyboard.press('Escape');
+ }
+});
 async function businessPanel(page,lang='sq'){
  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();

@@ -1,6 +1,21 @@
 /* ILLYRIAN EN UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.en={
+  "identity": {
+    "badgeLabel": "DEMO badge — not real verification",
+    "badgeNote": "No identity or business has been verified by this badge. Payment does not grant verification.",
+    "guideTitle": "Identity and badge meanings",
+    "ordinary": "Ordinary profile",
+    "ordinaryInfo": "A personal profile is not proof of business ownership or an identity check.",
+    "declared": "Declared business · DEMO",
+    "declaredInfo": "Information is self-declared. This status is not verification of identity or ownership.",
+    "verifiedExample": "Verified business · DEMO example",
+    "verifiedInfo": "An explanatory example only, not this business’s status. In the real app the badge requires documented identity/ownership checks, with a clear date and scope.",
+    "meaning": "Identity verification does not guarantee product quality, transaction honesty, stock or absolute safety.",
+    "paidSeparate": "Basic verification is independent of Business Pro and paid promotions. Payment does not guarantee verification.",
+    "lifecycle": "In the real service the status must be rechecked, may expire or be revoked, and the decision may be appealed. No real verification is performed here.",
+    "guideLink": "Understand the business status"
+},
   "businessTeam": {
     "businessMissing": "This business is no longer available. Go back and choose an existing business.",
     "manage": "Manage business · DEMO",

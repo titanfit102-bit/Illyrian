@@ -52,12 +52,15 @@
   sample:{label:'Rrjedhë demonstrative',text:'Ky është një shembull i prodhuar për dizajn, jo provë për një person ose biznes real.'},
   pending:{label:'Në pritje të shqyrtimit',text:'Një raportim ose kërkesë kontrolli është regjistruar vetëm në këtë shfletues; askush nuk po shqyrton automatikisht.'}
  })[key];
+ const identityText=key=>window.IllyrianI18n?.t('identity:'+key)||key;
+ const identityGuide=()=>'<section id="ig6-identity-guide" data-i18n-direct><h3>'+clean(identityText('guideTitle'))+'</h3>'+[['ordinary','ordinary','ordinaryInfo'],['declared','declared','declaredInfo'],['verified-example','verifiedExample','verifiedInfo']].map(([status,title,info])=>'<article class="ig6-card" data-identity-state="'+status+'"><h4>'+clean(identityText(title))+'</h4><p>'+clean(identityText(info))+'</p></article>').join('')+'<p>'+clean(identityText('meaning'))+'</p><p>'+clean(identityText('paidSeparate'))+'</p><p>'+clean(identityText('lifecycle'))+'</p></section>';
+ const refreshIdentityBadges=()=>document.querySelectorAll('[data-ily-identity-badge]').forEach(button=>{button.setAttribute('aria-label',identityText('badgeLabel'));button.setAttribute('title',identityText('badgeLabel'));const note=button.parentElement.querySelector('[data-ily-identity-note]');if(note)note.textContent=identityText('badgeNote')});
  const trust=()=>{
   const cards=['declared','sample','pending'].map(key=>{const x=explanation(key);return '<article class="ig6-card"><h4>'+clean(x.label)+'</h4><p>'+clean(x.text)+'</p>'+b('explain:'+key,'Pse e shoh këtë?')+'</article>'}).join('');
   return '<h3>Besimi me shpjegim — IN9-06</h3>'+
    '<p>Transparenca duhet të tregojë <b>çfarë dimë, çfarë nuk dimë dhe kush e ka kontrolluar</b>. Nuk japim simbole “i verifikuar” pa proces të vërtetë.</p>'+
    '<div class="ig6-warning"><strong>Asnjë shitës, biznes apo pjesëmarrës real nuk është verifikuar në këtë demo.</strong></div>'+
-   cards+'<p class="ig6-muted">Për produktin real nevojiten nivele të qarta verifikimi, burime provash, skadim verifikimi dhe mekanizëm apelimi.</p>';
+   identityGuide()+cards+'<p class="ig6-muted">Për produktin real nevojiten nivele të qarta verifikimi, burime provash, skadim verifikimi dhe mekanizëm apelimi.</p>';
  };
  const reportForm=()=>'<h4>Raporto përmbajtje (demo)</h4><form id="ig6-report" class="ig6-form">'+
   '<label>Çfarë po raporton?<input name="target" maxlength="80" minlength="4" required placeholder="P.sh. ofertë e pasaktë"></label>'+
@@ -254,7 +257,7 @@
    '<p>Një histori e dukshme për arsyetimin e vendimeve. Nuk është regjistër i pandryshueshëm sigurie.</p>'+
    (state.audits.length?state.audits.filter(a=>!a.businessSource).map(a=>'<article class="ig6-card"><b>'+clean(a.action)+'</b><p>'+clean(a.id)+' · '+clean(a.at)+'</p></article>').join(''):
     '<p class="ig6-muted">Ende nuk ka vendime ose veprime të regjistruara.</p>');
- let root=null,opener=null,restore=[];
+ let root=null,opener=null,restore=[],identityOrigin=null;
  const tabs=()=>'<nav class="ig6-tabs">'+[['trust','Besimi'],['reports','Raportime'],['appeals','Apelime'],['work','Panele pune'],['audit','Historiku']].map(([key,label])=>b('tab:'+key,label,state.tab===key?'aria-current="page"':'')).join('')+'</nav>';
  const view=()=>state.tab==='trust'?trust():state.tab==='reports'?reports():state.tab==='review'?review():
   state.tab==='appeals'?appealPanel():state.tab==='appeal-review'?appealReview():state.tab==='work'?workPanels():audit();
@@ -268,14 +271,17 @@
    notice()+view()+'<footer>Vetëm demonstrim në pajisje. Për prodhim kërkohen audit, autorizime dhe proces apelimi i sigurt.</footer></section>';
   restoreBusiness();
   const field=focusId?root.querySelector('#'+CSS.escape(focusId)):formId&&focusName?root.querySelector('#'+CSS.escape(formId))?.elements.namedItem(focusName):null;
-  const next=act?[...root.querySelectorAll('[data-ig6]')].find(x=>x.dataset.ig6===act):null;
+  const next=act?[...root.querySelectorAll('button[data-ig6]')].find(x=>x.dataset.ig6===act):null;
   (field||next||root.querySelector('.ig6-panel header button'))?.focus({preventScroll:true});
  };
- const open=()=>{
+ const open=(sourceOpener=null)=>{
   if(state.open)return;
   const phone=document.querySelector('#phone');
   if(!phone)return;
-  state.open=true;state.tab='trust';state.role='visitor';state.notice='';opener=document.activeElement;
+  state.open=true;state.tab='trust';state.role='visitor';state.notice='';opener=sourceOpener||document.activeElement;
+  const host=opener?.matches('[data-ily-identity-guide]')?opener.closest('#illyrian-shop-layer,#isp-root'):null;
+  const scroll=host?.querySelector(host.id==='isp-root'?'.isp-panel':'.ils-body');
+  identityOrigin=host?{hostId:host.id,scroll:scroll?.scrollTop||0}:null;
   root=document.createElement('div');root.id='ig6-root';phone.appendChild(root);
   restore=['#screen','#navbar','.head','#illyrian-shop-layer','#isp-root','#ilp-root','#il4-root'].map(x=>phone.querySelector(':scope > '+x)).filter(x=>x&&x!==root).map(el=>({el,prior:el.inert}));
   restore.forEach(({el})=>el.inert=true);
@@ -283,7 +289,8 @@
  };
  const close=()=>{
   state.open=false;root?.remove();root=null;restore.forEach(({el,prior})=>{if(el.isConnected)el.inert=prior});restore=[];
-  if(opener?.isConnected)opener.focus();
+  if(identityOrigin){const host=document.getElementById(identityOrigin.hostId),scroll=host?.querySelector(identityOrigin.hostId==='isp-root'?'.isp-panel':'.ils-body');if(scroll)scroll.scrollTop=identityOrigin.scroll;const target=opener?.isConnected?opener:host?.querySelector('[data-ily-identity-guide]');target?.focus({preventScroll:true});identityOrigin=null}
+  else if(opener?.isConnected)opener.focus();
  };
  // Failed writes must not destroy unsent report fields or keyboard focus.
  const message=t=>{
@@ -374,11 +381,14 @@
   const first=screen.querySelector('.section-header')||screen.querySelector('.profile-banner')||screen.firstElementChild;
   first?.parentNode?.insertBefore(item,first.nextSibling);
  }
- window.IllyrianGovernance=Object.freeze({openBusiness:(source,store)=>{const scope=businessOptions().find(s=>s.source===source&&s.store===store);if(!scope)return false;open();bizKey=scope.key;bizActor='owner';bizThread='t1';state.tab='work';state.role='business';render();return true;}});
+ window.IllyrianGovernance=Object.freeze({openTrust:sourceOpener=>{open(sourceOpener);state.tab='trust';render();return true},openBusiness:(source,store)=>{const scope=businessOptions().find(s=>s.source===source&&s.store===store);if(!scope)return false;open();bizKey=scope.key;bizActor='owner';bizThread='t1';state.tab='work';state.role='business';render();return true;}});
  function init(){
   const phone=document.querySelector('#phone'),screen=document.querySelector('#screen');
   if(!phone||!screen)return;
+  refreshIdentityBadges();
   document.addEventListener('click',e=>{
+   const badge=e.target.closest('[data-ily-identity-badge]');if(badge){e.preventDefault();e.stopImmediatePropagation();const note=badge.parentElement.querySelector('[data-ily-identity-note]');if(note){note.hidden=!note.hidden;badge.setAttribute('aria-expanded',String(!note.hidden))}return}
+   const guide=e.target.closest('[data-ily-identity-guide]');if(guide){e.preventDefault();e.stopImmediatePropagation();window.IllyrianGovernance.openTrust(guide);return}
    const manage=e.target.closest('[data-business-manage]');if(manage){e.preventDefault();window.IllyrianGovernance.openBusiness(manage.dataset.source,manage.dataset.store);return}
    const entry=e.target.closest('#ig6-entry [data-ig6="open"]');
    if(entry){e.preventDefault();open()}
@@ -403,6 +413,7 @@
   },true);
   document.addEventListener('focusin',e=>{if(state.open&&root&&!root.contains(e.target))root.querySelector('.ig6-panel header button')?.focus()},true);
   window.addEventListener('illyrian:language-changed',()=>{
+   refreshIdentityBadges();if(state.open&&state.tab==='trust')render();
    if(businessActive()){rememberBusiness();render()}
    if(state.open)root?.querySelector('.ig6-panel')?.setAttribute('aria-label',feedback('title','Besimi dhe menaxhimi'));
   });

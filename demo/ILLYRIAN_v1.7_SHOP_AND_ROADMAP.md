@@ -943,3 +943,8 @@ The owner explicitly continued with phase 2 after phase 1 delivery; the prior in
 ### Programme phase 3 — current authorization (26 October 2026)
 
 The owner continued explicitly after phase 2 delivery. Only phase 3 business team/shared inbox is active; stop before phase 4. Original five-phase source remains unchanged. Existing Governance Work/Business is the administration integration point; no parallel admin app, personal DM import or catalog merge. DEMO flows and real contracts/permissions are separated in blueprint §17; current source/CI/Preview evidence stays in CURRENT_STATE. Phases 4–5 remain PLANNED.
+
+
+### Programme phase 4 — current authorization (27 October 2026)
+
+Owner explicitly continued after phase 3 delivery; only phase 4 identity/badges and Business Pro specifications is active. Stop before phase 5. Original full requirements above remain unchanged. Bounded DEMO badge/status clarity reuses core/Shop/Governance; no actual identity processing, subscription activation or prices. Real contracts, safeguards, business/legal/platform analysis and decisions are in blueprint §18; current CI/source/Preview evidence stays in CURRENT_STATE.

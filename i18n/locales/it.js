@@ -1,6 +1,21 @@
 /* ILLYRIAN IT UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.it={
+  "identity": {
+    "badgeLabel": "Simbolo DEMO — non è una verifica reale",
+    "badgeNote": "Nessuna identità o attività è stata verificata da questo simbolo. Pagare non conferisce la verifica.",
+    "guideTitle": "Identità e significato dei simboli",
+    "ordinary": "Profilo ordinario",
+    "ordinaryInfo": "Un profilo personale non dimostra proprietà aziendale o identità verificata.",
+    "declared": "Attività dichiarata · DEMO",
+    "declaredInfo": "I dati sono autodichiarati. Questo stato non verifica identità o proprietà.",
+    "verifiedExample": "Attività verificata · esempio DEMO",
+    "verifiedInfo": "Solo esempio illustrativo, non lo stato di questa attività. Nell’app reale il simbolo richiede controlli documentati di identità/proprietà, con data e ambito chiari.",
+    "meaning": "La verifica dell’identità non garantisce qualità dei prodotti, correttezza delle transazioni, disponibilità o sicurezza assoluta.",
+    "paidSeparate": "La verifica di base è indipendente da Business Pro e dalle promozioni a pagamento. Pagare non garantisce la verifica.",
+    "lifecycle": "Nel servizio reale lo stato va ricontrollato, può scadere o essere revocato e la decisione può essere contestata. Qui non si effettuano verifiche reali.",
+    "guideLink": "Comprendi lo stato dell’attività"
+},
   "businessTeam": {
     "businessMissing": "Questa attività non è più disponibile. Torna indietro e scegli un’attività esistente.",
     "manage": "Gestisci attività · DEMO",

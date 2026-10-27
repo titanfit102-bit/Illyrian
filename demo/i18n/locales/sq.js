@@ -1,6 +1,21 @@
 /* ILLYRIAN SQ UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.sq={
+  "identity": {
+    "badgeLabel": "Shenjë DEMO — jo verifikim real",
+    "badgeNote": "Asnjë identitet apo biznes nuk është verifikuar nga kjo shenjë. Pagesa nuk jep verifikim.",
+    "guideTitle": "Identiteti dhe kuptimi i shenjave",
+    "ordinary": "Profil i zakonshëm",
+    "ordinaryInfo": "Profili personal nuk është provë e pronësisë së një biznesi ose e kontrollit të identitetit.",
+    "declared": "Biznes i deklaruar · DEMO",
+    "declaredInfo": "Të dhënat janë vetëdeklaruar. Ky status nuk përbën verifikim identiteti apo pronësie.",
+    "verifiedExample": "Biznes i verifikuar · shembull DEMO",
+    "verifiedInfo": "Vetëm shembull shpjegues, jo status i këtij biznesi. Në aplikacionin real shenja kërkon kontrolle të dokumentuara të identitetit/pronësisë, me datë dhe fushë të qartë.",
+    "meaning": "Verifikimi i identitetit nuk garanton cilësi produkti, korrektësi transaksioni, stok apo siguri absolute.",
+    "paidSeparate": "Verifikimi bazë është i pavarur nga Business Pro dhe promovimet me pagesë. Pagesa nuk garanton verifikim.",
+    "lifecycle": "Në shërbimin real statusi duhet të rikontrollohet, mund të skadojë ose të revokohet dhe vendimi mund të apelohet. Këtu nuk kryhet verifikim real.",
+    "guideLink": "Kupto statusin e biznesit"
+},
   "businessTeam": {
     "businessMissing": "Biznesi nuk është më i disponueshëm. Kthehu dhe zgjidh një biznes ekzistues.",
     "manage": "Menaxho biznesin · DEMO",
