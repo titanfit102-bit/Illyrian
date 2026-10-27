@@ -912,7 +912,7 @@ Program i veçantë nga Shop 1–5 dhe Smart Social 5.1–5.4; numrat 6.1–6.5 
 
 ### 6.1 — dorëzimi dhe hapi pasues
 
-Baza MVP dhe harta e familjeve A01–A54 janë konsoliduar te ky seksion/blueprint §24; kontratat ekzistuese referohen. Boshllëqet fushë→API/rol/gjendje/test për çdo instancë mbeten në regjistrin §24; **nuk pretendohet specifikim shterues i çdo butoni/ekrani**. 34 grupet e kërkesave të burimit kanë destinacion më sipër, pa aktivizuar fazat e tjera. Ndalesa6.1 u përmbush; specifikimi6.2 i autorizuar më pas është te blueprint §25.6.3–6.5 mbeten PLANIFIKUAR/OPEN.
+Baza MVP dhe harta e familjeve A01–A54 janë konsoliduar te ky seksion/blueprint §24; kontratat ekzistuese referohen. Boshllëqet fushë→API/rol/gjendje/test për çdo instancë mbeten në regjistrin §24; **nuk pretendohet specifikim shterues i çdo butoni/ekrani**. 34 grupet e kërkesave të burimit kanë destinacion më sipër, pa aktivizuar fazat e tjera. Ndalesa6.1 u përmbush; specifikimi6.2 është te blueprint §25 dhe specifikimi6.3 i autorizuar veçmas te§26. Vetëm6.4–6.5 mbeten PLANIFIKUAR; implementimi real dhe gates e tyre mbeten OPEN.
 
 
 ### 6.2 — dorëzimi i specifikimit, 28 tetor2026
