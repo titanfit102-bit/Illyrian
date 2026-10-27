@@ -27,6 +27,8 @@ Account suspension, block relations, content privacy, plan membership, seller ow
 
 ## 3. Domain and data contracts (logical, not deployed)
 
+Canonical ownership/version and cross-module reference rules are consolidated in [§21](#21-product-simplification-and-authoritative-data--task-52). The short names below are domain summaries: plan=Activity, report=SafetyReport, moderation_case=ModerationCase; they do not define additional stores or competing APIs.
+
 **Identity:** account(id, created_at, status), profile(account_id, name, locale, city_visibility), privacy_preference(account_id, rules), account_block(blocker_id, blocked_id), follow_request(from_id, to_id, status).
 **Community:** post(id, author_id, visibility, status), media_asset(id, owner_id, storage_key, content_type, scan_status), comment(id, post_id, author_id, status), reaction(account_id, target_id, type), story(id, expires_at), reel(id, processing_status).
 **Plans:** plan(id, owner_id, city, venue_visibility, starts_at, capacity, status), plan_request(plan_id, member_id, status), plan_attendance(plan_id, member_id, state), plan_group_message(plan_id, author_id, body).
@@ -460,7 +462,7 @@ Local core mute hides that fixture author's Feed posts without preventing contac
 
 ## 20. Smart social programme — task 5.1 and PERFORMANCE FIRST (27 October 2026)
 
-This is a new programme, separate from delivered Shop §§15–19. Complete owner requirements (including 5.2–5.4) and original-source Git references are preserved in the [roadmap matrix](../demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#smart-social-programme--owner-source-27-october-2026). Only task 5.1 plus minimum permanent PERFORMANCE FIRST registration is authorized. STOP before 5.2. Do not interpret recommendations as approvals.
+This is a new programme, separate from delivered Shop §§15–19. Complete owner requirements (including 5.2–5.4) and original-source Git references are preserved in the [roadmap matrix](../demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#smart-social-programme--owner-source-27-october-2026). The initial authorization covered 5.1 and PERFORMANCE FIRST; its reconciliation is complete. The owner subsequently opened 5.2; current scope and contracts are in §21. Stop before 5.3. Do not interpret recommendations as approvals.
 
 ### Source/approval reconciliation and actual delta
 
@@ -491,4 +493,49 @@ Context links carry canonical target IDs and a return destination/draft token, n
 
 Permanent rule is in AGENTS and recovered via CURRENT_STATE/MASTER_HANDOFF. This documentation-only increment adds no runtime listeners, renders, media, storage, dependencies or network requests: runtime performance impact is zero by unchanged executable bytes, not a measured speed gain. No new FPS, battery, latency or native PASS. Existing performance candidates in §8 remain proposals; establish comparable device/network/data baseline and record module-specific objectives/results/limits before changing runtime performance.
 
-5.2 authoritative model/simplification remains PLANNED, referencing existing domain contracts without performing migrations or removing functions. 5.3 professional media remains PLANNED, with unknown “Detyra 2” resolved before design changes; no new codecs/streaming/storage infrastructure now. 5.4 optimization/60 FPS remains a target and measurement programme, not an achieved result. Their complete requirements are preserved in the roadmap matrix, with original-source Git references; they are not reimplemented or duplicated here. F06 remains deferred to real-app phase; main/Production/merge untouched.
+5.2 authoritative model/simplification is specified in §21, with a bounded DEMO status correction; no migration or function removal. 5.3 professional media remains PLANNED, with unknown “Detyra 2” resolved before design changes; no new codecs/streaming/storage infrastructure now. 5.4 optimization/60 FPS remains a target and measurement programme, not an achieved result. Their complete requirements are preserved in the roadmap matrix, with original-source Git references; they are not reimplemented or duplicated here. F06 remains deferred to real-app phase; main/Production/merge untouched.
+
+## 21. Product simplification and authoritative data — task 5.2
+
+Owner continuation on 27 October 2026 opens SS2-A/B/C, superseding the stop-before-5.2 checkpoint at `adab4d0d6332f29ab26f3fa2ab64a9e5e8f4eedb`. This is consolidation of the existing domain design, not a new stack, backend or migration. 5.3–5.4 remain PLANNED. Source requirements and acceptance remain in the roadmap; UI/design, Shop/Plus, all existing functions and stored IDs stay compatible.
+
+### DEMO conflicts and simplification decisions (SS2-A)
+
+Inspection at that source covered core Feed/Events/Messages, Commerce target adapters, Shop/Plus, Plans, Connections, Privacy/Map and Governance. This is a bounded state/reference review, not a global audit.
+
+| Surface / actual source | Conflict or duplication | Decision / practical boundary |
+|---|---|---|
+| Feed + Shop/Shop Plus: `commerceRefs`, `IllyrianShopTargets` | Equal names/IDs across two local catalogs can identify different listings | RETAIN both views/stores and `{source,type,id}` references; one real Listing below. No name matching or catalog/order merge. Existing filters/forms already vary by category; no proven redundant control requires removal |
+| Core Events + Plans | Core `e…` fixtures and Plans IDs/participation are independent | RETAIN visible flows; map only with explicit legacy identity. Do not merge attendance or requests by title/person name |
+| Connections → Plans | Interest/host examples are not accepted participation | RETAIN existing draft/open flows; Plans owns created local event/request state. No automatic plan creation or duplicate activity service |
+| Privacy/Map → Plans | Map/upcoming and status projections used viewer-local Date.parse, unlike Plans/Connections city-zone resolver | CORRECT read projections: reuse ActivityTime.resolve; exact start is closed/expired, invalid/DST-ambiguous time unknown. Private/cancelled precedence retained; no persisted rewrite. Schematic map pins/sample statuses are illustrative, not new activities |
+| Personal Messages + Plans group chat + business inbox | Different audience and local records; legacy core strings lack individual server IDs | RETAIN separate scopes/entry points. Real messages share canonical infrastructure with distinct conversation membership, not merged inbox access |
+| Social/Shop Plus reports → Governance | Reports and decision projections have separate meanings | RETAIN existing source reports and single Governance decision/appeal overlay; do not copy reports into a second writable queue. Unknown legacy associations remain unresolved |
+| Privacy/Map profiles/groups + core accounts/Communities | Fictional local identities and local privacy switches are not global ACL | RETAIN demonstrations. Real account/privacy/membership is authoritative; never merge fixtures by display name or treat a role toggle as authorization |
+
+No extra navigation layer, dependency or store is added. Larger screen/button consolidation, global block/ACL synchronization and destructive data unification are DEFERRED until product/access/migration approval. This retains the practical design tests without pretending local stores are the APK architecture.
+
+### Authoritative object registry (SS2-B; BACKEND, not deployed)
+
+All six objects have opaque server-generated ID, authoritative owner/principal, status, object-scoped access and monotonic version. The named domain owns writes; Feed, Reel, Message, Search, map, Shop/Plus and notification entries are references/projections. Existing detailed fields/APIs remain in the cited sections.
+
+| Canonical object / authority | Ownership and status | Access and concurrent changes |
+|---|---|---|
+| Account/Profile (§3/§13), identity domain | Account owns profile; active/suspended/deleted; profile visibility is a separate policy | Self-edit approved fields; privileged suspension requires capability/audit. Expected version for profile/privacy changes; server-derived actor, never submitted owner ID |
+| Listing (§15), marketplace domain | Shop owns listing; owner account acts through scoped business membership. Draft/published/paused/withdrawn/expired/removed lifecycle; stock/availability and moderation are separate dimensions | Public only if policy permits; writes require current shop capability. Version conflict409 preserves draft; atomic inventory/reservation and no negative stock. Business verification/payment does not grant listing access |
+| Activity (plan, §13), activity domain | Organizer owns activity; draft/published/cancelled/completed. Capacity/full, time expiry and viewer visibility are derived, not substitute lifecycle states | Authorized organizer edits; participants see permitted fields. Unique activity/account participation, transactional last-seat allocation and version check; invitations/interest never imply acceptance |
+| Conversation/Message (§3/§17), messaging domain | Conversation has personal/group/business scope; sender owns authored message within policy, not ownership of the whole thread. Message sent/edited/deleted lifecycle; delivery/read tracked separately per recipient | Current conversation membership, business capability, block/contact and moderation checks on read/send/subscription. Unique conversation+sender+client_message_id for retries; edits use version. Assignment and reply commit atomically; no private preview leakage across scopes |
+| SafetyReport (§19), safety domain | Reporter owns submission/receipt, not review outcome; submitted/triaged/linked/closed workflow | Reporter sees permitted receipt; assigned reviewers see minimized evidence; accused never gains reporter/evidence access through target ID. Idempotent submission; versioned review/link; report remains separate from case/decision |
+| ModerationDecision (§19), safety domain | Authorized reviewer/system principal issues decision for ModerationCase; imposed/revoked/superseded lifecycle, appeal status separate | Capability, assignment and applicant/reviewer separation; reason/policy/version audit. One current decision revision per case, transactional decision+case+audit+outbox; appeal produces a new revision retaining lawful history, never edits source reports to mimic a decision |
+
+A common reference is `{target_type,target_id}`; business scope and parent conversation/community/activity are resolved server-side. Reel/Feed/Message product references point to the SAME Listing ID used by Shop; all activity links point to the SAME Activity ID. Never copy availability/capacity/permission into another writer or resolve by label. Recheck current revision, visibility, block, expiry and moderation at open/action; unavailable targets keep source/draft/back navigation without revealing private content. §16/§20 retain detailed link contracts.
+
+Compatibility: explicit `(source_store,object_type,legacy_id) → canonical_id` mapping with migration version, collision handling and rollback; preserve original IDs/statuses/UGC/language and unknown codes. No real records created from fictional fixtures. Core string messages need verified parent/sender and assigned IDs during a separately approved migration, not invented IDs now. No DEMO migration or wholesale raw rewrite. These names refine §3 summaries; they do not create parallel report/message/activity models.
+
+Concurrency: expected version/CAS and transactions on the server; stale writes return409 with current permitted revision, retaining unsent draft. Idempotency is actor+operation+payload scoped; reused keys with different payload conflict. Event/version outbox updates projections after commit; deduplicate delivery and prevent older events regressing a newer revision. Revalidate offline replay after membership/block/deletion changes. localStorage snapshot checks are only bounded stale-write detection, never atomic server guarantees.
+
+### Acceptance and evidence (SS2-C)
+
+- DEMO regression: same Milan activity before and exactly at start, viewers New York/Tokyo; Plans, Privacy statuses and map presence agree. Invalid DST time stays unknown in sq/en/it, private title remains hidden, cancellation wins; viewing never rewrites stored plans. Existing Commerce source-collision/unavailable, Plans/Connections draft/stale-write and Governance overlay tests remain required.
+- Real Android/iOS/API, NOT RUN: same listing/activity ID from Reel/Feed/Message/Shop; two shops with colliding legacy IDs; edits/deletion/expiry reflected after revision refresh; unauthorized/cross-scope links, private/block/revoked membership and search/cache/subscription isolation; concurrent last seat, stock and inbox assignment; duplicate message/report, out-of-order projections, decision/appeal consistency; unknown legacy status, rollback, offline/retry/draft and sq/en/it. Require DB/API implementation and actual devices before PASS.
+- Performance: projection reuses the existing bounded time resolver/cache; no new network, listeners or storage. No measured speed/FPS/battery claim. Code/test/CI evidence is recorded in CURRENT_STATE; provider, platform, migration policy and larger UI decisions remain OPEN.

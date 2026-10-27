@@ -3176,3 +3176,36 @@ test('Safety phase 5 review: malformed stored targetRef cannot interrupt unrelat
 test('Safety phase 5 review: Unicode legacy case keeps its complete audit reference',async({page})=>{
  await ready(page);await page.evaluate(()=>localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify({flags:[{target:'Unique flag',reason:'Spam',detail:'ë'.repeat(180)}]})));await page.reload();await safetyPanel(page);const card=page.locator('[data-case-id]').filter({hasText:'Unique flag'});await safetyDecision(page,card);const data=await teamData(page),saved=data.cases.find(c=>c.target==='Unique flag');expect(data.audits.find(a=>a.action.includes('moderator')).id).toBe(saved.id);
 });
+
+for(const timezoneId of ['America/New_York','Asia/Tokyo']){
+ test('Smart Social 5.2 Privacy plan expiry agrees with Plans in '+timezoneId,async({browser})=>{
+  const context=await browser.newContext({timezoneId}),page=await context.newPage();
+  await page.clock.install({time:new Date('2026-12-01T16:30:00Z')});
+  await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','en');localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({events:[{id:'shared-berlin',title:'Shared Milan plan',city:'Milano',kind:'Sport',date:'2026-12-01',time:'18:00',place:'Public hall',capacity:8,privacy:'public'}],requests:[]}))});
+  for(const [at,want,closed] of [['2026-12-01T16:30:00Z','available',false],['2026-12-01T17:00:00Z','expired',true]]){
+   await page.clock.setFixedTime(new Date(at));await ready(page);
+   const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+   await page.locator('.head [data-act="tab"][data-val="events"]').click();await page.locator('[data-ilp-entry]').click();
+   await expect(page.locator('#ilp-root .ilp-card .ilp-muted')).toContainText(await page.evaluate(c=>window.IllyrianI18n.t(c?'plans:statusClosed':'plans:statusActive'),closed));
+   await page.keyboard.press('Escape');await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();await page.locator('[data-il4-entry]').click();await page.locator('[data-il4="tab:states"]').click();
+   await expect(page.locator('#il4-root .il4-card').filter({hasText:'Shared Milan plan'}).locator('[data-il4="state:'+want+'"]')).toBeVisible();
+   await page.locator('[data-il4="tab:map"]').click();
+   await expect(page.locator('#il4-root .il4-results button').filter({hasText:'Shared Milan plan'})).toHaveCount(closed?0:1);
+   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(raw);
+  }
+  await context.close();
+ });
+}
+for(const lang of ['sq','en','it']){
+ test('Smart Social 5.2 invalid plan time stays unknown with private and cancellation precedence '+lang,async({page})=>{
+  await page.addInitScript(l=>{localStorage.setItem('illyrian_demo_ui_language_v1',l);const base={city:'Berlin',kind:'Sport',date:'2027-03-28',time:'02:30',place:'Private hall',capacity:2,privacy:'public'};localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({events:[{...base,id:'gap',title:'DST gap'},{...base,id:'secret',title:'SECRET PLAN',privacy:'private'},{...base,id:'cancelled',title:'Cancelled gap',cancelled:true}],requests:[]}))},lang);
+  await ready(page);const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+  await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();await page.locator('[data-il4-entry]').click();await page.locator('[data-il4="tab:states"]').click();
+  const card=page.locator('#il4-root .il4-card').filter({hasText:'DST gap'}),unknown=await page.evaluate(()=>window.IllyrianI18n.t('privacy:stateUnknown'));
+  await expect(card.locator('[data-il4="state:unknown"]')).toBeVisible();await expect(card).toContainText(unknown);
+  await card.locator('button').click();await expect(page.locator('#il4-root .il4-notice')).toHaveText(unknown);
+  await expect(page.locator('#il4-root')).not.toContainText('SECRET PLAN');
+  await expect(page.locator('#il4-root .il4-card').filter({hasText:'Cancelled gap'}).locator('[data-il4="state:canceled"]')).toBeVisible();
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(raw);
+ });
+}

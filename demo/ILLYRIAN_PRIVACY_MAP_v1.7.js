@@ -78,7 +78,7 @@
    s==='none'||s==='declined'?b('group-request',g.privacy==='public'?'Bashkohu':'Kërko anëtarësim'):
    s==='pending'?b('group-withdraw','Tërhiq kërkesën'):s==='accepted'?b('group-withdraw','Largohu nga komuniteti'):'')+'</article>';
  };
- const upcoming=()=>{const x=stored(PLANS),arr=Array.isArray(x.events)?x.events:[];return arr.filter(v=>v&&typeof v.title==='string'&&v.privacy==='public'&&!v.cancelled&&Date.parse(String(v.date)+'T'+String(v.time))>Date.now()).slice(0,12)};
+ const upcoming=()=>{const x=stored(PLANS),arr=Array.isArray(x.events)?x.events:[];return arr.filter(v=>v&&typeof v.title==='string'&&v.privacy==='public'&&!v.cancelled&&window.IllyrianActivityTime.resolve(v)!==null&&window.IllyrianActivityTime.resolve(v)>Date.now()).slice(0,12)};
  const shopItems=()=>{const data=stored(SHOP),arr=Array.isArray(data.listings)?data.listings:[];return arr.filter(v=>v&&typeof v.store==='string'&&typeof v.city==='string'&&v.city.length<70).slice(0,12)};
  const pins=()=>{
   const live=upcoming().map((e,i)=>({id:'plan-'+i,kind:'activity',name:e.title,city:e.city,detail:'Aktivitet publik në demo',source:'created'}));
@@ -116,12 +116,13 @@
   const x=stored(PLANS),events=Array.isArray(x.events)?x.events:[];
   const req=Array.isArray(x.requests)?x.requests:[];
   return [...sampleStatuses,...events.filter(e=>e&&typeof e==='object').slice(0,24).map(e=>{
-   let stateCode=e.privacy==='private'?'private':e.cancelled?'canceled':Date.parse(String(e.date)+'T'+String(e.time))<=Date.now()?'expired':
+   const instant=window.IllyrianActivityTime.resolve(e);
+   let stateCode=e.privacy==='private'?'private':e.cancelled?'canceled':instant===null?'unknown':instant<=Date.now()?'expired':
    req.filter(r=>r?.eventId===e.id&&r.status==='accepted').length>=Number(e.capacity||1)?'full':'available';
    return {id:'existing-'+String(e.id).slice(0,30),title:stateCode==='private'?'':String(e.title||'').slice(0,90),state:stateCode,public:stateCode!=='private',note:'Gjendje e llogaritur nga të dhënat lokale të panelit të organizatorit.'};
   })];
  };
- const stateLabel=s=>({available:'I hapur',full:'Plot',canceled:'Anuluar',expired:'I skaduar',private:'Privat',removed:'Nuk gjendet'})[s]||'I panjohur';
+ const stateLabel=s=>({available:'I hapur',full:'Plot',canceled:'Anuluar',expired:'I skaduar',private:'Privat',removed:'Nuk gjendet'})[s]||feedback('stateUnknown','Gjendje e panjohur.');
  const statuses=()=>'<h3 data-i18n-direct>'+ui('statusesHeading','Gjendjet e aktiviteteve dhe kthimi i sigurt')+'</h3><p>'+ui('statusesIntro','Kur hap një aktivitet nga Postimi/Story/Reel, gjendja duhet kontrolluar sërish. Klikimi nuk regjistron automatikisht pjesëmarrje.')+'</p>'+
  getPlanStatuses().map(p=>'<article class="il4-card"><div class="il4-cardtop"><strong data-user-content>'+escaped(p.public?p.title:'Aktivitet privat ose i padisponueshëm')+'</strong><span>'+escaped(stateLabel(p.state))+'</span></div>'+
  '<p>'+escaped(p.note)+'</p>'+b('state:'+p.state,feedback('statusesAction','Çfarë mund të bëj?'))+'</article>').join('')+
