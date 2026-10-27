@@ -8,11 +8,12 @@ Përditësuar: 27 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 |---|---|
 | Repository / dega | `titanfit102-bit/Illyrian` / `feat/i18n-shop-feedback-20261022` |
 | PR | [#1](https://github.com/titanfit102-bit/Illyrian/pull/1), OPEN / DRAFT / UNMERGED → `demo/v1.7-illyrian-shop` |
-| Kandidati runtime i verifikuar | `88de889ae952e4a32b024453dd6edb3f75f26a30`, faza 5 e programit Shop; commit-i vijues i mbylljes është vetëm dokumentacion. HEAD LIVE kontrollohet në GitHub |
-| Browser QA | [40458232975](https://github.com/titanfit102-bit/Illyrian/actions/runs/40458232975), **357 Chromium +16 Linux WebKit PASS**, **12 classifier tests PASS** mbi `88de889`; logjet 122036492727/122038986608/122036457816 të inspektuara. Suite e plotë e ekzekutuar, jo ripërdorim; përfshin 15 testet e reja të fazës 5 |
-| Security | [40458232880](https://github.com/titanfit102-bit/Illyrian/actions/runs/40458232880) PASS mbi `88de889`, job 122036457469: 7 fixtures negative, 87-file bounded scan, syntax/vendor dhe npm audit 0 në atë ekzekutim; jo audit global |
+| Baseline remote para 5.4 | `400cf47231246d9d23ff7ff1def37f00bfd3f236`, 5.3 e përfunduar; HEAD LIVE ndiqet pas kandidatit 5.4 |
+| Browser QA e baseline | [40550136260](https://github.com/titanfit102-bit/Illyrian/actions/runs/40550136260), **372 Chromium +16 Linux WebKit +12 classifier PASS** mbi `400cf47`, jo ripërdorim; logjet122351390616/122356531992/122351320216 |
+| Security e baseline | [40550136208](https://github.com/titanfit102-bit/Illyrian/actions/runs/40550136208) PASS mbi `400cf47`, job122351319693; syntax/vendor,7 detector fixtures dhe npm audit0 në atë ekzekutim |
 | Izolimi | Integrimi `015ce439e7c6d736149c6c300391586517664f62`; main `9f91b5c083b4482a70a2149483cc799360e6102c`; pa merge/Production |
-| Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/). Runtime `88de889`: [immutable](https://illyrian-demo-1kwsn3p1d-un24.vercel.app/), `dpl_inysxYuogS6CmDjaQrjT5km5tigx`, READY/target null dhe alias i lidhur sipas Vercel LIVE. Root HTTP200/exact source prefix; katër JS, CSS dhe tri locale të ndryshuara HTTP200/exact source parity. Commit-i dokumentues vijues ndiqet nga alias/Actions, pa redeploy manual |
+| Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/). Baseline `400cf47`: [immutable](https://illyrian-demo-i7hyn82so-un24.vercel.app/), READY/target null dhe SHA i verifikuar LIVE. Kandidati5.4 ndiqet automatikisht nga Git integration; kontrollo alias/HEAD/CI, pa redeploy manual |
+
 
 ## Funksionet dhe provat që ruhen
 
@@ -24,7 +25,7 @@ Përditësuar: 27 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 
 ## Politika aktive dhe çështjet e hapura
 
-Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv: vetëm Detyra 5.3, e hapur nga pronari pas 5.2 në `5cb9d43`. [Blueprint §22](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#22-professional-media-system--task-53) mban kufirin DEMO dhe kontratat reale. Shop/5.1/5.2 nuk rihapen. Pa merge, main/Production, backend/native, migrime destruktive ose shpenzime. NDALO përpara 5.4.
+Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv: vetëm Detyra5.4, e hapur nga pronari pas 5.3 në `400cf47`. [Blueprint §23](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#23-measured-performance--task-54) mban matjet dhe kontratat/pranimin real. Shop/5.1–5.3 nuk rihapen. Pa merge, main/Production, backend/native, migrime destruktive, refaktorim të gjerë ose shpenzime. Pas dorëzimit5.4 ndalo dhe prit drejtimin e pronarit.
 
 | Fusha | Statusi / hapi |
 |---|---|
@@ -85,9 +86,9 @@ BACKEND/PLANNED: regjistër kanonik objektesh, role/leje server-side, prova priv
 
 Lokalisht **100/100 regresione relevante PASS**, përfshirë **15 testet e reja të fazës 5**; pas saktësimit të arsyes së paregjistruar të raporteve të vjetra Social, **27/27 Safety/Governance PASS**. Rishikimi i pavarur gjeti tri raste të riprodhuara RED→GREEN: shigjetat Reel pas panelit, targetRef i keqformuar dhe referenca Unicode e plotë në audit. Ruajtja e dështuar mban formularin/tekstin, rolin/gjuhën dhe Retry pa dublim; apelimi i pranuar përditëson edhe rastin shembull/importuar. Nuk u hoqën teste. Sintaksë/vendor, 12 classifier, 7 detector fixtures/skanim i kufizuar, locale mirrors, figurat/logoja e integruar dhe npm audit 0 PASS. Dy pamje 320px/390px u inspektuan; paneli 320px ka scrollWidth=clientWidth=320, jo certifikim fizik.
 
-Remote **VERIFIED** mbi `88de889ae952e4a32b024453dd6edb3f75f26a30`: **357/357 Chromium +16/16 Linux WebKit +12/12 classifier dhe Security PASS**; logjet dhe lidhjet në tabelën sipër. Preview READY në të njëjtin source, root/asetet e ndryshuara HTTP200/source parity. Testet browser u ekzekutuan plotësisht; commit-i dokumentues vijues përdor vetëm rrugën e provuar të ripërdorimit kur klasifikuesi e lejon.
+Remote **VERIFIED** mbi `88de889ae952e4a32b024453dd6edb3f75f26a30`: **357/357 Chromium +16/16 Linux WebKit +12/12 classifier dhe Security PASS**; logjet dhe lidhjet në [browser40458232975](https://github.com/titanfit102-bit/Illyrian/actions/runs/40458232975) / [Security40458232880](https://github.com/titanfit102-bit/Illyrian/actions/runs/40458232880). Preview READY në të njëjtin source, root/asetet e ndryshuara HTTP200/source parity. Testet browser u ekzekutuan plotësisht; commit-i dokumentues vijues përdor vetëm rrugën e provuar të ripërdorimit kur klasifikuesi e lejon.
 
-## Hapi i saktë pasues
+## Mbyllja historike e programit Shop
 
 **Faza 5 është dorëzuar brenda kufirit DEMO; NDALUAR pas saj.** Të pesë fazat e programit janë të dorëzuara në pjesët DEMO të raportuara, me kërkesat reale të ruajtura si specifikime/vendime. Commit-i dokumentues i mbylljes ndiqet nga Actions/alias LIVE; mos bëj commit tjetër vetëm për një rezultat të vogël CI. Hapi tjetër kërkon drejtimin e ri të pronarit. QA fizike, backend/native, siguria/operacionet reale, politika e moshës dhe referenca historike 6B mbeten OPEN; Pro/pagesat mbeten të paaktivizuara.
 
@@ -106,6 +107,14 @@ IMPLEMENTUAR DEMO: lifecycle i përbashkët brenda HTML-it për fotografi postim
 
 SPECIFIKUAR/BACKEND: media asset/rendition, upload/resume/quota/processing, leje private, metadata/moderim, cache/CDN/deletion, Android/iOS dhe kriteret e matjes në §22. Provider/stack/licenca/politika/buxhete kërkojnë vendim; matje fizike memorie/bateri/native NOT RUN. “Detyra 2” mbetet e paidentifikuar; dizajni aktiv ruhet.
 
-Verifikimi lokal: 63/63 regresione relevante PASS, përfshirë10 të reja;9 rastet e gabimit/race/quota u vëzhguan RED në sjelljen e vjetër dhe GREEN pas korrigjimit, plus provë e kufijve ekzistues të imazhit. Sintaksë/vendor,12 classifier tests, diff dhe ruajtja e48 kërkesave kanonike PASS. Shqyrtimi i pavarur i kodit/kontratave: pa çështje të mbetura. Remote i kandidatit PENDING deri në Actions; jo PASS i supozuar. Baseline i 5.2 `5cb9d43205b0c19828a8d63c1c45d825462ba7d6`: [362 Chromium +16 WebKit +12 classifier PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40544242139), [Security PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40544242939); nuk janë prova të patch-it 5.3.
+Verifikimi5.3 është i përfunduar: lokalisht63/63 (10 të reja), remote372 Chromium+16 WebKit+12 classifier/Security PASS mbi `400cf47`, sipas tabelës sipër. Media reale dhe “Detyra2” mbeten OPEN sipas §22. Ndalesa historike para5.4 zëvendësohet nga autorizimi i ri më poshtë; mos përsërit5.3 ose konsolidimin.
 
-**Hapi pasues: ndalo përpara 5.4.** Ruaj kufijtë DEMO→APK dhe PERFORMANCE FIRST në AGENTS; pranimi real i medias mbetet i hapur sipas §22. Mos përsërit konsolidimin ose fazat e dorëzuara.
+## Smart Social 5.4 — performanca dhe hapi pasues
+
+IMPLEMENTUAR DEMO: biseda personale shfaq50 mesazhet e fundit dhe ngarkon historinë më të vjetër me50 për veprim, duke ruajtur draftin/DOM-in e composer-it, përzgjedhjen, rendin, fokusin dhe scroll anchor. Historiku i plotë, IDs/çelësat dhe mbrojtjet quota/Retry/stale mbeten të pandryshuara; inbox-et dhe Shop/Plus nuk bashkohen. Kufiri është vetëm renderimi fillestar; ngarkimi i përsëritur mund të rrisë DOM-in, serializimi i plotë mbetet. Pa sync/backend/cache/virtualizim të rremë.
+
+MATUR: krahasim AB/BA7+7, Chromium/Linux390×844/CPU4×, fixture5,000 mesazhe, kushte identike. Hapja1,653.9→183.8ms (**−88.9%**), send feedback1,578.9→180.1ms (**−88.6%**), flluska fillestare5,001→51; historiku i ruajtur nuk shkurtohet. Metoda/të gjitha modulet/kufizimet dhe kontratat e APK-së ruhen një herë te §23, jo pretendim native/60FPS/memorie/bateri/rrjet real.
+
+Verifikimi lokal: **71/71 regresione relevante PASS (1.8min)**, përfshirë **7 të reja**; sintaksë/vendor,12 classifier, locale mirrors,48 kërkesa kanonike dhe figurat e pandryshuara,7 detector fixtures/skanim i kufizuar dhe diff PASS. Pesë raste paging u vëzhguan RED→GREEN; dy kufij të historikut të shkurtër ruajnë sjelljen ekzistuese. Rishikim i pavarur i runtime/testeve/metodës: pa gjetje vepruese. Remote i kandidatit PENDING deri në Actions; baseline sipër nuk është prova e patch-it5.4. Mos bëj commit tjetër vetëm për të shënuar një rezultat të vogël CI.
+
+**Hapi pasues: ndalo pas5.4 dhe prit drejtimin e pronarit.** Pjesët e kufizuara DEMO të5.1–5.4 dhe specifikimet përkatëse janë dorëzuar brenda provave të raportuara, jo APK e përfunduar. Pajisjet fizike Android/iPhone, slow mobile network, memory/battery/native, API/DB/sync dhe buxhetet e miratuara mbeten NOT RUN/OPEN sipas §23/§8; ruaj të gjitha vendimet dhe gates reale. Mos ndërto fazë të re, backend/native ose optimizime të tjera pa scope të ri.

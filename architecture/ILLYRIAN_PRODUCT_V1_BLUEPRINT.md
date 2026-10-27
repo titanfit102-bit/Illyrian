@@ -108,7 +108,7 @@ Recommended build order: authentication/privacy first -> content/media -> plans/
 
 ### Performance evidence and candidate budgets — no claimed pass (2026-10-25)
 
-- **CURRENT DEMO:** QA Lab displays browser Navigation Timing as **INFO**, not a measured device performance budget. Automated tests cover screen reachability and some 200% CSS scaling; they do not certify battery, memory pressure, startup time on actual phones, or real network latency. Avoid changing code just to satisfy speculative benchmarks.
+- **CURRENT DEMO:** QA Lab displays browser Navigation Timing as **INFO**, not a measured device performance budget; §23 adds a bounded reproducible browser comparison, not device certification. Automated tests cover screen reachability and some 200% CSS scaling; they do not certify battery, memory pressure, startup time on actual phones, or real network latency. Avoid changing code just to satisfy speculative benchmarks.
 - **FUTURE REAL APP:** before implementing a native/client/backend performance gate, select and record **two benchmark devices, OS/browser/app build versions, network profile, content fixture, measurement tool, baseline and repetitions**. Measure cold/warm start, first useful screen, p95 tap feedback, scroll-jank rate, memory peak, MB per media session, battery/background cost, package size, crash-free sessions/ANR and API p95 after backend exists.
 - **Candidate pilot targets — PROPOSED, NOT APPROVED, NOT TESTED:** useful first screen p75 ≤3 s on the selected midrange device/profile; tap-feedback p95 ≤100 ms; crash-free sessions ≥99.5% once meaningful sessions are available. These are initial hypotheses for measurement **only**; confirm feasibility, device conditions and targets with the owner before enforcing CI/release gates. Do not pretend p95 API, AAB size or network-use budgets exist before their baselines.
 - **Change review:** whenever DEMO code adds large assets or expensive UI work, compare identical-browser/same-fixture baselines before/after and report relative change. A documentation change alone does not constitute a benchmark. Native release needs recorded physical measurements and an agreed fail threshold before M5 sign-off.
@@ -462,7 +462,7 @@ Local core mute hides that fixture author's Feed posts without preventing contac
 
 ## 20. Smart social programme — task 5.1 and PERFORMANCE FIRST (27 October 2026)
 
-This is a new programme, separate from delivered Shop §§15–19. Complete owner requirements (including 5.2–5.4) and original-source Git references are preserved in the [roadmap matrix](../demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#smart-social-programme--owner-source-27-october-2026). The initial authorization covered 5.1 and PERFORMANCE FIRST; its reconciliation is complete. 5.2 was subsequently delivered (§21); the owner has now opened 5.3 (§22). Stop before 5.4. Do not interpret recommendations as approvals.
+This is a new programme, separate from delivered Shop §§15–19. Complete owner requirements (including 5.2–5.4) and original-source Git references are preserved in the [roadmap matrix](../demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#smart-social-programme--owner-source-27-october-2026). The initial authorization covered 5.1 and PERFORMANCE FIRST; its reconciliation is complete. 5.2 and 5.3 were subsequently delivered (§§21–22); the owner has now opened the bounded performance work in 5.4 (§23). Do not interpret recommendations as approvals.
 
 ### Source/approval reconciliation and actual delta
 
@@ -542,7 +542,7 @@ Concurrency: expected version/CAS and transactions on the server; stale writes r
 
 ## 22. Professional media system — task 5.3
 
-Owner continuation opens SS3-A–F after verified 5.2 source `5cb9d43205b0c19828a8d63c1c45d825462ba7d6`; it supersedes stop-before-5.3, not previous product decisions. This increment covers safe DEMO image lifecycle fixes and real-media contracts. Unknown “Detyra 2” remains unresolved (§20): preserve active design, logo, screens, navigation and commerce tags. 5.4 is not started. No backend/provider, paid infrastructure, subscriptions or actual video upload/streaming is activated.
+Owner continuation opens SS3-A–F after verified 5.2 source `5cb9d43205b0c19828a8d63c1c45d825462ba7d6`; it supersedes stop-before-5.3, not previous product decisions. This increment covers safe DEMO image lifecycle fixes and real-media contracts. Unknown “Detyra 2” remains unresolved (§20): preserve active design, logo, screens, navigation and commerce tags. 5.4 was unopened at that checkpoint; its subsequent scope is §23. No backend/provider, paid infrastructure, subscriptions or actual video upload/streaming is activated.
 
 ### Existing surfaces and DEMO implementation (SS3-A/B/F)
 
@@ -587,4 +587,61 @@ Server processing normalizes orientation, strips sensitive GPS/device metadata b
 | Memory, battery, small screens | Test repeated select/switch/remove/delete and long feeds, peak/steady decoded memory, foreground/background energy, keyboard/a11y and layout on agreed lower-end Android and iPhone. Physical/native evidence NOT RUN; Linux Chromium/WebKit and viewport captures are separate evidence |
 | Real security / failure acceptance | Wrong MIME/signature, oversize/decompression-heavy input, unsupported codec, sensitive metadata, private/cross-tenant IDs, revoked/expired links, offline/retry/resume, interrupted transcode, storage/quota failure and deletion races; no duplicate publish or private cache leak. Requires real backend/storage and actual devices before PASS |
 
-DEMO regression covers corrupt decode, stale selection, closed composer, avatar quota/Retry in sq/en/it, canvas failure/Retry, dimensions and byte limits, plus existing social/commerce/media regressions. Full real attachment/video/media platform acceptance remains NOT RUN. Requirements SS3-A–F are retained; only the practical DEMO slice above is implemented. No native performance result, stack choice or 5.4 authorization is implied.
+DEMO regression covers corrupt decode, stale selection, closed composer, avatar quota/Retry in sq/en/it, canvas failure/Retry, dimensions and byte limits, plus existing social/commerce/media regressions. Full real attachment/video/media platform acceptance remains NOT RUN. Requirements SS3-A–F are retained; only the practical DEMO slice above is implemented. No native performance result or stack choice is implied; subsequent 5.4 authorization is bounded by §23.
+
+## 23. Measured performance — task 5.4
+
+Owner continuation opens SS4-A–E after source `400cf47231246d9d23ff7ff1def37f00bfd3f236`; previous stop-before-5.4 is superseded. Apply AGENTS PERFORMANCE FIRST and DEMO→APK. Preserve existing design, modules, stored IDs/data, privacy, security and accessibility; no backend/native, provider, paid infrastructure, merge or Production.
+
+**IMPLEMENTED DEMO:** personal chat initially renders the newest 50 saved messages (plus the unchanged fictional incoming example); a keyboard-accessible sq/en/it button prepends 50 older messages at a time. Keep the same composer DOM, draft/selection, ordered escaped content and visible scroll anchor; remove the completed control and move focus to the first loaded message. Current-thread/range guards prevent an unrelated load. Loaded depth is ephemeral to the modal, resets on reopening/send and is not persisted. Complete stored history/keys/IDs and existing quota/Retry/stale-write controls remain unchanged. Group/business/moderation conversations, Shop/Plus and design are preserved. Repeated history loads can eventually render all messages; whole-state parse/serialization remains. No backend sync or virtual list is claimed.
+
+### Reproducible browser comparison — bounded evidence
+
+Source baseline `400cf47231246d9d23ff7ff1def37f00bfd3f236`; candidate is this 5.4 change. `qa/measure-v17.cjs` starts the existing local static server and prints metadata/raw samples/median/maximum as JSON. For comparison, place the baseline HTML and three original `demo/i18n/locales/*.js` files at their served relative paths in a temporary baseline directory; use `NODE_PATH="$PWD/security/node_modules" PERF_COMPARE_DIR=<baseline-directory> PERF_SAMPLES=7 node qa/measure-v17.cjs`. Unchanged assets are shared. No new timing CI gate/dependency or production instrumentation.
+
+Environment: Linux x64, AMD EPYC 9V74 host (9 visible CPUs), Chromium140.0.7339.186/Playwright1.55.1;390×844, CPU throttle4×, reduced motion, localhost/unthrottled. Seven fresh contexts **per variant**, sequential alternating AB/BA, same routing/cache policy, no other browser test running. Original changed assets were verified against GitHub blobs before editing. These are scripted click/input→forced layout→two-rAF elapsed diagnostics, not physical tap latency/INP or guaranteed visual readiness. Startup uses navigation loadEventEnd, not real cold native launch. Values below are milliseconds **median (maximum)**; seven samples do not justify p95/statistical guarantees. Only long-chat rendering is optimized; small stock-module differences reflect bounded observations/host variability, not claimed gains or native budget PASS.
+
+| Probe | Before | After |
+|---|---:|---:|
+| Opening: load event | 774.1 (1143.4) | 713.0 (901.6) |
+| Profile | 123.6 (185.0) | 139.6 (188.7) |
+| Feed | 92.9 (146.6) | 87.2 (149.8) |
+| Story | 120.6 (142.3) | 132.2 (179.8) |
+| Reel | 146.9 (159.1) | 147.2 (191.1) |
+| Search: open / navigate | 169.8 (183.8) | 161.6 (345.8) |
+| Search: query | 30.5 (37.5) | 32.9 (38.4) |
+| Community detail | 99.1 (127.3) | 95.3 (124.6) |
+| Plans | 44.1 (52.4) | 36.7 (57.4) |
+| Shop | 156.1 (201.4) | 142.6 (177.8) |
+| Shop Plus | 100.7 (120.9) | 89.3 (148.1) |
+| Inbox | 134.7 (153.7) | 131.2 (147.4) |
+| Stock chat: open | 109.9 (145.8) | 100.0 (147.7) |
+| Stock chat: input | 25.6 (29.4) | 22.1 (25.2) |
+| Stock chat: send | 105.5 (143.4) | 105.1 (136.0) |
+| 5,000 messages: open | 1653.9 (2069.3) | 183.8 (216.6) |
+| 5,000 messages: send | 1578.9 (2013.4) | 180.1 (183.9) |
+
+Long-chat median open elapsed fell **88.9%**, send feedback **88.6%** in this fixture; initial bubbles5,001→51. Synchronous handler/layout medians: open1,155.5→100.7ms, send1,095.9→94.7ms. Scroll probe changes scrollTop across40 rAF intervals/run: median per-run maximum gap100.0→16.8ms (worst150.1→16.8ms), median gaps>50ms2→0 (worst3→0); stock Feed median/worst maximum gap16.8ms both variants. It is not real touch/scroll/FPS certification. Local document transferSize687,689→688,835bytes (+1,146); no transferred-media, heap/RSS, battery or billed-minutes saving was measured. No speculative Feed/cache/preload/asset refactor is justified by this bounded comparison.
+
+Regression evidence: seven new browser cases cover ordered full123-message history and literal UGC in sq/en/it, draft/input DOM/selection/focus/scroll preservation, language switch, isolated thread/reopen,5,000-message send/reload with complete storage and empty/exact50 boundaries. Five paging cases failed against the original all-at-once renderer then passed; the two unchanged short-history cases characterize preserved behavior. Existing media/commerce/safety/profile/quota/stale regressions remain required. Exact local/remote outcomes and next action belong in CURRENT_STATE, not inferred from this design.
+
+### Real APK/client/backend measurement and data contracts — SPECIFIED, NOT IMPLEMENTED
+
+- Reuse the authoritative Message/Conversation IDs, ownership, visibility/version rules in §§13/17/21 and media lifecycle in §22. Personal, business and moderation inboxes retain separate permissions. No new duplicate message store or DEMO sync simulation.
+- Proposed personal history read: `GET /conversations/{id}/messages?before=<opaque_cursor>&limit=<bounded_limit>` returns messages in stable `(server_sequence,id)` order, a next cursor and revision; server authorizes current membership/block/visibility before every page and before counts. Cursor binds conversation/filter/snapshot, cannot expose another thread or skip messages after concurrent inserts. Initial read requests the newest page; prepend preserves the visible anchor, selection and unsent draft. A server-enforced maximum page/payload and cache/retention limits require a measured data baseline; DEMO's 50 is a presentation batch, not an approved API budget.
+- Delta sync uses a server-issued continuation/sequence token scoped to the current account/conversation; deduplicate by authoritative message ID, apply edits/deletion tombstones in order, recover expired cursors with an authorized resync. Acknowledge only committed server sequences. Durable outbox with client operation ID/idempotency, expected revision and explicit queued/sent/failed states; reconnect/retry must not duplicate, lose, silently reorder or falsely confirm a message. An incoming page never overwrites the composer. Auth/membership revocation invalidates cached private views, previews and queued sends according to the approved retention policy.
+- Instrument one user action across UI→request→query→render with non-content correlation IDs; never log private messages, tokens or GPS. Bound payloads, cancel superseded search, debounce only after measuring, deduplicate in-flight reads and avoid repeated full sync. Query plans/indexes for conversation sequence, authorized feed pagination and search must be validated against realistic cardinality/permissions before selecting indexes or infrastructure. No unmeasured cache, DB migration, request reduction or API latency claim.
+- Bounded client cache/decoded media, eviction on memory pressure/account change, offscreen/background resource release and measured selective preload; avoid unnecessary render/compute. Virtualize only when measured content size warrants it, preserving keyboard/screenreader order, search/find, scroll restoration, variable media heights and draft state. Incremental DEMO history can still grow after repeated loads; it is not virtualization or a reduction of persisted data/whole-state serialization.
+
+| Surface | Measurable objective / real acceptance | Evidence boundary / relevant checks |
+|---|---|---|
+| App opening | Cold/warm start to first usable screen, bytes/requests and p50/p95; no blocked first action | Local fresh-context load timing below; real Android/iOS startup, package size and crash/ANR NOT RUN |
+| Navigation/profile/other overlays | Tap→feedback and destination-ready p50/p95, Back/focus restoration; avoid duplicate render/listeners | Local action→two-rAF probe and existing focus/flows regressions; reduced-motion probe cannot certify animation smoothness |
+| Feed | First useful content, page-render time/DOM count, long tasks and scroll gaps on large lists; preserve order/privacy | Local stock Feed scroll diagnostic; real large-feed pagination/virtualization remains conditional, not implemented |
+| Stories/Reels/photos | First visible frame, decode/bytes/memory peak and background stop; interruption/retry | Local viewer-open timing plus media regressions; real video/adaptive formats and device acceptance remain §22 |
+| Messages | Latest page/open, input, send feedback and eventual server commit measured separately; older pages ordered, draft/anchor retained, no loss/duplicate on recovery | Local stock/5,000-item history and send timing, paging/data/quota/stale regressions; server delivery/delta sync NOT RUN |
+| Communities/Plans | Directory/detail first content and pagination/filter latency, correct time/permissions and unchanged actions | Local detail/open timing and existing Community/Plans regressions; remote data/API latency NOT RUN |
+| Search | Input feedback and authorized result-ready p50/p95 across realistic query/data sizes; no stale result application or private leaks | Local stock Explore query; search index/backend/cancellation and large real dataset NOT RUN |
+| Shop/Shop Plus | Catalog/profile/query/pagination-ready and product-media bytes; keep source-qualified listing IDs, drafts and ordering | Local overlay-open timing and existing commerce tests; real inventory/search/network measurements NOT RUN |
+
+**Physical/real-service acceptance plan:** choose a representative midrange Android and iPhone (exact models/OS/build/tools remain DECISION REQUIRED), plus desktop browser/version. Record cold/warm cache, fixture/cardinality (empty, typical, 5,000+ history and large feeds), repetitions and the same device/thermal/battery state before/after. Measure p50/p95 first-use/open/navigation/search/send, long tasks/frame gaps/scroll-jank, peak process and decoded-media memory, transferred bytes/request count, background and foreground battery drain with device profiling; 60 FPS is an aspiration on capable selected devices, not a browser-derived certificate. Compare normal, high-latency/low-bandwidth, offline, packet-loss/interrupted/resumed and background/foreground scenarios; preserve drafts, ordered sync, access checks, accessibility and recovery. Current real devices, weak mobile network, native memory/battery, API/database and recovery pipeline: **NOT RUN/OPEN**. Candidate budgets in §8 remain PROPOSED/unapproved; baseline first, agree device-specific thresholds before CI/release enforcement. Device worksheet M01–M18 and security/release gates remain mandatory for actual acceptance; no release authorization.

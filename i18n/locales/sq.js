@@ -304,6 +304,7 @@ window.ILLYRIAN_LOCALES.sq={
     "reply": "Përgjigju Story..."
   },
   "messages": {
+    "older": "Ngarko mesazhet më të vjetra",
     "storageConflict": "Të dhënat lokale ndryshuan ose nuk lexohen. Kopjo draftin dhe rifresko faqen para riprovimit.",
     "title": "Mesazhet",
     "conversations": "Bisedat e tua",

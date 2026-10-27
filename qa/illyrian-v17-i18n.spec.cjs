@@ -3278,3 +3278,61 @@ test('Media 5.3 post reencode keeps existing dimensions and rejects oversized in
  await page.locator(input).setInputFiles({name:'too-big.png',mimeType:'image/png',buffer:Buffer.alloc(8*1024*1024+1)});
  await expect(page.locator('.toast')).toContainText('8 MB');await expect(page.locator(preview)).toHaveAttribute('src',encoded.src);await expect(page.locator('#v5-text')).toHaveValue('Bounded photo');
 });
+
+// Performance 5.4: rendering history must not truncate persisted messages or replace the live composer.
+async function longChat(page,count=123){
+ await page.addInitScript(count=>{
+  localStorage.setItem('illyrian_demo_v07_session','entered');
+  if(!localStorage.getItem('illyrian_demo_v09_state'))localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({messages:{leon:Array.from({length:count},(_,i)=>'History '+i+' <img src=x onerror=alert(1)>'),arta:['Arta only']}}));
+ },count);
+ await ready(page);
+ await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();
+ await page.locator('#v6-inbox-list [data-act="v6-openchat"][data-id="leon"]').click();
+}
+for(const [lang,label] of [['sq','Ngarko mesazhet më të vjetra'],['en','Load older messages'],['it','Carica messaggi precedenti']]){
+ test('Performance 5.4: ordered history preserves live draft, focus, scroll and raw data - '+lang,async({page})=>{
+  await longChat(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  const box=page.locator('#v6-chat-scroll'),older=box.locator('[data-act="v54-chat-older"]'),bubbles=box.locator('.v6-bubble.me'),input=page.locator('#v6-msg-input');
+  await expect(bubbles).toHaveCount(50);await expect(bubbles.first()).toContainText('History 73 <img');await expect(bubbles.last()).toContainText('History 122 <img');
+  await expect(older).toHaveText(label);expect(await box.locator('.v6-bubble img').count()).toBe(0);
+  await input.fill('Unsent history draft');await input.evaluate(el=>{el.setSelectionRange(3,8);window.__historyInput=el});
+  const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await box.evaluate(el=>{el.scrollTop=0;window.__historyAnchor=el.querySelector('.v6-bubble.me');window.__historyTop=window.__historyAnchor.getBoundingClientRect().top});
+  await older.focus();await page.keyboard.press('Enter');await expect(bubbles).toHaveCount(100);await expect(older).toBeFocused();
+  await expect(bubbles.first()).toContainText('History 23 <img');
+  expect(await page.evaluate(()=>Math.abs(window.__historyAnchor.getBoundingClientRect().top-window.__historyTop))).toBeLessThan(3);
+  expect(await input.evaluate(el=>({same:el===window.__historyInput,start:el.selectionStart,end:el.selectionEnd}))).toEqual({same:true,start:3,end:8});
+  await expect(input).toHaveValue('Unsent history draft');
+  await older.click();await expect(bubbles).toHaveCount(123);await expect(older).toBeHidden();
+  await expect(bubbles.first()).toBeFocused();
+  const texts=await bubbles.evaluateAll(els=>els.map(el=>el.firstChild.textContent));
+  expect(texts).toEqual(Array.from({length:123},(_,i)=>'History '+i+' <img src=x onerror=alert(1)>'));
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang==='en'?'it':'en');
+  await expect(bubbles).toHaveCount(123);await expect(input).toHaveValue('Unsent history draft');
+  await page.locator('#v6-chat-form button[type="submit"]').click();
+  await expect(bubbles).toHaveCount(50);await expect(bubbles.last()).toContainText('Unsent history draft');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).messages);
+  expect(saved.leon).toEqual([...texts,'Unsent history draft']);expect(saved.arta).toEqual(['Arta only']);
+ });
+}
+test('Performance 5.4: older history is scoped to the current thread and resets on reopen',async({page})=>{
+ await longChat(page,51);const box=page.locator('#v6-chat-scroll');
+ await expect(box.locator('.v6-bubble.me')).toHaveCount(50);
+ await box.locator('[data-act="v54-chat-older"]').click();await expect(box.locator('.v6-bubble.me')).toHaveCount(51);
+ await page.locator('[data-act="v6-back-inbox"]').click();await page.locator('[data-act="v6-openchat"][data-id="arta"]').click();
+ await expect(box.locator('.v6-bubble.me')).toHaveCount(1);await expect(box).toContainText('Arta only');await expect(box.locator('[data-act="v54-chat-older"]')).toHaveCount(0);
+ await page.locator('[data-act="v6-back-inbox"]').click();await page.locator('[data-act="v6-openchat"][data-id="leon"]').click();
+ await expect(box.locator('.v6-bubble.me')).toHaveCount(50);await expect(box.locator('[data-act="v54-chat-older"]')).toBeVisible();
+});
+test('Performance 5.4: a 5000-message thread keeps the rendered tail bounded after send',async({page})=>{
+ await longChat(page,5000);const bubbles=page.locator('#v6-chat-scroll .v6-bubble.me');await expect(bubbles).toHaveCount(50);
+ await page.locator('#v6-msg-input').fill('Newest');await page.locator('#v6-chat-form button[type="submit"]').click();await expect(bubbles).toHaveCount(50);await expect(bubbles.last()).toContainText('Newest');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).messages.leon);expect(saved).toHaveLength(5001);expect(saved[0]).toBe('History 0 <img src=x onerror=alert(1)>');expect(saved.at(-1)).toBe('Newest');
+ await page.reload({waitUntil:'load'});await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();await page.locator('[data-act="v6-openchat"][data-id="leon"]').click();await expect(bubbles).toHaveCount(50);await expect(bubbles.last()).toContainText('Newest');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).messages.leon.length)).toBe(5001);
+});
+
+for(const count of [0,50])test('Performance 5.4: complete short history needs no older control - '+count,async({page})=>{
+ await longChat(page,count);const box=page.locator('#v6-chat-scroll');await expect(box.locator('.v6-bubble.me')).toHaveCount(count);await expect(box.locator('.v6-bubble:not(.me)')).toHaveCount(1);await expect(box.locator('[data-act="v54-chat-older"]')).toHaveCount(0);
+});

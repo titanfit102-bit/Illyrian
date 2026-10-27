@@ -304,6 +304,7 @@ window.ILLYRIAN_LOCALES.it={
     "reply": "Rispondi alla storia..."
   },
   "messages": {
+    "older": "Carica messaggi precedenti",
     "storageConflict": "I dati locali sono cambiati o non sono leggibili. Copia la bozza e ricarica prima di riprovare.",
     "title": "Messaggi",
     "conversations": "Le tue conversazioni",
