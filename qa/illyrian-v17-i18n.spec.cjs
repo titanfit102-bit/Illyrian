@@ -3209,3 +3209,72 @@ for(const lang of ['sq','en','it']){
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(raw);
  });
 }
+
+async function s53Photo(page,color='blue',width=80,height=40){
+ const data=await page.evaluate(({color,width,height})=>{const c=document.createElement('canvas');c.width=width;c.height=height;const x=c.getContext('2d');x.fillStyle=color;x.fillRect(0,0,width,height);return c.toDataURL('image/png').split(',')[1]},{color,width,height});
+ return {name:color+'.png',mimeType:'image/png',buffer:Buffer.from(data,'base64')};
+}
+async function s53Open(page,kind){
+ if(kind==='post'){await page.locator('#screen .compose-prompt').click();return ['#v5-file','.v5-compose-preview img']}
+ if(kind==='avatar'){await page.locator('#navbar [data-val="profile"]').click();await page.locator('[data-act="modal"][data-val="edit"]').first().click();return ['#v12-photo-file','.v12-avatar-large']}
+ await page.locator('[data-act="v15-open"][data-val="'+kind+'"]').first().click();return ['#v15-file','.v15-preview img'];
+}
+async function s53Blue(page,selector){return page.locator(selector).evaluate(img=>{if(!img.complete||!img.naturalWidth)return false;const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(img,0,0,1,1);const p=x.getImageData(0,0,1,1).data;return p[2]>200&&p[0]<30})}
+async function s53HoldFirst(page){await page.evaluate(()=>{
+ const NativeImage=window.Image,set=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,'src').set;
+ window.Image=function(...args){const img=new NativeImage(...args);Object.defineProperty(img,'src',{set(value){if(!window.s53Release&&/^(blob:|data:)/.test(value)){window.s53Release=()=>new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});set.call(img,value)});}else set.call(img,value)}});return img};
+})}
+for(const kind of ['post','story','reel']){
+ test('Media 5.3 latest photo wins over delayed decode '+kind,async({page})=>{
+  await ready(page);const [input,preview]=await s53Open(page,kind);await s53HoldFirst(page);
+  await page.locator(input).setInputFiles(await s53Photo(page,'red'));await expect.poll(()=>page.evaluate(()=>typeof window.s53Release)).toBe('function');
+  await page.locator(input).setInputFiles(await s53Photo(page,'blue'));await expect.poll(()=>s53Blue(page,preview)).toBe(true);
+  await page.evaluate(()=>window.s53Release());await expect.poll(()=>s53Blue(page,preview)).toBe(true);
+ });
+}
+test('Media 5.3 corrupt post image releases URL and permits retry without losing text',async({page})=>{
+ await ready(page);const [input,preview]=await s53Open(page,'post');await page.locator('#v5-text').fill('Photo retry draft');
+ await page.evaluate(()=>{window.s53URLs=[];window.s53Revoked=[];const create=URL.createObjectURL.bind(URL),revoke=URL.revokeObjectURL.bind(URL);URL.createObjectURL=f=>{const u=create(f);window.s53URLs.push(u);return u};URL.revokeObjectURL=u=>{window.s53Revoked.push(u);revoke(u)}});
+ await page.locator(input).setInputFiles({name:'bad.png',mimeType:'image/png',buffer:Buffer.from('not an image')});
+ await expect.poll(()=>page.evaluate(()=>window.s53URLs.length===1&&window.s53Revoked.includes(window.s53URLs[0]))).toBe(true);
+ await expect(page.locator('#v5-text')).toHaveValue('Photo retry draft');
+ await page.locator(input).setInputFiles(await s53Photo(page));await expect.poll(()=>s53Blue(page,preview)).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>window.s53URLs.every(u=>window.s53Revoked.includes(u)))).toBe(true);
+});
+test('Media 5.3 closed composer cannot receive a delayed photo in a new draft',async({page})=>{
+ await ready(page);const [input]=await s53Open(page,'post');await s53HoldFirst(page);
+ await page.locator(input).setInputFiles(await s53Photo(page));await expect.poll(()=>page.evaluate(()=>typeof window.s53Release)).toBe('function');
+ await page.keyboard.press('Escape');await s53Open(page,'post');await page.locator('#v5-text').fill('New composer');
+ await page.evaluate(()=>window.s53Release());await expect(page.locator('.v5-compose-preview img')).toHaveCount(0);await expect(page.locator('#v5-text')).toHaveValue('New composer');
+});
+for(const lang of ['sq','en','it']){
+ test('Media 5.3 avatar quota rolls back and retry preserves profile text '+lang,async({page})=>{
+  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);const [input,preview]=await s53Open(page,'avatar');
+  await page.locator('#edit-name').fill('Unsaved profile name');const before=await page.locator(preview).getAttribute('src');
+  await page.evaluate(()=>{window.s53Set=Storage.prototype.setItem;window.s53Fail=true;Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state'&&window.s53Fail)throw new DOMException('Synthetic quota','QuotaExceededError');return window.s53Set.call(this,k,v)}});
+  await page.locator(input).setInputFiles(await s53Photo(page));
+  await expect(page.locator('.toast')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('common:storageSaveFailed')));
+  await expect(page.locator(preview)).toHaveAttribute('src',before);await expect(page.locator('#edit-name')).toHaveValue('Unsaved profile name');
+  await page.evaluate(()=>window.s53Fail=false);await page.locator(input).setInputFiles(await s53Photo(page));await expect.poll(()=>s53Blue(page,preview)).toBe(true);
+  await expect(page.locator('#edit-name')).toHaveValue('Unsaved profile name');
+  const dims=await page.locator(preview).evaluate(img=>[img.naturalWidth,img.naturalHeight]);expect(dims).toEqual([160,160]);
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.name)).not.toBe('Unsaved profile name');
+ });
+}
+test('Media 5.3 Story canvas error retains caption and permits retry',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await ready(page);const [input,preview]=await s53Open(page,'story');await page.locator('#v15-caption').fill('Canvas retry draft');
+ await page.evaluate(()=>{window.s53Context=HTMLCanvasElement.prototype.getContext;window.s53FailCanvas=true;HTMLCanvasElement.prototype.getContext=function(...args){return window.s53FailCanvas?null:window.s53Context.apply(this,args)}});
+ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
+ await page.locator(input).setInputFiles({name:'white.png',mimeType:'image/png',buffer:png});
+ await expect(page.locator('.toast')).toBeVisible();expect(errors).toEqual([]);await expect(page.locator('#v15-caption')).toHaveValue('Canvas retry draft');
+ await page.evaluate(()=>window.s53FailCanvas=false);await page.locator(input).setInputFiles(await s53Photo(page));await expect.poll(()=>s53Blue(page,preview)).toBe(true);
+ await expect(page.locator('#v15-caption')).toHaveValue('Canvas retry draft');expect(errors).toEqual([]);
+});
+test('Media 5.3 post reencode keeps existing dimensions and rejects oversized input without discarding photo',async({page})=>{
+ await ready(page);const [input,preview]=await s53Open(page,'post');await page.locator('#v5-text').fill('Bounded photo');
+ await page.locator(input).setInputFiles(await s53Photo(page,'blue',3000,2000));await expect.poll(()=>s53Blue(page,preview)).toBe(true);
+ const encoded=await page.locator(preview).evaluate(img=>({width:img.naturalWidth,height:img.naturalHeight,src:img.src}));
+ expect([encoded.width,encoded.height]).toEqual([1240,827]);expect(encoded.src.startsWith('data:image/jpeg;base64,')).toBe(true);expect(encoded.src.length).toBeLessThanOrEqual(720000);
+ await page.locator(input).setInputFiles({name:'too-big.png',mimeType:'image/png',buffer:Buffer.alloc(8*1024*1024+1)});
+ await expect(page.locator('.toast')).toContainText('8 MB');await expect(page.locator(preview)).toHaveAttribute('src',encoded.src);await expect(page.locator('#v5-text')).toHaveValue('Bounded photo');
+});
