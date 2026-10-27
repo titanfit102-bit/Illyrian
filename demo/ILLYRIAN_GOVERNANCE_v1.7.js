@@ -22,6 +22,11 @@
  const drafts=array(prev.drafts,25).filter(x=>typeof x.id==='string'&&typeof x.kind==='string');
  const state={open:false,tab:'trust',role:'visitor',notice:'',selected:'',cases,appeals,audits,drafts,
    applicant:'Në shqyrtim',storeOffer:'Draft',shopTab:'trust',businessTeams:normalTeams(prev.businessTeams)};
+ const safetyText=k=>window.IllyrianI18n?.t('safety:'+k)||k;
+ const reportKinds={social:['profile','post','commentThread','conversation','reel'],communities:['community','post'],plans:['activity'],shop:['listing'],shopPlus:['listing']};
+ const validRef=r=>r&&typeof r.source==='string'&&typeof r.kind==='string'&&Object.hasOwn(reportKinds,r.source)&&reportKinds[r.source].includes(r.kind)&&typeof r.id==='string'&&r.id.length>0&&r.id.length<=120;
+ let reportContext=null,reportTarget='';
+ const reportButton=(source,kind,id,label)=>validRef({source,kind,id})?'<button type="button" class="ily-report-button" data-i18n-direct data-ily-report data-report-source="'+clean(source)+'" data-report-kind="'+clean(kind)+'" data-report-id="'+clean(id)+'" data-report-label="'+clean(String(label||id).slice(0,80))+'">'+clean(safetyText('report'))+'</button>':'';
  const bounded=(str,limit=160)=>String(str??'').trim().slice(0,limit);
  const unique=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
  const feedback=(key,fallback)=>window.IllyrianI18n?.t('governance:'+key)||fallback;
@@ -30,23 +35,37 @@
  const save=()=>{try{const next=JSON.stringify(persisted());if(localStorage.getItem(KEY)!==expectedRaw){bizConflict=true;throw new Error('stale')}localStorage.setItem(KEY,next);expectedRaw=next;lastSaved=next;return true}catch{
   Object.assign(state,JSON.parse(lastSaved));state.businessTeams=normalTeams(JSON.parse(lastSaved).businessTeams);state.notice=bizConflict?teamText('conflict'):feedback('storageFull','Kufiri i të dhënave lokale u arrit.');return false}};
  const stamp=()=>new Date().toISOString().slice(0,16).replace('T',' ');
- const log=(action,id)=>{state.audits.unshift({action:bounded(action,65),id:bounded(id,35),at:stamp()});state.audits=state.audits.slice(0,60)};
+ const log=(action,id)=>{state.audits.unshift({action:bounded(action,65),id:bounded(id,4096),at:stamp()});state.audits=state.audits.slice(0,60)};
  const b=(act,t,extra='')=>'<button type="button" data-ig6="'+clean(act)+'" '+extra+'>'+clean(t)+'</button>';
  const notice=()=>state.notice?'<p class="ig6-note" role="status">'+clean(state.notice)+'</p>':'';
  const sampleCases=[
   {id:'sample-1',target:'Listim ilustrues për makinë',reason:'Çmim i dyshimtë',detail:'Raport demonstrues: kërkohet dokumentacion.',status:'pending',source:'shembull'},
   {id:'sample-2',target:'Ofertë ilustrative dyqani',reason:'Fotografi e pasaktë',detail:'Shembull për procesin e apelimit.',status:'restricted',source:'shembull'}
  ];
- const fromShop=()=>{
-  const s=load(SHOP);return array(s.flags,40).map((f,i)=>({
-   id:'shop-'+i+'-'+bounded(f.target,18),target:bounded(f.target,80),reason:bounded(f.reason,80),
-   detail:bounded(f.detail,180),status:'pending',source:'Shop Plus'
-  }));
+ // Source stores are read-only projections. Only decisions live in Governance.
+ const flagCase=(f,overlays=state.cases)=>{
+  const target=bounded(f.target,80),reason=bounded(f.reason,80),detail=bounded(f.detail,180);
+  const legacy=overlays.filter(c=>/^shop-\d+-/.test(c.id)&&c.source==='Shop Plus'&&c.target===target&&c.reason===reason&&(c.detail||'')===detail);
+  const id=typeof f.id==='string'&&f.id.length>0&&f.id.length<=100?'shopPlus:'+f.id:legacy.length===1?legacy[0].id:'shop-legacy:'+encodeURIComponent(JSON.stringify([target,reason,detail]));
+  return {id,target,reason,detail,status:'pending',source:'Shop Plus',...(typeof f.listingId==='string'&&f.listingId.length<=120?{targetRef:{source:'shopPlus',kind:'listing',id:f.listingId}}:{})};
  };
- const allCases=()=>[...sampleCases,...fromShop(),...state.cases].map(c=>{
-  const saved=state.cases.find(v=>v.id===c.id);
-  return {...c,...(saved?{status:saved.status||c.status,reasonNote:saved.reasonNote||'',reviewedAt:saved.reviewedAt||''}:{})};
- }).filter((c,i,arr)=>arr.findIndex(x=>x.id===c.id)===i).slice(0,80);
+ const fromShop=()=>array(load(SHOP).flags,40).map(f=>flagCase(f));
+ const fromSocial=()=>{
+  const core=load('illyrian_demo_v09_state');return (Array.isArray(core.reports)?core.reports:[]).filter(id=>typeof id==='string'&&id.length>0&&id.length<=120).slice(0,60).map(id=>{
+   const post=array(core.posts,100).find(p=>p.id===id),source=post?.communityId?'communities':'social';
+   return {id:'social:post:'+id,target:safetyText('postReport')+' '+id,reason:'unspecified',detail:'',status:'pending',source:'Social · DEMO',targetRef:{source,kind:'post',id}};
+  });
+ };
+ const allCases=()=>[...sampleCases,...fromShop(),...fromSocial(),...state.cases].map(c=>{
+  const saved=state.cases.find(v=>v.id===c.id);return {...c,...(saved||{})};
+ }).filter((c,i,arr)=>arr.findIndex(x=>x.id===c.id)===i).slice(0,140);
+ const pendingAppeal=id=>state.appeals.some(x=>x.caseId===id&&x.status==='pending');
+ const canAppeal=c=>knownStatus(c.status)&&c.status!=='pending'&&!pendingAppeal(c.id);
+ const storeCase=c=>{let saved=state.cases.find(x=>x.id===c.id);if(!saved){if(state.cases.length>=30)return null;saved={...c};state.cases.push(saved)}return saved};
+ const flagStatus=f=>{
+  const saved=array(load(KEY).cases,30),base=flagCase(f,saved),overlay=saved.find(c=>c.id===base.id);
+  return overlay?statusName(overlay.status):null;
+ };
  const explanation=(key)=>({
   declared:{label:'Të dhëna të deklaruara',text:'Shitësi ose organizatori ka shkruar këto të dhëna; platforma nuk ka kryer kontrolle të identitetit apo stokut.'},
   sample:{label:'Rrjedhë demonstrative',text:'Ky është një shembull i prodhuar për dizajn, jo provë për një person ose biznes real.'},
@@ -62,35 +81,41 @@
    '<div class="ig6-warning"><strong>Asnjë shitës, biznes apo pjesëmarrës real nuk është verifikuar në këtë demo.</strong></div>'+
    identityGuide()+cards+'<p class="ig6-muted">Për produktin real nevojiten nivele të qarta verifikimi, burime provash, skadim verifikimi dhe mekanizëm apelimi.</p>';
  };
- const reportForm=()=>'<h4>Raporto përmbajtje (demo)</h4><form id="ig6-report" class="ig6-form">'+
-  '<label>Çfarë po raporton?<input name="target" maxlength="80" minlength="4" required placeholder="P.sh. ofertë e pasaktë"></label>'+
-  '<label>Arsyeja<select name="reason"><option value="Informacion i pasaktë">Informacion i pasaktë</option><option value="Mashtrim i dyshuar">Mashtrim i dyshuar</option><option value="Spam">Spam</option><option value="Shkelje privatësie">Shkelje privatësie</option><option value="Përmbajtje e papërshtatshme">Përmbajtje e papërshtatshme</option></select></label>'+
-  '<label>Shpjegim<textarea name="detail" maxlength="240" rows="2" placeholder="Çfarë ndodhi?"></textarea></label>'+
-  '<button type="submit">Ruaj raportimin lokal</button></form>';
+ const reasonCodes=['Informacion i pasaktë','Mashtrim i dyshuar','Spam','Shkelje privatësie','Përmbajtje e papërshtatshme','impersonation','harassment','threat','misleadingAd','harmfulActivity'];
+ const reasonText=code=>code==='unspecified'?safetyText('unspecified'):reasonCodes.includes(code)?safetyText('reason'+reasonCodes.indexOf(code)):code;
+ const reportForm=()=>'<h4 id="ig6-report-heading" data-i18n-direct>'+clean(safetyText('reportTitle'))+'</h4><p data-i18n-direct>'+clean(safetyText('localOnly'))+'</p><form id="ig6-report" class="ig6-form" data-i18n-direct>'+
+  '<label>'+clean(safetyText('target'))+'<input name="target" maxlength="80" minlength="4" required data-user-content value="'+clean(reportContext?reportTarget:'')+'" '+(reportContext?'readonly':'')+'></label>'+
+  (!reportContext?'<p>'+clean(safetyText('unlinked'))+'</p>':'')+
+  '<label>'+clean(safetyText('reason'))+'<select name="reason">'+reasonCodes.map(code=>'<option value="'+clean(code)+'">'+clean(reasonText(code))+'</option>').join('')+'</select></label>'+
+  '<label>'+clean(safetyText('detail'))+'<textarea name="detail" maxlength="240" rows="2" data-user-content></textarea></label>'+
+  '<button type="submit">'+clean(safetyText('save'))+'</button></form>';
  const statusLabels={pending:'Në pritje',restricted:'Kufizuar (demo)',dismissed:'Mbyllur pa masë',more:'Duhet sqarim',reinstated:'Kufizimi u hoq'};
  const knownStatus=s=>Object.prototype.hasOwnProperty.call(statusLabels,s);
- const statusName=s=>knownStatus(s)?statusLabels[s]:(typeof s==='string'&&s?s:statusLabels.pending);
- const statusMarkup=s=>'<span'+(!knownStatus(s)&&typeof s==='string'&&s?' data-user-content':'')+'>'+clean(statusName(s))+'</span>';
+ const statusName=s=>knownStatus(s)?safetyText(s):(typeof s==='string'&&s?s:statusLabels.pending);
+ const statusMarkup=s=>'<span data-case-status'+(!knownStatus(s)&&typeof s==='string'&&s?' data-user-content':'')+'>'+clean(statusName(s))+'</span>';
  const caseCards=()=>{
   const role=state.role==='moderator';
-  return allCases().map(c=>'<article class="ig6-card"><h4 data-user-content>'+clean(c.target)+'</h4>'+
-   '<p>'+clean(c.reason)+' · '+clean(c.source||'Raport demonstrues')+'</p>'+
+  return allCases().map(c=>'<article class="ig6-card" data-case-id="'+clean(c.id)+'"><h4 data-user-content>'+clean(c.target)+'</h4>'+
+   '<p>'+clean(reasonText(c.reason))+' · '+clean(c.source||'Raport demonstrues')+'</p>'+
    (c.detail?'<p data-user-content>'+clean(c.detail)+'</p>':'')+
    '<p><b>Status:</b> '+statusMarkup(c.status)+'</p>'+
    (c.reasonNote?'<p><b>Arsye vendimi:</b> <span data-user-content>'+clean(c.reasonNote)+'</span></p>':'')+
-   (role?b('review:'+c.id,'Shqyrto si moderator'):b('appeal:'+c.id,'Apelo / kundërshto vendimin'))+'</article>').join('');
+   (role?b('review:'+c.id,'Shqyrto si moderator',pendingAppeal(c.id)?'disabled':''):b('appeal:'+c.id,'Apelo / kundërshto vendimin',canAppeal(c)?'':'disabled'))+'</article>').join('');
  };
+ const localUpdates=()=>'<section id="ig6-local-updates" data-i18n-direct><h4>'+clean(safetyText('updates'))+'</h4><p>'+clean(safetyText('localOnly'))+'</p>'+allCases().filter(c=>c.reviewedAt&&c.reasonNote).map(c=>'<article class="ig6-card"><b data-user-content>'+clean(c.target)+'</b><p>'+clean(statusName(c.status))+'</p><p data-user-content>'+clean(c.reasonNote)+'</p></article>').join('')+state.appeals.filter(a=>a.response).map(a=>'<p data-user-content>'+clean(a.caseId)+' · '+clean(a.response)+'</p>').join('')+'</section>';
+ const safetyGuide=()=>'<section id="ig6-safety-guide" data-i18n-direct><h4>'+clean(safetyText('guide'))+'</h4><p>'+clean(safetyText('controls'))+'</p><p>'+clean(safetyText('vulnerable'))+'</p><p>'+clean(safetyText('spam'))+'</p></section>';
  const reports=()=>{
   return '<h3>Raportime, vendime dhe apelime</h3><p>Çdo vendim duhet të ketë arsye. Veprimet e moderatorit të këtij paneli nuk fshehin përmbajtje reale dhe nuk prekin server.</p>'+
    '<div class="ig6-roles">'+b('role:visitor','Si përdorues',state.role==='visitor'?'class="chosen"':'')+
     b('role:moderator','Si moderator demo',state.role==='moderator'?'class="chosen"':'')+'</div>'+
-   reportForm()+'<h4>Rastet e regjistruara</h4>'+caseCards()+
-   '<p class="ig6-muted">Raportimet nga Shop Plus lexohen si shembuj. Një vendim këtu ruhet vetëm në panelin demonstrues dhe nuk fshin listimin origjinal.</p>';
+   reportForm()+localUpdates()+safetyGuide()+'<h4>Rastet e regjistruara</h4>'+caseCards()+
+   '<p class="ig6-muted" data-i18n-direct>'+clean(safetyText('projection'))+'</p>';
  };
  const review=()=>{
   const c=allCases().find(x=>x.id===state.selected);
   if(!c)return b('tab:reports','Kthehu')+'<p>Raportimi nuk u gjet.</p>';
   const mod=state.role==='moderator';
+  if((mod&&pendingAppeal(c.id))||(!mod&&!canAppeal(c)))return b('tab:reports','← Te raportimet');
   return b('tab:reports','← Te raportimet')+'<h3>'+clean(c.target)+'</h3>'+
     '<p><b>Arsyeja:</b> '+clean(c.reason)+'</p><p><b>Statusi:</b> '+statusMarkup(c.status)+'</p>'+
     '<p>'+clean(c.detail||'Nuk ka shpjegim shtesë.')+'</p>'+
@@ -261,15 +286,17 @@
  const tabs=()=>'<nav class="ig6-tabs">'+[['trust','Besimi'],['reports','Raportime'],['appeals','Apelime'],['work','Panele pune'],['audit','Historiku']].map(([key,label])=>b('tab:'+key,label,state.tab===key?'aria-current="page"':'')).join('')+'</nav>';
  const view=()=>state.tab==='trust'?trust():state.tab==='reports'?reports():state.tab==='review'?review():
   state.tab==='appeals'?appealPanel():state.tab==='appeal-review'?appealReview():state.tab==='work'?workPanels():audit();
- const render=()=>{
+ const render=(preserveForm=false)=>{
   if(!root||!state.open)return;
   root.hidden=false;
+  const oldForm=preserveForm?root.querySelector('form'):null,oldFields=oldForm?[...oldForm.elements].filter(e=>e.name).map(e=>({name:e.name,value:e.value})):[];
   const before=document.activeElement,act=before?.dataset?.ig6,focusId=before?.id,focusName=before?.name,formId=before?.form?.id;
   root.innerHTML='<div class="ig6-shade" data-ig6="close"></div><section class="ig6-panel" role="dialog" aria-modal="true" aria-label="'+clean(feedback('title','Besimi dhe menaxhimi'))+'">'+
    '<header><div><small>ILLYRIAN · DEMO v1.7</small><h2>Besimi dhe menaxhimi</h2></div>'+b('close','✕ Mbyll')+'</header>'+
    '<p class="ig6-warning">Asnjë rol nuk është i verifikuar; kjo faqe nuk kryen moderim, pagesa ose vendime reale.</p>'+tabs()+
    notice()+view()+'<footer>Vetëm demonstrim në pajisje. Për prodhim kërkohen audit, autorizime dhe proces apelimi i sigurt.</footer></section>';
   restoreBusiness();
+  if(oldForm){const form=root.querySelector('#'+CSS.escape(oldForm.id));for(const f of oldFields){const el=form?.elements.namedItem(f.name);if(el)el.value=f.value}}
   const field=focusId?root.querySelector('#'+CSS.escape(focusId)):formId&&focusName?root.querySelector('#'+CSS.escape(formId))?.elements.namedItem(focusName):null;
   const next=act?[...root.querySelectorAll('button[data-ig6]')].find(x=>x.dataset.ig6===act):null;
   (field||next||root.querySelector('.ig6-panel header button'))?.focus({preventScroll:true});
@@ -278,24 +305,25 @@
   if(state.open)return;
   const phone=document.querySelector('#phone');
   if(!phone)return;
-  state.open=true;state.tab='trust';state.role='visitor';state.notice='';opener=sourceOpener||document.activeElement;
-  const host=opener?.matches('[data-ily-identity-guide]')?opener.closest('#illyrian-shop-layer,#isp-root'):null;
-  const scroll=host?.querySelector(host.id==='isp-root'?'.isp-panel':'.ils-body');
-  identityOrigin=host?{hostId:host.id,scroll:scroll?.scrollTop||0}:null;
+  state.open=true;state.tab='trust';state.role='visitor';state.notice='';reportContext=null;reportTarget='';opener=sourceOpener||document.activeElement;
+  const host=opener?.matches('[data-ily-identity-guide],[data-ily-report],[data-ily-report-center]')?opener.closest('#illyrian-shop-layer,#isp-root,#ilp-root,#layer'):null;
+  const scroll=host?.querySelector(host.id==='isp-root'?'.isp-panel':host.id==='ilp-root'?'.ilp-panel':host.id==='layer'?'.modal':'.ils-body');
+  identityOrigin=host?{hostId:host.id,scroll:scroll?.scrollTop||0,selector:opener.matches('[data-ily-report]')?'[data-ily-report][data-report-source="'+CSS.escape(opener.dataset.reportSource)+'"][data-report-kind="'+CSS.escape(opener.dataset.reportKind)+'"][data-report-id="'+CSS.escape(opener.dataset.reportId)+'"]':opener.matches('[data-ily-report-center]')?'[data-ily-report-center]':'[data-ily-identity-guide]'}:null;
   root=document.createElement('div');root.id='ig6-root';phone.appendChild(root);
-  restore=['#screen','#navbar','.head','#illyrian-shop-layer','#isp-root','#ilp-root','#il4-root'].map(x=>phone.querySelector(':scope > '+x)).filter(x=>x&&x!==root).map(el=>({el,prior:el.inert}));
+  restore=['#screen','#navbar','.head','#layer','#illyrian-shop-layer','#isp-root','#ilp-root','#il4-root'].map(x=>phone.querySelector(':scope > '+x)).filter(x=>x&&x!==root).map(el=>({el,prior:el.inert}));
   restore.forEach(({el})=>el.inert=true);
   render();
  };
  const close=()=>{
   state.open=false;root?.remove();root=null;restore.forEach(({el,prior})=>{if(el.isConnected)el.inert=prior});restore=[];
-  if(identityOrigin){const host=document.getElementById(identityOrigin.hostId),scroll=host?.querySelector(identityOrigin.hostId==='isp-root'?'.isp-panel':'.ils-body');if(scroll)scroll.scrollTop=identityOrigin.scroll;const target=opener?.isConnected?opener:host?.querySelector('[data-ily-identity-guide]');target?.focus({preventScroll:true});identityOrigin=null}
+  window.dispatchEvent(new Event('illyrian:safety-updated'));
+  if(identityOrigin){const host=document.getElementById(identityOrigin.hostId),scroll=host?.querySelector(identityOrigin.hostId==='isp-root'?'.isp-panel':identityOrigin.hostId==='ilp-root'?'.ilp-panel':identityOrigin.hostId==='layer'?'.modal':'.ils-body');if(scroll)scroll.scrollTop=identityOrigin.scroll;const target=opener?.isConnected?opener:host?.querySelector(identityOrigin.selector);target?.focus({preventScroll:true});identityOrigin=null}
   else if(opener?.isConnected)opener.focus();
  };
  // Failed writes must not destroy unsent report fields or keyboard focus.
- const message=t=>{
+ const message=(t,nextTab=null)=>{
   state.notice=t;
-  if(save()){render();return true}
+  if(save()){if(nextTab)state.tab=nextTab;render();return true}
   let el=root?.querySelector('.ig6-note[role="status"]');
   if(!el&&root){
    el=document.createElement('p');el.className='ig6-note';el.setAttribute('role','status');
@@ -307,12 +335,12 @@
  const act=k=>{
   if(k==='close')return close();
   if(k.startsWith('biz-')&&businessActive())return businessAction(k);
-  if(k.startsWith('tab:')){state.tab=k.slice(4);state.notice='';if(state.tab==='work')state.role='business';render();return}
+  if(k.startsWith('tab:')){reportContext=null;reportTarget='';state.tab=k.slice(4);state.notice='';if(state.tab==='work')state.role='business';render();return}
   if(k.startsWith('role:')){state.role=k.slice(5);state.notice='';render();return}
   if(k.startsWith('work:')){state.role=k.slice(5);state.notice='';render();return}
   if(k.startsWith('explain:')){const x=explanation(k.slice(8));if(x)state.notice=x.text;render();return}
-  if(k.startsWith('review:')&&state.role==='moderator'){state.selected=k.slice(7);state.tab='review';render();return}
-  if(k.startsWith('appeal:')&&state.role==='visitor'){state.selected=k.slice(7);state.tab='review';render();return}
+  if(k.startsWith('review:')&&state.role==='moderator'&&!pendingAppeal(k.slice(7))){state.selected=k.slice(7);state.tab='review';render();return}
+  if(k.startsWith('appeal:')&&state.role==='visitor'&&canAppeal(allCases().find(c=>c.id===k.slice(7))||{})){state.selected=k.slice(7);state.tab='review';render();return}
   if(k.startsWith('appeal-review:')&&state.role==='moderator'){state.selected=k.slice(14);state.tab='appeal-review';render();return}
   if(k.startsWith('delete-draft:')){
    const id=k.slice(13);state.drafts=state.drafts.filter(x=>x.id!==id);log('Drafti u fshi',id);message(feedback('draftRemoved','Drafti u fshi lokalisht.'));return;
@@ -328,38 +356,37 @@
   const d=new FormData(form),v=k=>bounded(d.get(k),240);
   if(form.id==='ig6-report'){
    const target=v('target').slice(0,80),reason=v('reason'),detail=v('detail');
-   const allowed=['Informacion i pasaktë','Mashtrim i dyshuar','Spam','Shkelje privatësie','Përmbajtje e papërshtatshme'];
+   const allowed=reasonCodes;
    if(target.length<4||!allowed.includes(reason)||state.cases.length>=30){state.notice=feedback('reportInvalid','Kontrollo formularin ose kufirin e raporteve.');render();return}
-   const id='r'+unique();state.cases.push({id,target,reason,detail,status:'pending',source:'Raport lokal'});log('Raportim i krijuar',id);
+   if(reportContext&&allCases().some(c=>validRef(c.targetRef)&&['source','kind','id'].every(k=>c.targetRef[k]===reportContext[k])&&['pending','more'].includes(c.status))){state.notice=safetyText('duplicate');render(true);return}
+   const id='r'+unique();state.cases.push({id,target,reason,detail,status:'pending',source:reportContext?.source||'Raport lokal',...(reportContext?{targetRef:{...reportContext}}:{})});log('Raportim i krijuar',id);
    message(feedback('reportSaved','Raportimi u ruajt. Nuk iu dërgua askujt.'));return;
   }
   if(form.id==='ig6-decision'){
    if(state.role!=='moderator')return;
    const decision=v('decision'),note=v('note'),c=allCases().find(x=>x.id===state.selected);
    if(!c||!['restricted','dismissed','more','reinstated'].includes(decision)||note.length<10){state.notice=feedback('decisionInvalid','Vendimi kërkon status dhe shpjegim prej të paktën 10 shkronjash.');render();return}
-   const entry=state.cases.find(x=>x.id===c.id);
-   if(entry){entry.status=decision;entry.reasonNote=note;entry.reviewedAt=stamp();}
-   else {state.cases.push({...c,status:decision,reasonNote:note,reviewedAt:stamp()})}
-   log('Vendim i moderatorit demo: '+decision,c.id);state.tab='reports';message(feedback('decisionSaved','Vendimi demonstrues u regjistrua me arsye.'));return;
+   if(pendingAppeal(c.id))return;
+   const entry=storeCase(c);if(!entry){state.notice=safetyText('limit');render(true);return}
+   entry.status=decision;entry.reasonNote=note;entry.reviewedAt=stamp();
+   log('Vendim i moderatorit demo: '+decision,c.id);message(feedback('decisionSaved','Vendimi demonstrues u regjistrua me arsye.'),'reports');return;
   }
   if(form.id==='ig6-appeal'){
    if(state.role!=='visitor')return;
    const c=allCases().find(x=>x.id===state.selected),t=v('text');
-   if(!c||t.length<10||state.appeals.length>=30){state.notice=feedback('appealInvalid','Apelimi kërkon shpjegim të paktën 10 shkronja.');render();return}
+   if(!c||!canAppeal(c)||t.length<10||state.appeals.length>=30){state.notice=feedback('appealInvalid','Apelimi kërkon shpjegim të paktën 10 shkronja.');render();return}
    if(state.appeals.some(x=>x.caseId===c.id&&x.status==='pending')){state.notice=feedback('appealPending','Ekziston një apelim në pritje për këtë rast.');render();return}
    const id='a'+unique();state.appeals.push({id,caseId:c.id,text:t,status:'pending',created:stamp()});log('Apelim i krijuar',c.id);
-   state.tab='appeals';message(feedback('appealSaved','Apelimi u ruajt vetëm në demo.'));return;
+   message(feedback('appealSaved','Apelimi u ruajt vetëm në demo.'),'appeals');return;
   }
   if(form.id==='ig6-appeal-review'){
    if(state.role!=='moderator')return;
    const a=state.appeals.find(x=>x.id===state.selected),decision=v('decision'),note=v('note');
    if(!a||a.status!=='pending'||!['accepted','rejected'].includes(decision)||note.length<10){state.notice=feedback('responseInvalid','Përgjigjja kërkon vendim dhe arsye të qartë.');render();return}
+   const base=allCases().find(c=>c.id===a.caseId);
+   if(decision==='accepted'){if(!base)return;const c=storeCase(base);if(!c){state.notice=safetyText('limit');render(true);return}c.status='reinstated';c.reasonNote=note;c.reviewedAt=stamp()}
    a.status=decision;a.response=note;a.reviewedAt=stamp();
-   if(decision==='accepted'){
-    const c=state.cases.find(x=>x.id===a.caseId);
-    if(c){c.status='reinstated';c.reasonNote=note;c.reviewedAt=stamp();}
-   }
-   log('Vendim apelimi demo: '+decision,a.id);state.tab='appeals';message(feedback('responseSaved','Përgjigjja e apelimit u regjistrua.'));return;
+   log('Vendim apelimi demo: '+decision,a.id);message(feedback('responseSaved','Përgjigjja e apelimit u regjistrua.'),'appeals');return;
   }
   if(form.id==='ig6-draft'){
    const kind=v('kind'),title=v('title'),note=v('note');
@@ -381,12 +408,14 @@
   const first=screen.querySelector('.section-header')||screen.querySelector('.profile-banner')||screen.firstElementChild;
   first?.parentNode?.insertBefore(item,first.nextSibling);
  }
- window.IllyrianGovernance=Object.freeze({openTrust:sourceOpener=>{open(sourceOpener);state.tab='trust';render();return true},openBusiness:(source,store)=>{const scope=businessOptions().find(s=>s.source===source&&s.store===store);if(!scope)return false;open();bizKey=scope.key;bizActor='owner';bizThread='t1';state.tab='work';state.role='business';render();return true;}});
+ window.IllyrianGovernance=Object.freeze({reportButton,flagStatus,openTrust:sourceOpener=>{open(sourceOpener);state.tab='trust';render();return true},openBusiness:(source,store)=>{const scope=businessOptions().find(s=>s.source===source&&s.store===store);if(!scope)return false;open();bizKey=scope.key;bizActor='owner';bizThread='t1';state.tab='work';state.role='business';render();return true;}});
  function init(){
   const phone=document.querySelector('#phone'),screen=document.querySelector('#screen');
   if(!phone||!screen)return;
   refreshIdentityBadges();
   document.addEventListener('click',e=>{
+   const report=e.target.closest('[data-ily-report]'),center=e.target.closest('[data-ily-report-center]');
+   if(report||center){const ref=report?{source:report.dataset.reportSource,kind:report.dataset.reportKind,id:report.dataset.reportId}:null;if(report&&!validRef(ref))return;e.preventDefault();e.stopImmediatePropagation();open(report||center);reportContext=ref;reportTarget=report?bounded(report.dataset.reportLabel,80):'';if(reportTarget.length<4)reportTarget=(ref?.kind+' '+ref?.id).slice(0,80);state.tab='reports';render();return}
    const badge=e.target.closest('[data-ily-identity-badge]');if(badge){e.preventDefault();e.stopImmediatePropagation();const note=badge.parentElement.querySelector('[data-ily-identity-note]');if(note){note.hidden=!note.hidden;badge.setAttribute('aria-expanded',String(!note.hidden))}return}
    const guide=e.target.closest('[data-ily-identity-guide]');if(guide){e.preventDefault();e.stopImmediatePropagation();window.IllyrianGovernance.openTrust(guide);return}
    const manage=e.target.closest('[data-business-manage]');if(manage){e.preventDefault();window.IllyrianGovernance.openBusiness(manage.dataset.source,manage.dataset.store);return}
@@ -413,7 +442,7 @@
   },true);
   document.addEventListener('focusin',e=>{if(state.open&&root&&!root.contains(e.target))root.querySelector('.ig6-panel header button')?.focus()},true);
   window.addEventListener('illyrian:language-changed',()=>{
-   refreshIdentityBadges();if(state.open&&state.tab==='trust')render();
+   refreshIdentityBadges();if(state.open&&!businessActive())render(true);
    if(businessActive()){rememberBusiness();render()}
    if(state.open)root?.querySelector('.ig6-panel')?.setAttribute('aria-label',feedback('title','Besimi dhe menaxhimi'));
   });

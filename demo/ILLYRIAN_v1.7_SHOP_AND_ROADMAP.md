@@ -948,3 +948,8 @@ The owner continued explicitly after phase 2 delivery. Only phase 3 business tea
 ### Programme phase 4 — current authorization (27 October 2026)
 
 Owner explicitly continued after phase 3 delivery; only phase 4 identity/badges and Business Pro specifications is active. Stop before phase 5. Original full requirements above remain unchanged. Bounded DEMO badge/status clarity reuses core/Shop/Governance; no actual identity processing, subscription activation or prices. Real contracts, safeguards, business/legal/platform analysis and decisions are in blueprint §18; current CI/source/Preview evidence stays in CURRENT_STATE.
+
+
+### Programme phase 5 authorization — 27 October 2026
+
+Owner continues after phase 4 delivery. Original five-phase requirements above remain unchanged. Existing Governance is the DEMO support/review/appeal surface; the separate Task 6B historical reference remains unresolved, not fabricated. Phase 5 design, real-APK contracts/age/privacy/operations decisions and bounded tests are in blueprint §19; current verified source/CI/Preview belong in CURRENT_STATE. Stop after phase 5; no backend, paid activation or automatic release.

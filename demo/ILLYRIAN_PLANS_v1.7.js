@@ -96,7 +96,7 @@
       if(!ended)html+='<form id="ilp-chat-form"><input name="message" maxlength="280" placeholder="'+ui('writeGroup','Shkruaj në grup...')+'" aria-label="'+ui('groupMessage','Mesazhi në grup')+'" required><button type="submit">'+ui('sendAction','Dërgo')+'</button></form>';
       else html+='<p class="ilp-muted">'+ui('readOnly','Biseda është vetëm për lexim.')+'</p>';
     }else html+='<p class="ilp-muted">'+ui('access','Biseda është e disponueshme vetëm pas pranimit.')+'</p>';
-    return html+button('list',feedback('back','Kthehu te aktivitetet'));
+    return html+(window.IllyrianGovernance?.reportButton('plans','activity',e.id,e.title)||'')+button('list',feedback('back','Kthehu te aktivitetet'));
   };
   const content=()=>state.view==='form'?form():state.view==='detail'?detail():
    `<p class="ilp-muted ilp-intro" data-i18n-direct>${ui("listIntro","Kalo midis organizatorit dhe pjesëmarrësit për të provuar të gjithë procesin. Nuk ka persona apo aktivitete reale.")}</p>
@@ -267,7 +267,7 @@
       e.preventDefault();open(el.dataset.ilpOpen||null)
     },true);
     document.addEventListener('keydown',e=>{
-      if(!state.open)return;
+      if(!state.open||root?.inert)return;
       if(e.key==='Escape'){e.preventDefault();close();return}
       if(e.key!=='Tab')return;
       const items=[...root.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')].filter(x=>x.getClientRects().length);

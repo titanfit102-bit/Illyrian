@@ -225,7 +225,8 @@
   return '<h3 data-i18n-direct>'+ui('modHeading','Raportime dhe etiketa të promovimit')+'</h3><p data-i18n-direct>'+ui('modIntro','Përmbajtja e reklamuar duhet të shënohet; raportimet janë prova lokale.')+'</p>'+
    '<div class="isp-hero"><b data-i18n-direct>'+ui('modTransparency','TRANSPARENCË')+'</b><p data-i18n-direct>'+ui('modDisclosure','“PROMOVUAR · DEMO” shënon listimet e sponsorizuara fiktive. Në produktin real do të kërkohet politikë reklamash, raportime, shqyrtim dhe apelim.')+'</p></div>'+
    '<p><span data-i18n-direct>'+ui('modReportCount','Raportime lokale:')+'</span> '+state.flags.length+'</p>'+
-   (state.flags.length?state.flags.slice(-15).reverse().map(f=>'<article class="isp-card"><p><b data-user-content>'+esc(f.target)+'</b> · '+'<span data-i18n-direct>'+reasonLabel(f.reason)+'</span></p><small data-i18n-direct>'+ui('modPending','Në shqyrtim (simulim, jo moderator real)')+'</small></article>').join(''):'<p class="isp-empty" data-i18n-direct>'+ui('modEmpty','Asnjë raportim demonstrues.')+'</p>');
+   '<button type="button" data-ily-report-center data-i18n-direct>'+esc(window.IllyrianI18n?.t('safety:center')||'Governance · DEMO')+'</button>'+
+   (state.flags.length?state.flags.slice(-15).reverse().map(f=>'<article class="isp-card"><p><b data-user-content>'+esc(f.target)+'</b> · '+'<span data-i18n-direct>'+reasonLabel(f.reason)+'</span></p><small data-i18n-direct>'+esc(window.IllyrianGovernance?.flagStatus(f)||feedback('modPending','Në shqyrtim (simulim, jo moderator real)'))+'</small></article>').join(''):'<p class="isp-empty" data-i18n-direct>'+ui('modEmpty','Asnjë raportim demonstrues.')+'</p>');
  };
  const checkout=()=>{
   const product=all().find(p=>p.type==='Produkte'&&numeric(p.quantity)>0);
@@ -381,7 +382,7 @@
   if(form.id==='isp-report'){
    const allowed=['Informacion i pasaktë','Mashtrim i dyshuar','Listim i dyfishuar','Përmbajtje e papërshtatshme'],reason=v('reason');
    if(!allowed.includes(reason)||state.flags.length>=40){validationError(form,'reportInvalid','Arsyeja e raportimit nuk është e vlefshme ose u arrit kufiri.','reason');return;}
-   state.flags.push({target:all().find(p=>p.id===state.selected)?.name||'Listim',reason,detail:v('detail').slice(0,180)});
+   state.flags.push({id:'f'+Date.now().toString(36)+Math.random().toString(36).slice(2,8),listingId:state.selected,target:all().find(p=>p.id===state.selected)?.name||'Listim',reason,detail:v('detail').slice(0,180)});
    message(feedback('reportSaved','Raportimi është provë lokale; asnjë moderator nuk u njoftua.'),()=>{state.tab='moderation'});return;
   }
  }
@@ -432,6 +433,7 @@
   const phone=document.querySelector('#phone');if(!phone)return;
   document.addEventListener('click',e=>{const el=e.target.closest('[data-isp-open]');if(el){e.preventDefault();e.stopPropagation();open()}},true);
   window.addEventListener('illyrian:language-changed',onLocaleChange);
+  window.addEventListener('illyrian:safety-updated',()=>{if(state.open&&state.tab==='moderation')render()});
   // Warn immediately but never rerender and erase an unsent form.
   window.addEventListener('storage',e=>{
    if(e.storageArea!==localStorage||(e.key!==KEY&&e.key!==null))return;

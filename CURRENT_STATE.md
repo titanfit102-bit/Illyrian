@@ -24,7 +24,7 @@ Përditësuar: 27 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 
 ## Politika aktive dhe çështjet e hapura
 
-Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv: vetëm faza 4 e programit Shop, e autorizuar pas përfundimit të fazës 3; qartësi e shenjave DEMO dhe specifikime reale identiteti/Business Pro. NDALO përpara fazës 5. Kufizimi i mëparshëm vetëm CI/dokumentacion i përkiste detyrës së mbyllur. Pa merge, main/Production, backend/native, migrime destruktive ose shpenzime.
+Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy). Informacionet për aplikacionin real ruhen te blueprint/roadmap; nuk kthehen në kërkesa implementimi të çdo patch-i DEMO. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope aktiv: vetëm faza 5 e programit Shop, e autorizuar pas dorëzimit të fazës 4; raportime/moderim i unifikuar në Governance dhe mbrojtje praktike DEMO. Ndalimi i mëparshëm përpara saj ishte checkpoint historik. Pa program/fazë tjetër automatikisht. Kufizimi i mëparshëm vetëm CI/dokumentacion i përkiste detyrës së mbyllur. Pa merge, main/Production, backend/native, migrime destruktive ose shpenzime.
 
 | Fusha | Statusi / hapi |
 |---|---|
@@ -65,7 +65,7 @@ Sintaksë/vendor, 7 detector fixtures/skanim i kufizuar, locale mirrors, burimi 
 
 ## Programi Shop — faza 4 (27 tetor 2026)
 
-Pronari autorizoi fazën 4 pas dorëzimit të fazës 3. [Blueprint §18](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#18-marketplace-programme--phase-4-identity-verification-and-business-pro-27-october-2026) ruan planin, kontratat e regjistrimit/verifikimit/rikontrollit/skadimit/revokimit/apelimit dhe Business Pro si propozim të veçantë. Faza 5 mbetet PLANNED.
+Pronari autorizoi fazën 4 pas dorëzimit të fazës 3. [Blueprint §18](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#18-marketplace-programme--phase-4-identity-verification-and-business-pro-27-october-2026) ruan planin, kontratat e regjistrimit/verifikimit/rikontrollit/skadimit/revokimit/apelimit dhe Business Pro si propozim të veçantë. Në atë checkpoint faza 5 mbeti PLANNED; autorizimi vijues është më poshtë.
 
 IMPLEMENTUAR / VERIFIED DEMO në skenarët e raportuar: shenjat dekorative ekzistuese në postime/profil shfaqin DEMO dhe shpjegim të hapshëm me tastierë/prekje. Bizneset Shop/Plus mbeten të deklaruara/jo të verifikuara; lidhja e re hap të njëjtin panel Governance/Besimi, me profile të zakonshme, biznese të deklaruara dhe një shembull të etiketuar qartë të biznesit të verifikuar. Shembulli nuk i jep status asnjë biznesi. Të dhënat/flag-et e vjetra ruhen; nuk shtohet storage, formular dokumentesh, miratim verifikimi, backend ose aktivizim Pro/pagesash. Sponsorët dhe statusi i identitetit mbeten të ndarë.
 
@@ -75,9 +75,21 @@ Lokalisht **68/68 regresione relevante PASS**, përfshirë **7/7 të reja**: sq/
 
 Sintaksë/vendor, locale mirrors, 12 classifier tests, detector me 7 fixtures negative/skanim i kufizuar dhe npm audit 0 PASS. Asetet e integruara të figurave/markës dhe burimi origjinal i kërkesës janë të pandryshuara. Remote **VERIFIED** mbi `dbac966784f429f43369196412e8f8194b0b3cf6`: **342/342 Chromium +16/16 Linux WebKit +12/12 classifier PASS**, Security PASS dhe Preview READY/source parity, me lidhjet/logjet në tabelën sipër. WebKit mbi commit-in fillestar `0b1e64a` nuk nisi testet: job 121944459512 dhe riprova e vetme 121950342624 arritën timeout-in 16-minutësh gjatë instalimit nga azure.archive.ubuntu.com ([run 40428976137](https://github.com/titanfit102-bit/Illyrian/actions/runs/40428976137)). Korrigjimi minimal `dbac966` zgjedh archive.ubuntu.com (HTTPS, arkivi zyrtar) vetëm në mirrorlist-in e runner-it WebKit; instalimi dhe 16 testet përfunduan. Çelësat/nënshkrimet apt, inventari i kyçur, testet, emrat e kontrolleve, timeout-i dhe concurrency ruhen; kod aplikacioni i pandryshuar nga `0b1e64a`. Rishikimi i pavarur i korrigjimit nuk gjeti problem veprues. Pa matje të minutave të faturuara.
 
+## Programi Shop — faza 5 (27 tetor 2026)
+
+Pronari autorizoi vazhdimin me fazën 5 pas dorëzimit të fazës 4. [Blueprint §19](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#19-marketplace-programme--phase-5-trust-safety-and-unified-moderation-27-october-2026) ruan ndarjen DEMO/BACKEND, planin, modelet/API/lejet, politikat e propozuara dhe pranimin Android/iOS. Burimi origjinal i pesë fazave ruhet në roadmap.
+
+IMPLEMENTUAR DEMO, verifikimi në proces: Governance mbetet paneli i vetëm i shqyrtimit/vendimit/apelimit. Lexon raportet Social dhe flag-et Shop Plus pa rishkruar burimin; vendimi lokal shfaqet edhe në Shop Plus. Flag-et e reja kanë ID të qëndrueshme, të vjetrat identifikohen pa u varur nga rendi; vendimet e vjetra lidhen vetëm kur përputhja është e qartë. Lidhje kontekstuale nga profili, biseda/thread-i i komenteve, Reel, Communities, Plans dhe Shop përdorin panelin ekzistues. Nuk kopjohen mesazhe private, nuk hiqet përmbajtje nga vendim simulimi dhe nuk dërgohet njoftim real. Njoftimet lokale rrjedhin nga vendimet/apelimet. Mute lokal është i veçantë nga block; dështimi i ruajtjes nuk pretendon sukses.
+
+BACKEND/PLANNED: regjistër kanonik objektesh, role/leje server-side, prova private, transaksione/vendime/audit/outbox, apelime, block/mute/kontakt global, spam/risk dhe mbrojtje sipas moshës. Afatet e përgjigjes, stafi/oraret, tregu/ligji, ofruesi dhe politikat reale kërkojnë vendime dhe prova. Nuk vendoset score pasurie/shpenzimesh, çmim, backend ose siguri artificiale. Referenca “Detyra 6B” nuk u gjet si dorëzim i veçantë në burimet aktuale; integrimi përdor Governance ekzistues dhe referenca historike mbetet e hapur.
+
+Lokalisht **100/100 regresione relevante PASS**, përfshirë **15 testet e reja të fazës 5**; pas saktësimit të arsyes së paregjistruar të raporteve të vjetra Social, **27/27 Safety/Governance PASS**. Rishikimi i pavarur gjeti tri raste të riprodhuara RED→GREEN: shigjetat Reel pas panelit, targetRef i keqformuar dhe referenca Unicode e plotë në audit. Ruajtja e dështuar mban formularin/tekstin, rolin/gjuhën dhe Retry pa dublim; apelimi i pranuar përditëson edhe rastin shembull/importuar. Nuk u hoqën teste. Sintaksë/vendor, 12 classifier, 7 detector fixtures/skanim i kufizuar, locale mirrors, figurat/logoja e integruar dhe npm audit 0 PASS. Dy pamje 320px/390px u inspektuan; paneli 320px ka scrollWidth=clientWidth=320, jo certifikim fizik.
+
+Remote **NOT VERIFIED** për fazën 5 deri në përfundimin e CI/Preview të commit-it të ri. Tabela sipër ruan kandidatin e verifikuar të fazës 4. Mos supozo PASS nga kodi ose nga provat lokale.
+
 ## Hapi i saktë pasues
 
-**Faza 4 është dorëzuar në kufirin DEMO; NDALUAR përpara fazës 5.** Fazat 1–3 ruhen të dorëzuara. Commit-i dokumentues i mbylljes verifikohet nga Actions/alias LIVE; mos bëj commit tjetër vetëm për rezultatin e vogël të CI-së. Faza 5 kërkon vazhdimin e pronarit. QA fizike dhe gates reale mbeten OPEN; mos ndërto backend/native, Pro/pagesa ose unifikim moderimi nga specifikimet.
+Përfundo regresionet, rishikimin e pavarur dhe CI/Preview të fazës 5, përditëso faktet kanonike dhe ndalo pas saj. Fazat 1–4 ruhen të dorëzuara. QA fizike dhe gates reale mbeten OPEN; mos ndërto backend/native, Pro/pagesa ose sistem tjetër moderimi nga specifikimet.
 
 ## Konsolidimi historik — vetëm dokumentacion
 
