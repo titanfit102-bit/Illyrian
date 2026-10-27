@@ -953,3 +953,544 @@ Owner explicitly continued after phase 3 delivery; only phase 4 identity/badges 
 ### Programme phase 5 authorization — 27 October 2026
 
 Owner continues after phase 4 delivery. Original five-phase requirements above remain unchanged. Existing Governance is the DEMO support/review/appeal surface; the separate Task 6B historical reference remains unresolved, not fabricated. Phase 5 design, real-APK contracts/age/privacy/operations decisions and bounded tests are in blueprint §19; current verified source/CI/Preview belong in CURRENT_STATE. Stop after phase 5; no backend, paid activation or automatic release.
+
+
+## Smart social programme — owner source 27 October 2026
+
+Separate from the delivered five-phase Shop programme. Verbatim source below; only 5.1 and minimal PERFORMANCE FIRST registration authorized now.
+
+Vazhdo ILLYRIAN nga gjendja më e fundit reale në GitHub.
+
+Lexo të gjithë dokumentin e bashkëngjitur dhe ruaj 100% të kërkesave në dokumentacionin kanonik ekzistues, pa dublime dhe pa humbur vendimet e mëparshme.
+
+Ky është program i ri zhvillimi; mos e ngatërro dhe mos e zëvendëso me programin ekzistues pesëfazor të Shop.
+
+Kontrollo varësitë dhe mbivendosjet mes dy programeve, si dhe referencat K1–K8, O1–O8/N1–N3 dhe Detyra 2. Mos shpik vendime ose miratime që nuk gjenden në dokumentacion.
+
+Zbato automatikisht politikën DEMO → APK në [AGENTS.md](http://agents.md/): implemento vetëm çfarë është e nevojshme për DEMO-n dhe dokumento pjesën tjetër për APK-në reale.
+
+Regjistro standardin e përhershëm PERFORMANCE FIRST në [AGENTS.md](http://agents.md/), duke ruajtur rregullat ekzistuese dhe duke shmangur dokumentacionin paralel.
+
+**Fillo vetëm me Detyrën 5.1**, për aq sa nuk përsërit punën e përfunduar dhe nuk ndërhyn në faza të tjera të paautorizuara. Kryej ndryshimet e sigurta, testet dhe përditësimet e nevojshme në GitHub, pastaj ndalo përpara 5.2.
+
+Mos ndrysho arkitekturën madhore, mos fshi funksione, mos bëj merge dhe mos prek Production.
+
+# KUFIRI I EKZEKUTIMIT: Të pesë fazat e programit ekzistues Shop janë dorëzuar në kufijtë e DEMO-s dhe nuk duhen përsëritur. Për këtë ekzekutim autorizohet vetëm Detyra 5.1 dhe regjistrimi minimal i standardit PERFORMANCE FIRST. Detyrat 5.2–5.4 ruhen si specifikime për më vonë, pa implementim. Përpara çdo ndryshimi, krahaso çdo kërkesë me funksionet ekzistuese dhe dokumento vetëm diferencën reale. K1–K8, O1–O8 dhe N1–N3 janë burime rekomandimesh, jo autorizim automatik. Mos bashko inbox-et personale, të biznesit dhe të moderimit në një burim të përbashkët pa kontrata të miratuara të aksesit. Mos ndrysho dizajnin aktiv mbi bazën e një reference të paidentifikuar si “Detyra 2”. Ruaj kërkesat origjinale një herë në dokumentacionin kanonik dhe përdor referenca në dokumentet e vazhdimësisë. Respekto politikën DEMO → APK, F06 të shtyrë për aplikacionin real dhe ndalimin e merge/Production.   ILLYRIAN — SMART SOCIAL INTEGRATION, PRODUCT SIMPLIFICATION, PROFESSIONAL MEDIA & MAXIMUM PERFORMANCE
+
+Vazhdo projektin titanfit102-bit/Illyrian nga checkpoint-i më i fundit i verifikuar në GitHub.
+
+## OBJEKTIVI KRYESOR
+
+Përmirëso integrimin inteligjent të funksioneve sociale, thjeshto produktin dhe arkitekturën e të dhënave, zhvillo sistemin profesional të medias dhe siguro performancë maksimale në Android, iOS dhe desktop.
+
+## Ruaj funksionalitetet e miratuara, dizajnin ekzistues dhe arkitekturën e autorizuar. Mos përsërit punë të përfunduar, mos krijo dublime dhe dallo qartë funksionet reale nga simulimet e DEMO-s dhe specifikimet për APK-në e ardhshme.
+
+## 1. DETYRA 5.1 — SMART SOCIAL INTEGRATION
+
+**Objektivi**
+
+Integro rekomandimet e miratuara pa e mbingarkuar aplikacionin. Përdoruesi duhet të kalojë natyrshëm nga një postim ose Reel te aktiviteti, biznesi, produkti, kërkesa ose biseda përkatëse.
+
+**Analiza dhe përmirësimet**
+
+Shqyrto rekomandimet **K1–K8 dhe O1–O8/N1–N3** nga raportet.
+
+Dallo qartë drejtimet e miratuara, hipotezat dhe funksionet realisht të implementuara.
+
+Analizo dhe përmirëso:
+
+**Inbox-in e përbashkët** për veprime, kërkesa dhe konfirmime.
+
+Lidhjet kontekstuale ndërmjet **Feed, Plans, Messages dhe Shop**.
+
+Statuset e kuptueshme të aktiviteteve, listimeve dhe kërkesave.
+
+Privatësinë dhe dukshmërinë e çdo veprimi.
+
+Kërkimin dhe filtrat që ndihmojnë përdoruesin të arrijë rezultatin.
+
+Ripërdorimin e funksioneve ekzistuese, pa krijuar kopje.
+
+**Implementimi dhe kufizimet**
+
+Implemento rrjedhat e përshtatshme dhe të testueshme në DEMO.
+
+Mos paraqit simulimet lokale si autorizim server-side, mesazhe realtime ose transaksione reale.
+
+Funksionet që kërkojnë validim përdoruesish ose backend real dokumentoji si **kontrata dhe skenarë pranimi për APK**, pa krijuar zgjidhje të rreme.
+
+**Verifikimi specifik**
+
+Testo:
+
+Navigimin ndërmjet moduleve.
+
+Statuset.
+
+Përmbajtjen private.
+
+Bllokimin.
+
+Gjuhët.
+
+Rikuperimin e draftit.
+
+Rastet kur përmbajtja nuk disponohet më.
+
+Mos paraqit hipoteza si vendime apo funksione të përfunduara.
+
+## Pas çdo inkrementi domethënës të verifikuar, dokumento ndryshimet, testet, vendimet, arsyet dhe hapat pasues.
+
+## 2. DETYRA 5.2 — PRODUCT SIMPLIFICATION & AUTHORITATIVE DATA MODEL
+
+**Objektivi**
+
+Thjeshto produktin, elimino dublimet dhe përcakto arkitekturën koherente të aplikacionit real, pa humbur funksionalitete të miratuara.
+
+**Analiza dhe thjeshtimi**
+
+Analizo ekranet, butonat, filtrat dhe mekanizmat e dyfishtë ose të panevojshëm.
+
+Thjeshto vetëm kur nuk humbet funksionalitet i miratuar.
+
+Identifiko dhe dokumento konfliktet e gjendjes ndërmjet **Feed, Shop, Shop Plus, Plans, Connections, Privacy/Map dhe Governance**.
+
+Përcakto funksionet që duhen bashkuar, thjeshtuar ose shtyrë, duke respektuar vendimet ekzistuese.
+
+**Modeli autoritativ i të dhënave**
+
+Për aplikacionin real përcakto **një burim autoritativ të dhënash** për çdo:
+
+Përdorues.
+
+Listim.
+
+Aktivitet.
+
+Mesazh.
+
+Raportim.
+
+Vendim moderimi.
+
+Çdo objekt duhet të ketë:
+
+**ID**.
+
+**Pronar**.
+
+**Status**.
+
+**Leje aksesi**.
+
+**Rregulla për ndryshimet e njëkohshme**.
+
+Produkti i lidhur në **Reel, Feed ose Message** duhet të referojë të njëjtin listim në **Shop**.
+
+E njëjta kërkesë zbatohet për aktivitetet e lidhura në disa module.
+
+**Kufizimet dhe vendimet**
+
+Mos transfero mekanikisht arkitekturën e DEMO-s në APK-në reale.
+
+Mos fshi funksione të dobishme.
+
+Mos ndrysho arkitekturën madhore pa miratimin përkatës.
+
+Ruaj historikun e vendimeve dhe arsyet e çdo ndryshimi.
+
+Përgatit kontratat dhe skenarët e pranimit që kërkon aplikacioni real.
+
+Dallo projektimin nga implementimi.
+
+**Verifikimi specifik**
+
+Testo ndryshimet e autorizuara në DEMO, veçanërisht:
+
+Përputhshmërinë e referencave.
+
+Përputhshmërinë e statuseve.
+
+Përputhshmërinë e të dhënave ekzistuese.
+
+Pas çdo ndryshimi domethënës të verifikuar, përditëso edhe dokumentacionin e kontratave në GitHub, duke regjistruar testet, vendimet, commit-et, problemet dhe hapat pasues.
+
+## Mos kryej ndryshime destruktive ose madhore pa miratim.
+
+## 3. DETYRA 5.3 — PROFESSIONAL MEDIA SYSTEM
+
+**Objektivi**
+
+Përmirëso shpejtësinë, cilësinë vizuale, stabilitetin dhe sigurinë e fotove, videove, Stories dhe Reels, përfshirë telefonat e dobët dhe internetin e ngadaltë.
+
+**Analiza e medias**
+
+Analizo dhe përmirëso:
+
+Ngarkimin e fotove dhe videove.
+
+Median në **Feed**.
+
+**Stories/Reels**.
+
+Fotot e profilit.
+
+Median në **Messages**.
+
+Fotot e produkteve dhe bizneseve.
+
+Etiketimin e produkteve dhe bizneseve në media.
+
+Respekto dizajnin e miratuar në **Detyrën 2**. Mos ndrysho dizajnin aktiv nëse miratimi përkatës mungon.
+
+**Optimizimi dhe funksionalitetet**
+
+Përcakto dhe zbato aty ku është e përshtatshme për DEMO-n:
+
+Kompresimin, madhësitë e imazheve, thumbnails dhe formatet moderne.
+
+Streaming dhe cilësi adaptive video kur justifikohen.
+
+Lazy loading, pagination dhe caching.
+
+Sjelljen në rrjet të dobët ose pa internet.
+
+Kufizimin e konsumit të memories dhe baterisë.
+
+Ngarkimet e ndërprera, retry dhe dështimet e ruajtjes.
+
+Kufijtë e skedarëve dhe medias për përdoruesit e bizneset.
+
+Fshirjen e medias dhe trajtimin e gabimeve.
+
+**Siguria dhe privatësia**
+
+Përcakto:
+
+Kontrollet e aksesit për median private.
+
+Validimin e skedarëve.
+
+Heqjen sipas rastit të metadata-ve sensitive.
+
+Moderimin dhe raportimet.
+
+Mos premto pamundësi absolute të kopjimit të medias private.
+
+**Arkitektura për APK-në reale**
+
+Dokumento kontratat për:
+
+Android/iOS.
+
+Backend.
+
+Storage.
+
+Përpunim video.
+
+Njoftime.
+
+Integrim me Feed/Shop.
+
+Strategjinë caching/thumbnails/compression/streaming.
+
+Dallo teknologjitë e propozuara nga ato të miratuara.
+
+**Matjet dhe kriteret e pranimit**
+
+Përcakto matje dhe kritere pranimi për:
+
+Hapjen.
+
+Ngarkimin e Feed/Stories/Reels.
+
+Madhësinë e medias.
+
+Memorien.
+
+Baterinë.
+
+Ekranet e vogla.
+
+Rrjetet e ngadalta.
+
+**Testimi dhe kufizimet**
+
+Inspekto kodin dhe dokumentacionin përpara ndryshimeve.
+
+Implemento përmirësime të kontrolluara në DEMO, pa dëmtuar funksionet ose dizajnin.
+
+Testo:
+
+Ngarkimin e medias.
+
+Gabimet.
+
+Ndërprerjet.
+
+Retry.
+
+Performancën.
+
+Aksesueshmërinë.
+
+Privatësinë.
+
+Kufijtë e medias.
+
+Fshirjen e medias.
+
+**Mos aktivizo infrastrukturë reale me pagesë pa miratim dhe pa analizuar nevojat dhe alternativat.**
+
+## Pas çdo ndryshimi domethënës të verifikuar, përditëso edhe dokumentacionin e APK-së në GitHub, me rezultatet, testet, vendimet dhe hapat pasues.
+
+## Respekto degën e autorizuar, Draft PR dhe kufijtë ekzistues për merge, Production dhe veprime të rrezikshme.
+
+## 4. DETYRA 5.4— MAXIMUM PERFORMANCE & ULTRA-SMOOTH EXPERIENCE
+
+**Objektivi**
+
+ILLYRIAN duhet të jetë jashtëzakonisht i shpejtë, i rrjedhshëm dhe reaktiv në **Android, iOS dhe desktop**, duke respektuar kufizimet reale të pajisjes dhe rrjetit.
+
+**Performanca është kërkesë themelore gjatë gjithë zhvillimit, jo optimizim vetëm në fund.**
+
+**Optimizimi i aplikacionit**
+
+Optimizo:
+
+Hapjen e aplikacionit.
+
+Navigimin.
+
+Feed.
+
+Stories/Reels.
+
+Messages.
+
+Communities.
+
+Plans.
+
+Search.
+
+Shop.
+
+Profile.
+
+Funksionet e tjera.
+
+Syno:
+
+Scroll dhe animacione të rrjedhshme.
+
+Përgjigje të menjëhershme vizuale ndaj prekjes.
+
+**60 FPS** në pajisjet përfaqësuese që e mbështesin.
+
+**Bisedat dhe menaxhimi i të dhënave**
+
+Përmirëso bisedat e gjata me:
+
+Ngarkim gradual.
+
+Sinkronizim efikas.
+
+Pa humbje të dhënash.
+
+Përdor:
+
+Lazy loading.
+
+Pagination.
+
+Caching.
+
+Preloading selektiv.
+
+Optimizim foto/video.
+
+Zbato këto teknika kur përfitimi është i matshëm.
+
+**Backend dhe arkitektura për aplikacionin real**
+
+Optimizo kërkimin, databazën, API-të dhe komunikimin backend për aplikacionin real, duke shmangur kërkesat e tepërta.
+
+Menaxho:
+
+Memorien.
+
+Baterinë.
+
+Rrjetin e dobët.
+
+Ndërprerjet.
+
+Rikuperimin pas gabimeve.
+
+Shmang renderimet dhe llogaritjet e panevojshme.
+
+Përdor lista virtuale për përmbajtje shumë të gjatë kur nevojitet.
+
+**Objektivat e matshëm**
+
+Përcakto objektiva të matshëm për:
+
+Hapjen e aplikacionit.
+
+Reagimin e UI-së.
+
+Scroll.
+
+Navigimin.
+
+Kërkimin.
+
+Dërgimin e mesazheve.
+
+**Metoda e matjes dhe optimizimit**
+
+**Së pari mat gjendjen aktuale**, identifiko ngadalësimet, pastaj optimizo sipas ndikimit.
+
+Krahaso rezultatet **para/pas** dhe testo regresionet.
+
+Vlerëso:
+
+Telefona Android mesatarë.
+
+iPhone.
+
+Rrjete të ngadalta.
+
+Lista me shumë të dhëna.
+
+Në mungesë të pajisjeve reale, shëno testet si **të papërfunduara, jo PASS**.
+
+Vlerëso DEMO-n dhe APK-në reale veçmas.
+
+Mos pretendo performancë native vetëm nga Chromium.
+
+Për APK-në ende të pandërtuar përgatit kriteret dhe planin e matjeve.
+
+**Mos sakrifiko sigurinë, privatësinë, aksesueshmërinë, saktësinë e të dhënave ose funksionalitetet për shpejtësi.**
+
+**Dokumentacioni i performancës**
+
+Për çdo modul dokumento:
+
+Objektivat e performancës.
+
+Rezultatet.
+
+Kufizimet.
+
+Testet e performancës.
+
+Pas çdo ndryshimi domethënës të verifikuar, regjistro matjet para/pas, ndryshimet, testet, commit-et, vendimet dhe hapat pasues në dokumentacionin e GitHub.
+
+## Mos ndrysho arkitekturën madhore, mos aktivizo shërbime me pagesë dhe mos prek Production jashtë autorizimeve.
+
+## 5. RREGULL I PËRHERSHËM — PERFORMANCE FIRST
+
+**Shpejtësia, efikasiteti dhe stabiliteti i ILLYRIAN janë prioritete të detyrueshme në çdo fazë zhvillimi.**
+
+Regjistro këtë standard në:
+
+CURRENT_STATE.md
+
+MASTER_HANDOFF.md
+
+Dokumentacionin përkatës të arkitekturës.
+
+Standardi duhet të rikuperohet automatikisht në çdo bisedë të ardhshme.
+
+Për çdo funksionalitet, ndryshim kodi ose përmirësim, kontrollo ndikimin në:
+
+Performancë.
+
+Përdorimin e memories.
+
+Baterinë.
+
+Rrjedhshmërinë e ndërfaqes.
+
+Kontrollet duhet të jenë proporcionale me rëndësinë e ndryshimit.
+
+## Optimizimi duhet të jetë pjesë e implementimit dhe testimit, jo një korrigjim që shtyhet për në fund.
+
+## Mos sakrifiko sigurinë, privatësinë, aksesueshmërinë ose saktësinë e funksioneve për shpejtësi.
+
+## Pas çdo ndryshimi domethënës të verifikuar, përditëso dokumentacionin e vazhdimësisë dhe regjistro rezultatet përkatëse të performancës.
+
+## 6. VERIFIKIMI, AUTORIZIMET DHE DOKUMENTACIONI — PËR TË GJITHA DETYRAT
+
+**Përpara implementimit**
+
+Lexo CURRENT_STATE.md, MASTER_HANDOFF.md, blueprint-in, raportet përkatëse, dokumentacionin e arkitekturës dhe kodin ekzistues.
+
+Verifiko gjendjen reale në GitHub, degën aktive, HEAD, Draft PR, testet dhe autorizimet aktive.
+
+Dallo funksionet e implementuara, drejtimet e miratuara, hipotezat dhe specifikimet për aplikacionin real.
+
+Mos përsërit punë të përfunduar.
+
+Respekto arkitekturën, funksionalitetet, dizajnin dhe vendimet ekzistuese.
+
+**Gjatë implementimit**
+
+Vazhdo vetëm brenda autorizimeve ekzistuese.
+
+Implemento përmirësime të sigurta, të kontrolluara dhe të testueshme në DEMO.
+
+Mos krijo zgjidhje të rreme për funksionet që kërkojnë backend real ose validim përdoruesish.
+
+Mos paraqit simulimet si funksione reale.
+
+Ruaj funksionalitetet dhe të dhënat ekzistuese.
+
+Testo ndryshimet dhe regresionet përkatëse.
+
+Vlerëso ndikimin në performancë, siguri, privatësi dhe aksesueshmëri.
+
+Mos prek mjedise të mbrojtura ose projekte të tjera.
+
+Mos kryej ndryshime destruktive, madhore ose me rrezik të lartë pa miratimin përkatës.
+
+Mos ndrysho arkitekturën madhore dhe mos aktivizo shërbime ose infrastrukturë reale me pagesë jashtë autorizimeve.
+
+Respekto kufijtë ekzistues për degën e autorizuar, Draft PR, merge dhe Production.
+
+**Dokumentacioni i vazhdimësisë**
+
+**Pas çdo ndryshimi ose inkrementi domethënës të verifikuar, përditëso dhe ruaj në GitHub:**
+
+CURRENT_STATE.md
+
+MASTER_HANDOFF.md
+
+Dokumentacionin përkatës të arkitekturës.
+
+Dokumentacionin e kontratave dhe APK-së, kur lidhet me ndryshimin.
+
+Regjistro:
+
+Ndryshimet e implementuara.
+
+Testet dhe rezultatet.
+
+Matjet para/pas të performancës, sipas rastit.
+
+Commit-et.
+
+Vendimet dhe arsyet e tyre.
+
+Kufizimet.
+
+Problemet e hapura.
+
+Hapat pasues.
+
+Ruaj historikun e vendimeve dhe siguro që çdo bisedë e ardhshme mund të rikuperojë gjendjen e projektit dhe standardin e përhershëm **PERFORMANCE FIRST**.
+
+Vazhdo nga checkpoint-i më i fundit i verifikuar, pa humbur funksionalitete të miratuara dhe pa tejkaluar autorizimet ekzistuese.

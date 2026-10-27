@@ -38,3 +38,8 @@ These are repository working rules, **not an independent grant of authority**. T
 6. Preserve Draft PR / isolated Preview only. M01–M18 physical Android/iPhone, real screenreaders and explicit final acceptance/release sign-off remain unverified milestones; no final PASS without proof. F06 settings are deferred as above; existing CI and release-gate mechanisms are unchanged.
 
 **Foundation protocol v1.1:** a supplementary, selectively applicable work standard when supplied by the owner; it never authorizes backend, native development, new services, release or changes to protected scopes.
+
+
+## PERFORMANCE FIRST — permanent owner standard (27 October 2026)
+
+Speed, efficiency and stability are requirements throughout development. For each feature/change assess UI responsiveness/rendering, memory, battery and network impact proportionately to actual DEMO risk. Measure the current bottleneck before optimizing; use comparable before/after evidence for performance claims. Reuse existing flows and avoid unnecessary renders, work or dependencies. Never trade security, privacy, accessibility, data correctness or approved functionality for speed. Record material results/limitations in CURRENT_STATE, MASTER_HANDOFF and the existing blueprint; no parallel performance dossier. Unavailable physical Android/iPhone, battery or native measurements remain NOT RUN/OPEN, never inferred from Chromium or a 60 FPS aspiration. Future APK budgets and devices require explicit baselines. This standard does not authorize task 5.2–5.4, architecture changes, paid services, merge or Production.
