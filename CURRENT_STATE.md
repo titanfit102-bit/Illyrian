@@ -1,6 +1,6 @@
 # ILLYRIAN — CURRENT_STATE
 
-Përditësuar: 27 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për përdorimin e pronarit; repository PUBLIC.** Faza 1 historike e QA-së mbetet PARTIAL / pranim final OPEN; nuk është faza 1 e re e programit Shop më poshtë. Integrimi i Fazës 3 është i verifikuar vetëm në skenarët e raportuar; backend/native nuk janë implementuar.
+Përditësuar: 28 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për përdorimin e pronarit; repository PUBLIC.** Faza 1 historike e QA-së mbetet PARTIAL / pranim final OPEN; nuk është faza 1 e re e programit Shop më poshtë. Integrimi i Fazës 3 është i verifikuar vetëm në skenarët e raportuar; backend/native nuk janë implementuar.
 
 ## Gjendja e verifikuar
 
@@ -8,9 +8,10 @@ Përditësuar: 27 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 |---|---|
 | Repository / dega | `titanfit102-bit/Illyrian` / `feat/i18n-shop-feedback-20261022` |
 | PR | [#1](https://github.com/titanfit102-bit/Illyrian/pull/1), OPEN / DRAFT / UNMERGED → `demo/v1.7-illyrian-shop` |
-| Burimi runtime / baseline para 6.1 | `fb9ef1a8f08dbc0713ff7e647db8c855eaa9ff6f`, 5.4 e përfunduar; 6.1 ndryshon vetëm dokumentacionin |
+| Burimi runtime | `fb9ef1a8f08dbc0713ff7e647db8c855eaa9ff6f`,5.4 e verifikuar;6.1/6.2 nuk ndryshojnë kodin e aplikacionit |
+| Checkpoint para6.2 | `f3d8af4dbc0f63dda0b4a957c90daa11e704e86f`,6.1 dokumentues i verifikuar; [CI40597779671](https://github.com/titanfit102-bit/Illyrian/actions/runs/40597779671) SUCCESS me ripërdorim real të379/16 dhe12 classifier; [Security40597779657](https://github.com/titanfit102-bit/Illyrian/actions/runs/40597779657) SUCCESS. Rilexuar LIVE para ndryshimit |
 | Browser QA e burimit | [40558529682](https://github.com/titanfit102-bit/Illyrian/actions/runs/40558529682), **379 Chromium +16 Linux WebKit +12 classifier PASS** mbi `fb9ef1a`; actual test steps SUCCESS, logjet122381072097/122386068408/122380975761 rilexuar në6.1. Jo prova native/fizike |
-| Security e burimit | [40558529671](https://github.com/titanfit102-bit/Illyrian/actions/runs/40558529671) PASS mbi `fb9ef1a`, job122380975094 me detector/install/syntax/vendor/audit steps SUCCESS. Kontrolli i commit-it dokumentues6.1 ndiqet veçmas në Actions |
+| Security e burimit | [40558529671](https://github.com/titanfit102-bit/Illyrian/actions/runs/40558529671) PASS mbi `fb9ef1a`, job122380975094 me detector/install/syntax/vendor/audit steps SUCCESS. Kontrollet e burimit dokumentues6.1 janë në rreshtin e checkpoint-it; kandidati6.2 ndiqet veçmas në Actions |
 | Izolimi | Integrimi `015ce439e7c6d736149c6c300391586517664f62`; main `9f91b5c083b4482a70a2149483cc799360e6102c`; pa merge/Production |
 | Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/); [immutable i burimit](https://illyrian-demo-bencrmk8b-un24.vercel.app/), `dpl_9fWrbvcFwqURVFRbhDbmsRfxqxF5`, READY/target null/SHA `fb9ef1a` rilexuar LIVE në6.1. Metadata e kandidatit dokumentues verifikohet veçmas; pa test të ri ndërveprimi/telefoni ose redeploy manual |
 
@@ -25,7 +26,7 @@ Përditësuar: 27 tetor 2026 (Europe/Rome). **Faza aktuale: DEMO private për p�
 
 ## Politika aktive dhe çështjet e hapura
 
-Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy) automatikisht. [MASTER_HANDOFF](MASTER_HANDOFF.md#authorization) mban autorizimet. Scope i ri: **vetëm6.1, dokumentacion për MVP/hartën DEMO→APK**; [roadmap Programi6](demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#programme-6) ruan kërkesat e pesë fazave dhe [blueprint §24](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-61) kontratat/hartën/boshllëqet. Shop/Smart Social nuk rihapen. Pa kod/dizajn/teste/arkitekturë funksionale të re, merge, main/Production, backend/native, shpenzime ose ndryshime destruktive. Ndalo para6.2.
+Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy) dhe [autorizimet](MASTER_HANDOFF.md#authorization). Scope i ri: **vetëm6.2 — specifikime/mockup-e/plan testesh për njoftimet Android/iOS**; kontratat në [blueprint §25](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-62), kërkesat te [roadmap Programi6](demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#programme-6). Pa kod/dizajn/simulim të DEMO-s, backend/native/push real, merge/main/Production, provider/privilegje/pagesa ose migrim. Dy SVG janë asete dokumentuese statike. Ndalo para6.3.
 
 | Fusha | Statusi / hapi |
 |---|---|
@@ -122,9 +123,19 @@ Ndalesa pas5.4 u përmbush; pronari hapi më pas vetëm6.1. Pajisjet fizike Andr
 
 ## Programi 6 — dorëzimi 6.1 dhe ndalesa
 
-- Konsoliduar specifikimi kandidat MVP1.0 me IN/OUT ende për vendim, rolet/rrjedhat/kriteret, standardi C0 dhe harta **54 familje ekran→veprim→APK**, pa pretendim specifikimi të çdo instance/fushe. Kërkesat **34 grupe** të6.1–6.5 janë në roadmap,6.2–6.5 vetëm PLANIFIKUAR/OPEN.
+- Konsoliduar specifikimi kandidat MVP1.0 me IN/OUT ende për vendim, rolet/rrjedhat/kriteret, standardi C0 dhe harta **54 familje ekran→veprim→APK**, pa pretendim specifikimi të çdo instance/fushe. Kërkesat **34 grupe** të6.1–6.5 janë në roadmap,6.2–6.5 ishin PLANIFIKUAR/OPEN në checkpoint-in6.1;6.2 u hap më pas veçmas.
 - Raporti ILLYRIAN_PRAN_MASTER_PRODUCT_INNOVATION_REVIEW u gjet/lexua i plotë; K1–K8/N1–N3 tani kanë burim, por jo miratim. “Detyra2” dhe provenienca historike6A/6B mbeten OPEN. Politika AGENTS ishte e mjaftueshme dhe nuk ndryshoi.
 - Verifikimi dokumentues: matricë burim→destinacion34/34, hartë54/54, diff,29 lidhje/ankora të shtuara dhe ruajtja48/48 e kërkesave të mëparshme; vetëm katër dokumentet ekzistuese. Rishikim i pavarur: korrigjuar veprimi i paqenë remove-avatar, plotësuar filtri Latest/shpjegimi dhe statuset e vjetruara; pa gjetje të tjera vepruese. Runtime/teste/config identike me burimin e verifikuar sipër. Lokalisht PASS: syntax/vendor,7 detector fixtures/skanim68 skedarë të snapshot-it dhe12 classifier tests; pa riekzekutim browser. CI e commit-it të ri kontrollohet në Actions; PASS i ripërdorur nuk quhet riekzekutim379/16. Nuk krijohet commit shtesë vetëm për status CI.
-- OPEN: miratim MVP/treg/platformë/stack/auth/role të hollësishme; inventar për çdo instancë/fushë/API/gabim/test; notifications6.2, recovery/Help6.3, admin6.4, kontrata/pranim final6.5. Regjistri i plotë i boshllëqeve është vetëm te blueprint §24.
+- OPEN: miratim MVP/treg/platformë/stack/auth/role të hollësishme; inventar për çdo instancë/fushë/API/gabim/test; implementimi/testet reale notifications sipas§25, recovery/Help6.3, admin6.4, kontrata/pranim final6.5. Regjistri i plotë i boshllëqeve është vetëm te blueprint §24.
 
-**Hapi pasues: ndalo para6.2 dhe prit vazhdimin e pronarit.** Përfundoi inkrementi dokumentues6.1 me boshllëqet e deklaruara; jo MVP final i miratuar, kontratë shteruese e çdo ekrani ose APK e gatshme.
+Ndalesa6.1 u përmbush në `f3d8af4`; pronari hapi më pas vetëm6.2. Boshllëqet e MVP/inventarit/API-ve dhe gatishmëria APK nuk u mbyllën nga6.1.
+
+
+## Programi6 — 6.2, specifikimi i njoftimeve
+
+- Dorëzuar si dokumentacion/propozim: matrica Android/iOS,12 gjendje mockup në dy SVG,8 kontrata logjike API dhe24 raste pranimi native/API. Burimet zyrtare u kontrolluan më28 tetor; reply/unlock/bubbles trajtohen sipas OS, jo si barazi platformash ose përfundim native.
+- Ripërdoren Notification/Outbox, Message/Conversation, IDs dhe scopes ekzistuese. Regjistrim i lidhur me account/session epoch, server ACL para send/open/reply, privatësi generic lock-screen, quiet-hours/mute/dedup, delta sync dhe sent≠provider accepted≠read janë në§25. Pa shërbim/push/llogari/test real të aktivizuar.
+- Verifikim lokal PASS:34/34 kërkesa të Programit6 dhe48/48 Shop/Smart Social të ruajtura,54 familjet e hartës,8 kontrata API/24 skenarë NOT RUN/12 grupe burimesh,12 gjendje SVG statike XML pa përmbajtje aktive,17 lidhje/ankora të reja. Të dy SVG u renderuan/inspektuan; jo prova native. Syntax/vendor,7 detector fixtures/skanim i kufizuar68 skedarë dhe12 classifier tests PASS. Rishikimi i pavarur sqaroi projection/delivery-job/retry-attempt, pa gjetje të tjera vepruese. CI/Preview i commit-it përfundimtar ndiqet në Actions/Vercel; SVG të reja mund të kërkojnë suite të plotë sipas klasifikuesit ekzistues, pa ndryshim politike.
+- OPEN: default-et/MVP/platforma/OS/provider/SDK, secure rich-preview/enrichment, operator/retention/limite dhe të gjitha NQ01–24 në klient/backend/pajisje reale. Specifikimi nuk provon APK readiness.
+
+**Hapi pasues: ndalo para6.3 dhe prit vazhdimin e pronarit.** Recovery/Help Center, admin dhe pranimi final mbeten6.3–6.5 të planifikuara.
