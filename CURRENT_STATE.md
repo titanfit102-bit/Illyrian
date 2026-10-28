@@ -1,6 +1,6 @@
 # ILLYRIAN — CURRENT_STATE
 
-Përditësuar: 27 tetor 2026 (UTC), verifikimi6.3. Etiketat historike “28 tetor” të checkpoint-eve të mëparshme ruhen siç ishin në Git; nuk përdoren si datë e këtij kontrolli. **Faza aktuale: DEMO private për përdorimin e pronarit; repository PUBLIC.** Faza 1 historike e QA-së mbetet PARTIAL / pranim final OPEN; nuk është faza 1 e re e programit Shop më poshtë. Integrimi i Fazës 3 është i verifikuar vetëm në skenarët e raportuar; backend/native nuk janë implementuar.
+Përditësuar: 28 tetor 2026 (Europe/Rome), verifikimi6.4. Etiketat historike “28 tetor” të checkpoint-eve të mëparshme ruhen siç ishin në Git; nuk përdoren si datë e këtij kontrolli. **Faza aktuale: DEMO private për përdorimin e pronarit; repository PUBLIC.** Faza 1 historike e QA-së mbetet PARTIAL / pranim final OPEN; nuk është faza 1 e re e programit Shop më poshtë. Integrimi i Fazës 3 është i verifikuar vetëm në skenarët e raportuar; backend/native nuk janë implementuar.
 
 ## Gjendja e verifikuar
 
@@ -8,14 +8,15 @@ Përditësuar: 27 tetor 2026 (UTC), verifikimi6.3. Etiketat historike “28 teto
 |---|---|
 | Repository / dega | `titanfit102-bit/Illyrian` / `feat/i18n-shop-feedback-20261022` |
 | PR | [#1](https://github.com/titanfit102-bit/Illyrian/pull/1), OPEN / DRAFT / UNMERGED → `demo/v1.7-illyrian-shop` |
-| Burimi runtime | `fb9ef1a8f08dbc0713ff7e647db8c855eaa9ff6f`,5.4 e verifikuar;6.1/6.2/6.3 nuk ndryshojnë kodin e aplikacionit |
+| Burimi runtime | `fb9ef1a8f08dbc0713ff7e647db8c855eaa9ff6f`,5.4 e verifikuar;6.1/6.2/6.3/6.4 nuk ndryshojnë kodin e aplikacionit |
 | Checkpoint para6.2 | `f3d8af4dbc0f63dda0b4a957c90daa11e704e86f`,6.1 dokumentues i verifikuar; [CI40597779671](https://github.com/titanfit102-bit/Illyrian/actions/runs/40597779671) SUCCESS me ripërdorim real të379/16 dhe12 classifier; [Security40597779657](https://github.com/titanfit102-bit/Illyrian/actions/runs/40597779657) SUCCESS. Rilexuar LIVE para ndryshimit |
 | Checkpoint para6.3 | `8258d2e6ac0a24f0189794ebbbda53db951f23f0`,6.2; Draft PR#1/HEAD rilexuar LIVE. [Browser40601069212](https://github.com/titanfit102-bit/Illyrian/actions/runs/40601069212) SUCCESS:379 Chromium+16 WebKit+12 classifier të ekzekutuara; [Security40601069090](https://github.com/titanfit102-bit/Illyrian/actions/runs/40601069090) SUCCESS. Jo prova native/recovery. |
 | Dorëzimi6.3 i verifikuar | [f8056fd](https://github.com/titanfit102-bit/Illyrian/commit/f8056fd5314fda5084469fb762c84a7a87d180cc): katër dokumentet u rilexuan me përmbajtje/blob SHA identike. [Browser40604036624](https://github.com/titanfit102-bit/Illyrian/actions/runs/40604036624) SUCCESS:12 classifier të ekzekutuara dhe ripërdorim379/16 nga40601069212, browser execution SKIPPED/reuse SUCCESS. [Security40604036750](https://github.com/titanfit102-bit/Illyrian/actions/runs/40604036750) SUCCESS:7 fixtures,90 skedarë pa gjetje,sintaksë/vendor,audit0. Pas tij korrigjohet vetëm një status historik i vjetruar në roadmap dhe kjo provë; runtime i pandryshuar. |
+| Checkpoint para6.4 | `9a8b065ef16ff1b7c27a01d6ad13da657a03ae3a`,6.3 dhe follow-up; burimet kanonike përputhen me blob SHA LIVE. [Browser40604172943](https://github.com/titanfit102-bit/Illyrian/actions/runs/40604172943) SUCCESS:12 classifier të ekzekutuara/ripërdorim379+16 nga40601069212, execution SKIPPED/reuse SUCCESS. [Security40604173115](https://github.com/titanfit102-bit/Illyrian/actions/runs/40604173115) SUCCESS: detector/install/syntax/vendor/audit steps. Draft PR#1/HEAD/base rilexuar LIVE. |
 | Browser QA e burimit | [40558529682](https://github.com/titanfit102-bit/Illyrian/actions/runs/40558529682), **379 Chromium +16 Linux WebKit +12 classifier PASS** mbi `fb9ef1a`; actual test steps SUCCESS, logjet122381072097/122386068408/122380975761 rilexuar në6.1. Jo prova native/fizike |
 | Security e burimit | [40558529671](https://github.com/titanfit102-bit/Illyrian/actions/runs/40558529671) PASS mbi `fb9ef1a`, job122380975094 me detector/install/syntax/vendor/audit steps SUCCESS. Kontrollet e burimit dokumentues6.1 janë në rreshtin e checkpoint-it; kandidati6.2 ndiqet veçmas në Actions |
 | Izolimi | Integrimi `015ce439e7c6d736149c6c300391586517664f62`; main `9f91b5c083b4482a70a2149483cc799360e6102c`; pa merge/Production |
-| Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/); [immutable6.3](https://illyrian-demo-4ndtrhrks-un24.vercel.app/), `dpl_3xHjmdRH2XFvYPS7DrrnrJkNEXkS`, READY/target null/SHA `f8056fd`, alias/projekt/team rilexuar LIVE. Follow-up vetëm Markdown verifikohet veçmas; pa test të ri ndërveprimi/telefoni ose redeploy manual |
+| Preview | [Alias fiks i telefonit](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/); [immutable6.3](https://illyrian-demo-ga376tu7u-un24.vercel.app/), `dpl_eHcfGuxtjiTK4Rwc7L6SNGNAabsd`, READY/target null/SHA `9a8b065`, alias/projekt/team rilexuar LIVE para6.4. Kandidati dokumentues verifikohet veçmas; pa test të ri ndërveprimi/telefoni ose redeploy manual |
 
 
 ## Funksionet dhe provat që ruhen
@@ -28,7 +29,7 @@ Përditësuar: 27 tetor 2026 (UTC), verifikimi6.3. Etiketat historike “28 teto
 
 ## Politika aktive dhe çështjet e hapura
 
-Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy) dhe [autorizimet](MASTER_HANDOFF.md#authorization). Scope i ri: **vetëm6.3 — projektimi i rikuperimit të sigurt dhe Help Center sq/en/it**; kontratat në [blueprint §26](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-63), kërkesat te [roadmap Programi6](demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#programme-6). Pa kod/dizajn/simulim DEMO, rikuperim/reset/llogari/ticket real, email/SMS, backend/native/admin real, merge/main/Production ose shërbime me pagesë. Ndalo para6.4;6.4–6.5 mbeten të planifikuara.
+Zbato [AGENTS: DEMO vs APK](AGENTS.md#demo-vs-apk--permanent-owner-policy) dhe [autorizimet](MASTER_HANDOFF.md#authorization). Scope i ri: **vetëm6.4 — dizajni i panelit privat Owner/Support/Moderator dhe autorizimet** në [blueprint §27](architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-64); kërkesat te [roadmap Programi6](demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#programme-6). Pa kod/dizajn/simulim të ri DEMO, heqje QA, panel/backend/admin/llogari/reset/email/SMS real, provider/pagesa ose merge/main/Production. Ndalo para6.5;6.5 mbetet e planifikuar.
 
 | Fusha | Statusi / hapi |
 |---|---|
@@ -128,7 +129,7 @@ Ndalesa pas5.4 u përmbush; pronari hapi më pas vetëm6.1. Pajisjet fizike Andr
 - Konsoliduar specifikimi kandidat MVP1.0 me IN/OUT ende për vendim, rolet/rrjedhat/kriteret, standardi C0 dhe harta **54 familje ekran→veprim→APK**, pa pretendim specifikimi të çdo instance/fushe. Kërkesat **34 grupe** të6.1–6.5 janë në roadmap,6.2–6.5 ishin PLANIFIKUAR/OPEN në checkpoint-in6.1;6.2 u hap më pas veçmas.
 - Raporti ILLYRIAN_PRAN_MASTER_PRODUCT_INNOVATION_REVIEW u gjet/lexua i plotë; K1–K8/N1–N3 tani kanë burim, por jo miratim. “Detyra2” dhe provenienca historike6A/6B mbeten OPEN. Politika AGENTS ishte e mjaftueshme dhe nuk ndryshoi.
 - Verifikimi dokumentues: matricë burim→destinacion34/34, hartë54/54, diff,29 lidhje/ankora të shtuara dhe ruajtja48/48 e kërkesave të mëparshme; vetëm katër dokumentet ekzistuese. Rishikim i pavarur: korrigjuar veprimi i paqenë remove-avatar, plotësuar filtri Latest/shpjegimi dhe statuset e vjetruara; pa gjetje të tjera vepruese. Runtime/teste/config identike me burimin e verifikuar sipër. Lokalisht PASS: syntax/vendor,7 detector fixtures/skanim68 skedarë të snapshot-it dhe12 classifier tests; pa riekzekutim browser. CI e commit-it të ri kontrollohet në Actions; PASS i ripërdorur nuk quhet riekzekutim379/16. Nuk krijohet commit shtesë vetëm për status CI.
-- OPEN: miratim MVP/treg/platformë/stack/auth/role të hollësishme; inventar për çdo instancë/fushë/API/gabim/test; implementimi/testet reale notifications sipas§25, implementimi/testet reale recovery/Help sipas§26, admin6.4, kontrata/pranim final6.5. Regjistri i plotë i boshllëqeve është vetëm te blueprint §24.
+- OPEN: miratim MVP/treg/platformë/stack/auth/role të hollësishme; inventar për çdo instancë/fushë/API/gabim/test; implementimi/testet reale notifications sipas§25, implementimi/testet reale recovery/Help sipas§26, implementimi/testet e panelit sipas§27, kontrata/pranim final6.5. Regjistri i plotë i boshllëqeve është vetëm te blueprint §24.
 
 Ndalesa6.1 u përmbush në `f3d8af4`; pronari hapi më pas vetëm6.2. Boshllëqet e MVP/inventarit/API-ve dhe gatishmëria APK nuk u mbyllën nga6.1.
 
@@ -140,7 +141,7 @@ Ndalesa6.1 u përmbush në `f3d8af4`; pronari hapi më pas vetëm6.2. Boshllëqe
 - Verifikim lokal PASS:34/34 kërkesa të Programit6 dhe48/48 Shop/Smart Social të ruajtura,54 familjet e hartës,8 kontrata API/24 skenarë NOT RUN/12 grupe burimesh,12 gjendje SVG statike XML pa përmbajtje aktive,17 lidhje/ankora të reja. Të dy SVG u renderuan/inspektuan; jo prova native. Syntax/vendor,7 detector fixtures/skanim i kufizuar68 skedarë dhe12 classifier tests PASS. Rishikimi i pavarur sqaroi projection/delivery-job/retry-attempt, pa gjetje të tjera vepruese. CI/Preview i commit-it përfundimtar ndiqet në Actions/Vercel; SVG të reja mund të kërkojnë suite të plotë sipas klasifikuesit ekzistues, pa ndryshim politike.
 - OPEN: default-et/MVP/platforma/OS/provider/SDK, secure rich-preview/enrichment, operator/retention/limite dhe të gjitha NQ01–24 në klient/backend/pajisje reale. Specifikimi nuk provon APK readiness.
 
-Ndalesa pas6.2 u përmbush në `8258d2e`; pronari hapi vetëm6.3. Specifikimi recovery/Help është në§26; admin6.4 dhe pranimi final6.5 mbeten të planifikuara.
+Ndalesa pas6.2 u përmbush në `8258d2e`; pronari hapi vetëm6.3. Specifikimi recovery/Help është në§26, paneli6.4 është projektuar më pas në§27; pranimi final6.5 mbetet i planifikuar.
 
 
 ## Programi6 — 6.3, rikuperimi dhe Help Center
@@ -150,4 +151,14 @@ Ndalesa pas6.2 u përmbush në `8258d2e`; pronari hapi vetëm6.3. Specifikimi re
 - Verifikimi lokal PASS:34/34 kërkesat e programit,48/48 Shop/Smart Social,54 familjet e hartës,8 rrjedha/12 API/24 raste NOT RUN/16 artikuj×3/12 gjendje×3 lidhjet/ankorat e shtuara, diff ndaj checkpoint-it LIVE. Syntax/vendor,7 detector fixtures/skanim i kufizuar68 skedarë dhe12 classifier PASS. Rishikimi i pavarur konfirmoi mbulimin6.3 dhe sqaroi revokimin e TicketAccess sipas auth/contact epoch; pa gjetje të tjera vepruese. CI e këtij commit-i ndiqet në Actions; nëse rruga Markdown ripërdor379/16 nga40601069212, ajo nuk quhet riekzekutim browser. Runtime/teste/config dhe dy SVG6.2 ruhen të pandryshuara. Pa commit shtesë vetëm për rezultatin CI.
 - OPEN para aktivizimit: scope/metoda/provider/SDK, proof/step-up dhe risk policy, TTL/attempt/rate/retention me vlera/operatorë të miratuar, schema/provider transaction/reconciliation, mbulim suporti dhe rikuperim admin me siguri të lartë. RQ01–24 API/native/siguri reale, UI/telefon/screenreader/përkthime të certifikuara janë NOT RUN; nuk pretendohet backend, rikuperim real ose APK readiness.
 
-**Hapi pasues: ndalo para6.4 dhe prit vazhdimin e pronarit.** Dokumentacioni i6.3 ruhet në katër dokumentet kanonike;6.4–6.5 mbeten PLANIFIKUAR. Historia e saktë e commit-it dhe prova e ruajtjes verifikohen LIVE në Draft PR#1; burimi para ndryshimit është `8258d2e`.
+Ndalesa pas6.3 u përmbush në `9a8b065`; pronari hapi vetëm6.4. Dokumentacioni i6.3 ruhet në katër dokumentet kanonike;6.5 mbetet PLANIFIKUAR. Historia e saktë e commit-it dhe prova e ruajtjes verifikohen LIVE në Draft PR#1; burimi para ndryshimit është `8258d2e`.
+
+
+## Programi6 — 6.4, paneli privat dhe rolet
+
+- DORËZUAR si dizajn PROPOZUAR në§27:12 familje ekranesh,14 rreshta lejesh Owner/Support/Moderator,12 familje API, modele/lifecycle/checklist dhe24 skenarë pranimi NOT RUN. Një workspace mbi SupportTicket/RecoveryCase/Safety ekzistuese; jo panel/queue/identitet paralel.
+- Lejet janë sipas objektit/scope/caktimit dhe MFA/grant aktual server-side; rolet e biznesit nuk japin privilegje platforme. Pa impersonation/password/DM/SQL identity override; rikuperimi përdor§26, moderimi§19 dhe njoftimet§25. Search vetëm me case-purpose, kontakte të maskuara; prioritetet/afatet/statistikat/urgjencat nuk anashkalojnë provat. Shop/Plans/Punë dhe QA DEMO ruhen.
+- Lokalisht PASS:34/34 kërkesat e Programit6,48/48 Shop/Smart Social,54 familjet e hartës,12 UI/14 leje/12 API/24 raste NOT RUN dhe14 lidhje/ankora të shtuara; kontratat e mëparshme notifications/recovery/Help dhe asetet ruhen. Syntax/vendor,7 detector fixtures/skanim i kufizuar68 skedarë,12 classifier dhe diff PASS. Rishikimi i pavarur konfirmoi gjashtë kërkesat dhe sqaroi revokimin edhe të operatorit të fundit kur komprometohet, pa gjetje të tjera vepruese. CI/Preview i këtij commit-i verifikohet LIVE pas ruajtjes. Runtime/teste/config dhe asetet SVG6.2 të pandryshuara; pa riekzekutim lokal browser për këtë edit vetëm Markdown. Ripërdorimi379/16 nuk quhet ekzekutim i ri. Regjistri i sigurisë nuk ndryshon status nga specifikimi.
+- OPEN: metoda/provider/client/stack, executable schemas/server enforcement, staff bootstrap/lost-MFA/independent reviewers, proof/step-up/rate/row/retention/metrics values dhe personel/afate/coverage reale. PQ01–24, pajisjet/screenreader/native/security reale janë NOT RUN; nuk pretendohet panel real ose APK readiness.
+
+**Hapi pasues: ndalo para6.5 dhe prit vazhdimin e pronarit.**6.5 duhet të verifikojë6.1–6.4 dhe kontratat/pranimin real pa supozuar implementim. Ruajtja e katër dokumenteve kanonike dhe HEAD/CI/Preview konfirmohen LIVE në Draft PR#1; burimi para6.4 është `9a8b065`.
