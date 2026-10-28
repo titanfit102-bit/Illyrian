@@ -4,6 +4,8 @@
 
 **Practical owner test worksheet:** [`DEMO_V1_7_PHYSICAL_QA_SESSION.md`](DEMO_V1_7_PHYSICAL_QA_SESSION.md). This document provides a historically verified immutable Preview example and instructions to record a **new same-SHA candidate**, short on-device steps, evidence fields, and clearly marks physical-device cases NOT TESTED. It does **not** replace M01–M18 below.
 
+**Current documentary audit:** [blueprint §33](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-75). The dated ledgers below are historical checkpoints; CURRENT_STATE/GitHub LIVE select the next candidate. The durable index added below preserves browser evidence, not physical PASS or owner acceptance.
+
 ## 0. Preconditions: avoid testing the wrong build
 - Verify repository `titanfit102-bit/Illyrian`, exact tested **code commit SHA**, open **Draft PR #1**, and target `demo/v1.7-illyrian-shop`. Verify the **exact-SHA `pull_request` Chromium + Linux WebKit** GitHub Actions runs for the selected feature-branch candidate. The duplicate feature-branch `push` trigger was intentionally removed; do not require a redundant push run.
 - Obtain an **immutable Vercel Preview deployment URL** for that SHA; confirm `READY`, Preview target (not Production), branch and Git metadata. Open `/` through authorized HTTP access and check that it actually renders `ILLYRIAN_DEMO_v1.7.html`. A `READY` API response or static `vercel.json` rewrite alone does **not** satisfy F05.
@@ -76,3 +78,25 @@ All must be demonstrably satisfied before suggesting owner sign-off:
 - **Physical device cases M01–M18: NOT TESTED.** Linux WebKit touch emulation cannot replace Android Chrome/iOS Safari real devices, TalkBack/VoiceOver, text scaling and hardware. F06 branch protection still pending authorized owner decision. No release sign-off.
 
 **Source of authority:** `CURRENT_STATE.md`, `MASTER_HANDOFF.md` active section, GitHub LIVE code/CI, existing DEMO architecture. This file is a QA execution aid, not an assertion that cases were performed.
+
+
+<a id="durable-browser-evidence"></a>
+## 8. Durable browser evidence index — 28 October2026, task7.5
+
+Recovered existing proof, not a new browser/device session. Source `8258d2e6ac0a24f0189794ebbbda53db951f23f0`, [full PR run40601069212](https://github.com/titanfit102-bit/Illyrian/actions/runs/40601069212), feature branch→integration base `015ce439e7c6d736149c6c300391586517664f62`. Actual Chromium job122529094386:379 passed; Linux WebKit job122532628136:16 passed; steps/logs reread in7.5. Runtime/test/config bytes are unchanged at pre-audit baseline `0c19089` by Git compare; the pictures still carry their historical source, not a new build or fresh Preview. No physical Android/iPhone, TalkBack/VoiceOver, full visual/translation or release PASS.
+
+| Stored original artifact | GitHub provenance / retention | Integrity and contents |
+| --- | --- | --- |
+| [visual-review.zip](archive/qa/8258d2e6ac0a24f0189794ebbbda53db951f23f0/visual-review.zip) | Artifact12778273876,3054568 bytes, created27 Oct2026 23:26:22 UTC; API expiry10 Nov2026 23:26:21 UTC. ZIP copied byte-for-byte before expiry; Git history retains this reference independently. | SHA256 `4c2b3895eddf81244d4a5d9399044e96859c0b4da3520078307d7c2e6a73da8b`, matched GitHub digest;87 JPEG members, no non-image member/path traversal or EXIF. Source is existing synthetic local CI, not real users. |
+| [i18n-inventory.zip](archive/qa/8258d2e6ac0a24f0189794ebbbda53db951f23f0/i18n-inventory.zip) | Artifact12778273879,1779 bytes, created27 Oct2026 23:26:23 UTC; API expiry10 Nov2026 23:26:22 UTC. Original archive bytes preserved. | SHA256 `310a7db2efe67e668670a8f4724ca1ac84aaa29737596e2b82c33f7986ccc066`, matched digest; one `visible-ui-sq.json`,5112 bytes. Sample19 routes/264 distinct labels/76 exact-match misses; not76 confirmed untranslated UI strings. |
+
+Visual member index (original names retained inside ZIP):
+
+| Filename pattern | Viewports / members | Scope |
+| --- | --- | --- |
+| `<width>x<height>-01-home`, `02-shop`, `02a-shop-plus-catalog`, `02b-shop-plus-needs`, `02c-shop-plus-create`, `03-events`, `04-plans`, `05-profile`, `06-reels`, each `.jpg` | 320x568,360x780,390x844,430x932,844x390,932x430,1280x800;9 states×7 sizes=63 images. | Browser captures only; default CI locale, no claim of all themes/permissions/form errors or every element. |
+| `i18n-<sq/en/it>-<390x844/844x390>-<plans-dialog/privacy-dialog/shop-plus-catalog/shop-plus-form>.jpg` | 3 locales×2 sizes×4 states=24 images. | Sampled language/dialog evidence; a contact sheet was inspected for archive provenance, not pixel-diff/global acceptance. |
+
+Inventory field `catalogKeys=710` is named by the old capture script but counts unique non-template Albanian text values (`Set`, excluding interpolation), not the full782 locale-key count/19 namespaces verified from current source. Exact-match misses include fixture names, combined labels and dynamic text. Review suspected UI omissions against source/semantics before logging a defect; do not translate UGC or claim global coverage from key parity.
+
+Decisions and negative/intermediate results remain in Git history/security/Phase1/Phase3 and blueprint; no new full snapshot copy. For future material evidence, add sanitized original files to this same archive/index (or approved durable store), naming source/build/run/device/OS/locale/orientation/state, timestamp, outcome/issue, SHA256 and reviewer. Remove credentials/share URLs/private content **before** publication; do not publish native symbols/private manifests or personal incident evidence here. Archives must not be treated as public-user retention policy or proof of media rights. Preserve legal/privacy and release review. Historical screenshot sets outside these87 and future physical/build records remain OPEN; this index does not retroactively archive every past CI artifact.
