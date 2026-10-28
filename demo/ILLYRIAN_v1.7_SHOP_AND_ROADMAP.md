@@ -886,23 +886,34 @@ Program i veçantë nga Shop 1–5 dhe Smart Social 5.1–5.4; numrat 6.1–6.5 
 | 6.5-06 | Dallo teste reale nga simulimet. Chromium PASS nuk provon APK; telefon fizik, screenreader, Preview/release të pakontrolluara mbeten OPEN deri në evidencë. Verifiko kod/dokumente/raporte/vendime/commit/PR/CI. | VERIFIKUAR vetëm brenda provave: §28 ledger CI/commit/PR/burime; testet browser të ripërdorura dallohen. Native/fizike/screenreader/restore dhe Preview interaction/release pa provë mbeten OPEN. |
 | 6.5-07 | Konsolido burimet ekzistuese dhe dorëzo raport gatishmërie APK, boshllëqe/kontrolle të papërfunduara/hapa të saktë dhe konfirmim ruajtjeje GitHub. Pa deklaruar backend/DB/siguri/APK të përfunduar pa prova ose ndryshuar çfarë kërkon miratim. | DORËZUAR si raport kanonik: §28 verdict HOLD,12 gaps me hapa/pronarë të propozuar dhe kufij; CURRENT_STATE ruan provat e ruajtjes/CI. Pa dokument paralel, backend/DB/APK/release claim. |
 
-### MVP 1.0 — specifikim për vendim, jo scope i miratuar
+<a id="mvp-10--specifikim-për-vendim-jo-scope-i-miratuar"></a>
+<a id="mvp-owner-decision"></a>
+### MVP 1.0 — vendimi aktual i pronarit B01
 
-**MIRATUAR PËR APK si parime**, jo si listë release-i: ekosistem ILLYRIAN, një identitet me capabilities scoped, katalog i vetëm Shop/Plus, ID autoritative, privacy/server authorization, i18n/UGC, pagesa të ndara dhe gates ekzistuese (blueprint §10). Nuk u gjet miratim i MVP 1.0, platformave, stack-ut ose gjithë funksioneve të DEMO-s për publikimin e parë.
+**28 tetor2026 (Europe/Rome), pas auditit7.5 në `7edc9db`. MIRATUAR PËR APK si drejtim i versionit fillestar, jo implementim ose leje ndërtimi/publikimi.** Pas shpjegimit të paketës së propozuar, pronari pranoi propozimin për momentin dhe kërkoi diskutim të ri për versionin e avancuar për investitorët. Ky vendim zëvendëson statusin e mëparshëm “i pamiratuar” vetëm për zgjedhjet e mëposhtme; historiku i propozimit ruhet në parent `7edc9db`.
+
+- **IN:** llogari/profil, Plans dhe bisedat e lidhura me aktivitetet; recovery/Help, report/block, moderim privat dhe njoftime bazë si mbështetje e këtij cikli.
+- **LATER:** Shop, Stories/Reels, Pro, reklama dhe pagesa; iOS pas Android. Asnjë funksion nuk hiqet nga DEMO ose dokumentacioni.
+- **Tregu/audienca/platformat/gjuhët:** Shqipëri,18+, Android fillimisht, sq/en/it. Ky është target produkti, jo kufizim teknik i implementuar, politikë ligjore e adoptuar, age-assurance e përfunduar ose zgjedhje framework/provider-i. Qytetet, OS/pajisjet dhe afatet ende OPEN.
+- **Kufiri i investitorëve — vendim i detyrueshëm:** përpara përgatitjes/ndërtimit të DEMO-s së avancuar për investitorët, ChatGPT duhet të rikthejë diskutimin me pronarin dhe të kërkojë miratim të ri për funksionet, shtrirjen dhe paraqitjen. Miratimi i tanishëm nuk bartet automatikisht te ajo DEMO; mos e nis ose zgjero si scope të miratuar. Ky është gate projekti, jo njoftim/monitorim automatik në sfond.
+
+B01 është **PARTIAL: drejtimi i mësipërm i miratuar; specifikimi i ekzekutueshëm ende i paplotë**. Rolet/boundaries/rrjedhat e detajuara, Feed/Communities, liria e DM, media/attachments, metoda auth, push/Quick Reply/bubbles, OS/device matrix dhe protokolli i suksesit nuk u zgjodhën nga ky miratim. Plotëso C0/B02 dhe propozimet teknike B03 për slice-in e zgjedhur, duke ruajtur OPEN pa shtuar/hequr scope në heshtje. Pa native/backend/setup/shpenzim/main/Production/merge ose politikë publike të aktivizuar.
+
+**MIRATUAR PËR APK si parime:** ekosistem ILLYRIAN, një identitet me capabilities scoped, katalog i vetëm Shop/Plus, ID autoritative, privacy/server authorization, i18n/UGC, pagesa të ndara dhe gates ekzistuese (blueprint §10). Miratimi B01 më sipër cakton vetëm versionin fillestar; nuk miraton gjithë DEMO-n, stack-un, provider-in ose publikimin.
 
 | Familja / qëllimi dhe rrjedha kandidate | Roli / harta | Përfshirja në MVP 1.0 |
 |---|---|---|
-| Hyrje reale → profil minimal → preferenca/privatësi/sesione | Visitor/Member; A01–A08 | PROPOZUAR bazë; metoda auth, fusha të detyrueshme/consent dhe të drejtat e vizitorit OPEN. |
-| Zbulim përmbajtjeje/komuniteti → postim tekst/foto → koment/ndjekje | Member/staf komuniteti scoped; A09–A14/A26–A28 | PROPOZUAR minimal; audiencat/politika moshe dhe shtrirja komunitare OPEN. |
-| Zbulo Plan → kërkesë → pranim/listë pritjeje → bisedë → anulim/tërheqje | Member/Organizer; A29–A36 | PROPOZUAR si cikli i parë sipas raportit §11; zgjedhja finale kundrejt pilotit tregtar OPEN. |
-| Bisedë e autorizuar, draft/outbox/retry/history | Anëtar bisede; A22–A24 | Biseda e Planit PROPOZUAR; DM i lirë, attachments/receipts/typing OPEN. Pa kalim automatik nga UI në shërbim real. |
-| Media minimale foto, avatar dhe kontroll aksesi/fshirje | Autor/pronar; A08/A12/A15–A21 | Tekst/foto PROPOZUAR; Stories/video/Reels release scope OPEN, jo heqje nga DEMO. |
-| Shop discovery → listim → inquiry/Kërkoj; menaxhim nga Shop | Visitor/Member/Seller; A40–A46 | PROPOZUAR kushtor M0/M3; kategoritë fillestare, stoku dhe roli në pilot OPEN. |
-| Staf biznesi/inbox i përbashkët/verifikim/Pro | Business capabilities; A47–A49 | PROPOZUAR për faza pasuese; as stafi, verifikimi real, Pro apo ads nuk bëhen launch scope pa vendim. |
-| Njoftime për veprime dhe preferenca, hapje e sigurt | Marrës i autorizuar; A25/A37; 6.2 | PROPOZUAR bazë in-app; push/Quick Reply/bubbles kanë specifikim6.2 (blueprint §25); përfshirja/implementimi presin vendim release-i dhe prova native. |
-| Recovery/Help/ticket dhe sesione | Member/Support; A02/A52; 6.3 | Projektuar në blueprint §26; përfshirja finale, metodat/provider/politikat dhe implementimi real OPEN. |
-| Report/block/appeal dhe operim privat | Member/Moderator/Support/Owner; A38/A50–A53 | Parime sigurie të miratuara; minimumi i implementimit real kusht për veçoritë me UGC/private data, recovery/support§26 dhe paneli§27 janë projektuar; zbatimi/pranimi real OPEN; plani/verdict final në§28. |
-| Gjuhë sq/en/it, theme, qytet manual/GPS opsional, a11y/performance | Çdo rol; A03/A06/A39/A54 | Ruaj kontratat; mbulimi final, pajisjet/OS dhe thresholds OPEN. 100+ gjuhë nuk është dorëzim MVP. |
+| Hyrje reale → profil minimal → preferenca/privatësi/sesione | Visitor/Member; A01–A08 | IN — MIRATUAR PËR APK: llogari/profil; auth/fushat/consent/të drejtat e vizitorit OPEN për C0. |
+| Zbulim përmbajtjeje/komuniteti → postim tekst/foto → koment/ndjekje | Member/staf komuniteti scoped; A09–A14/A26–A28 | OPEN — Feed/postime/komente/Communities nuk u përcaktuan veçmas nga paketa Plans; mos i shto ose përjashto automatikisht. |
+| Zbulo Plan → kërkesë → pranim/listë pritjeje → bisedë → anulim/tërheqje | Member/Organizer; A29–A36 | IN — MIRATUAR PËR APK: Plans/aktivitete si cikli i parë; detajet e rrjedhës/lejeve/gjendjeve dhe C0 OPEN. |
+| Bisedë e autorizuar, draft/outbox/retry/history | Anëtar bisede; A22–A24 | IN për bisedat e lidhura me aktivitetet — MIRATUAR PËR APK; DM i lirë/attachments/receipts/typing dhe kontratat përfundimtare OPEN. |
+| Media minimale foto, avatar dhe kontroll aksesi/fshirje | Autor/pronar; A08/A12/A15–A21 | LATER: Stories/Reels; minimumi foto/avatar për profil/Plans dhe kontrollet e medias duhen detajuar në C0. Jo heqje nga DEMO. |
+| Shop discovery → listim → inquiry/Kërkoj; menaxhim nga Shop | Visitor/Member/Seller; A40–A46 | LATER — Shop në fazë pasuese; ruaj katalogun unik dhe specifikimet, pa zgjedhje kategorish ose launch tregtar tani. |
+| Staf biznesi/inbox i përbashkët/verifikim/Pro | Business capabilities; A47–A49 | LATER — stafi i avancuar i biznesit/verifikimi/Pro dhe ads nuk janë pjesë e paketës fillestare të miratuar. |
+| Njoftime për veprime dhe preferenca, hapje e sigurt | Marrës i autorizuar; A25/A37; 6.2 | IN — MIRATUAR PËR APK: njoftime bazë për slice-in; push/Quick Reply/bubbles/SDK/defaults mbeten OPEN, jo miratim i gjithë6.2. |
+| Recovery/Help/ticket dhe sesione | Member/Support; A02/A52; 6.3 | IN — MIRATUAR PËR APK: recovery/Help; metoda/provider/politika dhe detajet ticket/sesione plotësohen sipas§26, pa aktivizim real. |
+| Report/block/appeal dhe operim privat | Member/Moderator/Support/Owner; A38/A50–A53 | IN — MIRATUAR PËR APK: report/block dhe moderim privat; kufijtë e roleve, apelimi, procedurat dhe operatorët OPEN sipas§§26–28. Pa akses staf në DM private. |
+| Gjuhë sq/en/it, theme, qytet manual/GPS opsional, a11y/performance | Çdo rol; A03/A06/A39/A54 | IN: sq/en/it; theme/qytet manual/GPS opsional dhe a11y/performance ruajnë kontratat. Android fillimisht, iOS LATER; OS/pajisje/thresholds OPEN. |
 
 **Përjashtime/kufij të vendosur:** pa transaksione/pagesa/payouts/abonime/reklamim real pa gates M4 dhe miratim; 5% vetëm ilustrues. Pa copy fixtures→llogari/listime reale, shared passwords, privilegje nga UI, publikim koordinatash personale live ose score besimi sipas pasurisë/shpenzimit. QA switches/reset/social demo dhe role fiktive nuk shpërndahen si privilegje përdoruesi real; mjetet DEMO ruhen tani.
 
@@ -934,7 +945,7 @@ Gjashtë kërkesat6.4 ruhen në matricë dhe lidhen me [blueprint §27](../archi
 
 [Blueprint §28](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-65) është raporti i vetëm përfundimtar i gatishmërisë:6.1–6.4 janë të verifikuara si dokumentacion brenda provave;18 familje kontratash kritike/AQ01–18, lifecycle export/delete/backup/restore/migration, matje dhe12 gates lidhen me burimet ekzistuese. **APK real: HOLD/OPEN**, jo build-ready/specifikim shterues i çdo ekrani. B01–B12 ruajnë miratimet/skemat/implementimet/testet/operacionet e munguara dhe hapat e saktë; mos krijo backlog tjetër paralel.
 
-Hapi i parë është vendimi i pronarit për MVP IN/OUT/LATER, tregun/moshën dhe platformat/fazat te tabela ekzistuese më sipër. Pastaj plotëso C0 për slice-in, zgjidh stack/provider/politikat/buxhetet/operatorët, përgatit planin dhe kërko autorizim për ndërtimin real. Gate M0–M5 dhe kufijtë Shop/Smart Social ruhen; pagesat/Pro/publikimi nuk hapen. Programi6 mbyllet si dokumentacion; nuk ka6.6 ose kod APK të autorizuar automatikisht. Provat për commit/CI/readback/Preview janë te CURRENT_STATE.
+Hapi B01 mori miratimin fillestar të dokumentuar te [tabela MVP](#mvp-owner-decision): Plans/biseda dhe mbështetja, Shqipëri18+, Android pastaj iOS, sq/en/it; Shop/Stories/Reels/Pro/ads/pagesa LATER. Mbeten C0/rolet/rrjedhat/OS/suksesi dhe B02/B03/politikat/operatorët, pastaj autorizim i veçantë real-build. Për DEMO-n e avancuar për investitorët kërkohet diskutim dhe miratim i ri para ndërtimit. Programi6/7 mbetet i mbyllur si dokumentacion; pa6.6/7.6, merge ose release automatik.
 
 <a id="programme-7"></a>
 ## Programi7 — documentation audit, Android/iOS guide, privacy/legal drafts and final readiness
