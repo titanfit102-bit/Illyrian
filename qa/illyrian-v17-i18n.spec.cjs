@@ -2786,10 +2786,11 @@ test('IA-03 Governance quota failure retains keyboard focus and exact report on 
 });
 
 
-// UX placement: keep the ONE existing composer, its handlers and media entry.
+// Owner reference: ONE composer after Stories, filters next; Shop entry retained after feed.
 async function assertHomeComposerOrder(page){
  await expect(page.locator('#screen > .stories + .compose')).toHaveCount(1);
- await expect(page.locator('#screen > .compose + .ils-entry')).toHaveCount(1);
+ await expect(page.locator('#screen > .compose + .filters')).toHaveCount(1);
+ await expect(page.locator('#screen > .ils-entry')).toHaveCount(1);
  await expect(page.locator('#screen > .v15-studio')).toHaveCount(1);
  await expect(page.locator('#screen > .compose')).toHaveCount(1);
  await expect(page.locator('#screen > .compose > .avatar')).toHaveCount(1);

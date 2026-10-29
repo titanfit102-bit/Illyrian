@@ -2,6 +2,8 @@
 
 ## Vendimi aktual — Plane & Aktivitete, 29 tetor2026
 
+**Home reference implementation scope (owner29Oct2026):** uploaded reference supersedes PDF A.1 for Home only. One scoped `home-reference` visual layer; existing handlers/stores/domain codes retained. Header avatar routes to existing profile; grid icon retains Mundësi; composer photo, photo-based Reel and manual-city actions reuse existing flows. Three primary feed labels retain original domain values; chronological feed remains a secondary icon. Auxiliary Home tools move after posts rather than being deleted. Shop remains a compact dedicated entry, not Home product listings. No real verification, new media carousel/video/native backend from the picture. Other module design and investor/release authorization unchanged.
+
 Pronari autorizoi një ndryshim të kufizuar: në Mundësi hiqet shortcut-i `Aktivitetet` (Aktivitetet e tua), ndërsa `Plane` riemërtohet **Plane & Aktivitete** (en:Plans & Activities;it:Piani & Attività). Shtatë hyrje; route/key `Plane` dhe Events ruhen. Të gjitha/Kërkesat e mia/Të pranuara mbeten të arritshme brenda modulit, me fokus te tab-i aktiv. Pa ndryshim të stores/IDs, kërkesave, pjesëmarrjes, historikut ose thirrjeve të tjera `v10-my-plans`. Ky vendim mbizotëron ndaj përshkrimeve historike me tetë hyrje; nuk miraton ridizajnimin global A.1, backend, main/Production/merge ose DEMO-n e avancuar për investitorët. Parent ac0224d; QA e prekur, CI dhe Preview verifikohen në dorëzim, jo PASS i supozuar ose fizik.
 
 **Date:** 22 October 2026 | **Stage:** Phase 8 design, NOT product implementation | **Status:** Proposed for validation

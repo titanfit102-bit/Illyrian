@@ -149,8 +149,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   expect(await rail.evaluate(el=>el===el.parentElement.firstElementChild)).toBe(true);
   const firstRing=rail.locator('.ring').first(),navBar=page.locator('#navbar');
   const ringSize=await firstRing.boundingBox();
-  expect(ringSize.width).toBeGreaterThanOrEqual(73);
-  expect(ringSize.width).toBeLessThanOrEqual(83);
+  expect(ringSize.width).toBeGreaterThanOrEqual(55);
+  expect(ringSize.width).toBeLessThanOrEqual(65);
   await expect(page.locator('#phone > .statusbar')).toBeHidden();
   await expect(page.locator('#phone > .homebar')).toBeHidden();
   const header=await page.locator('#phone > .head').boundingBox();
@@ -161,7 +161,7 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
    expect(box.width).toBeGreaterThanOrEqual(44);
    expect(box.height).toBeGreaterThanOrEqual(44);
    expect(await btn.getAttribute('aria-label')).toBeTruthy();
-   await expect(btn.locator('.v12-nav-label')).toBeHidden();
+   await expect(btn.locator('.v12-nav-label')).toBeVisible();
   }
   const bottom=await navBar.boundingBox();
   expect(bottom.y+bottom.height).toBeLessThanOrEqual(height+1);
@@ -394,4 +394,23 @@ test('Mundësi seven options stay reachable and localized in compact mobile view
   await page.keyboard.press('Escape');
   await expect(panel).toBeHidden();
  }
+});
+
+for(const theme of ['light','dark'])test('Reference Home preserves all actions and three primary filters - '+theme,async({page})=>{
+ await page.emulateMedia({colorScheme:theme});
+ await openDemo(page,390,844);
+
+ await expect(page.locator('#phone')).toHaveClass(/home-reference/);
+ await expect(page.locator('.head .ily-header-avatar')).toBeVisible();
+ await expect(page.locator('#screen > .filters [data-act="feed"]:not([data-val="Më të rejat"])')).toHaveCount(3);
+ await expect(page.locator('#screen > .compose .ily-compose-reel')).toBeVisible();
+ await page.locator('#screen > .compose .ily-compose-city').click();
+ await expect(page.locator('#v9-near-city')).toBeVisible();
+ await page.locator('#screen [data-act="feed"][data-val="Më të rejat"]').click();
+ await expect(page.locator('#screen [data-val="Më të rejat"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('.head .ily-header-avatar').click();
+ await expect(page.locator('#phone')).not.toHaveClass(/home-reference/);
+ await page.locator('#navbar [data-val="home"]').click();
+ await expect(page.locator('#phone')).toHaveClass(/home-reference/);
+ await page.screenshot({path:'qa-results/home-reference-'+theme+'.png'});
 });
