@@ -358,7 +358,8 @@ test('Mundësi routes intent, my activities, plans and communities via original 
 
  await toggle.click();
  await expect(panel.locator('[data-ily-op-category="Aktivitetet"]')).toHaveCount(0);
- await expect(panel.locator('[data-ily-op-category="Plane"]')).toHaveText('Plane & Aktivitete');
+ const unifiedLabel=await page.evaluate(()=>window.IllyrianI18n.t('common:homePlans'));
+ await expect(panel.locator('[data-ily-op-category="Plane"]')).toHaveText(unifiedLabel);
  await panel.locator('[data-ily-op-category="Plane"]').click();
  await expect(page.locator('#screen .v10-event-tabs button.selected')).toBeFocused();
  for(const view of ['all','mine','accepted']){
