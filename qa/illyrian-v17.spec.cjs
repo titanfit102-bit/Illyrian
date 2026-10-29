@@ -406,11 +406,17 @@ for(const theme of ['light','dark'])test('Reference Home preserves all actions a
  await expect(page.locator('#screen > .compose .ily-compose-reel')).toBeVisible();
  await page.locator('#screen > .compose .ily-compose-city').click();
  await expect(page.locator('#v9-near-city')).toBeVisible();
+ for(const city of ['Milano','Romë','Tiranë','Prishtinë']){
+  await page.locator('#v9-near-city').selectOption(city);
+  await expect(page.locator('#screen > .compose + .filters')).toHaveCount(1);
+  const after=await page.locator('#screen > .ils-entry').evaluate(el=>!!(el.previousElementSibling?.matches('.post,.empty')));
+  expect(after).toBe(true);
+ }
  await page.locator('#screen [data-act="feed"][data-val="Më të rejat"]').click();
  await expect(page.locator('#screen [data-val="Më të rejat"]')).toHaveAttribute('aria-pressed','true');
  await page.locator('.head .ily-header-avatar').click();
  await expect(page.locator('#phone')).not.toHaveClass(/home-reference/);
  await page.locator('#navbar [data-val="home"]').click();
  await expect(page.locator('#phone')).toHaveClass(/home-reference/);
- await page.screenshot({path:'qa-results/home-reference-'+theme+'.png'});
+ await page.screenshot({animations:'disabled',path:'qa-results/visual/home-reference-'+theme+'.png'});
 });

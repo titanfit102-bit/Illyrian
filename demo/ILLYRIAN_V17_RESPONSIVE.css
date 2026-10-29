@@ -340,8 +340,8 @@
 
 /* Owner reference Home, 29 Oct 2026. Scoped visual layer, existing domain stores/handlers. */
 #phone .ily-header-avatar{display:none}
-#phone.home-reference{--bg:#fbfafb;--card:#fff;--card2:#f3f0f3;--ink:#19171d;--muted:#645e6b;--border:#ded8e0;--red:#d6003b;--accent:#d6003b}
-#phone.home-reference.dark{--bg:#030608;--card:#080d12;--card2:#10171f;--ink:#f6f7fb;--muted:#aeb9c8;--border:#28323e;--red:#ff0050;--accent:#ff0050;--shadow:none}
+#phone.home-reference > :is(#screen,.head,#navbar){--bg:#fbfafb;--card:#fff;--card2:#f3f0f3;--ink:#19171d;--muted:#645e6b;--border:#ded8e0;--red:#d6003b;--accent:#d6003b}
+#phone.home-reference.dark > :is(#screen,.head,#navbar){--bg:#030608;--card:#080d12;--card2:#10171f;--ink:#f6f7fb;--muted:#aeb9c8;--border:#28323e;--red:#ff0050;--accent:#ff0050;--shadow:none}
 #phone.home-reference > .head{background:var(--bg);border-bottom:0;gap:4px;padding-inline:10px}
 #phone.home-reference > .head .brand{font-weight:850;font-size:clamp(16px,4.4vw,24px);letter-spacing:.015em}
 #phone.home-reference .ily-header-avatar{display:grid;place-items:center;border:0;padding:4px;background:transparent}
@@ -399,3 +399,7 @@
 #phone.home-reference #screen .story-btn{width:66px;min-height:87px;gap:5px}
 #phone.home-reference #screen .ring{width:clamp(56px,15.5vw,64px);height:clamp(56px,15.5vw,64px)}
 #phone.home-reference #screen .storyname{max-width:66px;font-size:11px;line-height:1.3}
+
+#phone.home-reference{background:#fbfafb}
+#phone.home-reference.dark{background:#030608}
+#phone.home-reference.dark #screen > .filters .pill.active{background:#d6003b;border-color:#d6003b;color:#fff}
