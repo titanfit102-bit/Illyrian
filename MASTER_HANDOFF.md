@@ -1,5 +1,7 @@
 # ILLYRIAN — MASTER_HANDOFF
 
+Home QA2:40970014876/0466567 dha380 PASS/1 FAIL, WebKit SKIPPED; Security40970014878 SUCCESS. Etiketat dhe screenshot tests sq/en/it Light/Dark kaluan. Matja Dark lexoi sfondin gjatë transition .15s; testi tani pret CSS rgb(3,6,8) përpara llogaritjes, pa ulur AA4.5 ose ndryshuar runtime-in. Verifiko CI e korrigjimit; mos deklaro suite PASS nga380/381.
+
 Home follow-up: CI40968539317 (`0e913685`)376 PASS/5 FAIL, WebKit SKIPPED. Korrigjuar namespace `home:` për filtrat/qytetin; përditësuar dy pritshmëri italiane dhe dy locatorë që tani kufizohen te filtrat; testi i Dark ndjek accent-in e ri duke ruajtur AA4.5. Dy testet Home shtojnë pritshmëri konkrete sq/en/it dhe screenshot të Për ty pa toast. CI i korrigjimit duhet kontrolluar LIVE; mos trashëgo PASS nga ekzekutimi i dështuar. Preview direct-browser BLOCKED nga kontrolli automatik në ridrejtimin Vercel login; visual review nga CI.
 
 ## Vendimi aktual — Plane & Aktivitete, 29 tetor2026

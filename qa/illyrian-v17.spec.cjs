@@ -323,6 +323,7 @@ test('P1-A11Y-01 Reels Home Light label meets AA 4.5 contrast, Dark keeps theme'
  expect(c.fg).toBe('rgb(220, 12, 53)');
  await page.evaluate(()=>document.querySelector('#phone').classList.add('dark'));
  await expect(button).toHaveCSS('color','rgb(255, 0, 80)');
+ await expect(page.locator('#phone')).toHaveCSS('background-color','rgb(3, 6, 8)');
  const darkContrast=await button.evaluate(el=>{
   const lum=s=>{const c=s.match(/\d+(?:\.\d+)?/g).slice(0,3).map(n=>Number(n)/255);return c.reduce((v,x,i)=>v+[.2126,.7152,.0722][i]*(x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4)),0)};
   return (lum(getComputedStyle(el).color)+.05)/(lum(getComputedStyle(document.querySelector('#phone')).backgroundColor)+.05);

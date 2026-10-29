@@ -1,5 +1,7 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+Home QA2:40970014876/0466567 dha380 PASS/1 FAIL; Security40970014878 SUCCESS. Testet e reja Home sq/en/it Light/Dark kaluan. Pritja e sfondit përfundimtar Dark u shtua për të shmangur matjen gjatë transition .15s; pa ndryshim runtime ose ulje të pragut AA4.5. Suite përfundimtare ende për verifikim.
+
 Home reference QA: run40968539317/0e913685376 PASS/5 FAIL, WebKit SKIPPED. Korrigjuar namespace i etiketave `home:`, pritshmëritë italiane/locatorët e qytetit dhe kontrolli i paletës Dark me prag AA4.5 të pandryshuar. Testet Home kontrollojnë tekstet konkrete sq/en/it dhe screenshot Për ty pa toast. CI pas korrigjimit dhe kontrolli vizual i screenshot-eve mbeten për verifikim; Preview browser login u bllokua nga kontrolli automatik, pa anashkalim.
 
 ## Vendimi aktual — Plane & Aktivitete, 29 tetor2026

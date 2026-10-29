@@ -1,5 +1,7 @@
 # ILLYRIAN — Product Architecture Blueprint v0.1 (decision draft)
 
+Home QA2/0466567:380 PASS/1 FAIL në40970014876; filtër/locale/Light-Dark tests PASS, Security SUCCESS. Testi i kontrastit Dark korrigjon sinkronizimin: pret background-color përfundimtar rgb(3,6,8) pas transition .15s, pastaj mat AA4.5; runtime/paleta të pandryshuara. Riekzekutimi mbetet për verifikim.
+
 Home reference QA follow-up: ekzekutimi40968539317/0e913685376 PASS/5 FAIL; korrigjuar lidhja e etiketave me namespace kanonik `home:`, dy tekste italiane të vjetruara, dy locatorë qyteti të paqartë dhe pritshmëria e accent-it Dark. Pragu AA4.5 mbahet; etiketat sq/en/it testohen me tekste konkrete. Screenshot-et Light/Dark të CI janë prova browser, jo fizike/native; riekzekutimi mbetet për verifikim.
 
 ## Vendimi aktual — Plane & Aktivitete, 29 tetor2026
