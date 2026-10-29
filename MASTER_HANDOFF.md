@@ -1,5 +1,7 @@
 # ILLYRIAN — MASTER_HANDOFF
 
+Home follow-up: CI40968539317 (`0e913685`)376 PASS/5 FAIL, WebKit SKIPPED. Korrigjuar namespace `home:` për filtrat/qytetin; përditësuar dy pritshmëri italiane dhe dy locatorë që tani kufizohen te filtrat; testi i Dark ndjek accent-in e ri duke ruajtur AA4.5. Dy testet Home shtojnë pritshmëri konkrete sq/en/it dhe screenshot të Për ty pa toast. CI i korrigjimit duhet kontrolluar LIVE; mos trashëgo PASS nga ekzekutimi i dështuar. Preview direct-browser BLOCKED nga kontrolli automatik në ridrejtimin Vercel login; visual review nga CI.
+
 ## Vendimi aktual — Plane & Aktivitete, 29 tetor2026
 
 **Drejtimi vizual aktual:** pronari refuzoi PDF-në A.1 si udhëzim zbatimi dhe autorizoi Kryefaqen sipas fotografisë së tij, hap pas hapi. Mos implemento A.1 ose ekrane të tjera nga ky autorizim. Ruaj emrin/logon/ikonën, sq/en/it, Auto/Light/Dark dhe funksionet/të dhënat ekzistuese; kontrollat dytësore ruhen, jo zëvendësim me një figurë statike. GPS opsional; video-ikona hap vetëm Reel-foto ekzistuese, jo shërbim video të rremë. Gate i investitorëve dhe main/merge/Production mbeten.

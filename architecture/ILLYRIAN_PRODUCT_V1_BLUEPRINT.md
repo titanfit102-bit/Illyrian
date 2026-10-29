@@ -1,5 +1,7 @@
 # ILLYRIAN — Product Architecture Blueprint v0.1 (decision draft)
 
+Home reference QA follow-up: ekzekutimi40968539317/0e913685376 PASS/5 FAIL; korrigjuar lidhja e etiketave me namespace kanonik `home:`, dy tekste italiane të vjetruara, dy locatorë qyteti të paqartë dhe pritshmëria e accent-it Dark. Pragu AA4.5 mbahet; etiketat sq/en/it testohen me tekste konkrete. Screenshot-et Light/Dark të CI janë prova browser, jo fizike/native; riekzekutimi mbetet për verifikim.
+
 ## Vendimi aktual — Plane & Aktivitete, 29 tetor2026
 
 **Home reference implementation scope (owner29Oct2026):** uploaded reference supersedes PDF A.1 for Home only. One scoped `home-reference` visual layer; existing handlers/stores/domain codes retained. Header avatar routes to existing profile; grid icon retains Mundësi; composer photo, photo-based Reel and manual-city actions reuse existing flows. Three primary feed labels retain original domain values; chronological feed remains a secondary icon. Auxiliary Home tools move after posts rather than being deleted. Shop remains a compact dedicated entry, not Home product listings. No real verification, new media carousel/video/native backend from the picture. Other module design and investor/release authorization unchanged.

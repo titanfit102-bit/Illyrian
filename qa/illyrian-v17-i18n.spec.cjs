@@ -271,7 +271,7 @@ test('Italian major screens and Settings labels update after navigation',async({
  await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
  await expect(page.locator('#screen .section-header h2')).toHaveText('Scopri la comunità');
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await expect(page.locator('#screen .compose-prompt')).toHaveText('Cosa succede oggi?');
+ await expect(page.locator('#screen .compose-prompt')).toHaveText('A cosa stai pensando?');
 });
 
 
@@ -2403,7 +2403,7 @@ for(const lang of ['sq','en','it']){
  });
 }
 test('Phase3 manual city failed save restores previous city',async({page})=>{
- await ready(page);await page.locator('#screen [data-act="feed"][data-val="Afër teje"]').click();
+ await ready(page);await page.locator('#screen > .filters [data-act="feed"][data-val="Afër teje"]').click();
  const select=page.locator('#v9-near-city'),before=await select.inputValue();
  await p3FailCoreWrites(page);await select.selectOption(before==='Romë'?'Milano':'Romë');
  await expect(select).toHaveValue(before);
@@ -2464,7 +2464,7 @@ for(const lang of ['sq','en','it']){
 }
 test('Phase3 GPS denied unavailable and revoked leaves manual social flows usable',async({page})=>{
  await page.addInitScript(()=>{window.p3GeoCalls=0;Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(){window.p3GeoCalls++;throw Error('GPS denied')},watchPosition(){window.p3GeoCalls++;throw Error('GPS denied')}}})});
- await ready(page);await page.locator('#screen [data-act="feed"][data-val="Afër teje"]').click();await page.locator('#v9-near-city').selectOption('Milano');
+ await ready(page);await page.locator('#screen > .filters [data-act="feed"][data-val="Afër teje"]').click();await page.locator('#v9-near-city').selectOption('Milano');
  await page.reload();await expect(page.locator('#v9-near-city')).toHaveValue('Milano');
  await page.evaluate(()=>Object.defineProperty(navigator,'geolocation',{configurable:true,value:undefined}));
  await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();await expect(page.locator('#layer .modal')).toBeVisible();await page.keyboard.press('Escape');
@@ -2829,7 +2829,7 @@ test('Home composer remains directly below Stories after navigation, filter and 
  await page.locator('#screen .filters [data-act="feed"]').nth(1).click();
  await assertHomeComposerOrder(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
- await expect(page.locator('#screen > .compose .compose-prompt')).toHaveText('Cosa succede oggi?');
+ await expect(page.locator('#screen > .compose .compose-prompt')).toHaveText('A cosa stai pensando?');
  await assertHomeComposerOrder(page);
 });
 

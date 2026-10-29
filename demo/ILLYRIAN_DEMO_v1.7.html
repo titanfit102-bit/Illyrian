@@ -288,7 +288,7 @@ function nav(){return [['home','Kryefaqja','home'],['explore','Zbulo','search'],
 function headerTools(){return ''}
 function pills(labels,chosen,action){if(action==='feed'){
  const entries=[['Për ty','feedForYou','grid'],['Të ndjekur','feedFollowing','user'],['Afër teje','feedNear','pin'],['Më të rejat','feedNew','more']];
- return `<div class="filters ily-reference-filters">${entries.map(([value,key,icon])=>{const label=window.IllyrianI18n?.t('feed:'+key)||value;return `<button type="button" class="pill ${chosen===value?'active':''}" data-act="feed" data-val="${value}" data-feed-key="${key}" data-i18n-direct title="${esc(label)}" aria-label="${esc(label)}" aria-pressed="${chosen===value}">${svg(icon,18)}<span class="ily-feed-label ${key==='feedNew'?'sr-only':''}">${esc(label)}</span></button>`}).join('')}</div>`;
+ return `<div class="filters ily-reference-filters">${entries.map(([value,key,icon])=>{const label=window.IllyrianI18n?.t('home:'+key)||value;return `<button type="button" class="pill ${chosen===value?'active':''}" data-act="feed" data-val="${value}" data-feed-key="${key}" data-i18n-direct title="${esc(label)}" aria-label="${esc(label)}" aria-pressed="${chosen===value}">${svg(icon,18)}<span class="ily-feed-label ${key==='feedNew'?'sr-only':''}">${esc(label)}</span></button>`}).join('')}</div>`;
  }return `<div class="filters">${labels.map(s=>`<button class="pill ${chosen===s?'active':''}" data-act="${action}" data-val="${esc(s)}">${esc(s)}</button>`).join('')}</div>`}
 // Existing fixture markers describe a DEMO design, never a real identity check.
 function identityBadge(){const t=(key,fallback)=>window.IllyrianI18n?.t('identity:'+key)||fallback;return `<span class="ily-identity" data-i18n-direct><button type="button" data-ily-identity-badge aria-expanded="false" aria-label="${esc(t('badgeLabel','Shenjë DEMO — jo verifikim real'))}" title="${esc(t('badgeLabel','Shenjë DEMO — jo verifikim real'))}"><span class="verified" aria-hidden="true">✦</span> DEMO</button><span data-ily-identity-note class="ily-identity-note" role="status" hidden>${esc(t('badgeNote','Asnjë identitet apo biznes nuk është verifikuar nga kjo shenjë. Pagesa nuk jep verifikim.'))}</span></span>`;}
@@ -2246,10 +2246,10 @@ document.head.appendChild(v15Style);
   const i=window.IllyrianI18n;
   if(!i)return;
   for(const button of document.querySelectorAll('#screen [data-feed-key]')){
-   const label=i.t('feed:'+button.dataset.feedKey);button.setAttribute('aria-label',label);button.setAttribute('title',label);button.querySelector('.ily-feed-label').textContent=label;
+   const label=i.t('home:'+button.dataset.feedKey);button.setAttribute('aria-label',label);button.setAttribute('title',label);button.querySelector('.ily-feed-label').textContent=label;
   }
   const profile=head.querySelector('.ily-header-avatar');if(profile){profile.setAttribute('aria-label',i.t('navigation:profile'));profile.setAttribute('title',i.t('navigation:profile'));}
-  const city=document.querySelector('#screen .ily-compose-city');if(city)city.setAttribute('aria-label',i.t('feed:manualCityAction'));
+  const city=document.querySelector('#screen .ily-compose-city');if(city)city.setAttribute('aria-label',i.t('home:manualCityAction'));
   const controls=[
    ['homeCalendar',head.querySelector('[data-val="events"]')],
    ['homeOpportunities',toggle],

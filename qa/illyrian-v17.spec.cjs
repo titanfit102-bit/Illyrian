@@ -322,7 +322,12 @@ test('P1-A11Y-01 Reels Home Light label meets AA 4.5 contrast, Dark keeps theme'
  expect(c.ratio,'small text needs WCAG AA contrast in Light').toBeGreaterThanOrEqual(4.5);
  expect(c.fg).toBe('rgb(220, 12, 53)');
  await page.evaluate(()=>document.querySelector('#phone').classList.add('dark'));
- await expect(button).toHaveCSS('color','rgb(229, 12, 55)');
+ await expect(button).toHaveCSS('color','rgb(255, 0, 80)');
+ const darkContrast=await button.evaluate(el=>{
+  const lum=s=>{const c=s.match(/\d+(?:\.\d+)?/g).slice(0,3).map(n=>Number(n)/255);return c.reduce((v,x,i)=>v+[.2126,.7152,.0722][i]*(x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4)),0)};
+  return (lum(getComputedStyle(el).color)+.05)/(lum(getComputedStyle(document.querySelector('#phone')).backgroundColor)+.05);
+ });
+ expect(darkContrast,'small text needs WCAG AA contrast in Dark').toBeGreaterThanOrEqual(4.5);
 });
 
 
@@ -404,6 +409,11 @@ for(const theme of ['light','dark'])test('Reference Home preserves all actions a
  await expect(page.locator('.head .ily-header-avatar')).toBeVisible();
  await expect(page.locator('#screen > .filters [data-act="feed"]:not([data-val="Më të rejat"])')).toHaveCount(3);
  await expect(page.locator('#screen > .compose .ily-compose-reel')).toBeVisible();
+ for(const [locale,labels,cityLabel] of [['sq',['Për ty','Duke ndjekur','Afër teje'],'Qyteti manual'],['it',['Per te','Seguiti','Vicino a te'],'Scegli la città manualmente'],['en',['For you','Following','Near you'],'Choose city manually']]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+  await expect(page.locator('#screen > .filters .ily-feed-label:not(.sr-only)')).toHaveText(labels);
+  await expect(page.locator('#screen > .compose .ily-compose-city')).toHaveAttribute('aria-label',cityLabel);
+ }
  await page.locator('#screen > .compose .ily-compose-city').click();
  await expect(page.locator('#v9-near-city')).toBeVisible();
  for(const city of ['Milano','Romë','Tiranë','Prishtinë']){
@@ -418,5 +428,7 @@ for(const theme of ['light','dark'])test('Reference Home preserves all actions a
  await expect(page.locator('#phone')).not.toHaveClass(/home-reference/);
  await page.locator('#navbar [data-val="home"]').click();
  await expect(page.locator('#phone')).toHaveClass(/home-reference/);
+ await page.locator('#screen > .filters [data-val="Për ty"]').click();
+ await expect(page.locator('#toast-area .toast')).toHaveCount(0);
  await page.screenshot({animations:'disabled',path:'qa-results/visual/home-reference-'+theme+'.png'});
 });

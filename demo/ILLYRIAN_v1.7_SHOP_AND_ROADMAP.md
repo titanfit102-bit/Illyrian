@@ -1,5 +1,7 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+Home reference QA: run40968539317/0e913685376 PASS/5 FAIL, WebKit SKIPPED. Korrigjuar namespace i etiketave `home:`, pritshmëritë italiane/locatorët e qytetit dhe kontrolli i paletës Dark me prag AA4.5 të pandryshuar. Testet Home kontrollojnë tekstet konkrete sq/en/it dhe screenshot Për ty pa toast. CI pas korrigjimit dhe kontrolli vizual i screenshot-eve mbeten për verifikim; Preview browser login u bllokua nga kontrolli automatik, pa anashkalim.
+
 ## Vendimi aktual — Plane & Aktivitete, 29 tetor2026
 
 **Kryefaqja — referenca e pronarit:** header me katër veprime ekzistuese, Stories mbi composer, tri zgjedhje Për ty/Duke ndjekur/Afër teje dhe Më të rejat dytësore; postime me media në gjerësinë e feed-it. Nav pesë tab-e me etiketa Home, dark pothuajse i zi dhe Light përkatës. Refotografia jep stilin/hierarkinë, jo numra, badge real ose carousel të sajuar. A.1 nuk është burim implementimi. Pranim: kontrolle të arritshme, pa overflow320/390/landscape, ndryshim locale/theme pa humbje, rrjedha foto/reel/city/profil/Shop të ruajtura; prova CI/Preview në CURRENT_STATE/dorëzim.
