@@ -1,5 +1,9 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+## Vendimi aktual — Plane & Aktivitete, 29 tetor2026
+
+Pronari autorizoi një ndryshim të kufizuar: në Mundësi hiqet shortcut-i `Aktivitetet` (Aktivitetet e tua), ndërsa `Plane` riemërtohet **Plane & Aktivitete** (en:Plans & Activities;it:Piani & Attività). Shtatë hyrje; route/key `Plane` dhe Events ruhen. Të gjitha/Kërkesat e mia/Të pranuara mbeten të arritshme brenda modulit, me fokus te tab-i aktiv. Pa ndryshim të stores/IDs, kërkesave, pjesëmarrjes, historikut ose thirrjeve të tjera `v10-my-plans`. Ky vendim mbizotëron ndaj përshkrimeve historike me tetë hyrje; nuk miraton ridizajnimin global A.1, backend, main/Production/merge ose DEMO-n e avancuar për investitorët. Parent ac0224d; QA e prekur, CI dhe Preview verifikohen në dorëzim, jo PASS i supozuar ose fizik.
+
 > **Active scope — 26 October 2026:** owner-private DEMO testing; source repository PUBLIC. Follow [permanent DEMO/APK policy](../AGENTS.md#demo-vs-apk--permanent-owner-policy) and [knowledge map](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#14-knowledge-preservation-and-demoapk-boundary--26-october-2026). Phase 7/8 and M0–M5 remain; historical checkpoints below are not current tasks. F06 enforcement is deferred to the real-app phase, not a DEMO development blocker. Advanced backend/native requirements are documented, not implemented in DEMO. Existing tests, CI and release gates are unchanged.
 
 **Scope aktual, 28 tetor:** [Programi6](#programme-6), vetëm6.2 — specifikim/mockup/test-plan njoftimesh native;6.1 është dorëzuar me OPEN të deklaruara.6.3–6.5 mbeten të planifikuara; Shop/Smart Social nuk rihapen. Gjendja LIVE/provat: CURRENT_STATE.

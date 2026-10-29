@@ -1,5 +1,9 @@
 # ILLYRIAN — MASTER_HANDOFF
 
+## Vendimi aktual — Plane & Aktivitete, 29 tetor2026
+
+Pronari autorizoi një ndryshim të kufizuar: në Mundësi hiqet shortcut-i `Aktivitetet` (Aktivitetet e tua), ndërsa `Plane` riemërtohet **Plane & Aktivitete** (en:Plans & Activities;it:Piani & Attività). Shtatë hyrje; route/key `Plane` dhe Events ruhen. Të gjitha/Kërkesat e mia/Të pranuara mbeten të arritshme brenda modulit, me fokus te tab-i aktiv. Pa ndryshim të stores/IDs, kërkesave, pjesëmarrjes, historikut ose thirrjeve të tjera `v10-my-plans`. Ky vendim mbizotëron ndaj përshkrimeve historike me tetë hyrje; nuk miraton ridizajnimin global A.1, backend, main/Production/merge ose DEMO-n e avancuar për investitorët. Parent ac0224d; QA e prekur, CI dhe Preview verifikohen në dorëzim, jo PASS i supozuar ose fizik.
+
 ## ACTIVE SNAPSHOT — vazhdimësia
 
 28 tetor 2026 (Europe/Rome), verifikimi7.5. Datat historike të checkpoint-eve ruhen në Git. Për progres, CI, Preview, bllokues dhe hapin e radhës lexo [CURRENT_STATE](CURRENT_STATE.md). Ky dokument ruan kontekstin afatgjatë; faktet LIVE dhe udhëzimi më i ri eksplicit i pronarit kanë përparësi. Historiku i plotë është [i arkivuar](docs/archive/continuity/README.md), jo i fshirë.

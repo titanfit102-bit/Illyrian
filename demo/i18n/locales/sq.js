@@ -118,7 +118,7 @@ window.ILLYRIAN_LOCALES.sq={
     "replied": "Përgjigje e biznesit",
     "accepted": "Ftesa u pranua"
 },
-  "common": { "homeCalendar": "Kalendari", "homeOpportunities": "Mundësi", "homeBusinesses": "Biznese", "homeMarketplace": "Tregu", "homeJobs": "Punë", "homeServices": "Shërbime", "homeIntent": "Çfarë kërkon tani?", "homeActivity": "Aktivitetet e tua", "homePlans": "Plane", "homeCommunities": "Komunitete", 
+  "common": { "homeCalendar": "Kalendari", "homeOpportunities": "Mundësi", "homeBusinesses": "Biznese", "homeMarketplace": "Tregu", "homeJobs": "Punë", "homeServices": "Shërbime", "homeIntent": "Çfarë kërkon tani?", "homeActivity": "Aktivitetet e tua", "homePlans": "Plane & Aktivitete", "homeCommunities": "Komunitete",
     "storageSaveFailed": "Ndryshimi nuk u ruajt në këtë pajisje. Provo përsëri.",
     "notificationsShort": "Njoftime",
     "close": "Mbyll",

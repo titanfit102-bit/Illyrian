@@ -215,8 +215,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
   await expect(toggle).toHaveAttribute('aria-expanded','true');
   const panel=head.locator('#ily-opportunities-panel');
   await expect(panel).toBeVisible();
-  await expect(panel.locator('button')).toHaveCount(8);
-  expect(await panel.locator('button').evaluateAll(items=>items.map(x=>x.dataset.ilyOpCategory))).toEqual(['Biznese','Tregu','Punë','Shërbime','Interesi','Aktivitetet','Plane','Komunitete']);
+  await expect(panel.locator('button')).toHaveCount(7);
+  expect(await panel.locator('button').evaluateAll(items=>items.map(x=>x.dataset.ilyOpCategory))).toEqual(['Biznese','Tregu','Punë','Shërbime','Interesi','Plane','Komunitete']);
   await expect(panel.locator('[data-ily-op-category="Biznese"]')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(panel).toBeHidden();
@@ -288,7 +288,7 @@ test('Home Opportunities links Tregu and Shërbime to Shop - 390x844',async({pag
 test('Home header uses semantic sq en it labels - 390x844',async({page})=>{
  await openDemo(page,390,844);
  const head=page.locator('#phone > .head'),panel=head.locator('#ily-opportunities-panel');
- const keys=['homeBusinesses','homeMarketplace','homeJobs','homeServices','homeIntent','homeActivity','homePlans','homeCommunities'];
+ const keys=['homeBusinesses','homeMarketplace','homeJobs','homeServices','homeIntent','homePlans','homeCommunities'];
  for(const lang of ['sq','en','it']){
   await page.evaluate(code=>window.IllyrianI18n.changeLanguage(code),lang);
   const expected=await page.evaluate(keys=>({
@@ -338,7 +338,7 @@ test('Home removes relocated panels without losing composer, Shop, or existing b
  await expect(home.locator(':scope > .stories + .compose')).toHaveCount(1);
  await expect(home.locator('[data-ilshop-open]')).toHaveCount(1);
  await expect(home.locator('.v15-studio')).toHaveCount(1);
- await expect(page.locator('#ily-opportunities-panel [data-ily-op-category]')).toHaveCount(8);
+ await expect(page.locator('#ily-opportunities-panel [data-ily-op-category]')).toHaveCount(7);
 });
 test('Mundësi routes intent, my activities, plans and communities via original screens - 390x844',async({page})=>{
  await openDemo(page,390,844);
@@ -357,15 +357,15 @@ test('Mundësi routes intent, my activities, plans and communities via original 
  await page.locator('#layer [data-act="close"]').click();
 
  await toggle.click();
- await panel.locator('[data-ily-op-category="Aktivitetet"]').click();
- await expect(page.locator('#screen .v10-event-tabs')).toBeVisible();
- await expect(page.locator('#screen .v10-event-tabs button.selected')).toBeVisible();
- await expect(panel).toBeHidden();
- await page.locator('#navbar [data-val="home"]').click();
-
- await toggle.click();
+ await expect(panel.locator('[data-ily-op-category="Aktivitetet"]')).toHaveCount(0);
+ await expect(panel.locator('[data-ily-op-category="Plane"]')).toHaveText('Plane & Aktivitete');
  await panel.locator('[data-ily-op-category="Plane"]').click();
- await expect(page.locator('#screen .v10-event-tabs')).toBeVisible();
+ await expect(page.locator('#screen .v10-event-tabs button.selected')).toBeFocused();
+ for(const view of ['all','mine','accepted']){
+  const button=page.locator('#screen [data-act="v10-plans-view"][data-val="'+view+'"]');
+  await button.click();
+  await expect(button).toHaveAttribute('aria-pressed','true');
+ }
  await page.locator('#navbar [data-val="home"]').click();
 
  await toggle.click();
@@ -374,13 +374,13 @@ test('Mundësi routes intent, my activities, plans and communities via original 
  await expect(page.locator('#finder')).toBeFocused();
  await expect(page.locator('#screen .directory-card')).not.toHaveCount(0);
 });
-test('Mundësi eight options stay reachable and localized in compact mobile viewport',async({page})=>{
+test('Mundësi seven options stay reachable and localized in compact mobile viewport',async({page})=>{
  await openDemo(page,320,568);
  const panel=page.locator('#ily-opportunities-panel');
  for(const lang of ['sq','en','it']){
   await page.evaluate(code=>window.IllyrianI18n.changeLanguage(code),lang);
   await page.locator('#phone > .head [data-ily-op-toggle]').click();
-  await expect(panel.locator('button')).toHaveCount(8);
+  await expect(panel.locator('button')).toHaveCount(7);
   const report=await panel.evaluate(el=>{
    const style=getComputedStyle(el),r=el.getBoundingClientRect(),phone=document.getElementById('phone').getBoundingClientRect();
    return {scrollable:style.overflowY,within:r.bottom<=phone.bottom+1,buttons:[...el.querySelectorAll('button')].every(b=>b.offsetHeight>=44)};
