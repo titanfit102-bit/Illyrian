@@ -704,3 +704,18 @@ test('Premium profile blocks invalid usernames without overwriting saved data',a
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
  await expect(page.locator('#layer #edit-name')).toBeVisible();
 });
+
+test('Profile language switch while editing preserves unsaved input and camera choice',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('#screen .p17-edit').click();
+ await page.locator('#edit-name').fill('Lira Draft');
+ await page.locator('#edit-bio').fill('My own words stay intact');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(page.locator('#edit-name')).toHaveValue('Lira Draft');
+ await expect(page.locator('#edit-bio')).toHaveValue('My own words stay intact');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await page.locator('#layer [data-p17-action="profile-save"]').click();
+ await expect(page.locator('#screen .p17-person-name')).toContainText('Lira Draft');
+});
