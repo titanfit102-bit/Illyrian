@@ -190,15 +190,16 @@ test('Desktop phone mockup preserves explicit demo chrome and visible nav labels
 // Exercise portrait, narrow viewport and landscape without navigating away from
 // the established Discover and Events implementations.
 for(const [width,height] of [[320,568],[390,844],[844,390]]){
- test('Home header Calendar Opportunities Notifications - '+width+'x'+height,async({page})=>{
+ test('Home header centered brand Camera Calendar Opportunities Notifications - '+width+'x'+height,async({page})=>{
   await openDemo(page,width,height);
   const head=page.locator('#phone > .head');
   const buttons=head.locator(':scope > .top-actions > button:visible');
   const labels=await buttons.evaluateAll(items=>items.map(el=>el.getAttribute('aria-label')));
-  const expected=await page.evaluate(()=>['common:homeCalendar','common:homeOpportunities'].map(k=>window.IllyrianI18n.t(k)));
-  expect(labels.slice(0,2)).toEqual(expected);
+  const expected=await page.evaluate(()=>['home:openCamera','common:homeCalendar','common:homeOpportunities'].map(k=>window.IllyrianI18n.t(k)));
+  expect(labels.slice(0,3)).toEqual(expected);
   // The existing i18n layer localizes Notifications on load.
-  expect(labels[2]).toMatch(/^(Njoftime|Notifications|Notifiche)$/);
+  expect(labels[3]).toMatch(/^(Njoftime|Notifications|Notifiche)$/);
+  expect(labels).toHaveLength(4);
   await expect(head.locator('.ily-create-trigger')).toBeHidden();
   await expect(page.locator('#screen > .stories .story-btn').first()).toBeVisible();
   const b=await buttons.all();
@@ -208,8 +209,10 @@ for(const [width,height] of [[320,568],[390,844],[844,390]]){
    expect(box.height).toBeGreaterThanOrEqual(44);
   }
   const brandBox=await head.locator('.brand').boundingBox();
-  const calendarBox=await b[0].boundingBox();
-  expect(brandBox.x+brandBox.width).toBeLessThanOrEqual(calendarBox.x+1);
+  const calendarBox=await b[1].boundingBox(),optionsBox=await b[2].boundingBox(),headBox=await head.boundingBox();
+  expect(calendarBox.x+calendarBox.width).toBeLessThanOrEqual(brandBox.x+1);
+  expect(brandBox.x+brandBox.width).toBeLessThanOrEqual(optionsBox.x+1);
+  expect(Math.abs(brandBox.x+brandBox.width/2-(headBox.x+headBox.width/2))).toBeLessThanOrEqual(1);
   const toggle=head.locator('[data-ily-op-toggle]');
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-expanded','true');
@@ -407,7 +410,8 @@ for(const theme of ['light','dark'])test('Reference Home preserves all actions a
  await openDemo(page,390,844);
 
  await expect(page.locator('#phone')).toHaveClass(/home-reference/);
- await expect(page.locator('.head .ily-header-avatar')).toBeVisible();
+ await expect(page.locator('.head .ily-header-avatar')).toHaveCount(0);
+ await expect(page.locator('.head [data-ily-camera]')).toBeVisible();
  await expect(page.locator('#screen > .filters [data-act="feed"]:not([data-val="Më të rejat"])')).toHaveCount(3);
  await expect(page.locator('#screen > .compose .ily-compose-reel')).toBeVisible();
  for(const [locale,labels,cityLabel] of [['sq',['Për ty','Duke ndjekur','Afër teje'],'Qyteti manual'],['it',['Per te','Seguiti','Vicino a te'],'Scegli la città manualmente'],['en',['For you','Following','Near you'],'Choose city manually']]){
@@ -425,11 +429,38 @@ for(const theme of ['light','dark'])test('Reference Home preserves all actions a
  }
  await page.locator('#screen [data-act="feed"][data-val="Më të rejat"]').click();
  await expect(page.locator('#screen [data-val="Më të rejat"]')).toHaveAttribute('aria-pressed','true');
- await page.locator('.head .ily-header-avatar').click();
+ await page.locator('#navbar [data-val="profile"]').click();
  await expect(page.locator('#phone')).not.toHaveClass(/home-reference/);
+ await expect(page.locator('.head [data-ily-camera]')).toBeHidden();
  await page.locator('#navbar [data-val="home"]').click();
  await expect(page.locator('#phone')).toHaveClass(/home-reference/);
  await page.locator('#screen > .filters [data-val="Për ty"]').click();
  await expect(page.locator('#toast-area .toast')).toHaveCount(0);
  await page.screenshot({animations:'disabled',path:'qa-results/visual/home-reference-'+theme+'.png'});
+});
+
+// Browser chooser events exercise wiring only, not a physical phone camera.
+for(const [locale,label] of [['sq','Hap kamerën'],['en','Open camera'],['it','Apri la fotocamera']])test('Home camera chooser preserves draft without automatic publication - '+locale,async({page})=>{
+ await openDemo(page,390,844);
+ await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+ const camera=page.locator('.head [data-ily-camera]');
+ await expect(camera).toHaveAttribute('aria-label',label);
+ await page.locator('#screen .compose-prompt').click();
+ await page.locator('#v5-text').fill('Camera draft '+locale);
+ await page.keyboard.press('Escape');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const chooserPromise=page.waitForEvent('filechooser');await camera.click();const chooser=await chooserPromise;
+ await expect(page.locator('#v5-file')).toHaveAttribute('capture','environment');
+ await expect(page.locator('#v5-text')).toHaveValue('Camera draft '+locale);
+ await chooser.setFiles([]);await page.locator('#v5-file').dispatchEvent('cancel');
+ await expect(page.locator('#v5-file')).not.toHaveAttribute('capture');
+ await expect(page.locator('#v5-text')).toHaveValue('Camera draft '+locale);
+ await page.keyboard.press('Escape');
+ const nextPromise=page.waitForEvent('filechooser');await camera.click();const next=await nextPromise;
+ const png=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=20;c.getContext('2d').fillRect(0,0,20,20);return c.toDataURL('image/png').split(',')[1]});
+ await next.setFiles({name:'camera-fixture.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});
+ await expect(page.locator('.v5-compose-preview img')).toBeVisible();
+ await expect(page.locator('#v5-text')).toHaveValue('Camera draft '+locale);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await expect(page.locator('#v5-file')).not.toHaveAttribute('capture');
 });

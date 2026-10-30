@@ -217,6 +217,7 @@ window.ILLYRIAN_LOCALES.en={
     "dark": "Dark"
   },
   "home": {
+    "openCamera": "Open camera",
     "activitiesHeader": "Activities and events",
     "changeLocation": "Change ↗",
     "discoverPlans": "Discover plans →",

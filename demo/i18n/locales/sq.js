@@ -217,6 +217,7 @@ window.ILLYRIAN_LOCALES.sq={
     "dark": "Dark"
   },
   "home": {
+    "openCamera": "Hap kamerën",
     "activitiesHeader": "Aktivitete dhe Evente",
     "changeLocation": "Ndrysho ↗",
     "discoverPlans": "Zbulo plane →",

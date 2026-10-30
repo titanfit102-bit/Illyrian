@@ -217,6 +217,7 @@ window.ILLYRIAN_LOCALES.it={
     "dark": "Scuro"
   },
   "home": {
+    "openCamera": "Apri la fotocamera",
     "activitiesHeader": "Attività ed eventi",
     "changeLocation": "Cambia ↗",
     "discoverPlans": "Scopri i piani →",
