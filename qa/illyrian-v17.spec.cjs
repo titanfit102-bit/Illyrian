@@ -575,3 +575,22 @@ test('Friend profile portraits, photo covers and biographies are consistent',asy
   await page.locator('#layer [data-act="close"]').first().click();
  }
 });
+
+test('Custom owner photo or preset never changes another person portrait',async({page})=>{
+ await openDemo(page,390,844);
+ const newPortrait='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jQWQAAAAASUVORK5CYII=';
+ await page.evaluate(data=>{
+  const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key)||'{}');
+  s.v5AvatarChoice='a2';s.profile={...(s.profile||{}),photoData:data};
+  localStorage.setItem(key,JSON.stringify(s));
+ },newPortrait);
+ await page.reload({waitUntil:'load'});
+ await expect(page.locator('#screen > .stories .story-btn').first().locator('img')).toHaveAttribute('src',newPortrait);
+ for(const [idx,name] of [[1,'arta'],[2,'leon'],[3,'besa'],[4,'dion']]){
+  await expect(page.locator('#screen > .stories .story-btn').nth(idx).locator('img')).toHaveAttribute('src','./assets/profiles/'+name+'.webp');
+ }
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="user-profile"][data-id="arta"]').first().click();
+ await expect(page.locator('#layer .v11-person-avatar')).toHaveAttribute('src','./assets/profiles/arta.webp');
+ await expect(page.locator('#layer .v11-person-avatar')).not.toHaveAttribute('src',newPortrait);
+});

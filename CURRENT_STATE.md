@@ -1,5 +1,7 @@
 # ILLYRIAN — CURRENT_STATE
 
+**Korrigjim i izolimit të fotove, 30 tetor 2026:** `tinyAvatar` përdor fotografinë personale të ruajtur vetëm për `a1`; `a2`–`a5` mbeten portrete të pavarura edhe kur përdoruesi zgjedh një preset identik. Nuk modifikohen të dhënat e ruajtura. Test regresioni me foto personale + preset `a2`.
+
 **Profilet — pamja 30 tetor 2026:** Faqet e katër personazheve përdorin portretin përkatës në avatar/cover, biografi natyrale dhe miniatura në postimet e tyre; pa etiketa të përsëritura apo statistika të fabrikuara. QA verifikon katër profilet.
 
 **Fotot e profileve — 30 tetor 2026:** Portrete fotorealiste sintetike WebP, 5 skedarë lokalë në `demo/assets/profiles/`, për `a1` (profil fillestar), Arta, Leon, Besa dhe Dion. E njëjta fotografi përdoret në avatarët e Stories, Reels, Feed, Messages dhe Profile; Reel i Besës nuk riciklon më foton e Artës. Ruhet `state.profile.photoData` dhe zgjedhja e përdoruesit; pa shërbime imazhesh të jashtme, pa ndryshime storage/API. Vetëm Settings → About ruan deklarimin DEMO dhe sqarimin për profilet ilustrative. QA e re kontrollon burimet, ngarkimin, indeksin e Besës dhe profilin; CI kërkon verifikim mbi SHA të re.

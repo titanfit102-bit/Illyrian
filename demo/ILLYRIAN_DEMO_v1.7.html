@@ -1181,7 +1181,7 @@ function v12AvatarSrc(){
 }
 const v12PriorTinyAvatar=tinyAvatar;
 tinyAvatar=function(id,cl='avatar'){
- if(id==='a1'||id===state.v5AvatarChoice)return `<img class="${cl}" src="${v12AvatarSrc()}" alt="" />`;
+ if(id==='a1')return `<img class="${cl}" src="${v12AvatarSrc()}" alt="" />`;
  return v12PriorTinyAvatar(id,cl);
 };
 const v12Icon=(name)=>{
