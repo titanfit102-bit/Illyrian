@@ -594,3 +594,113 @@ test('Custom owner photo or preset never changes another person portrait',async(
  await expect(page.locator('#layer .v11-person-avatar')).toHaveAttribute('src','./assets/profiles/arta.webp');
  await expect(page.locator('#layer .v11-person-avatar')).not.toHaveAttribute('src',newPortrait);
 });
+
+for(const width of [320,390,430])test('Premium profile keeps five global nav destinations and adapts to '+width+'px',async({page})=>{
+ await openDemo(page,width,844);
+ const original=await page.locator('#navbar button').evaluateAll(items=>items.map(b=>[b.dataset.act,b.dataset.val||b.dataset.id||'']));
+ await page.locator('#navbar [data-val="profile"]').click();
+ const profile=page.locator('#screen > .p17-profile');
+ await expect(profile).toBeVisible();
+ await expect(profile.locator('.p17-cover')).toBeVisible();
+ await expect(profile.locator('.p17-avatar')).toHaveAttribute('src','./assets/profiles/owner.webp');
+ await expect(profile.locator('.p17-stats b')).toHaveCount(3);
+ await expect(profile.locator('.p17-tabs [role="tab"]')).toHaveCount(5);
+ await expect(profile).not.toContainText(/\bdemo\b/i);
+ const actual=await page.locator('#navbar button').evaluateAll(items=>items.map(b=>[b.dataset.act,b.dataset.val||b.dataset.id||'']));
+ expect(actual).toEqual(original);
+ expect(await profile.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+ for(const name of ['posts','reels','saved','liked','opportunities']){
+  await profile.locator('.p17-tabs [data-id="'+name+'"]').click();
+  await expect(profile.locator('.p17-tabs [data-id="'+name+'"]')).toHaveAttribute('aria-selected','true');
+ }
+});
+
+test('Premium profile edit persists name, username, city and interests after reload',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('#screen .p17-edit').click();
+ await page.locator('#edit-name').fill('Lira S.');
+ await page.locator('#edit-bio').fill('Udhëtime, kafe dhe ide të reja.');
+ await page.locator('#p17-handle').fill('lira.social');
+ await page.locator('#p17-city').fill('Prishtinë');
+ await page.locator('#p17-tags').fill('Udhëtime, Kafe, Art');
+ await page.locator('#layer [data-p17-action="profile-save"]').click();
+ await expect(page.locator('#screen .p17-person-name')).toContainText('Lira S.');
+ await expect(page.locator('#screen .p17-location')).toContainText('@lira.social');
+ await expect(page.locator('#screen .p17-location')).toContainText('Prishtinë');
+ const data=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile);
+ expect(data).toMatchObject({name:'Lira S.',p17Handle:'lira.social',p17City:'Prishtinë',p17Tags:['Udhëtime','Kafe','Art']});
+ await page.reload({waitUntil:'load'});
+ await expect(page.locator('#navbar [data-val="profile"]')).toBeVisible();
+ await page.locator('#navbar [data-val="profile"]').click();
+ await expect(page.locator('#screen .p17-bio')).toContainText('Udhëtime, kafe');
+ await expect(page.locator('#screen .p17-tags span')).toHaveCount(3);
+});
+
+test('Premium profile validates cover photos and retains prior image after invalid upload',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ const image=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=72;c.height=40;const ctx=c.getContext('2d');ctx.fillStyle='#ea5b7d';ctx.fillRect(0,0,72,40);return c.toDataURL('image/png').split(',')[1]});
+ await page.locator('#p17-cover-file').setInputFiles({name:'cover.png',mimeType:'image/png',buffer:Buffer.from(image,'base64')});
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.p17Cover?.startsWith('data:image/jpeg;base64,'))).toBe(true);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.p17Cover);
+ await expect(page.locator('#screen .p17-cover')).toHaveAttribute('style',/data:image\/jpeg;base64/);
+ await page.locator('#p17-cover-file').setInputFiles({name:'invalid.png',mimeType:'image/png',buffer:Buffer.from('not a photograph')});
+ await expect(page.locator('#toast-area')).toContainText(/JPG|JPEG|fotografi|foto|WebP/i);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.p17Cover)).toBe(saved);
+});
+
+test('Premium Highlights create, view, edit and persist a Story snapshot',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v15_creator',JSON.stringify({stories:[{id:'my-highlight-source',caption:'Shëtitje në qytet',sample:'arta',created:1730000000000}],reels:[]})));
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('#screen [data-p17-action="highlight-editor"]').click();
+ await page.locator('#p17-title').fill('Udhëtime');
+ await page.locator('#p17-source').selectOption('my-highlight-source');
+ await page.locator('#layer [data-p17-action="highlight-save"]').click();
+ await expect(page.locator('#screen [data-p17-action="highlight-view"]')).toContainText('Udhëtime');
+ const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.p17Highlights);
+ expect(before).toHaveLength(1);expect(before[0].items).toHaveLength(1);
+ await page.locator('#screen [data-p17-action="highlight-view"]').click();
+ await expect(page.locator('#layer .p17-viewer-photo')).toBeVisible();
+ await page.locator('#layer [data-p17-action="highlight-editor"]').click();
+ await page.locator('#p17-title').fill('Tirana');
+ await page.locator('#layer [data-p17-action="highlight-save"]').click();
+ await expect(page.locator('#screen [data-p17-action="highlight-view"]')).toContainText('Tirana');
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-val="profile"]').click();
+ await expect(page.locator('#screen [data-p17-action="highlight-view"]')).toContainText('Tirana');
+});
+
+test('Premium saved and liked tabs show only matching content, and owner posts open existing actions',async({page})=>{
+ await page.addInitScript(()=>{
+  const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key)||'{}');
+  s.posts=[{id:'my-premium',name:'Profili yt',ava:'a1',city:'Tiranë',when:'Tani',text:'Postimi im me fotografi',img:'arta',likes:0,comments:0,share:0,verified:false}];
+  s.likes=['my-premium'];s.bookmarks=['my-premium'];
+  localStorage.setItem(key,JSON.stringify(s));
+ });
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ const panel=page.locator('#screen .p17-profile');
+ for(const id of ['posts','saved','liked']){
+  await panel.locator('[data-p17-action="section"][data-id="'+id+'"]').click();
+  await expect(panel.locator('.p17-tile')).toHaveCount(1);
+ }
+ await panel.locator('[data-p17-action="section"][data-id="posts"]').click();
+ await panel.locator('[data-p17-action="open-media"]').click();
+ await expect(page.locator('#layer .post')).toContainText('Postimi im me fotografi');
+ await expect(page.locator('#layer [data-act="postmore"]')).toBeVisible();
+ await expect(page.locator('#layer [data-act="save"]')).toBeVisible();
+});
+
+test('Premium profile blocks invalid usernames without overwriting saved data',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('#screen .p17-edit').click();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.locator('#p17-handle').fill('<script>alert(1)</script>');
+ await page.locator('#layer [data-p17-action="profile-save"]').click();
+ await expect(page.locator('#p17-handle')).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await expect(page.locator('#layer #edit-name')).toBeVisible();
+});
