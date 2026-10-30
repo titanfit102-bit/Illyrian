@@ -1522,7 +1522,13 @@ home=function(){
  const studio=`<section class="v15-studio" aria-label="Studioja e përmbajtjes"><div class="v15-studio-title"><strong>Krijo një moment</strong><small>Story ose Reel · vetëm në pajisjen tënde</small></div><div class="v15-studio-actions"><button type="button" data-act="v15-open" data-val="story">${v12Icon('reels')} Story me foto</button><button type="button" data-act="v15-open" data-val="reel">${v12Icon('reels')} Reel nga foto</button></div>${v15Stories.length||v15Reels.length?`<div class="v15-recent">${v15Cards(v15Stories,'story')}${v15Cards(v15Reels,'reel')}</div>`:''}</section>`;
  html=html.replace(/<div class="v5-creator-hint">[\s\S]*?<\/button><\/div>/,'');
  html=html.replace('<div class="stories">',studio+'<div class="stories">');
- html=html.replace('data-act="modal" data-val="compose"><div class="ring self">','data-act="v15-open" data-val="story"><div class="ring self">');
+ const ownStory=v15Stories[0];
+ html=html.replace('data-act="modal" data-val="compose"><div class="ring self">',
+  `data-act="v15-my-story" aria-label="${ownStory?'Story im':'Hap kamerën'}"><div class="ring${ownStory?'':' self'}">`);
+ if(ownStory){
+  html=html.replace(`${tinyAvatar('a1','avatar')}<span class="story-plus">+</span></div><span class="storyname">Story im</span>`,
+   `<img class="avatar" src="${esc(v15Pic(ownStory))}" alt=""/></div><span class="storyname">Story im</span>`);
+ }
  return html;
 };
 const v15ProfileOriginal=profile;
@@ -1556,6 +1562,22 @@ modalContent=function(){
  return html;
 };
 function v15Action(action,id,val){
+ if(action==='v15-my-story'){
+  const latest=v15Stories[0];
+  if(latest){v8Action('v15-view',latest.id,'story');return true;}
+  // Direct user gesture: request the camera for a new Story, not a post.
+  // 'capture' is a browser hint; the OS can offer a photo picker instead.
+  v15Creator('story');
+  const input=document.getElementById('v15-file');
+  if(input){
+   input.setAttribute('capture','environment');
+   const reset=()=>input.removeAttribute('capture');
+   input.addEventListener('change',reset,{once:true});
+   input.addEventListener('cancel',()=>{reset();document.getElementById('v15-caption')?.focus()},{once:true});
+   input.click();
+  }
+  return true;
+ }
  if(action==='v15-open'){v15Creator(val);return true}
  if(action==='v15-sample'){v53PhotoJobs.delete('media');commerceCapture('media',v15Draft);v15Draft.sample=val;v15Draft.photo='';v15Draft.caption=document.querySelector('#v15-caption')?.value?.slice(0,180)||v15Draft.caption;v15Draft.plan=document.querySelector('#v15-plan')?.value||v15Draft.plan;render({scroll:true});return true}
  if(action==='v15-preview'){commerceCapture('media',v15Draft);v15Draft.caption=document.querySelector('#v15-caption')?.value?.trim().slice(0,180)||'';v15Draft.plan=document.querySelector('#v15-plan')?.value||'';render({scroll:true});return true}
