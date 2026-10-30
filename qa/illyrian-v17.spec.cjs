@@ -719,3 +719,24 @@ test('Profile language switch while editing preserves unsaved input and camera c
  await page.locator('#layer [data-p17-action="profile-save"]').click();
  await expect(page.locator('#screen .p17-person-name')).toContainText('Lira Draft');
 });
+
+test('Avatar change preserves unsaved premium profile fields',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('#screen .p17-edit').click();
+ await page.locator('#edit-name').fill('Test Avatar');
+ await page.locator('#p17-handle').fill('test.avatar');
+ await page.locator('#p17-city').fill('Elbasan');
+ await page.locator('#p17-tags').fill('Muzikë, Sport');
+ const raw=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=40;const x=c.getContext('2d');x.fillStyle='blue';x.fillRect(0,0,40,40);return c.toDataURL('image/png').split(',')[1]});
+ await page.locator('#v12-photo-file').setInputFiles({name:'portrait.png',mimeType:'image/png',buffer:Buffer.from(raw,'base64')});
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.photoData?.startsWith('data:image/jpeg;base64,'))).toBe(true);
+ await expect(page.locator('#edit-name')).toHaveValue('Test Avatar');
+ await expect(page.locator('#p17-handle')).toHaveValue('test.avatar');
+ await expect(page.locator('#p17-city')).toHaveValue('Elbasan');
+ await expect(page.locator('#p17-tags')).toHaveValue('Muzikë, Sport');
+ await page.locator('#layer [data-p17-action="profile-save"]').click();
+ const profile=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile);
+ expect(profile).toMatchObject({name:'Test Avatar',p17City:'Elbasan',p17Handle:'test.avatar'});
+ expect(profile.photoData).toMatch(/^data:image\/jpeg;base64,/);
+});

@@ -1228,7 +1228,7 @@ document.addEventListener('change',async ev=>{
   if(photo===null||!current())return;
   state.profile={...profile,photoData:photo};
   if(!persist()){state.profile=profile;toast(coreSaveFailed());return}
-  const fields=['edit-name','edit-bio'].map(id=>[id,document.getElementById(id)?.value]);
+  const fields=['edit-name','edit-bio','p17-handle','p17-city','p17-tags'].map(id=>[id,document.getElementById(id)?.value]);
   render({scroll:true});fields.forEach(([id,value])=>{const input=document.getElementById(id);if(input&&value!==undefined)input.value=value});
   toast("Fotoja e profilit u ndryshua lokalisht");
  }catch{toast('Fotoja nuk u hap. Provo një tjetër.');}
