@@ -559,3 +559,19 @@ test('Photorealistic seeded profiles use distinct bundled portraits across Stori
  await expect(page.locator('#screen .profile-pic')).toHaveAttribute('src','./assets/profiles/owner.webp');
  await expect(page.locator('#screen .profile-pic')).toBeVisible();
 });
+
+test('Friend profile portraits, photo covers and biographies are consistent',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ for(const name of ['arta','leon','besa','dion']){
+  await page.locator('#screen [data-act="user-profile"][data-id="'+name+'"]').first().click();
+  const detail=page.locator('#layer .v11-person-hero');
+  await expect(detail).toBeVisible();
+  const photo=detail.locator('.v11-person-avatar');
+  await expect(photo).toHaveAttribute('src','./assets/profiles/'+name+'.webp');
+  await expect.poll(()=>photo.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+  await expect(detail.locator('.v11-person-cover')).toHaveCSS('background-image',/assets\/profiles\//);
+  await expect(detail).not.toContainText(/demo|shembull/i);
+  await page.locator('#layer [data-act="close"]').first().click();
+ }
+});
