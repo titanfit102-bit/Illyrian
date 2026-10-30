@@ -48,9 +48,9 @@ function presentationCopy(value){
  return s.replace(/COPYTOKEN(\d+)/g,(_,i)=>tokens[Number(i)]);
 }
 const presentationOverrides={
- sq:{'explore:disclaimer':'Kërkimi përmban vetëm profile dhe biznese shembull.','shopPlus:catalogIntro':'Krahaso dyqanet dhe shiko karakteristikat e ofertave.','shopPlus:itemDemoDescription':'Shiko të dhënat e ofertës.'},
- en:{'explore:disclaimer':'Search contains only sample profiles and businesses.','shopPlus:catalogIntro':'Compare shops and browse offer details.','shopPlus:itemDemoDescription':'View offer details.'},
- it:{'explore:disclaimer':'La ricerca contiene solo profili e attività di esempio.','shopPlus:catalogIntro':'Confronta i negozi e consulta le caratteristiche delle offerte.','shopPlus:itemDemoDescription':'Consulta i dettagli dell’offerta.'}
+ sq:{'discover:disclaimer':'Kërkimi përmban vetëm profile dhe biznese shembull.','shopPlus:catalogIntro':'Krahaso dyqanet dhe shiko karakteristikat e ofertave.','shopPlus:itemDemoDescription':'Shiko të dhënat e ofertës.'},
+ en:{'discover:disclaimer':'Search contains only sample profiles and businesses.','shopPlus:catalogIntro':'Compare shops and browse offer details.','shopPlus:itemDemoDescription':'View offer details.'},
+ it:{'discover:disclaimer':'La ricerca contiene solo profili e attività di esempio.','shopPlus:catalogIntro':'Confronta i negozi e consulta le caratteristiche delle offerte.','shopPlus:itemDemoDescription':'Consulta i dettagli dell’offerta.'}
 };
 function presentationBundle(entries,ns,lang){
  return Object.fromEntries(Object.entries(entries).map(([k,v])=>[k,presentationOverrides[lang]?.[ns+':'+k]??(presentationCopy(v)||' ')]));

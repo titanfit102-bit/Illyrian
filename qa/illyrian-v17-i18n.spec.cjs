@@ -1299,7 +1299,7 @@ test('Shop Plus report form keeps unsent reason and text on locale switch',async
 });
 
 for(const [lang,labels] of Object.entries({
- sq:{tag:'ILLYRIAN SHOP · KËRKIM I AVANCUAR',intro:"Krahaso dyqanet dhe shiko karakteristikat e ofertave. Çdo listim është.",stock:'Inventari:',sold:"Pa stok",promoted:"PROMOVUAR",compare:'I njëjti produkt, disa dyqane',shops:'Dyqanet e vogla',demoListings:"listime",open:'Hap katalogun',fee:'Komision ilustrues 5%:',flow:'Rrjedhë ilustruese',simulate:'Simulo porosinë (pa pagesë)',created:"E krijuar lokalisht",return:"Kërkesë anulimi/kthimi"},
+ sq:{tag:'ILLYRIAN SHOP · KËRKIM I AVANCUAR',intro:"Krahaso dyqanet dhe shiko karakteristikat e ofertave.",stock:'Inventari:',sold:"Pa stok",promoted:"PROMOVUAR",compare:'I njëjti produkt, disa dyqane',shops:'Dyqanet e vogla',demoListings:"listime",open:'Hap katalogun',fee:'Komision ilustrues 5%:',flow:'Rrjedhë ilustruese',simulate:'Simulo porosinë (pa pagesë)',created:"E krijuar lokalisht",return:"Kërkesë anulimi/kthimi"},
  en:{tag:'ILLYRIAN SHOP · ADVANCED SEARCH',intro:"Compare shops and browse offer details.",stock:'Stock:',sold:"Out of stock",promoted:"SPONSORED",compare:'Same product, multiple shops',shops:'Small shops',demoListings:"listings",open:'Open catalog',fee:'Illustrative 5% fee:',flow:'Illustrative flow',simulate:'Simulate order (no payment)',created:"Created on this device",return:"Cancellation/return requested"},
  it:{tag:'ILLYRIAN SHOP · RICERCA AVANZATA',intro:"Confronta i negozi e consulta le caratteristiche delle offerte.",stock:'Disponibilità:',sold:"Esaurito",promoted:"SPONSORIZZATO",compare:'Stesso prodotto, più negozi',shops:'Piccoli negozi',demoListings:"annunci",open:'Apri catalogo',fee:'Commissione illustrativa del 5%:',flow:'Flusso illustrativo',simulate:'Simula ordine (nessun pagamento)',created:"Creato in locale",return:"Annullamento/reso richiesto"}
 })){
@@ -3349,6 +3349,9 @@ for(const lang of ['sq','en','it'])test('Presentation copy has one About disclos
  await expect(page.locator('#screen .demo-tag')).toHaveCount(0);
  const bad=await page.evaluate(()=>Object.entries(window.ILLYRIAN_LOCALES[window.IllyrianI18n.language]).flatMap(([ns,values])=>Object.keys(values).filter(k=>/\bdemo(?:s|je)?\b/i.test(window.IllyrianI18n.t(ns+':'+k))).map(k=>ns+':'+k)));
  expect(bad).toEqual([]);
+ const copyExpected={sq:['Kërkimi përmban vetëm profile dhe biznese shembull.','Krahaso dyqanet dhe shiko karakteristikat e ofertave.','Shiko të dhënat e ofertës.'],en:['Search contains only sample profiles and businesses.','Compare shops and browse offer details.','View offer details.'],it:['La ricerca contiene solo profili e attività di esempio.','Confronta i negozi e consulta le caratteristiche delle offerte.','Consulta i dettagli dell’offerta.']};
+ expect(await page.evaluate(()=>['discover:disclaimer','shopPlus:catalogIntro','shopPlus:itemDemoDescription'].map(k=>window.IllyrianI18n.t(k)))).toEqual(copyExpected[lang]);
+
  const pin=await page.evaluate(()=>window.IllyrianI18n.t('privacy:pinAria',{name:'DEMO café',city:'DEMO City',interpolation:{escapeValue:false}}));
  expect(pin).toContain('DEMO café');expect(pin).toContain('DEMO City');
  await page.locator('[data-ilshop-open]').first().click();
