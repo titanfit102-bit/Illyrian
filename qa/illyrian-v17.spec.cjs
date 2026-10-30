@@ -528,3 +528,34 @@ test('Story im: no Story opens camera chooser, saved Story opens its viewer',asy
  await mine.click();
  await expect(page.locator('#layer .v16-viewer')).toBeVisible();
 });
+
+test('Photorealistic seeded profiles use distinct bundled portraits across Stories, Reels and profile',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await openDemo(page,390,844);
+ const expected=['owner','arta','leon','besa','dion'];
+ const home=page.locator('#screen > .stories');
+ for(let n=0;n<expected.length;n++){
+  const src='./assets/profiles/'+expected[n]+'.webp';
+  const img=home.locator('.story-btn').nth(n).locator('img').first();
+  await expect(img).toHaveAttribute('src',src);
+  await expect.poll(()=>img.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+ }
+ const previews=home.locator('.story-reel-preview');
+ for(const [index,name] of ['arta','leon','besa'].entries()){
+  const img=previews.nth(index).locator('img');
+  await expect(img).toHaveAttribute('src','./assets/profiles/'+name+'.webp');
+  await expect.poll(()=>img.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+ }
+ const images=await page.evaluate(async names=>Promise.all(names.map(async name=>{
+  const r=await fetch('./assets/profiles/'+name+'.webp');
+  const blob=await r.blob();return {status:r.status,type:blob.type,size:blob.size};
+ })),expected);
+ for(const item of images){expect(item.status).toBe(200);expect(item.type).toContain('webp');expect(item.size).toBeGreaterThan(1000)}
+ await previews.nth(2).click();
+ await expect(page.locator('#layer .v4-reel-cover')).toHaveAttribute('src','./assets/profiles/besa.webp');
+ await expect(page.locator('#layer .v4-reel-counter')).toHaveText('3 / 3');
+ await page.locator('#layer [data-act="reel-close"]').click();
+ await page.locator('#navbar [data-val="profile"]').click();
+ await expect(page.locator('#screen .profile-pic')).toHaveAttribute('src','./assets/profiles/owner.webp');
+ await expect(page.locator('#screen .profile-pic')).toBeVisible();
+});
