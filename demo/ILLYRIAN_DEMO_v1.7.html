@@ -2325,7 +2325,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   const prior=state.profile,priorPosts=state.posts;
   state.profile={...prior,...next};
   if(mutatePosts)state.posts=priorPosts.map(p=>({...p,name:state.profile.name}));
-  if(!persist()){state.profile=prior;state.posts=priorPosts;toast(t("storage"));return false}
+  if(!persist()){state.profile=prior;state.posts=priorPosts;toast(coreSaveFailed());return false}
   return true;
  };
  const photoOf=record=>v5PhotoSrc(record);
@@ -2369,7 +2369,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   const cards=galleryData(section);
   const names={posts:"emptyPosts",reels:"emptyReels",saved:"emptySaved",liked:"emptyLiked"};
   const gallery=section==="opportunities"?opportunityCards():cards.length?'<div class="p17-gallery">'+cards.map(galleryCard).join("")+'</div>':'<div class="p17-empty"><div>'+icon(section==="reels"?"play":section==="liked"?"heart":"grid",28)+'</div><p>'+e(t(names[section]))+'</p>'+(section==="posts"?'<button data-act="modal" data-val="compose">'+e(t("createPost"))+'</button>':section==="reels"?'<button data-act="v15-open" data-val="reel">'+e(t("createReel"))+'</button>':'')+'</div>';
-  return '<section class="p17-profile" aria-label="'+e(t("profile"))+'"><div class="p17-cover" style="background-image:linear-gradient(180deg,rgba(8,10,20,.03),rgba(8,10,20,.35)),url(&quot;'+e(coverSrc())+'&quot;)"><label class="p17-cover-change">'+icon("camera",17)+'<span>'+e(t("cover"))+'</span><input id="p17-cover-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="'+e(t("cover"))+'"/></label></div><div class="p17-person-top"><div class="p17-avatar-wrap"><img class="p17-avatar" src="'+e(v12AvatarSrc())+'" alt="'+e(t("profile"))+'"/><button type="button" class="p17-avatar-camera" data-act="modal" data-val="edit" aria-label="'+e(t("edit"))+'">'+icon("camera",19)+'</button></div>'+stats()+'</div><div class="p17-identity"><div class="p17-person-name"><h2 data-user-content>'+e(p.name||"Profili yt")+'</h2></div><p class="p17-location"><span>@'+e(handle)+'</span><span>·</span>'+icon("pin",15)+'<span>'+e(city)+'</span></p><p class="p17-bio" data-user-content>'+e(p.bio||"")+'</p><div class="p17-actions"><button class="p17-edit" data-act="modal" data-val="edit">'+icon("check",18)+' '+e(t("edit"))+'</button><button class="p17-settings" data-act="modal" data-val="settings" aria-label="'+e(t("settings"))+'">'+icon("settings",21)+'</button></div><div class="p17-tags">'+tags.map(s=>'<span>'+e(s)+'</span>').join("")+'</div></div>'+highlights()+'<div class="p17-tabs" role="tablist" aria-label="'+e(t("profile"))+'">'+tabs.map(([id,ic])=>'<button role="tab" aria-selected="'+(section===id)+'" class="'+(section===id?"selected":"")+'" data-p17-action="section" data-id="'+id+'">'+icon(ic,22)+'<span>'+e(t(id))+'</span></button>').join("")+'</div><div class="p17-gallery-panel" role="tabpanel">'+gallery+'</div></section>';
+  return '<section class="p17-profile" aria-label="'+e(t("profile"))+'"><div class="p17-cover" style="background-image:linear-gradient(180deg,rgba(8,10,20,.03),rgba(8,10,20,.35)),url(&quot;'+e(coverSrc())+'&quot;)"><label class="p17-cover-change">'+icon("camera",17)+'<span>'+e(t("cover"))+'</span><input id="p17-cover-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="'+e(t("cover"))+'"/></label></div><div class="p17-person-top"><div class="p17-avatar-wrap"><img class="p17-avatar" src="'+e(v12AvatarSrc())+'" alt="'+e(t("profile"))+'"/><button type="button" class="p17-avatar-camera" data-p17-action="open-edit" aria-label="'+e(t("edit"))+'">'+icon("camera",19)+'</button></div>'+stats()+'</div><div class="p17-identity"><div class="p17-person-name"><h2 data-user-content>'+e(p.name||"Profili yt")+'</h2>'+identityBadge()+'</div><p class="p17-location"><span>@'+e(handle)+'</span><span>·</span>'+icon("pin",15)+'<span>'+e(city)+'</span></p><p class="p17-bio" data-user-content>'+e(p.bio||"")+'</p><div class="p17-actions"><button class="p17-edit" data-act="modal" data-val="edit">'+icon("check",18)+' '+e(t("edit"))+'</button><button class="p17-settings" data-act="modal" data-val="settings" aria-label="'+e(t("settings"))+'">'+icon("settings",21)+'</button></div><div class="p17-tags">'+tags.map(s=>'<span>'+e(s)+'</span>').join("")+'</div></div>'+highlights()+'<div class="p17-tabs" role="tablist" aria-label="'+e(t("profile"))+'">'+tabs.map(([id,ic])=>'<button role="tab" aria-selected="'+(section===id)+'" class="'+(section===id?"selected":"")+'" data-p17-action="section" data-id="'+id+'">'+icon(ic,22)+'<span>'+e(t(id))+'</span></button>').join("")+'</div><div class="p17-gallery-panel" role="tabpanel">'+gallery+'</div></section>';
  }
  const previousProfile=profile;
  profile=function(){return renderProfile()};
@@ -2455,6 +2455,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  }
  function handleAction(action,b){
   const id=b.dataset.id||"";
+  if(action==="open-edit"){openModal("edit");return;}
   if(action==="section"){section=id;render({scroll:true});return;}
   if(action==="open-media"){
    const kind=b.dataset.kind;
@@ -2494,7 +2495,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
    const tags=clean(document.getElementById("p17-tags")?.value,95).split(",").map(x=>x.trim().slice(0,20)).filter(Boolean).slice(0,3);
    if(!name){toast("Shkruaj emrin");document.getElementById("edit-name")?.focus();return}
    if(!/^[a-z0-9._]{3,24}$/.test(handle)){toast(t("badHandle"));document.getElementById("p17-handle")?.focus();return}
-   if(keep({name,bio,p17Handle:handle,p17City:city,p17Tags:tags},true)){close();toast(t("savedStatus"))}
+   if(keep({name,bio,p17Handle:handle,p17City:city,p17Tags:tags},true)){close();toast(t("savedStatus"))}else document.getElementById("edit-name")?.focus();
    return;
   }
  }
@@ -2513,7 +2514,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
    if(keep({p17Cover:photo})){render({scroll:true});toast(t("coverSave"))}
   }catch{toast(t("badImage"))}
  },true);
- window.addEventListener("illyrian:language-changed",()=>{if(state.tab==="profile")render({scroll:true})});
+ window.addEventListener("illyrian:language-changed",()=>{if(state.tab!=="profile")return;const active=document.activeElement?.closest?.("[data-ily-identity-badge]");const expanded=active?.getAttribute("aria-expanded")==="true";render({scroll:true});if(active){const next=document.querySelector("#screen .p17-person-name [data-ily-identity-badge]");next?.focus({preventScroll:true});if(expanded)next?.click()}});
 })();
 
 render();

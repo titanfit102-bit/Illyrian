@@ -25,7 +25,7 @@ for(const [lang,ordinary,declared,example] of [
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   const badge=page.locator('#screen [data-ily-identity-badge]').first();await expect(badge.locator('[data-ily-identity-icon]')).toHaveCount(1);await expect(badge).toHaveAttribute('aria-expanded','false');
   const before=await identityStorage(page);await badge.focus();await page.keyboard.press('Enter');await expect(badge).toHaveAttribute('aria-expanded','true');await expect(badge.locator('..').locator('[data-ily-identity-note]')).toBeVisible();await expect(badge).toBeFocused();await page.keyboard.press('Space');await expect(badge).toHaveAttribute('aria-expanded','false');expect(await identityStorage(page)).toEqual(before);
-  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('.profile-info [data-ily-identity-badge]').locator('[data-ily-identity-icon]')).toHaveCount(1);
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('.p17-person-name [data-ily-identity-badge]').locator('[data-ily-identity-icon]')).toHaveCount(1);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
   for(const plus of [false,true]){
    await identityCatalog(page,plus);const host=page.locator(plus?'#isp-root':'#illyrian-shop-layer');await expect(host.locator('[data-ily-business-status]')).toHaveText(declared);
@@ -39,7 +39,7 @@ for(const [lang,ordinary,declared,example] of [
 }
 test('Identity phase 4: live locale keeps badge disclosure focus and nested guide return',async({page})=>{
  await ready(page);await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
- const badge=page.locator('.profile-info [data-ily-identity-badge]');await badge.click();await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(badge).toBeFocused();await expect(badge).toHaveAttribute('aria-expanded','true');await expect(badge.locator('..').locator('[data-ily-identity-note]')).toContainText('Nessuna identità');
+ const badge=page.locator('.p17-person-name [data-ily-identity-badge]');await badge.click();await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(badge).toBeFocused();await expect(badge).toHaveAttribute('aria-expanded','true');await expect(badge.locator('..').locator('[data-ily-identity-note]')).toContainText('Nessuna identità');
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
  for(const plus of [false,true]){
   await identityCatalog(page,plus);const host=page.locator(plus?'#isp-root':'#illyrian-shop-layer'),opener=host.locator('[data-ily-identity-guide]');await opener.click();
@@ -1662,7 +1662,7 @@ test('i18n audit F10 root and demo mirror files stay byte-identical',()=>{
 test('audit F04 failed feed save preserves draft and never reports success',async({page})=>{
  await ready(page);
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
- await page.locator('#screen .v5-profile-hero [data-act="modal"][data-val="compose"]').click();
+ await page.locator('#screen .p17-empty [data-act="modal"][data-val="compose"]').click();
  const field=page.locator('#layer #v5-text');
  const draft='Mbyll personal post survives rejection';
  await field.fill(draft);
@@ -2056,14 +2056,14 @@ for(const [lang,error] of [
   await bio.fill('Unsent biography draft '+lang);
   const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
   await denyCoreStorage(page);
-  await page.locator('#layer [data-act="edit-save"]').click();
+  await page.locator('#layer [data-p17-action="profile-save"]').click();
   await expect(name).toHaveValue('Test Profile '+lang);
   await expect(bio).toHaveValue('Unsent biography draft '+lang);
   await expect(name).toBeFocused();
   await expect(page.locator('#toast-area')).toContainText(error);
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
   await restoreCoreStorage(page);
-  await page.locator('#layer [data-act="edit-save"]').click();
+  await page.locator('#layer [data-p17-action="profile-save"]').click();
   const profile=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile);
   expect(profile).toMatchObject({name:'Test Profile '+lang,bio:'Unsent biography draft '+lang});
  });
@@ -2466,8 +2466,9 @@ for(const lang of ['sq','en','it']){
   await page.keyboard.press('Escape');await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
   await expect(page.locator('#screen .post-copy').filter({hasText:text})).toHaveCount(1);
   await page.locator('#screen .post [data-act="v11-community-open"][data-id="c4"]').click();await expect(page.locator('#layer .modalhead h2')).toHaveText({sq:'Shkolla & Universiteti',en:'School & University',it:'Scuola e Università'}[lang]);await page.keyboard.press('Escape');
-  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('#screen .post-copy').filter({hasText:text})).toHaveCount(1);
-  await page.locator('#screen [data-act="postmore"][data-id="'+postId+'"]').click();await page.locator('#layer [data-act="report-post"]').click();expect(await page.evaluate(id=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).reports.includes(id),postId)).toBe(true);
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('#screen .p17-tile[data-id="'+postId+'"]').first()).toBeVisible();
+  await page.locator('#screen .p17-tile[data-id="'+postId+'"]').first().click();await expect(page.locator('#layer .post-copy')).toContainText(text);
+  await page.locator('#layer [data-act="postmore"][data-id="'+postId+'"]').click();await page.locator('#layer [data-act="report-post"]').click();expect(await page.evaluate(id=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).reports.includes(id),postId)).toBe(true);
   await page.reload();expect(await page.evaluate(id=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts.find(p=>p.id===id).communityId,postId)).toBe('c4');
  });
 }

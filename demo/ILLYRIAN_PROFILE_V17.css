@@ -83,3 +83,6 @@
  #phone #screen .p17-highlights{gap:10px}
 }
 @media(prefers-reduced-motion:reduce){#phone #screen .p17-profile *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+#phone #screen .p17-person-name .ily-identity{flex:none;position:relative}
+#phone #screen .p17-person-name .ily-identity button{min-height:28px;min-width:28px}

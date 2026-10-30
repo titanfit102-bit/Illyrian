@@ -556,8 +556,8 @@ test('Photorealistic seeded profiles use distinct bundled portraits across Stori
  await expect(page.locator('#layer .v4-reel-counter')).toHaveText('3 / 3');
  await page.locator('#layer [data-act="reel-close"]').click();
  await page.locator('#navbar [data-val="profile"]').click();
- await expect(page.locator('#screen .profile-pic')).toHaveAttribute('src','./assets/profiles/owner.webp');
- await expect(page.locator('#screen .profile-pic')).toBeVisible();
+ await expect(page.locator('#screen .p17-avatar')).toHaveAttribute('src','./assets/profiles/owner.webp');
+ await expect(page.locator('#screen .p17-avatar')).toBeVisible();
 });
 
 test('Friend profile portraits, photo covers and biographies are consistent',async({page})=>{
