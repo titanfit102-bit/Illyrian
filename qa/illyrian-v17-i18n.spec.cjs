@@ -14,9 +14,9 @@ for(const [lang,ordinary,declared,example] of [
 ]){
  test('Identity phase 4: truthful social badges and Shop/Plus guide - '+lang,async({page})=>{
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
-  const badge=page.locator('#screen [data-ily-identity-badge]').first();await expect(badge).toHaveText("ⓘ");await expect(badge).toHaveAttribute('aria-expanded','false');
+  const badge=page.locator('#screen [data-ily-identity-badge]').first();await expect(badge.locator('[data-ily-identity-icon]')).toHaveCount(1);await expect(badge).toHaveAttribute('aria-expanded','false');
   const before=await identityStorage(page);await badge.focus();await page.keyboard.press('Enter');await expect(badge).toHaveAttribute('aria-expanded','true');await expect(badge.locator('..').locator('[data-ily-identity-note]')).toBeVisible();await expect(badge).toBeFocused();await page.keyboard.press('Space');await expect(badge).toHaveAttribute('aria-expanded','false');expect(await identityStorage(page)).toEqual(before);
-  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('.profile-info [data-ily-identity-badge]')).toHaveText("ⓘ");
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('.profile-info [data-ily-identity-badge]').locator('[data-ily-identity-icon]')).toHaveCount(1);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
   for(const plus of [false,true]){
    await identityCatalog(page,plus);const host=page.locator(plus?'#isp-root':'#illyrian-shop-layer');await expect(host.locator('[data-ily-business-status]')).toHaveText(declared);
@@ -41,7 +41,7 @@ test('Identity phase 4: live locale keeps badge disclosure focus and nested guid
 });
 test('Identity phase 4: historical verified flag keeps its information disclosure and stored user text stays literal',async({page})=>{
  await ready(page);const raw=await page.evaluate(()=>{const k='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(k)||'{}');s.posts=Array.isArray(s.posts)?s.posts:[];s.posts.unshift({id:'identity-ugc',name:'<img src=x onerror="window.__identityInjected=1">',text:'Paid does not mean verified <svg onload="window.__identityInjected=1">',verified:true,ava:'a1',likes:0,comments:0,share:0,city:'Tiranë',when:'Tani'});const raw=JSON.stringify(s);localStorage.setItem(k,raw);return raw});await page.reload();
- const post=page.locator('#screen .post').filter({hasText:'Paid does not mean verified'});await expect(post.locator('[data-ily-identity-badge]')).toHaveText("ⓘ");await post.locator('[data-ily-identity-badge]').click();await expect(post.locator('[data-ily-identity-note]')).toBeVisible();await expect(post.locator('.post-name')).toContainText('<img');await expect(post.locator('.post-name img,.post-copy svg')).toHaveCount(0);expect(await page.evaluate(()=>window.__identityInjected)).toBeUndefined();expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ const post=page.locator('#screen .post').filter({hasText:'Paid does not mean verified'});await expect(post.locator('[data-ily-identity-badge]').locator('[data-ily-identity-icon]')).toHaveCount(1);await post.locator('[data-ily-identity-badge]').click();await expect(post.locator('[data-ily-identity-note]')).toBeVisible();await expect(post.locator('.post-name')).toContainText('<img');await expect(post.locator('.post-name img,.post-copy svg')).toHaveCount(0);expect(await page.evaluate(()=>window.__identityInjected)).toBeUndefined();expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
 });
 test('Identity phase 4: narrow mobile disclosures fit and sponsorship never grants a real badge',async({page})=>{
  await page.setViewportSize({width:320,height:568});await ready(page);
