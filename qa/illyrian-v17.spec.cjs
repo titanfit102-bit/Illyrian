@@ -464,3 +464,20 @@ for(const [locale,label] of [['sq','Hap kamerën'],['en','Open camera'],['it','A
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
  await expect(page.locator('#v5-file')).not.toHaveAttribute('capture');
 });
+
+test('Feed omits redundant content/why footer and preserves post actions',async({page})=>{
+ await openDemo(page,390,844);
+ for(const lang of ['sq','en','it']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  for(const feed of ['Për ty','Të ndjekur','Afër teje','Më të rejat']){
+   await page.locator('#screen > .filters [data-act="feed"][data-val="'+feed+'"]').click();
+   await expect(page.locator('#screen .v10-why-line,#screen [data-act="v10-why"]')).toHaveCount(0);
+  }
+ }
+ await page.locator('#screen > .filters [data-act="feed"][data-val="Për ty"]').click();
+ await expect(page.locator('#screen .post').first()).toBeVisible();
+ await expect(page.locator('#screen .post .post-bottom').first()).toBeVisible();
+ await page.locator('#screen .post [data-act="postmore"]').first().click();
+ await expect(page.locator('#layer [data-act="hide-post"]')).toBeVisible();
+ await expect(page.locator('#layer [data-act="report-post"]')).toBeVisible();
+});

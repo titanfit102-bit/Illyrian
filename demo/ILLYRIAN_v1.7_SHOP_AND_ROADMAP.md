@@ -1,5 +1,7 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+**Feed UI, 30 tetor 2026 (vendim i pronarit):** shiriti poshtë çdo postimi «Përmbajtje / Pse po e shoh?» hiqet plotësisht, përfshirë dritaren/handler-in e tij. Postimet ruajnë Pëlqe/Komento/Shpërndaj/Ruaj dhe menuja «Më shumë» ruan Fshihe/Raporto. Asnjë ndryshim në ruajtje, filtra/renditje, privatësi ose DEMO→APK. Test i fokusuar në Home sq/en/it dhe menunë e postimit; provat CI verifikohen LIVE pas commit-it.
+
 **Copy — vendim i miratuar30 tetor2026:** vetëm një shënim DEMO te About; hiq përsëritjet e ndërfaqes në çdo modul. Ruaj mesazhet e sakta për rezultatet lokale/nuk u dërgua/pa pagesë reale dhe informacionin ⓘ për mosverifikimin. Mos prek UGC, historikun, keys/IDs ose statuset e ruajtura; statuse të njohura ndryshojnë vetëm etiketën e shfaqur. Gjendja/testet/Preview te CURRENT_STATE; specifikimi te blueprint. Nuk është kalim në fazën APK ose autorizim investitor/merge/Production.
 
 **Home30 tetor — kërkesë aktive:** hiq profilin sipër, qendërzo ILLYRIAN, + majtas për kamerën. DEMO: +/Kalendari majtas dhe Mundësi/Njoftime djathtas; capture=environment në editorin ekzistues, draft i ruajtur pa auto-publish. Kamera reale e detyruar nuk premtohet në browser; APK camera direct PLANNED sipas blueprint-it. QA: qendër/44px320/390/landscape, sq/en/it, cancel dhe foto sintetike pa auto-publish; CI/Preview verifikohen në dorëzim. Kamera fizike Android/iPhone OPEN. Pa modul tjetër ose ndryshim stores/IDs/backend/native/merge/Production.

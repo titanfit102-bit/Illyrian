@@ -1006,13 +1006,6 @@ document.head.appendChild(v9Style);
 // Important: UI-only simulation. No real ranking model, moderation, identity or messaging backend.
 state.v10PlansView=['all','mine','accepted'].includes(saved.v10PlansView)?saved.v10PlansView:'all';
 // Home activity summary moved to the existing Mundësi route (v10-my-plans).
-const v10BasePost=post;
-post=function(p){
- const html=v10BasePost(p);
- if(!html)return html;
- const footer=`<div class="v10-why-line"><span>${esc(state.feed==='Më të rejat'?'Renditje sipas kohës':state.feed==='Afër teje'?`Qyteti i zgjedhur: ${state.v9NearCity}`:state.feed==='Të ndjekur'?'Nga rrjeti yt':"Përmbajtje")}</span><button type="button" data-act="v10-why" data-id="${esc(p.id)}">Pse po e shoh? ${svg('arrow',13)}</button></div>`;
- return html.replace('</article>',footer+'</article>');
-};
 const v10BaseEventPage=eventPage;
 eventPage=function(){
  const total=state.requests.length,accepted=state.acceptedPlans.length;
@@ -1039,17 +1032,6 @@ const v10BaseModal=modalContent;
 modalContent=function(){
  const m=state.modal;
  if(!m)return v10BaseModal();
- if(m.type==='v10-why'){
-  const p=getPost(m.id);if(!p)return drawer('Postimi nuk u gjet',"<p class=\"small\">Ky postim nuk është më lokalisht.</p>");
-  const author=people.find(x=>x.name===p.name);
-  const byMe=String(p.id).startsWith('my');
-  const reason=byMe?'E sheh sepse e publikove ti në këtë demonstrim.'
-   :state.feed==='Të ndjekur'?'Ky autor është ndër profilet që ndjek në këtë demonstrim.'
-   :state.feed==='Afër teje'?`Ky postim ka qytetin ${esc(p.city)}, të njëjtin me qytetin që zgjodhe për kërkimin.`
-   :state.feed==='Më të rejat'?"Postimet janë renditur sipas kohës së tyre lokalisht."
-   :'Ky është një postim shembull i përfshirë në Feed. Nuk përdoret algoritëm personalizimi apo ndjekje e aktivitetit tënd.';
-  return drawer('Pse po e shoh këtë postim?',`<div class="v10-reason"><span>✦ TRANSPARENCË E FEED-IT</span><strong>${esc(p.name)}</strong><p>${reason}</p></div><div class="v10-reason-actions">${author?`<button class="button soft full" data-act="user-profile" data-id="${author.id}">Shiko profilin e autorit →</button>`:''}<button class="button soft full" data-act="hide-post" data-id="${esc(p.id)}">Mos e shfaq këtë postim</button><button class="button soft full" data-act="report-post" data-id="${esc(p.id)}">Raporto postimin (vetëm )</button></div><p class="small">Aplikacioni real do të kërkojë rregulla të testuara renditjeje, privatësie dhe moderimi. Këtu nuk analizohen përdorues realë.</p>`);
- }
  if(m.type==='v10-share'){
   const p=getPost(m.id);if(!p)return drawer('Shpërndarja','Postimi nuk u gjet.');
   return drawer('Shpërndaje postimin',`<div class="v10-share-preview"><span>${esc(p.name)} · ${esc(p.city)}</span><p>${esc(p.text)}</p></div><button class="button full" data-act="v10-copy-post" data-id="${esc(p.id)}">${svg('copy',18)} Kopjo tekstin e postimit</button><p class="small" style="margin-top:14px">Kjo është kopje teksti, jo një lidhje publike drejt postimit. Nuk dërgohet asgjë te persona të tjerë.</p>`);
@@ -1066,7 +1048,6 @@ v8Action=function(action,id,v){
   state.v10PlansView=state.requests.length?'mine':'all';
   persist();state.tab='events';state.modal=null;render();return true;
  }
- if(action==='v10-why'){openModal('v10-why',id);return true;}
  if(action==='share'){openModal('v10-share',id);return true;}
  if(action==='v10-copy-post'){
   const p=getPost(id);if(!p)return true;
@@ -1085,10 +1066,7 @@ v10Style.textContent=`
  .v10-plan-summary strong{font-size:13px;line-height:1.2}
  .v10-plan-summary small{font-size:10px;line-height:1.4;opacity:.7}
  .v10-plan-summary button{border:0;border-radius:9px;background:#e50c37;color:white;padding:10px;font-size:10px;font-weight:800;flex-shrink:0;cursor:pointer}
- .v10-why-line{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:1px 1px 3px;margin-top:2px;font-size:10px;color:var(--ink,#141014);opacity:.82}
- .v10-why-line>span{opacity:.69}
- .v10-why-line button{display:flex;align-items:center;gap:3px;border:0;background:transparent;color:inherit;font-size:10px;cursor:pointer;padding:8px 2px 6px}
- .v10-why-line button:focus-visible,.v10-plan-summary button:focus-visible,.v10-event-tabs button:focus-visible{outline:2px solid #e50c37;outline-offset:2px}
+ .v10-plan-summary button:focus-visible,.v10-event-tabs button:focus-visible{outline:2px solid #e50c37;outline-offset:2px}
  .v10-event-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:8px 13px 13px}
  .v10-event-tabs button{border-radius:10px;background:var(--card,#fff);color:var(--ink,#141014);border:1px solid var(--border,#ebe3e9);padding:10px;font-size:11px;white-space:nowrap;font-weight:750;cursor:pointer}
  .v10-event-tabs button.selected{background:#e50c37;color:#fff;border-color:#e50c37}
@@ -1096,9 +1074,6 @@ v10Style.textContent=`
  .v10-plan-status{display:inline-block;border-radius:8px;background:var(--card2,#f3edf1);border:1px solid var(--border,#ebe3e9);color:var(--ink,#141014);font-size:10px;padding:5px 8px;margin-bottom:10px;font-weight:750}
  .v10-empty{margin:8px 13px 16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:24px 16px;background:var(--card,#fff);border:1px solid var(--border,#ebe3e9);border-radius:15px;color:var(--ink,#141014)}
  .v10-empty strong{font-size:13px}.v10-empty p{font-size:11px;opacity:.73;line-height:1.5;margin:0}.v10-empty button{margin-top:5px}
- .v10-reason{display:grid;gap:8px;border-radius:13px;background:var(--card2,#f3edf1);padding:15px;margin:7px 0 14px;color:var(--ink,#141014)}
- .v10-reason span{font-size:10px;letter-spacing:.08em;color:#e50c37;font-weight:800}.v10-reason strong{font-size:16px}.v10-reason p{font-size:13px;line-height:1.55;margin:0}
- .v10-reason-actions{display:grid;gap:8px;margin-bottom:14px}
  .v10-share-preview{border:1px solid var(--border,#ebe3e9);border-radius:14px;padding:15px;margin:6px 0 16px;background:var(--card2,#f3edf1);color:var(--ink,#141014)}
  .v10-share-preview span{font-size:11px;opacity:.7}.v10-share-preview p{font-size:13px;line-height:1.5;margin:8px 0 0}
  @media(max-width:375px){.v10-plan-summary{margin-left:8px;margin-right:8px}.v10-event-tabs{margin-left:8px;margin-right:8px}.v10-event-tabs button{padding:9px 8px}}

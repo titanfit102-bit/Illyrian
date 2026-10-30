@@ -1,5 +1,7 @@
 # ILLYRIAN — MASTER_HANDOFF
 
+**Feed UI, 30 tetor 2026 (vendim i pronarit):** shiriti poshtë çdo postimi «Përmbajtje / Pse po e shoh?» hiqet plotësisht, përfshirë dritaren/handler-in e tij. Postimet ruajnë Pëlqe/Komento/Shpërndaj/Ruaj dhe menuja «Më shumë» ruan Fshihe/Raporto. Asnjë ndryshim në ruajtje, filtra/renditje, privatësi ose DEMO→APK. Test i fokusuar në Home sq/en/it dhe menunë e postimit; provat CI verifikohen LIVE pas commit-it.
+
 **Politika aktuale e copy,30 tetor2026:** hiq etiketat/përsëritjet DEMO nga faqet, veprimet dhe fotografitë; mbetet vetëm një shënim te Rreth aplikacionit. Ky është vendim i pronarit për ndërfaqen dhe nuk ndryshon fazën teknike DEMO → APK. Ruaj sqarimet funksionale kur nuk ka dërgim/pagesë/ruajtje reale; mos shpik shërbime reale dhe mos rishkruaj tekstet ose të dhënat e përdoruesit që përmbajnë DEMO. Shenja ⓘ ruan sqarimin e mosverifikimit, pa pretendim badge të verifikuar. Gjendja/provat te CURRENT_STATE, kontrata te blueprint.
 
 **Vendim i ri i pronarit, Home30 tetor2026:** pa avatar profili sipër; ILLYRIAN në qendër; plus majtas për hapjen e kamerës. Zbatim i kufizuar: +/Kalendari majtas, Mundësi/Njoftime djathtas, për qendër reale edhe320px. Profili mbetet poshtë. + ripërdor fotografinë/draftin e postimit me capture=environment, pa publikim automatik. Capture varet nga browser/OS, jo garanci native; në desktop file picker. Kontrata/kufizimet dhe QA aktuale te CURRENT_STATE; gate i investitorëve dhe scopes e mbrojtura ruhen.
