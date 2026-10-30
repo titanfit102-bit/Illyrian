@@ -1,8 +1,17 @@
 const {test,expect}=require('@playwright/test');
 const KEY='illyrian_demo_ui_language_v1';
 const TEAM_KEY='illyrian_demo_v17_governance';
+async function openShop(page){
+ const entry=page.locator('#screen [data-ilshop-open]').first();
+ if(await entry.count()){await entry.click();return;}
+ const trigger=page.locator('#phone > .head [data-ily-op-toggle]');
+ if(!await trigger.isVisible())await page.locator('#navbar [data-val="home"]').click();
+ if(await trigger.getAttribute('aria-expanded')!=='true')await trigger.click();
+ await page.locator('#ily-opportunities-panel [data-ily-op-category="Tregu"]').click();
+ await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+}
 async function identityCatalog(page,plus=false){
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  if(plus){await page.locator('#illyrian-shop-layer [data-isp-open]').click();await page.locator('#isp-root [data-isp="tab:stores"]').click();await page.locator('#isp-root [data-isp="store:Market Arbër"]').click()}
  else{await page.locator('#illyrian-shop-layer [data-ils="businesses"]').click();await page.locator('#illyrian-shop-layer [data-ils="business"][data-value="Market Arbër"]').click()}
 }
@@ -69,7 +78,7 @@ async function teamData(page){return page.evaluate(k=>JSON.parse(localStorage.ge
 for(const lang of ['sq','en','it']){
  test('Business phase 3: Shop and Plus reuse administration and return focus - '+lang,async({page})=>{
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-ils="businesses"]').click();
   await page.locator('#illyrian-shop-layer [data-ils="business"][data-value="Market Arbër"]').first().click();
   const launch=page.locator('#illyrian-shop-layer [data-business-manage]');await launch.click();
@@ -284,7 +293,7 @@ for(const lang of ['sq','en','it']){
   await page.locator('#layer [data-illyrian-language="'+lang+'"]').click();
   await page.locator('#layer [data-act="close"]').click();
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
@@ -341,7 +350,7 @@ for(const [lang,tag] of [['sq','sq'],['en','en'],['it','it']]){
   const formatted=await page.evaluate(()=>window.IllyrianI18n.currency(12.5,'EUR'));
   expect(formatted).toBe(expected);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
   const currencySample=await page.locator('#illyrian-shop-layer').innerText();
   expect(currencySample).toContain('€');
@@ -360,7 +369,7 @@ for(const [lang,expected] of Object.entries({
    await page.locator('#layer [data-illyrian-language="'+lang+'"]').click();
    await page.locator('#layer [data-act="close"]').click();
    await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-   await page.locator('[data-ilshop-open]').first().click();
+   await openShop(page);
    await expect(page.locator('#illyrian-shop-layer .ils-top small')).toHaveText(expected.shop);
    await page.keyboard.press('Escape');
    await page.locator('.head [data-act="tab"][data-val="events"]').click();
@@ -386,7 +395,7 @@ for(const [language,expected] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-ils="detail"][data-id="p1"]').click();
   await page.locator('#illyrian-shop-layer [data-ils="add"]').click();
   await expect(page.locator('#illyrian-shop-layer .ils-toast')).toHaveText(expected.added);
@@ -416,7 +425,7 @@ test('Shop user listing title, seller and description remain unchanged across la
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-ils="sell"]').click();
  await page.locator('#ils-sell-form input[name="name"]').fill('Mbyll');
  await page.locator('#ils-sell-form input[name="store"]').fill('Mbyll');
@@ -449,7 +458,7 @@ async function openShopForStorage(page){
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
 }
 test('Shop rolls back failed add and listing creation, then recovers after storage is restored',async({page})=>{
  await openShopForStorage(page);
@@ -531,7 +540,7 @@ for(const locale of ['en','it']){
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="tab:needs"]').click();
   const plus=await page.locator('#isp-need').evaluate(form=>({
@@ -576,7 +585,7 @@ test('Shop Plus reverts failed buyer request instead of displaying unsaved reque
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').click();
  await page.locator('#isp-root [data-isp="tab:needs"]').click();
  const key='illyrian_demo_v17_shop_plus';
@@ -684,7 +693,7 @@ for(const [locale,notices] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="tab:needs"]').click();
   await page.locator('#isp-need').evaluate(form=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
@@ -702,7 +711,7 @@ for(const [locale,notices] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="create"]').click();
   await page.locator('#isp-create').evaluate(form=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
@@ -713,7 +722,7 @@ test('Shop Plus preserves unsaved request input on storage rejection, then succe
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="tab:needs"]').click();
  await page.locator('#isp-need input[name="title"]').fill('Mbyll');
@@ -740,7 +749,7 @@ test('Shop Plus preserves user listing title, seller and description across loca
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="create"]').click();
  await page.locator('#isp-create input[name="name"]').fill('Mbyll');
@@ -763,7 +772,7 @@ test('Shop Plus protects user request name and details on language switch',async
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="tab:needs"]').click();
  await page.locator('#isp-need input[name="title"]').fill('Mbyll');
@@ -786,7 +795,7 @@ for(const [lang,labels] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="create"]').click();
   const f=page.locator('#isp-create');
@@ -805,7 +814,7 @@ for(const [lang,labels] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="tab:needs"]').click();
   const f=page.locator('#isp-need');
@@ -821,7 +830,7 @@ for(const [lang,labels] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="item:k1"]').click();
   await page.locator('#isp-root [data-isp="report:k1"]').click();
@@ -1191,7 +1200,7 @@ for(const [lang,label] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await expect(page.locator('#isp-root header h2[data-i18n-direct]')).toHaveText(label.title);
   const filters=page.locator('#isp-filters');
@@ -1216,7 +1225,7 @@ for(const [lang,label] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="tab:needs"]').click();
   const need=page.locator('#isp-need');
@@ -1239,7 +1248,7 @@ test('Shop Plus language changes retain unsent listing and buyer request fields 
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="create"]').click();
  const listing=page.locator('#isp-create');
@@ -1282,7 +1291,7 @@ test('Shop Plus report form keeps unsent reason and text on locale switch',async
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="item:k1"]').click();
  await page.locator('#isp-root [data-isp="report:k1"]').click();
@@ -1307,7 +1316,7 @@ for(const [lang,labels] of Object.entries({
   await ready(page);
   await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await expect(page.locator('#isp-root .isp-hero b[data-i18n-direct]')).toHaveText(labels.tag);
   await expect(page.locator('#isp-root .isp-hero p[data-i18n-direct]')).toHaveText(labels.intro);
@@ -1326,7 +1335,7 @@ for(const [lang,labels] of Object.entries({
   await ready(page);
   await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="tab:stores"]').click();
   await expect(page.locator('#isp-root h3[data-i18n-direct]')).toHaveText(labels.shops);
@@ -1346,7 +1355,7 @@ test('Shop Plus order state retains original persisted enum while display locali
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="tab:checkout"]').click();
  await page.locator('#isp-root [data-isp="sample-order"]').click();
@@ -1374,7 +1383,7 @@ test('Shop Plus does not mislabel unrecognized persisted order statuses as retur
  await page.reload({waitUntil:'load'});
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="tab:checkout"]').click();
  const order=page.locator('#isp-root .isp-card').filter({hasText:'unknown-test'});
@@ -1394,7 +1403,7 @@ for(const [language,labels] of Object.entries({
   await ready(page);
   await page.evaluate(lang=>window.IllyrianI18n.changeLanguage(lang),language);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="item:k1"]').click();
   const detail=page.locator('#isp-root .isp-focus');
@@ -1427,7 +1436,7 @@ for(const [language,labels] of Object.entries({
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await expect(page.locator('#illyrian-shop-layer [data-isp-open]')).toContainText({sq:'Kërkim i avancuar',en:'Advanced search',it:'Ricerca avanzata'}[language]);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await expect(page.locator('#isp-root header [data-isp="close"]')).toHaveText(labels.close);
@@ -1476,7 +1485,7 @@ test('Shop Plus preserves unknown report codes and escapes persisted user text a
  await page.reload({waitUntil:'load'});
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="tab:moderation"]').click();
  const report=page.locator('#isp-root .isp-card').first();
@@ -1493,7 +1502,7 @@ test('Shop Plus preserves unknown report codes and escapes persisted user text a
 test('Shop Plus entry label switches languages before opening and close restores focus',async({page})=>{
  await ready(page);
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  const entry=page.locator('#illyrian-shop-layer [data-isp-open]').first();
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await expect(entry).toContainText('Advanced search');
@@ -1520,7 +1529,7 @@ test('Shop Plus draft seller response survives sq/en/it locale changes with focu
  });
  await page.reload({waitUntil:'load'});
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="tab:needs"]').click();
  await expect(page.locator('#isp-root h4[data-user-content]')).toHaveText('Mbyll community inquiry');
@@ -1551,7 +1560,7 @@ for(const lang of ['sq','en','it']){
  test('Shop Plus audit F01 F07 preserve vehicle draft and zero mileage in '+lang,async({page})=>{
   await ready(page);await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="create"]').click();
   const f=page.locator('#isp-create');
@@ -1588,7 +1597,7 @@ for(const lang of ['sq','en','it']){
  test('Shop Plus audit F01 preserves rental form after invalid area in '+lang,async({page})=>{
   await ready(page);await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="create"]').click();
   const f=page.locator('#isp-create');
@@ -1613,7 +1622,7 @@ for(const lang of ['sq','en','it']){
 }
 test('Shop Plus audit F01 edit retry leaves original saved until valid',async({page})=>{
  await ready(page);await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="create"]').click();
  let f=page.locator('#isp-create');
@@ -1732,7 +1741,7 @@ test('audit F08 rejects stale request in second tab and succeeds after reload',a
  async function prepare(page){
   await ready(page);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="tab:needs"]').click();
  }
@@ -1753,7 +1762,7 @@ test('audit F08 rejects stale request in second tab and succeeds after reload',a
  expect(await second.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(original);
  await second.reload({waitUntil:'load'});
  await second.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await second.locator('[data-ilshop-open]').first().click();
+ await openShop(second);
  await second.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await second.locator('#isp-root [data-isp="tab:needs"]').click();
  await second.locator('#isp-need input[name="title"]').fill('Second tab after reload');
@@ -1767,7 +1776,7 @@ test('audit F08 stale form warning follows locale without rewriting values',asyn
  for(const page of [writer,other]){
   await ready(page);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="tab:needs"]').click();
  }
@@ -1801,7 +1810,7 @@ test('Shop Plus rejects seller reply after request expires during an open draft,
  await page.reload({waitUntil:'load'});
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="tab:needs"]').click();
  await page.locator('#isp-root [data-isp="respond:expiry-check"]').click();
@@ -1831,7 +1840,7 @@ for(const lang of ['sq','en','it']){
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="create"]').click();
   const f=page.locator('#isp-create');
@@ -1871,7 +1880,7 @@ for(const lang of ['sq','en','it']){
 test('Shop Plus category-specific save and edit strip irrelevant metadata',async({page})=>{
  await ready(page);
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
  await page.locator('#isp-root [data-isp="create"]').click();
  const f=page.locator('#isp-create');
@@ -2247,7 +2256,7 @@ test('Shop Plus malformed persisted listing does not crash catalog/stores or rew
  await page.evaluate(raw=>localStorage.setItem('illyrian_demo_v17_shop_plus',raw),raw);
  await page.reload({waitUntil:'load'});
  await expect(page.locator('#phone')).toBeVisible();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('[data-isp-open]').first().click();
  const root=page.locator('#isp-root');
  await expect(root.locator('.isp-card:has-text("Fixture valid coffee")')).toHaveCount(1);
@@ -2271,7 +2280,7 @@ for(const lang of ['sq','en','it']){
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   await page.locator('#isp-root [data-isp="create"]').click();
   const form=page.locator('#isp-create');
@@ -2468,7 +2477,7 @@ test('Phase3 GPS denied unavailable and revoked leaves manual social flows usabl
  await page.reload();await expect(page.locator('#v9-near-city')).toHaveValue('Milano');
  await page.evaluate(()=>Object.defineProperty(navigator,'geolocation',{configurable:true,value:undefined}));
  await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();await expect(page.locator('#layer .modal')).toBeVisible();await page.keyboard.press('Escape');
- await page.locator('[data-ilshop-open]').first().click();await expect(page.locator('#illyrian-shop-layer')).toBeVisible();await page.keyboard.press('Escape');
+ await openShop(page);await expect(page.locator('#illyrian-shop-layer')).toBeVisible();await page.keyboard.press('Escape');
  await page.locator('.head [data-act="tab"][data-val="events"]').click();await page.locator('[data-ilc-entry]').click();await page.locator('[data-ilc="view:cities"]').click();
  await page.locator('#ilc-cities [name="home"]').selectOption('Berlin');await page.locator('#ilc-cities [type="submit"]').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_connections')).home)).toBe('Berlin');expect(await page.evaluate(()=>window.p3GeoCalls)).toBe(0);
@@ -2600,7 +2609,7 @@ test('IA-04: sorting historical Shop listings without seller never errors',async
  await ready(page);
  const before=await page.evaluate(k=>localStorage.getItem(k),key);
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#illyrian-shop-layer #ils-sort').selectOption('store');
  for(const name of ['Legacy one','Legacy two'])
   await expect(page.locator('#illyrian-shop-layer .ils-card').filter({hasText:name})).toHaveCount(1);
@@ -2721,7 +2730,7 @@ test('IA-04 Shop sorting all modes tolerates mixed missing, null, numeric and va
  await ready(page);
  const raw=await page.evaluate(k=>localStorage.getItem(k),key);
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  const sort=page.locator('#illyrian-shop-layer #ils-sort');
  for(const mode of ['store','price-low','price-high','relevance','store']){
   await sort.selectOption(mode);
@@ -2786,19 +2795,19 @@ test('IA-03 Governance quota failure retains keyboard focus and exact report on 
 });
 
 
-// Owner reference: ONE composer after Stories, filters next; Shop entry retained after feed.
+// Owner reference: ONE composer after Stories; Shop belongs to Mundësi and Explore, not Home.
 async function assertHomeComposerOrder(page){
  await expect(page.locator('#screen > .stories + .compose')).toHaveCount(1);
  await expect(page.locator('#screen > .compose + .filters')).toHaveCount(1);
- await expect(page.locator('#screen > .ils-entry')).toHaveCount(1);
- await expect(page.locator('#screen > .v15-studio')).toHaveCount(1);
+ await expect(page.locator('#screen > .ils-entry')).toHaveCount(0);
+ await expect(page.locator('#screen > .v15-studio')).toHaveCount(0);
+ await expect(page.locator('#screen > .stories .story-reel-preview')).toHaveCount(3);
  await expect(page.locator('#screen > .compose')).toHaveCount(1);
  await expect(page.locator('#screen > .compose > .avatar')).toHaveCount(1);
  await expect(page.locator('#screen > .compose .compose-prompt')).toBeVisible();
  await expect(page.locator('#screen > .compose [data-act="modal"][data-val="compose"].red-icon')).toHaveCount(1);
- await expect(page.locator('#screen > .ils-entry [data-ilshop-open]')).toBeVisible();
 }
-test('Home composer directly follows Stories before Shop on mobile; post and media handlers unchanged',async({page})=>{
+test('Home composer directly follows Stories without duplicated Shop or studio on mobile',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await ready(page);
  await assertHomeComposerOrder(page);
@@ -2811,7 +2820,7 @@ test('Home composer directly follows Stories before Shop on mobile; post and med
  await expect(page.locator('#layer #v5-file')).toHaveCount(1);
  await page.locator('#layer [data-act="close"]').click();
  await assertHomeComposerOrder(page);
- await page.locator('#screen > .ils-entry [data-ilshop-open]').click();
+ await openShop(page);
  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
  await page.keyboard.press('Escape');
  await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
@@ -2841,7 +2850,7 @@ for(const lang of ['sq','en','it']){
    navigator.geolocation.getCurrentPosition=()=>{window.__shopGpsCalls++;throw Error('GPS must be optional')};
   });
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('#ils-search').fill('kafe tirane');
   await expect(page.locator('#illyrian-shop-layer .ils-card')).toHaveCount(2);
   await page.locator('[data-ils="businesses"]').click();
@@ -2858,7 +2867,7 @@ for(const lang of ['sq','en','it']){
  });
  test('Shop phase 1 category filters show only relevant fields '+lang,async({page})=>{
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('[data-isp-open]').click();
   const root=page.locator('#isp-root'),form=root.locator('#isp-filters');
   await root.locator('[data-isp="type:Produkte"]').click();
@@ -2883,7 +2892,7 @@ for(const lang of ['sq','en','it']){
  test('Shop phase 1 Jobs save with undisclosed salary and preserve Plus '+lang,async({page})=>{
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
-  await page.locator('[data-ilshop-open]').first().click();
+  await openShop(page);
   await page.locator('[data-ils="sell"]').click();
   const f=page.locator('#ils-sell-form');
   await f.locator('[name="kind"]').selectOption('Punë');
@@ -2905,7 +2914,7 @@ for(const lang of ['sq','en','it']){
 test('Shop phase 1 Plus property and job forms persist only category data',async({page})=>{
  await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'));
- await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-isp-open]').click();
+ await openShop(page);await page.locator('[data-isp-open]').click();
  await page.locator('#isp-root [data-isp="create"]').click();
  const f=page.locator('#isp-create');
  await f.locator('[name="type"]').selectOption('Prona');
@@ -2924,7 +2933,7 @@ test('Shop phase 1 Plus property and job forms persist only category data',async
  expect(saved).toMatchObject({type:'Punë',price:0,area:null,year:null,quantity:null});
  await expect(page.locator('#isp-root .isp-focus strong')).toHaveText('Salary not disclosed');
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(before);
- await page.reload();await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-isp-open]').click();
+ await page.reload();await openShop(page);await page.locator('[data-isp-open]').click();
  await page.locator('#isp-root [data-isp="type:Punë"]').click();
  await expect(page.locator('#isp-root .isp-cards .isp-card').filter({hasText:'Mbyll property'})).toHaveCount(1);
 });
@@ -2934,7 +2943,7 @@ test('Shop phase 1 business profile escapes historical data and never invents ho
  await page.addInitScript(s=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[{id:'legacy-profile',kind:'Produkte',name:'Historical offer',store:s,city:'Tiranë',price:5}]})),seller);
  await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'));
- await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-ils="businesses"]').click();
+ await openShop(page);await page.locator('[data-ils="businesses"]').click();
  await page.locator('[data-ils="business"]').filter({hasText:'View business'}).first().click();
  const profile=page.locator('.ils-business-profile');
  await expect(profile.locator('h2')).toHaveText(seller);
@@ -2947,7 +2956,7 @@ test('Shop phase 1 business profile escapes historical data and never invents ho
 test('Shop phase 1 Plus business profile and mobile return preserve nested dialog',async({page})=>{
  await page.setViewportSize({width:320,height:568});await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
- await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-isp-open]').click();
+ await openShop(page);await page.locator('[data-isp-open]').click();
  await page.locator('#isp-root [data-isp="tab:stores"]').click();
  await page.locator('#isp-root [data-isp="store:Market Arbër"]').click();
  await expect(page.locator('#isp-root .ils-business-profile h2')).toHaveText('Market Arbër');
@@ -2960,7 +2969,7 @@ test('Shop phase 1 Plus business profile and mobile return preserve nested dialo
 
 test('Shop phase 1 locale repaint retains job draft, category label and focus',async({page})=>{
  await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
- await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-ils="sell"]').click();
+ await openShop(page);await page.locator('[data-ils="sell"]').click();
  const f=page.locator('#ils-sell-form');await f.locator('[name="kind"]').selectOption('Punë');
  await f.locator('[name="name"]').fill('Mbyll user job');await f.locator('[name="store"]').fill('Mbyll user business');
  await f.locator('[name="description"]').fill('Custom job draft');await f.locator('[name="description"]').focus();
@@ -2975,7 +2984,7 @@ test('Shop phase 1 locale repaint retains job draft, category label and focus',a
 
 test('Shop phase 1 query covers localized category, need description and manual city',async({page})=>{
  await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await page.locator('#ils-search').fill('properties');
  await expect(page.locator('.ils-card')).toHaveCount(1);
  await page.locator('#ils-search').fill('pastrim');await page.locator('#ils-city').selectOption('Elbasan');
@@ -3124,12 +3133,12 @@ for(const [lang,title] of [['sq',"Raportim lokal"],['en',"Local report"],['it',"
   const form=page.locator('#ig6-report');await form.locator('[name="reason"]').selectOption('threat');await form.locator('[name="detail"]').fill('Literal personal draft <img src=x>');await form.locator('[name="detail"]').focus();
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang==='it'?'en':'it');await expect(form.locator('[name="detail"]')).toHaveValue('Literal personal draft <img src=x>');await expect(form.locator('[name="detail"]')).toBeFocused();
   await form.locator('button').click();const data=await teamData(page);expect(data.cases.at(-1).targetRef).toEqual({source:'plans',kind:'activity',id:'demo-football'});expect(data.cases.at(-1).reason).toBe('threat');
-  await page.keyboard.press('Escape');await expect(source).toBeFocused();await expect(page.locator('#ilp-root')).not.toHaveAttribute('inert','');await page.keyboard.press('Escape');await page.locator('#navbar [data-val="home"]').click();await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-ils="detail"]').first().click();
+  await page.keyboard.press('Escape');await expect(source).toBeFocused();await expect(page.locator('#ilp-root')).not.toHaveAttribute('inert','');await page.keyboard.press('Escape');await page.locator('#navbar [data-val="home"]').click();await openShop(page);await page.locator('[data-ils="detail"]').first().click();
   const shop=page.locator('#illyrian-shop-layer [data-ily-report]');await shop.click();await expect(page.locator('#ig6-report [name="target"]')).not.toHaveValue('');await page.locator('#ig6-report button').click();expect((await teamData(page)).cases.at(-1).targetRef.source).toBe('shop');await page.keyboard.press('Escape');await expect(shop).toBeFocused();
  });
 }
 test('Safety phase 5: Shop Plus uses one stable decision, local notice and accepted appeal',async({page})=>{
- await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));await page.locator('[data-ilshop-open]').first().click();await page.locator('[data-isp-open]').click();await page.locator('[data-isp="item:k1"]').click();await page.locator('[data-isp="report:k1"]').click();await page.locator('#isp-report button').click();
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));await openShop(page);await page.locator('[data-isp-open]').click();await page.locator('[data-isp="item:k1"]').click();await page.locator('[data-isp="report:k1"]').click();await page.locator('#isp-report button').click();
  const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')),flag=JSON.parse(raw).flags[0];expect(flag.id).toEqual(expect.any(String));expect(flag.listingId).toBe('k1');
  await page.locator('#isp-root [data-ily-report-center]').click();const card=page.locator('[data-case-id]').filter({hasText:'Kafe espresso 250 g'});await safetyDecision(page,card);await expect(card.locator('[data-case-status]')).toContainText('Restricted');await expect(page.locator('#ig6-local-updates')).toContainText('Written local decision');
  await page.locator('[data-ig6="role:visitor"]').click();await card.locator('[data-ig6^="appeal:"]').click();await page.locator('#ig6-appeal textarea').fill('Please reconsider this local decision');await page.locator('#ig6-appeal button').click();await page.locator('[data-ig6="role:moderator"]').click();await page.locator('[data-ig6^="appeal-review:"]').click();await page.locator('#ig6-appeal-review textarea').fill('Accepted after local review of the example');await page.locator('#ig6-appeal-review button').click();
@@ -3354,7 +3363,7 @@ for(const lang of ['sq','en','it'])test('Presentation copy has one About disclos
 
  const pin=await page.evaluate(()=>window.IllyrianI18n.t('privacy:pinAria',{name:'DEMO café',city:'DEMO City',interpolation:{escapeValue:false}}));
  expect(pin).toContain('DEMO café');expect(pin).toContain('DEMO City');
- await page.locator('[data-ilshop-open]').first().click();
+ await openShop(page);
  await expect(page.locator('#illyrian-shop-layer header')).not.toContainText(/\bdemo\b/i);
  await page.locator('[data-isp-open]').click();
  await expect(page.locator('#isp-root header')).not.toContainText(/\bdemo\b/i);

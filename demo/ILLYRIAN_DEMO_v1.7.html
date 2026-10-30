@@ -41,18 +41,7 @@
 .v3-welcome-line{margin-bottom:9px}
 .v3-welcome-main h2{font-size:22px;margin:4px 0}.v3-welcome-glow{font-size:57px}
 .v3-welcome-main p{margin:5px 0 0;font-size:10px}
-.v4-reels-head{margin:15px 15px 10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.v4-reels-head strong{font-size:14px;font-weight:850}.v4-reels-head p{font-size:10px;color:var(--muted);margin:4px 0 0}
-.v4-reels-head button{border:0;color:var(--red);font-size:11px;font-weight:850;background:none;cursor:pointer}
 /* Light-only AA text contrast: 4.67:1 on #F8F5F6; dark theme keeps original palette. */
-.device:not(.dark) .v4-reels-head button{color:#DC0C35}
-.v4-reels-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 13px 16px}
-.v4-reel-thumb{border:0;border-radius:14px;height:148px;padding:9px;overflow:hidden;text-align:left;position:relative;color:white;background:#33131e;cursor:pointer}
-.v4-reel-thumb:before{content:"";position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(.92)}
-.v4-reel-thumb:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#11010d00 25%,#080007c9 100%)}
-.v4-reel-thumb>*{position:relative;z-index:1}.v4-reel-play{position:absolute;top:9px;right:9px;background:#0005;padding:5px 7px;border-radius:20px;font-size:10px}
-.v4-reel-title{position:absolute;left:9px;bottom:10px;right:9px;font-size:11px;font-weight:800;line-height:1.25;text-shadow:0 1px 3px #000}
-.v4-reel-title small{font-size:9px;display:block;font-weight:500;color:#e5e1e4;margin-top:4px}
 .v4-person-link{border:0;background:none;padding:0;color:inherit;text-align:left;cursor:pointer;font:inherit;font-weight:800}
 .v4-person-link:hover{text-decoration:underline}.v4-result-actions{display:flex;gap:5px;align-items:center}
 .v4-result-actions .button{font-size:10px;padding:7px 9px}.v4-person-summary{display:flex;gap:13px;align-items:center;padding:15px;background:var(--card2);border-radius:16px}
@@ -81,7 +70,6 @@
 .v4-reel-controls button{background:#fff3;border:1px solid #fff4;padding:8px 13px;color:white;border-radius:12px;font-size:11px;font-weight:750;cursor:pointer}
 .v4-preview-note{margin:8px 13px 14px;border:1px solid var(--border);background:var(--card);padding:12px;border-radius:14px;color:var(--muted);font-size:10px;line-height:1.5}
 .v4-profile-save{margin:0 13px 12px;width:calc(100% - 26px);border-radius:13px;padding:11px 12px;background:var(--card);border:1px solid var(--border);color:var(--ink);display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:800;cursor:pointer}
-@media(max-width:430px){.v4-reel-thumb{height:134px}.v4-reels-list{gap:7px}}
 @media(prefers-reduced-motion:reduce){.v4-reel-cover{animation:none}}
 
 /* ILLYRIAN v0.5 — creator studio, photo gallery and polish */
@@ -362,7 +350,7 @@ function sectionsTitle(title,sub){return `<div class="section-header"><h2>${safe
 function demoNotice(){return ''}
 function quickAction(icon,label,action,v){return `<button class="v3-quick" data-act="${action}" ${v?`data-val="${safeMark(v)}"`:''}><span>${icon}</span><b>${safeMark(label)}</b></button>`}
 function intentPreview(){const expired=state.intentExpiry&&Date.now()>new Date(state.intentExpiry).getTime();return `<div class="intent-strip"><div><span class="micro">ÇFARË KËRKOJ TANI?</span><strong>${safeMark(expired?'Qëllimi skadoi':state.intent)}</strong><small>${state.intent==='Pa zgjedhur'?'Zgjidh interesin tënd, pa zbuluar vendndodhjen.':expired?'Zgjidh një periudhë të re':'Vullnetare · e ndryshueshme · pa GPS'}</small></div><button class="intent-edit" data-act="modal" data-val="intent">Ndrysho ↗</button></div>`}
-function v3Home(){return `${v8WelcomeCard()}<div class="v3-shortcuts">${quickAction('🏪','Biznese','go-category','Biznese')}${quickAction('💼','Punë','go-category','Punë')}</div>${legacyHome()}<div class="v3-note">Dizajni i këtij ekrani është prototip për miratim, jo vendim përfundimtar mbi MVP.</div>`}
+function v3Home(){return `${v8WelcomeCard()}${legacyHome()}`}
 home=v3Home;
 function v3Post(p){if(state.hiddenPosts.includes(String(p.id)))return '';let postHtml=legacyPost(p);const community=communities.find(c=>c.id===p.communityId);if(community)postHtml=postHtml.replace('</article>',`<div class="post-context"><button data-act="v11-community-open" data-id="${community.id}">${safeMark(communityTitle(community))} →</button></div></article>`);if(p.id==='p3')return postHtml.replace('</article>',`<div class="post-context"><div><b>⚽ Nga postimi te aktiviteti</b><span>Shiko planin dhe kërko të bashkohesh.</span></div><button data-act="event" data-id="e2">Shiko planin →</button></div></article>`);return postHtml}
 post=v3Post;
@@ -426,9 +414,9 @@ const reels=[
   {id:'r2',owner:'Leon M.',profileId:'leon',avatar:'a3',photo:'cafe',label:'Kafe dhe ide të reja',caption:'Një ditë në Milano. Lidhjet më të mira fillojnë me një bisedë.',likes:'845',city:'Milano',plan:'e2'},
   {id:'r3',owner:'Besa H.',profileId:'besa',avatar:'a4',photo:'arta',label:'Njihuni në komunitet',caption:'Një postim mund të bëhet një takim. Provoje te Planet.',likes:'1.1K',city:'Romë',plan:'e2'}
 ];
-function v4ReelRail(){return `<div class="v4-reels-head"><div><strong>Reels për ty</strong><p>Momente, njerëz dhe ide të reja</p></div><button data-act="open-reels" data-id="0">Shiko të gjitha →</button></div><div class="v4-reels-list">${reels.map((r,i)=>`<button class="v4-reel-thumb" data-act="open-reels" data-id="${i}" style="background:linear-gradient(130deg,#290f29,#dc1748)"><span class="v4-reel-bg" style="display:block;position:absolute;inset:0;background:url('${IMAGES[r.photo]}') center/cover;opacity:.83;z-index:0"></span><span class="v4-reel-play">▶</span><span class="v4-reel-title">${esc(r.label)}<small>${esc(r.owner)}</small></span></button>`).join('')}</div>`}
+function v4FriendReelPreviews(){return reels.map((r,i)=>`<button type="button" class="story-btn story-reel-preview" data-act="open-reels" data-id="${i}" aria-label="Reel i ${esc(r.owner)}"><div class="ring"><img class="avatar" src="${IMAGES[r.photo]}" alt="" /><span class="story-reel-indicator" aria-hidden="true">▶</span></div><span class="storyname">${esc(r.owner.split(' ')[0])} · Reel</span></button>`).join('')}
 const v4OldHome=home;
-home=function(){const html=v4OldHome();const pos=html.indexOf('<div class="stories">');return pos>=0?html.slice(0,pos)+v4ReelRail()+html.slice(pos):html+v4ReelRail()};
+home=function(){const html=v4OldHome();return html.replace('</div><div class="compose">',v4FriendReelPreviews()+'</div><div class="compose">')};
 const v4OldResultItem=resultItem;
 resultItem=function(r){if(r.type!=='Njerëz')return v4OldResultItem(r);const following=state.follows.includes(r.id);return `<div class="result">${tinyAvatar(r.ava,'avatar lg')}<div class="result-info"><button class="v4-person-link" data-act="user-profile" data-id="${esc(r.id)}">${esc(r.name)}</button><p>${esc(r.sub)}</p></div><div class="v4-result-actions"><button class="button tiny soft" data-act="user-profile" data-id="${esc(r.id)}">Profil</button><button class="button tiny ${following?'soft':''}" data-act="follow" data-id="${esc(r.id)}">${following?'✓ Ndjek':'Ndiq'}</button></div></div>`};
 const v4OldPost=post;
@@ -1519,9 +1507,7 @@ function v15Cards(items,kind){
 const v15HomeOriginal=home;
 home=function(){
  let html=v15HomeOriginal();
- const studio=`<section class="v15-studio" aria-label="Studioja e përmbajtjes"><div class="v15-studio-title"><strong>Krijo një moment</strong><small>Story ose Reel · vetëm në pajisjen tënde</small></div><div class="v15-studio-actions"><button type="button" data-act="v15-open" data-val="story">${v12Icon('reels')} Story me foto</button><button type="button" data-act="v15-open" data-val="reel">${v12Icon('reels')} Reel nga foto</button></div>${v15Stories.length||v15Reels.length?`<div class="v15-recent">${v15Cards(v15Stories,'story')}${v15Cards(v15Reels,'reel')}</div>`:''}</section>`;
  html=html.replace(/<div class="v5-creator-hint">[\s\S]*?<\/button><\/div>/,'');
- html=html.replace('<div class="stories">',studio+'<div class="stories">');
  const ownStory=v15Stories[0];
  html=html.replace('data-act="modal" data-val="compose"><div class="ring self">',
   `data-act="v15-my-story" aria-label="${ownStory?'Story im':'Hap kamerën'}"><div class="ring${ownStory?'':' self'}">`);
@@ -2235,14 +2221,9 @@ document.head.appendChild(v15Style);
     return;
    }
    if(category==='Tregu'||category==='Shërbime'){
-    // Reuse the existing Shop overlay and canonical category filters.
-    const entry=document.querySelector('#screen [data-ilshop-open]');
-    if(!entry){tab('explore');return;}
-    document.querySelector('#navbar [data-val="home"]')?.focus({preventScroll:true});
-    entry.click();
-    const kind=category==='Shërbime'?'Shërbime':'Të gjitha';
-    document.querySelector('#illyrian-shop-layer [data-ils="category"][data-value="'+kind+'"]')?.click();
-    document.querySelector('#illyrian-shop-layer #ils-search')?.focus({preventScroll:true});
+    // Mundësi owns Shop access; the Home feed has no duplicate Shop entry.
+    toggle.focus({preventScroll:true});
+    if(!window.IllyrianShopUI?.openFromOpportunities(category))toast('Shop nuk u hap');
     return;
    }
    state.category=category;

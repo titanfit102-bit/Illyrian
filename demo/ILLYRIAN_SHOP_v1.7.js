@@ -114,12 +114,15 @@
  function show(){opener=document.activeElement;state.open=true;state.view='browse';state.store='';layer=document.createElement('section');layer.id='illyrian-shop-layer';layer.className='ils-overlay';layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');layer.setAttribute('aria-label','ILLYRIAN Shop');document.querySelector('#phone')?.appendChild(layer);for(const sel of ['#screen','#navbar','.head']){const el=document.querySelector('#phone > '+sel);if(el)el.inert=true}render();layer.querySelector('#ils-search')?.focus({preventScroll:true});}
  function close(){state.open=false;layer?.remove();layer=null;for(const sel of ['#screen','#navbar','.head']){const el=document.querySelector('#phone > '+sel);if(el)el.inert=false}if(opener?.isConnected)opener.focus({preventScroll:true});else document.querySelector('[data-ilshop-open],#navbar button')?.focus({preventScroll:true});window.dispatchEvent(new CustomEvent('illyrian:shop:closed',{detail:{source:'shop'}}));}
  function openFromEntry(event){event.preventDefault();event.stopPropagation();if(!state.open)show();}
+ // Mundësi opens the same Shop catalog; no duplicate Home control.
+ function openFromOpportunities(category){if(!state.open)show();const next=category==='Shërbime'?'Shërbime':'Të gjitha';if(state.category!==next||state.store){state.category=next;state.store='';render()}return true;}
+ window.IllyrianShopUI=Object.freeze({openFromOpportunities});
  function inject(){const screen=document.getElementById('screen');if(!screen||state.open)return;
    if(screen.querySelector('[data-ilshop-open]'))return;
-   const home=screen.querySelector('.stories,.v15-studio');const explore=screen.querySelector('#finder');
-   if(!home&&!explore)return;
+   const explore=screen.querySelector('#finder');
+   if(!explore)return;
    const entry=document.createElement('div');entry.className='ils-entry';entry.innerHTML=`<div><span>ILLYRIAN SHOP · v1.7</span><strong>Gjej produkte, makina dhe banesa.</strong><small>Kërko dhe krahaso listime nga dyqane të ndryshme.</small></div><button type="button" data-ilshop-open="1">Hap Shop →</button>`;
-   if(explore){const heading=screen.querySelector('.section-header');(heading||explore.parentElement).insertAdjacentElement('afterend',entry)}else{const posts=[...screen.querySelectorAll(':scope > .post')],composer=screen.querySelector(':scope > .stories + .compose');(screen.querySelector(':scope > .empty')||posts[posts.length-1]||screen.querySelector(':scope > .filters')||composer||home).insertAdjacentElement('afterend',entry)}
+   const heading=screen.querySelector('.section-header');(heading||explore.parentElement).insertAdjacentElement('afterend',entry)
  }
  const screen=document.getElementById('screen');if(!screen||!document.getElementById('phone'))return;
  new MutationObserver(()=>inject()).observe(screen,{childList:true,subtree:false});inject();

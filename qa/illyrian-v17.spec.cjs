@@ -309,45 +309,56 @@ test('Home header uses semantic sq en it labels - 390x844',async({page})=>{
 });
 
 
-test('P1-A11Y-01 Reels Home Light label meets AA 4.5 contrast, Dark keeps theme',async({page})=>{
+for(const theme of ['light','dark'])test('Friend Reels live as compact Story previews and open the matching Reel - '+theme,async({page})=>{
+ await page.emulateMedia({colorScheme:theme});
  await openDemo(page,390,844);
- const button=page.locator('.v4-reels-head button[data-act="open-reels"][data-id="0"]');
- await expect(button).toBeVisible();
- const c=await button.evaluate(el=>{
-  const fg=getComputedStyle(el).color,bg=getComputedStyle(document.querySelector('#phone')).backgroundColor;
-  const lum=s=>{
-   const rgb=s.match(/\d+(?:\.\d+)?/g).slice(0,3).map(n=>Number(n)/255);
-   return [0.2126,0.7152,0.0722].reduce((v,w,i)=>v+w*(rgb[i]<=0.04045?rgb[i]/12.92:Math.pow((rgb[i]+0.055)/1.055,2.4)),0);
-  };
-  const a=lum(fg),b=lum(bg);
-  return {fg,bg,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
- });
- expect(c.ratio,'small text needs WCAG AA contrast in Light').toBeGreaterThanOrEqual(4.5);
- expect(c.fg).toBe('rgb(220, 12, 53)');
- await page.evaluate(()=>document.querySelector('#phone').classList.add('dark'));
- await expect(button).toHaveCSS('color','rgb(255, 0, 80)');
- await expect(page.locator('#phone')).toHaveCSS('background-color','rgb(3, 6, 8)');
- const darkContrast=await button.evaluate(el=>{
-  const lum=s=>{const c=s.match(/\d+(?:\.\d+)?/g).slice(0,3).map(n=>Number(n)/255);return c.reduce((v,x,i)=>v+[.2126,.7152,.0722][i]*(x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4)),0)};
-  return (lum(getComputedStyle(el).color)+.05)/(lum(getComputedStyle(document.querySelector('#phone')).backgroundColor)+.05);
- });
- expect(darkContrast,'small text needs WCAG AA contrast in Dark').toBeGreaterThanOrEqual(4.5);
+ const reelPreviews=page.locator('#screen > .stories .story-reel-preview');
+ await expect(reelPreviews).toHaveCount(3);
+ await expect(page.locator('#screen > .stories [data-act="story"]')).toHaveCount(4);
+ await expect(page.locator('#screen > .v4-reels-head,#screen > .v4-reels-list')).toHaveCount(0);
+ const indicator=reelPreviews.first().locator('.story-reel-indicator');
+ await expect(indicator).toHaveCSS('color','rgb(255, 255, 255)');
+ await expect(indicator).toHaveCSS('background-color','rgb(16, 21, 28)');
+ await reelPreviews.nth(1).click();
+ await expect(page.locator('#layer .v4-reel-overlay')).toBeVisible();
+ await expect(page.locator('#layer .v4-reel-counter')).toHaveText('2 / 3');
+ await page.locator('#layer [data-act="reel-close"]').click();
+ await expect(page.locator('#layer .v4-reel-overlay')).toHaveCount(0);
+ await page.locator('#navbar [data-act="open-reels"]').click();
+ await expect(page.locator('#layer .v4-reel-overlay')).toBeVisible();
 });
 
-
 // Home quick links moved into Mundësi; reuse existing controls and persistence.
-test('Home removes relocated panels without losing composer, Shop, or existing business/job links - 390x844',async({page})=>{
+test('Home has one composer and no duplicate Shop, Jobs, Businesses, Reels rail or studio',async({page})=>{
  await openDemo(page,390,844);
  const home=page.locator('#screen');
- await expect(home.locator('.intent-strip')).toHaveCount(0);
- await expect(home.locator('.v10-plan-summary')).toHaveCount(0);
- const shortcuts=home.locator('.v3-shortcuts .v3-quick');
- await expect(shortcuts).toHaveCount(2);
- expect(await shortcuts.evaluateAll(items=>items.map(el=>el.dataset.val))).toEqual(['Biznese','Punë']);
+ for(const selector of ['.intent-strip','.v10-plan-summary','.v3-shortcuts','.v3-note','.v15-studio','.v4-reels-head','.v4-reels-list','.ils-entry']){
+  await expect(home.locator(selector)).toHaveCount(0);
+ }
  await expect(home.locator(':scope > .stories + .compose')).toHaveCount(1);
- await expect(home.locator('[data-ilshop-open]')).toHaveCount(1);
- await expect(home.locator('.v15-studio')).toHaveCount(1);
+ await expect(home.locator(':scope > .compose + .filters')).toHaveCount(1);
+ await expect(home.locator('.stories .story-reel-preview')).toHaveCount(3);
  await expect(page.locator('#ily-opportunities-panel [data-ily-op-category]')).toHaveCount(7);
+});
+test('Mundësi opens Shop and Services directly; Businesses and Jobs retain Explore routes',async({page})=>{
+ await openDemo(page,390,844);
+ const toggle=page.locator('#phone > .head [data-ily-op-toggle]'),panel=page.locator('#ily-opportunities-panel');
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Tregu"]').click();
+ await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+ await expect(page.locator('#screen > .ils-entry')).toHaveCount(0);
+ await page.keyboard.press('Escape');
+ await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Shërbime"]').click();
+ await expect(page.locator('#illyrian-shop-layer [data-ils="category"][data-value="Shërbime"]')).toHaveClass(/selected/);
+ await page.keyboard.press('Escape');
+ for(const category of ['Biznese','Punë']){
+  await toggle.click();
+  await panel.locator('[data-ily-op-category="'+category+'"]').click();
+  await expect(page.locator('#screen [data-act="category"][data-val="'+category+'"]')).toHaveClass(/active/);
+  await page.locator('#navbar [data-val="home"]').click();
+ }
 });
 test('Mundësi routes intent, my activities, plans and communities via original screens - 390x844',async({page})=>{
  await openDemo(page,390,844);
@@ -424,8 +435,7 @@ for(const theme of ['light','dark'])test('Reference Home preserves all actions a
  for(const city of ['Milano','Romë','Tiranë','Prishtinë']){
   await page.locator('#v9-near-city').selectOption(city);
   await expect(page.locator('#screen > .compose + .filters')).toHaveCount(1);
-  const after=await page.locator('#screen > .ils-entry').evaluate(el=>!!(el.previousElementSibling?.matches('.post,.empty')));
-  expect(after).toBe(true);
+  await expect(page.locator('#screen > .ils-entry')).toHaveCount(0);
  }
  await page.locator('#screen [data-act="feed"][data-val="Më të rejat"]').click();
  await expect(page.locator('#screen [data-val="Më të rejat"]')).toHaveAttribute('aria-pressed','true');
