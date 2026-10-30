@@ -86,7 +86,7 @@ test('List untranslated visible UI labels across main views',async({page})=>{
  }
  const lookup=await page.evaluate(()=>{
    const o=window.ILLYRIAN_LOCALES.sq;
-   return [...new Set(Object.values(o).flatMap(x=>Object.values(x).filter(v=>typeof v==='string'&&!v.includes('{{'))))];
+   return [...new Set(Object.entries(o).flatMap(([ns,entries])=>Object.keys(entries).filter(k=>typeof entries[k]==='string'&&!entries[k].includes('{{')).map(k=>window.IllyrianI18n.t(ns+':'+k,{lng:'sq'}))))];
  });
  const covered=new Set(lookup);
  const unique=[...new Set(snapshots.flatMap(s=>s.strings))];

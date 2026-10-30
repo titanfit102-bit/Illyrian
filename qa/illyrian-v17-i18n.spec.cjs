@@ -8,15 +8,15 @@ async function identityCatalog(page,plus=false){
 }
 async function identityStorage(page){return page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>key.startsWith('illyrian_')&&key!=='illyrian_demo_ui_language_v1')))}
 for(const [lang,ordinary,declared,example] of [
- ['sq','Profil i zakonshëm','Biznes i deklaruar · DEMO','Biznes i verifikuar · shembull DEMO'],
- ['en','Ordinary profile','Declared business · DEMO','Verified business · DEMO example'],
- ['it','Profilo ordinario','Attività dichiarata · DEMO','Attività verificata · esempio DEMO']
+ ['sq','Profil i zakonshëm',"Biznes i deklaruar","Biznes i verifikuar · shembull"],
+ ['en','Ordinary profile',"Declared business","Verified business · example"],
+ ['it','Profilo ordinario',"Attività dichiarata","Attività verificata · esempio"]
 ]){
  test('Identity phase 4: truthful social badges and Shop/Plus guide - '+lang,async({page})=>{
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
-  const badge=page.locator('#screen [data-ily-identity-badge]').first();await expect(badge).toHaveText(/DEMO/);await expect(badge).toHaveAttribute('aria-expanded','false');
+  const badge=page.locator('#screen [data-ily-identity-badge]').first();await expect(badge).toHaveText("ⓘ");await expect(badge).toHaveAttribute('aria-expanded','false');
   const before=await identityStorage(page);await badge.focus();await page.keyboard.press('Enter');await expect(badge).toHaveAttribute('aria-expanded','true');await expect(badge.locator('..').locator('[data-ily-identity-note]')).toBeVisible();await expect(badge).toBeFocused();await page.keyboard.press('Space');await expect(badge).toHaveAttribute('aria-expanded','false');expect(await identityStorage(page)).toEqual(before);
-  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('.profile-info [data-ily-identity-badge]')).toHaveText(/DEMO/);
+  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await expect(page.locator('.profile-info [data-ily-identity-badge]')).toHaveText("ⓘ");
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
   for(const plus of [false,true]){
    await identityCatalog(page,plus);const host=page.locator(plus?'#isp-root':'#illyrian-shop-layer');await expect(host.locator('[data-ily-business-status]')).toHaveText(declared);
@@ -34,14 +34,14 @@ test('Identity phase 4: live locale keeps badge disclosure focus and nested guid
  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
  for(const plus of [false,true]){
   await identityCatalog(page,plus);const host=page.locator(plus?'#isp-root':'#illyrian-shop-layer'),opener=host.locator('[data-ily-identity-guide]');await opener.click();
-  const language=plus?'en':'sq';await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);await expect(page.locator('#ig6-identity-guide [data-identity-state="verified-example"] h4')).toHaveText(plus?'Verified business · DEMO example':'Biznes i verifikuar · shembull DEMO');
+  const language=plus?'en':'sq';await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);await expect(page.locator('#ig6-identity-guide [data-identity-state="verified-example"] h4')).toHaveText(plus?"Verified business · example":"Biznes i verifikuar · shembull");
   await page.keyboard.press('Escape');await expect(opener).toBeFocused();await expect(host).toBeVisible();
   if(plus)await page.locator('#isp-root header [data-isp="close"]').click();await page.keyboard.press('Escape');
  }
 });
-test('Identity phase 4: historical verified flag stays DEMO and stored user text stays literal',async({page})=>{
+test('Identity phase 4: historical verified flag keeps its information disclosure and stored user text stays literal',async({page})=>{
  await ready(page);const raw=await page.evaluate(()=>{const k='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(k)||'{}');s.posts=Array.isArray(s.posts)?s.posts:[];s.posts.unshift({id:'identity-ugc',name:'<img src=x onerror="window.__identityInjected=1">',text:'Paid does not mean verified <svg onload="window.__identityInjected=1">',verified:true,ava:'a1',likes:0,comments:0,share:0,city:'Tiranë',when:'Tani'});const raw=JSON.stringify(s);localStorage.setItem(k,raw);return raw});await page.reload();
- const post=page.locator('#screen .post').filter({hasText:'Paid does not mean verified'});await expect(post.locator('[data-ily-identity-badge]')).toHaveText(/DEMO/);await post.locator('[data-ily-identity-badge]').click();await expect(post.locator('[data-ily-identity-note]')).toBeVisible();await expect(post.locator('.post-name')).toContainText('<img');await expect(post.locator('.post-name img,.post-copy svg')).toHaveCount(0);expect(await page.evaluate(()=>window.__identityInjected)).toBeUndefined();expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ const post=page.locator('#screen .post').filter({hasText:'Paid does not mean verified'});await expect(post.locator('[data-ily-identity-badge]')).toHaveText("ⓘ");await post.locator('[data-ily-identity-badge]').click();await expect(post.locator('[data-ily-identity-note]')).toBeVisible();await expect(post.locator('.post-name')).toContainText('<img');await expect(post.locator('.post-name img,.post-copy svg')).toHaveCount(0);expect(await page.evaluate(()=>window.__identityInjected)).toBeUndefined();expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
 });
 test('Identity phase 4: narrow mobile disclosures fit and sponsorship never grants a real badge',async({page})=>{
  await page.setViewportSize({width:320,height:568});await ready(page);
@@ -117,11 +117,11 @@ test('Business phase 3: assignment, single reply, business sender and private ac
  await page.locator('#ig6-team-assignment [name="assignee"]').selectOption('support');await page.locator('#ig6-team-assignment button').click();
  await page.locator('#ig6-business-actor').selectOption('support');
  await page.locator('#ig6-team-reply [name="body"]').fill('Përgjigje vetëm nga biznesi');await page.locator('#ig6-team-reply button').click();
- const preview=page.locator('[data-biz-customer-preview]');await expect(preview).toContainText('Market Arbër');await expect(preview).toContainText('Përgjigje vetëm nga biznesi');await expect(preview).not.toContainText('Drita Demo');
+ const preview=page.locator('[data-biz-customer-preview]');await expect(preview).toContainText('Market Arbër');await expect(preview).toContainText('Përgjigje vetëm nga biznesi');await expect(preview).not.toContainText("Drita");
  await expect(page.locator('#ig6-team-reply button')).toBeDisabled();
  const team=(await teamData(page)).businessTeams[0];expect(team.threads[0].messages.filter(m=>m.sender==='business')).toHaveLength(1);expect(team.threads[0].messages.at(-1).actorId).toBe('support');
  await expect(page.locator('[data-biz-audit]')).toHaveCount(0);
- await page.locator('#ig6-business-actor').selectOption('owner');await expect(page.locator('[data-biz-audit]')).toContainText('Drita Demo');
+ await page.locator('#ig6-business-actor').selectOption('owner');await expect(page.locator('[data-biz-audit]')).toContainText("Drita");
  await page.reload();await businessPanel(page);await expect(page.locator('[data-biz-customer-preview]')).toContainText('Përgjigje vetëm nga biznesi');
 });
 test('Business phase 3: public staff consent is self-only, source-scoped and excludes inbox',async({page})=>{
@@ -129,13 +129,13 @@ test('Business phase 3: public staff consent is self-only, source-scoped and exc
  await page.locator('#ig6-team-public [name="public"]').check();await page.locator('#ig6-team-public button').click();
  await page.keyboard.press('Escape');
  await page.evaluate(()=>window.IllyrianShopTargets.shop.open('business','Market Arbër'));
- const staff=page.locator('#illyrian-shop-layer [data-business-staff]');await expect(staff).toContainText('Drita Demo');await expect(staff).not.toContainText('Arta Demo');await expect(staff).not.toContainText('Klient');
+ const staff=page.locator('#illyrian-shop-layer [data-business-staff]');await expect(staff).toContainText("Drita");await expect(staff).not.toContainText("Arta");await expect(staff).not.toContainText('Klient');
  await page.locator('#illyrian-shop-layer [data-business-manage]').click();await page.locator('#ig6-business-actor').selectOption('support');
  await page.locator('#ig6-team-public [name="public"]').uncheck();await page.locator('#ig6-team-public button').click();await page.keyboard.press('Escape');
- await expect(staff).not.toContainText('Drita Demo');
+ await expect(staff).not.toContainText("Drita");
  await page.locator('#illyrian-shop-layer [data-ils="browse"]').click();
  await page.locator('#illyrian-shop-layer [data-isp-open]').click();await page.locator('#isp-root [data-isp="tab:stores"]').click();await page.locator('#isp-root [data-isp="store:Market Arbër"]').click();
- await expect(page.locator('#isp-root [data-business-staff]')).not.toContainText('Drita Demo');
+ await expect(page.locator('#isp-root [data-business-staff]')).not.toContainText("Drita");
  await page.locator('#isp-root [data-business-manage]').click();await page.locator('#ig6-business-actor').selectOption('support');
  await expect(page.locator('#ig6-team-public [name="public"]')).not.toBeChecked();
 });
@@ -178,7 +178,7 @@ test('Business phase 3: inbox text stays literal across locale changes and publi
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(page.locator('[data-biz-customer-preview]')).toContainText(markup);expect(await page.evaluate(()=>window.__teamInjected)).toBeUndefined();
  expect(await page.evaluate(k=>localStorage.getItem(k),TEAM_KEY)).toBe(raw);
  await page.keyboard.press('Escape');await page.evaluate(()=>window.IllyrianShopTargets.shop.open('business','Market Arbër'));
- const staff=page.locator('[data-business-staff]');await expect(staff).toContainText('Drita Demo');await expect(staff).not.toContainText('Private Customer Demo');await expect(staff).not.toContainText(markup);
+ const staff=page.locator('[data-business-staff]');await expect(staff).toContainText("Drita");await expect(staff).not.toContainText('Private Customer Demo');await expect(staff).not.toContainText(markup);
 });
 test('Business phase 3: removed business cannot redirect a staff mutation to another shop',async({page})=>{
  await ready(page);await page.evaluate(()=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[{id:'temp-team',kind:'Produkte',name:'Temporary fixture',store:'Temporary Business',city:'Tiranë',price:2}]})));
@@ -378,9 +378,9 @@ for(const [lang,expected] of Object.entries({
 }
 
 for(const [language,expected] of Object.entries({
- sq:{added:'Produkti u shtua në shportën demonstrative.',invalid:'Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.',saved:'Listimi u ruajt vetëm në këtë shfletues.'},
- en:{added:'The product was added to the demo cart.',invalid:'Check the category, item name, shop, city and price.',saved:'The listing was saved only in this browser.'},
- it:{added:'Il prodotto è stato aggiunto al carrello dimostrativo.',invalid:"Controlla categoria, nome dell'articolo, negozio, città e prezzo.",saved:"L'annuncio è stato salvato solo in questo browser."}
+ sq:{added:"Produkti u shtua në shportën.",invalid:'Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.',saved:'Listimi u ruajt vetëm në këtë shfletues.'},
+ en:{added:"The product was added to this app cart.",invalid:'Check the category, item name, shop, city and price.',saved:'The listing was saved only in this browser.'},
+ it:{added:"Il prodotto è stato aggiunto al carrello.",invalid:"Controlla categoria, nome dell'articolo, negozio, città e prezzo.",saved:"L'annuncio è stato salvato solo in questo browser."}
 })){
  test('i18n Shop runtime notifications and invalid form in '+language,async({page})=>{
   await ready(page);
@@ -778,9 +778,9 @@ test('Shop Plus protects user request name and details on language switch',async
 });
 
 for(const [lang,labels] of Object.entries({
- sq:{category:'Kategoria',inventory:'Inventari produkt (copë)',period:'Periudha e qirasë',month:'Për muaj',week:'Për javë',request:'Buxheti maksimal €',reason:'Arsyeja',fraud:'Mashtrim i dyshuar',days:'7 ditë',save:'Ruaj raportimin (demo)'},
- en:{category:'Category',inventory:'Product stock (units)',period:'Rental period',month:'Per month',week:'Per week',request:'Maximum budget €',reason:'Reason',fraud:'Suspected fraud',days:'7 days',save:'Save report (demo)'},
- it:{category:'Categoria',inventory:'Giacenza prodotto (unità)',period:'Periodo di affitto',month:'Al mese',week:'A settimana',request:'Budget massimo €',reason:'Motivo',fraud:'Sospetta frode',days:'7 giorni',save:'Salva segnalazione (demo)'}
+ sq:{category:'Kategoria',inventory:'Inventari produkt (copë)',period:'Periudha e qirasë',month:'Për muaj',week:'Për javë',request:'Buxheti maksimal €',reason:'Arsyeja',fraud:'Mashtrim i dyshuar',days:'7 ditë',save:"Ruaj raportimin"},
+ en:{category:'Category',inventory:'Product stock (units)',period:'Rental period',month:'Per month',week:'Per week',request:'Maximum budget €',reason:'Reason',fraud:'Suspected fraud',days:'7 days',save:"Save report"},
+ it:{category:'Categoria',inventory:'Giacenza prodotto (unità)',period:'Periodo di affitto',month:'Al mese',week:'A settimana',request:'Budget massimo €',reason:'Motivo',fraud:'Sospetta frode',days:'7 giorni',save:"Salva segnalazione"}
 })){
  test('Shop Plus static listing form is localized with immutable values: '+lang,async({page})=>{
   await ready(page);
@@ -883,8 +883,8 @@ test('Plans failed cancel restores stored event and never claims success',async(
 });
 
 for(const [locale,messages] of Object.entries({
- en:{bad:'Title or location is too short.',saved:'Activity saved in the demo.',quota:'Could not save the change on this device.'},
- it:{bad:'Il titolo o il luogo è troppo breve.',saved:'Attività salvata nella demo.',quota:'Impossibile salvare la modifica sul dispositivo.'}
+ en:{bad:'Title or location is too short.',saved:"Activity saved on this device.",quota:'Could not save the change on this device.'},
+ it:{bad:'Il titolo o il luogo è troppo breve.',saved:"Attività salvata in locale.",quota:'Impossibile salvare la modifica sul dispositivo.'}
 })){
  test('Plans semantic validation and success feedback in '+locale,async({page})=>{
   await ready(page);
@@ -939,7 +939,7 @@ test('Privacy rolls back unsaved private follow request and retries successfully
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
  await allowModuleWrites(page);
  await page.locator('#il4-root [data-il4="follow-request"]').click();
- await expect(page.locator('#il4-root .il4-notice')).toHaveText('Action saved in the demo.');
+ await expect(page.locator('#il4-root .il4-notice')).toHaveText("Action saved on this device.");
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_privacy_map')));
  expect(saved.follow.leon).toBe('pending');
 });
@@ -957,7 +957,7 @@ test('Privacy quota failure restores group membership status',async({page})=>{
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
  await allowModuleWrites(page);
  await page.locator('#il4-root [data-il4="group-request"]').click();
- await expect(page.locator('#il4-root .il4-notice')).toHaveText('Adesione/richiesta salvata nella demo.');
+ await expect(page.locator('#il4-root .il4-notice')).toHaveText("Adesione/richiesta salvata in locale.");
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v17_privacy_map')));
  expect(saved.membership['albania-milan']).toBe('pending');
 });
@@ -1001,8 +1001,8 @@ test('Privacy does not translate user-entered activity title on map',async({page
 
 for(const [lang,expected] of Object.entries({
  sq:{title:'Privatësia dhe harta',profiles:'Profilet',groups:'Komunitetet',visitor:'Shiko si vizitor',footer:'Vetëm demonstrim lokal · Nuk ka përdorues, hartë, mesazhe apo kërkesa reale.'},
- en:{title:'Privacy and map',profiles:'Profiles',groups:'Communities',visitor:'View as visitor',footer:'Local demo only · No real users, map, messages or requests.'},
- it:{title:'Privacy e mappa',profiles:'Profili',groups:'Comunità',visitor:'Visualizza come visitatore',footer:'Solo demo locale · Nessun utente, mappa, messaggio o richiesta reale.'}
+ en:{title:'Privacy and map',profiles:'Profiles',groups:'Communities',visitor:'View as visitor',footer:"Local Local only · No real users, map, messages or requests."},
+ it:{title:'Privacy e mappa',profiles:'Profili',groups:'Comunità',visitor:'Visualizza come visitatore',footer:"Solo locale · Nessun utente, mappa, messaggio o richiesta reale."}
 })){
  test('Privacy direct semantic labels render in '+lang,async({page})=>{
   await ready(page);
@@ -1102,9 +1102,9 @@ test('Direct i18n binding is never overwritten by phrase translation collisions'
 });
 
 for(const [lang,expected] of Object.entries({
- sq:{create:'Krijo aktivitetin',type:'Lloji',city:'Qyteti',place:'Vendi',kind:'Miqësi dhe komunitet',privacy:'Dukshmëria',private:'Privat',submit:'Publiko aktivitetin (demo)'},
- en:{create:'Create activity',type:'Type',city:'City',place:'Location',kind:'Friendship and community',privacy:'Visibility',private:'Private',submit:'Publish activity (demo)'},
- it:{create:'Crea attività',type:'Tipo',city:'Città',place:'Luogo',kind:'Amicizia e comunità',privacy:'Visibilità',private:'Privato',submit:'Pubblica attività (demo)'}
+ sq:{create:'Krijo aktivitetin',type:'Lloji',city:'Qyteti',place:'Vendi',kind:'Miqësi dhe komunitet',privacy:'Dukshmëria',private:'Privat',submit:"Publiko aktivitetin"},
+ en:{create:'Create activity',type:'Type',city:'City',place:'Location',kind:'Friendship and community',privacy:'Visibility',private:'Private',submit:"Publish activity"},
+ it:{create:'Crea attività',type:'Tipo',city:'Città',place:'Luogo',kind:'Amicizia e comunità',privacy:'Visibilità',private:'Privato',submit:"Pubblica attività"}
 })){
  test('Plans direct semantic form labels and unchanged option codes in '+lang,async({page})=>{
   await ready(page);
@@ -1183,9 +1183,9 @@ test('Plans user-authored place, event title and conditions are stable when loca
 });
 
 for(const [lang,label] of Object.entries({
- sq:{create:'Publiko ofertë në demo',category:'Kategoria',seller:'Dyqani / shitësi',period:'Periudha e qirasë',month:'Për muaj',week:'Për javë',product:'Produkte',request:'Kërkoj',budget:'Buxheti maksimal €',deadline:'7 ditë',report:'Arsyeja',fraud:'Mashtrim i dyshuar',submit:'Ruaj raportimin (demo)',search:'Kërko',apply:'Apliko filtrat',sort:'Renditja',title:'Shop i avancuar'},
- en:{create:'Publish offer in demo',category:'Category',seller:'Shop / seller',period:'Rental period',month:'Per month',week:'Per week',product:'Products',request:'Looking for',budget:'Maximum budget €',deadline:'7 days',report:'Reason',fraud:'Suspected fraud',submit:'Save report (demo)',search:'Search',apply:'Apply filters',sort:'Sort',title:'Advanced Shop'},
- it:{create:'Pubblica offerta nella demo',category:'Categoria',seller:'Negozio / venditore',period:'Periodo di affitto',month:'Al mese',week:'A settimana',product:'Prodotti',request:'Cerco',budget:'Budget massimo €',deadline:'7 giorni',report:'Motivo',fraud:'Sospetta frode',submit:'Salva segnalazione (demo)',search:'Cerca',apply:'Applica filtri',sort:'Ordina',title:'Shop avanzato'}
+ sq:{create:"Publiko ofertë lokalisht",category:'Kategoria',seller:'Dyqani / shitësi',period:'Periudha e qirasë',month:'Për muaj',week:'Për javë',product:'Produkte',request:'Kërkoj',budget:'Buxheti maksimal €',deadline:'7 ditë',report:'Arsyeja',fraud:'Mashtrim i dyshuar',submit:"Ruaj raportimin",search:'Kërko',apply:'Apliko filtrat',sort:'Renditja',title:'Shop i avancuar'},
+ en:{create:"Publish offer on this device",category:'Category',seller:'Shop / seller',period:'Rental period',month:'Per month',week:'Per week',product:'Products',request:'Looking for',budget:'Maximum budget €',deadline:'7 days',report:'Reason',fraud:'Suspected fraud',submit:"Save report",search:'Search',apply:'Apply filters',sort:'Sort',title:'Advanced Shop'},
+ it:{create:"Pubblica offerta in locale",category:'Categoria',seller:'Negozio / venditore',period:'Periodo di affitto',month:'Al mese',week:'A settimana',product:'Prodotti',request:'Cerco',budget:'Budget massimo €',deadline:'7 giorni',report:'Motivo',fraud:'Sospetta frode',submit:"Salva segnalazione",search:'Cerca',apply:'Applica filtri',sort:'Ordina',title:'Shop avanzato'}
 })){
  test('Shop Plus direct catalog and listing labels retain domain codes: '+lang,async({page})=>{
   await ready(page);
@@ -1210,7 +1210,7 @@ for(const [lang,label] of Object.entries({
   expect(types.map(x=>x.value)).toEqual(['Produkte','Makina','Prona','Banesa me qira','Shërbime','Punë']);
   const period=await form.locator('select[name="period"] option').evaluateAll(a=>a.map(e=>({value:e.value,text:e.textContent.trim()})));
   expect(period).toEqual([{value:'muaj',text:label.month},{value:'javë',text:label.week}]);
-  await expect(form.locator('button[type="submit"]')).toHaveText({sq:'Publiko në demo',en:'Publish in demo',it:'Pubblica nella demo'}[lang]);
+  await expect(form.locator('button[type="submit"]')).toHaveText({sq:"Publiko lokalisht",en:"Publish on this device",it:"Pubblica in locale"}[lang]);
  });
  test('Shop Plus direct buyer request and report preserve canonical codes: '+lang,async({page})=>{
   await ready(page);
@@ -1299,9 +1299,9 @@ test('Shop Plus report form keeps unsent reason and text on locale switch',async
 });
 
 for(const [lang,labels] of Object.entries({
- sq:{tag:'ILLYRIAN SHOP · KËRKIM I AVANCUAR',intro:'Krahaso dyqanet dhe shiko karakteristikat e ofertave. Çdo listim është demonstrues.',stock:'Inventari:',sold:'Pa stok (demo)',promoted:'PROMOVUAR · DEMO',compare:'I njëjti produkt, disa dyqane',shops:'Dyqanet e vogla',demoListings:'listime demonstrative',open:'Hap katalogun',fee:'Komision ilustrues 5%:',flow:'Rrjedhë ilustruese',simulate:'Simulo porosinë (pa pagesë)',created:'E krijuar në demo',return:'Kërkesë anulimi/kthimi (demo)'},
- en:{tag:'ILLYRIAN SHOP · ADVANCED SEARCH',intro:'Compare shops and inspect offer details. Every listing is fictional.',stock:'Stock:',sold:'Out of stock (demo)',promoted:'SPONSORED · DEMO',compare:'Same product, multiple shops',shops:'Small shops',demoListings:'demo listings',open:'Open catalog',fee:'Illustrative 5% fee:',flow:'Illustrative flow',simulate:'Simulate order (no payment)',created:'Created in demo',return:'Cancellation/return requested (demo)'},
- it:{tag:'ILLYRIAN SHOP · RICERCA AVANZATA',intro:'Confronta i negozi e consulta i dettagli delle offerte. Ogni annuncio è dimostrativo.',stock:'Disponibilità:',sold:'Esaurito (demo)',promoted:'SPONSORIZZATO · DEMO',compare:'Stesso prodotto, più negozi',shops:'Piccoli negozi',demoListings:'annunci demo',open:'Apri catalogo',fee:'Commissione illustrativa del 5%:',flow:'Flusso illustrativo',simulate:'Simula ordine (nessun pagamento)',created:'Creato nella demo',return:'Annullamento/reso richiesto (demo)'}
+ sq:{tag:'ILLYRIAN SHOP · KËRKIM I AVANCUAR',intro:"Krahaso dyqanet dhe shiko karakteristikat e ofertave. Çdo listim është.",stock:'Inventari:',sold:"Pa stok",promoted:"PROMOVUAR",compare:'I njëjti produkt, disa dyqane',shops:'Dyqanet e vogla',demoListings:"listime",open:'Hap katalogun',fee:'Komision ilustrues 5%:',flow:'Rrjedhë ilustruese',simulate:'Simulo porosinë (pa pagesë)',created:"E krijuar lokalisht",return:"Kërkesë anulimi/kthimi"},
+ en:{tag:'ILLYRIAN SHOP · ADVANCED SEARCH',intro:"Compare shops and browse offer details.",stock:'Stock:',sold:"Out of stock",promoted:"SPONSORED",compare:'Same product, multiple shops',shops:'Small shops',demoListings:"listings",open:'Open catalog',fee:'Illustrative 5% fee:',flow:'Illustrative flow',simulate:'Simulate order (no payment)',created:"Created on this device",return:"Cancellation/return requested"},
+ it:{tag:'ILLYRIAN SHOP · RICERCA AVANZATA',intro:"Confronta i negozi e consulta le caratteristiche delle offerte.",stock:'Disponibilità:',sold:"Esaurito",promoted:"SPONSORIZZATO",compare:'Stesso prodotto, più negozi',shops:'Piccoli negozi',demoListings:"annunci",open:'Apri catalogo',fee:'Commissione illustrativa del 5%:',flow:'Flusso illustrativo',simulate:'Simula ordine (nessun pagamento)',created:"Creato in locale",return:"Annullamento/reso richiesto"}
 })){
  test('Shop Plus catalog cards, comparison and sponsored disclaimers in '+lang,async({page})=>{
   await ready(page);
@@ -1356,13 +1356,13 @@ test('Shop Plus order state retains original persisted enum while display locali
  expect(rows[0].status).toBe('E krijuar në demo');
  const id=rows[0].id;
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
- await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText('Created in demo');
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText("Created on this device");
  await page.locator('#isp-root [data-isp="sample-cancel:'+id+'"]').click();
  rows=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).sampleOrders,key);
  expect(rows[0].status).toBe('Kërkesë anulimi/kthimi (demo)');
- await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText('Cancellation/return requested (demo)');
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText("Cancellation/return requested");
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
- await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText('Annullamento/reso richiesto (demo)');
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:id})).toContainText("Annullamento/reso richiesto");
 });
 
 test('Shop Plus does not mislabel unrecognized persisted order statuses as return requests',async({page})=>{
@@ -1419,9 +1419,9 @@ for(const [language,labels] of Object.entries({
 
 
 for(const [language,labels] of Object.entries({
- sq:{heading:'“Kërkoj…” — kërkesat e komunitetit',empty:'Ende pa kërkesa lokale.',expires:'Skadon:',reply:'Përgjigju si dyqan (demo)',form:'Mesazhi demonstrues',moderation:'Raportime dhe etiketa të promovimit',pending:'Në shqyrtim (simulim, jo moderator real)',reason:'Mashtrim i dyshuar',close:'✕ Mbyll'},
- en:{heading:'“Looking for…” — community requests',empty:'No local requests yet.',expires:'Expires:',reply:'Reply as a shop (demo)',form:'Demo message',moderation:'Reports and sponsored labels',pending:'Under review (simulation, no real moderator)',reason:'Suspected fraud',close:'✕ Close'},
- it:{heading:'“Cerco…” — richieste della comunità',empty:'Nessuna richiesta locale.',expires:'Scade:',reply:'Rispondi come negozio (demo)',form:'Messaggio dimostrativo',moderation:'Segnalazioni e annunci sponsorizzati',pending:'In esame (simulazione, senza moderatore reale)',reason:'Sospetta frode',close:'✕ Chiudi'}
+ sq:{heading:'“Kërkoj…” — kërkesat e komunitetit',empty:'Ende pa kërkesa lokale.',expires:'Skadon:',reply:"Përgjigju si dyqan",form:"Mesazhi",moderation:'Raportime dhe etiketa të promovimit',pending:'Në shqyrtim (simulim, jo moderator real)',reason:'Mashtrim i dyshuar',close:'✕ Mbyll'},
+ en:{heading:'“Looking for…” — community requests',empty:'No local requests yet.',expires:'Expires:',reply:"Reply as a shop",form:"message",moderation:'Reports and sponsored labels',pending:'Under review (simulation, no real moderator)',reason:'Suspected fraud',close:'✕ Close'},
+ it:{heading:'“Cerco…” — richieste della comunità',empty:'Nessuna richiesta locale.',expires:'Scade:',reply:"Rispondi come negozio",form:"Messaggio",moderation:'Segnalazioni e annunci sponsorizzati',pending:'In esame (simulazione, senza moderatore reale)',reason:'Sospetta frode',close:'✕ Chiudi'}
 })){
  test('Shop Plus requests replies moderation and accessible labels in '+language,async({page})=>{
   await ready(page);
@@ -1530,7 +1530,7 @@ test('Shop Plus draft seller response survives sq/en/it locale changes with focu
  await response.fill(draft);
  await response.focus();
  const saved=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
- const labels={sq:'Mesazhi demonstrues',en:'Demo message',it:'Messaggio dimostrativo'};
+ const labels={sq:"Mesazhi",en:"message",it:"Messaggio"};
  for(const lang of ['en','it','sq']){
   await page.evaluate(x=>window.IllyrianI18n.changeLanguage(x),lang);
   await expect(page.locator('#isp-answer label')).toContainText(labels[lang]);
@@ -1937,7 +1937,7 @@ test('visual regression: Privacy city All caption localizes, canonical filter va
   await expect(page.locator('html')).toHaveAttribute('lang',lang);
   await expect(city).toHaveValue('Të gjitha');
   await expect(city.locator('option').first()).toHaveText(label);
-  await expect(root.locator('.il4-map-label')).toContainText('ILLYRIAN · DEMO · '+label);
+  await expect(root.locator('.il4-map-label')).toContainText("ILLYRIAN · "+label);
   await expect(city).toBeFocused();
  }
  await root.locator('button[data-il4="close"]').click();
@@ -2167,9 +2167,9 @@ test('audit A1-05 Plans detail uses semantic labels for organizer and participan
  const root=page.locator('#ilp-root');
  await root.locator('[data-ilp="detail:demo-football"]').click();
  for(const lang of [
-  {code:'sq',heading:'Aktivitetet dhe organizatori',active:'Aktiv',seats:'vende',manage:'Menaxho kërkesat',accept:'Prano',pending:'në pritje',chat:'Biseda e grupit — demo',empty:'Ende pa mesazhe.',participant:'Si pjesëmarrës',status:'Statusi yt: Pa kërkesë'},
-  {code:'en',heading:'Activities and organizer',active:'Active',seats:'seats',manage:'Manage requests',accept:'Accept',pending:'pending',chat:'Group chat — demo',empty:'No messages yet.',participant:'As participant',status:'Your status: No request'},
-  {code:'it',heading:'Attività e organizzatore',active:'Attivo',seats:'posti',manage:'Gestisci le richieste',accept:'Accetta',pending:'in attesa',chat:'Chat di gruppo — demo',empty:'Nessun messaggio.',participant:'Come partecipante',status:'Il tuo stato: Nessuna richiesta'}
+  {code:'sq',heading:'Aktivitetet dhe organizatori',active:'Aktiv',seats:'vende',manage:'Menaxho kërkesat',accept:'Prano',pending:'në pritje',chat:"Biseda e grupit",empty:'Ende pa mesazhe.',participant:'Si pjesëmarrës',status:'Statusi yt: Pa kërkesë'},
+  {code:'en',heading:'Activities and organizer',active:'Active',seats:'seats',manage:'Manage requests',accept:'Accept',pending:'pending',chat:"Group chat",empty:'No messages yet.',participant:'As participant',status:'Your status: No request'},
+  {code:'it',heading:'Attività e organizzatore',active:'Attivo',seats:'posti',manage:'Gestisci le richieste',accept:'Accetta',pending:'in attesa',chat:"Chat di gruppo",empty:'Nessun messaggio.',participant:'Come partecipante',status:'Il tuo stato: Nessuna richiesta'}
  ]){
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang.code);
   await expect(root.locator('.ilp-panel header h2')).toHaveText(lang.heading);
@@ -2214,7 +2214,7 @@ for(const [lang,warning,confirm] of [
   await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
   await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
   await page.locator('#layer [data-act="v6-settings-section"][data-val="about"]').click();
-  await expect(page.locator('#layer')).toContainText('ILLYRIAN Demo v1.7');
+  await expect(page.locator('#layer')).toContainText("ILLYRIAN · DEMO v1.7");
   await page.locator('#layer [data-act="v6-reset-confirm"]').click();
   await expect(page.locator('#layer .v6-alert-banner')).toContainText(warning);
   await expect(page.locator('#layer [data-act="v6-reset-now"]')).toHaveText(confirm);
@@ -3104,7 +3104,7 @@ test('Commerce phase 2 deleted during composing rejects tag without dropping dra
 test('Commerce phase 2 Search promotion is labelled and opens existing offer',async({page})=>{
  await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
  await page.locator('#navbar [data-val="explore"]').click();await page.locator('#screen [data-act="category"][data-val="Biznese"]').click();
- const promo=page.locator('#screen .ily-commerce-promotion');await expect(promo.locator('[data-ily-commerce-sponsored]')).toHaveText('Sponsored · DEMO');
+ const promo=page.locator('#screen .ily-commerce-promotion');await expect(promo.locator('[data-ily-commerce-sponsored]')).toHaveText("Sponsored");
  await promo.locator('[data-ily-commerce-open="shopPlus|listing|k2"]').click();
  await expect(page.locator('#isp-root .isp-focus h3')).toHaveText('Kafe espresso 250 g');
  await page.keyboard.press('Escape');await expect(page.locator('#screen .ily-commerce-promotion')).toBeVisible();
@@ -3117,7 +3117,7 @@ async function safetyPanel(page){
 async function safetyDecision(page,card,status='restricted'){
  await page.locator('[data-ig6="role:moderator"]').click();await card.locator('[data-ig6^="review:"]').click();await page.locator('#ig6-decision [name="decision"]').selectOption(status);await page.locator('#ig6-decision [name="note"]').fill('Written local decision for this example');await page.locator('#ig6-decision button').click();
 }
-for(const [lang,title] of [['sq','Raportim lokal · DEMO'],['en','Local report · DEMO'],['it','Segnalazione locale · DEMO']]){
+for(const [lang,title] of [['sq',"Raportim lokal"],['en',"Local report"],['it',"Segnalazione locale"]]){
  test('Safety phase 5: contextual activity and Shop report retain source and locale - '+lang,async({page})=>{
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);await page.evaluate(()=>window.dispatchEvent(new CustomEvent('illyrian:plans:open',{detail:{id:'demo-football'}})));
   const source=page.locator('#ilp-root [data-ily-report]');await source.click();await expect(page.locator('#ig6-report-heading')).toHaveText(title);await expect(page.locator('#ilp-root')).toHaveAttribute('inert','');
@@ -3149,7 +3149,7 @@ test('Safety phase 5: failed decision keeps its exact form focus and retries onc
  await ready(page);await safetyPanel(page);await page.locator('[data-ig6="role:moderator"]').click();await page.locator('[data-case-id="sample-1"] [data-ig6^="review:"]').click();const f=page.locator('#ig6-decision');await f.locator('[name="decision"]').selectOption('restricted');await f.locator('[name="note"]').fill('Unsent decision must survive this failed save');const raw=await page.evaluate(k=>localStorage.getItem(k),TEAM_KEY);await rejectModuleWrites(page,TEAM_KEY);await f.locator('button').click();await expect(f).toBeVisible();await expect(f.locator('[name="note"]')).toHaveValue('Unsent decision must survive this failed save');await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(f.locator('[name="note"]')).toHaveValue('Unsent decision must survive this failed save');expect(await page.evaluate(k=>localStorage.getItem(k),TEAM_KEY)).toBe(raw);await allowModuleWrites(page);await f.locator('button').click();expect((await teamData(page)).cases.filter(x=>x.id==='sample-1')).toHaveLength(1);expect((await teamData(page)).audits.filter(x=>x.id==='sample-1')).toHaveLength(1);
 });
 test('Safety phase 5: contextual community profile and comment-thread reports preserve nested chat drafts',async({page})=>{
- await ready(page);await page.locator('#screen [data-act="user-profile"]').first().click();const profile=page.locator('#layer [data-ily-report]');await expect(profile).toHaveAttribute('data-report-kind','profile');await profile.click();await page.locator('#ig6-report button').click();await page.keyboard.press('Escape');await expect(profile).toBeFocused();await page.locator('#layer [data-act="v6-openchat"]').click();await page.locator('#v6-msg-input').fill('Keep this private local draft');const chat=page.locator('#layer [data-ily-report]');await chat.click();await page.keyboard.press('Tab');await expect(page.locator('#ig6-root')).toContainText('DEMO');await page.keyboard.press('Escape');await expect(page.locator('#v6-msg-input')).toHaveValue('Keep this private local draft');await expect(chat).toBeFocused();await page.keyboard.press('Escape');
+ await ready(page);await page.locator('#screen [data-act="user-profile"]').first().click();const profile=page.locator('#layer [data-ily-report]');await expect(profile).toHaveAttribute('data-report-kind','profile');await profile.click();await page.locator('#ig6-report button').click();await page.keyboard.press('Escape');await expect(profile).toBeFocused();await page.locator('#layer [data-act="v6-openchat"]').click();await page.locator('#v6-msg-input').fill('Keep this private local draft');const chat=page.locator('#layer [data-ily-report]');await chat.click();await page.keyboard.press('Tab');await expect(page.locator('#ig6-root')).not.toContainText('DEMO');await page.keyboard.press('Escape');await expect(page.locator('#v6-msg-input')).toHaveValue('Keep this private local draft');await expect(chat).toBeFocused();await page.keyboard.press('Escape');
  await page.locator('#navbar [data-val="explore"]').click();await page.locator('[data-act="v11-community-open"][data-id="c1"]').first().click();await page.locator('#layer [data-ily-report]').click();await page.locator('#ig6-report button').click();expect((await teamData(page)).cases.at(-1).targetRef).toEqual({source:'communities',kind:'community',id:'c1'});await page.keyboard.press('Escape');await page.keyboard.press('Escape');await page.locator('#navbar [data-val="home"]').click();await page.locator('#screen [data-act="comments"]').first().click();await page.locator('#layer [data-ily-report]').click();await expect(page.locator('#ig6-report [name="target"]')).not.toHaveValue('');await page.locator('#ig6-report button').click();expect((await teamData(page)).cases.at(-1).targetRef.kind).toBe('commentThread');
 });
 test('Safety phase 5: pending appeal blocks contradictory second decision and visitor cannot decide',async({page})=>{
@@ -3336,4 +3336,30 @@ test('Performance 5.4: a 5000-message thread keeps the rendered tail bounded aft
 
 for(const count of [0,50])test('Performance 5.4: complete short history needs no older control - '+count,async({page})=>{
  await longChat(page,count);const box=page.locator('#v6-chat-scroll');await expect(box.locator('.v6-bubble.me')).toHaveCount(count);await expect(box.locator('.v6-bubble:not(.me)')).toHaveCount(1);await expect(box.locator('[data-act="v54-chat-older"]')).toHaveCount(0);
+});
+
+for(const lang of ['sq','en','it'])test('Presentation copy has one About disclosure and preserves literal user DEMO text - '+lang,async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{const k='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(k)||'{}');s.posts=Array.isArray(s.posts)?s.posts:[];s.posts.unshift({id:'copy-policy-ugc',name:'DEMO Studio',text:'DEMO is part of my own text <b>literal</b>',ava:'a1',city:'Tiranë',when:'Tani',likes:0,comments:0,share:0});localStorage.setItem(k,JSON.stringify(s))});
+ await page.reload();await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const post=page.locator('#screen .post').filter({hasText:'DEMO is part of my own text'});
+ await expect(post.locator('.post-copy')).toHaveText('DEMO is part of my own text <b>literal</b>');
+ await expect(post.locator('.post-name')).toContainText('DEMO Studio');
+ await expect(page.locator('#screen .demo-tag')).toHaveCount(0);
+ const bad=await page.evaluate(()=>Object.entries(window.ILLYRIAN_LOCALES[window.IllyrianI18n.language]).flatMap(([ns,values])=>Object.keys(values).filter(k=>/\bdemo(?:s|je)?\b/i.test(window.IllyrianI18n.t(ns+':'+k))).map(k=>ns+':'+k)));
+ expect(bad).toEqual([]);
+ const pin=await page.evaluate(()=>window.IllyrianI18n.t('privacy:pinAria',{name:'DEMO café',city:'DEMO City',interpolation:{escapeValue:false}}));
+ expect(pin).toContain('DEMO café');expect(pin).toContain('DEMO City');
+ await page.locator('[data-ilshop-open]').first().click();
+ await expect(page.locator('#illyrian-shop-layer header')).not.toContainText(/\bdemo\b/i);
+ await page.locator('[data-isp-open]').click();
+ await expect(page.locator('#isp-root header')).not.toContainText(/\bdemo\b/i);
+ await page.locator('#isp-root header [data-isp="close"]').click();await page.keyboard.press('Escape');
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
+ await page.locator('#layer [data-act="v6-settings-section"][data-val="about"]').click();
+ await expect(page.locator('#phone [data-demo-disclosure]')).toHaveCount(1);
+ await expect(page.locator('[data-demo-disclosure]')).toHaveText('ILLYRIAN · DEMO v1.7');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
 });

@@ -5,19 +5,19 @@
  const CITIES=['Të gjitha','Tiranë','Durrës','Shkodër','Vlorë','Elbasan','Prishtinë'];
  const SEED=[
   {id:'p1',kind:'Produkte',name:'Kafe espresso 250 g',store:'Market Arbër',city:'Tiranë',price:5.5,unit:'copë',emoji:'☕',description:'Kafe e bluar për espresso. Produkt shembull.'},
-  {id:'p2',kind:'Produkte',name:'Kafe espresso 250 g',store:'Shije Shqiptare',city:'Tiranë',price:5.2,unit:'copë',emoji:'☕',description:'Kafe espresso në paketim 250 g, ofertë demonstrative.'},
+  {id:'p2',kind:'Produkte',name:'Kafe espresso 250 g',store:'Shije Shqiptare',city:'Tiranë',price:5.2,unit:'copë',emoji:'☕',description:"Kafe espresso në paketim 250 g, ofertë."},
   {id:'p3',kind:'Produkte',name:'Kafe espresso 250 g',store:'Mini Market Bora',city:'Durrës',price:5.8,unit:'copë',emoji:'☕',description:'Kafe espresso për shtëpi dhe zyrë.'},
   {id:'p4',kind:'Produkte',name:'Atlete sportive',store:'Urban Steps',city:'Tiranë',price:48,unit:'palë',emoji:'👟',description:'Atlete për përdorim të përditshëm; madhësitë verifikohen me dyqanin.'},
-  {id:'p5',kind:'Produkte',name:'Makineri kafeje espresso',store:'Elektro Albania',city:'Shkodër',price:129,unit:'copë',emoji:'🔌',description:'Pajisje shtëpiake demonstrative, pa garanci tregtare reale.'},
-  {id:'p6',kind:'Produkte',name:'Mjaltë mali 500 g',store:'Bletaria Drini',city:'Tiranë',price:10,unit:'kavanoz',emoji:'🍯',description:'Listim ushqimor demonstrues.'},
+  {id:'p5',kind:'Produkte',name:'Makineri kafeje espresso',store:'Elektro Albania',city:'Shkodër',price:129,unit:'copë',emoji:'🔌',description:"Pajisje shtëpiake, pa garanci tregtare reale."},
+  {id:'p6',kind:'Produkte',name:'Mjaltë mali 500 g',store:'Bletaria Drini',city:'Tiranë',price:10,unit:'kavanoz',emoji:'🍯',description:"Listim ushqimor."},
   {id:'c1',kind:'Makina',name:'Volkswagen Golf 7 · 2017',store:'Auto Durrësi',city:'Durrës',price:9800,unit:'automjet',emoji:'🚗',description:'1.6 TDI · 142 000 km · shembull; dokumentacioni nuk është verifikuar.'},
-  {id:'c2',kind:'Makina',name:'Toyota Yaris Hybrid · 2019',store:'Auto Tirana',city:'Tiranë',price:11600,unit:'automjet',emoji:'🚙',description:'Hybrid · 91 000 km · ofertë demonstrative.'},
+  {id:'c2',kind:'Makina',name:'Toyota Yaris Hybrid · 2019',store:'Auto Tirana',city:'Tiranë',price:11600,unit:'automjet',emoji:'🚙',description:"Hybrid · 91 000 km · ofertë."},
   {id:'h1',kind:'Banesa me qira',name:'Apartament 2+1 me qira',store:'Banesa Tirana',city:'Tiranë',price:540,unit:'muaj',emoji:'🏠',description:'Zona Komuna e Parisit; shifrat dhe disponueshmëria janë shembuj.'},
-  {id:'h2',kind:'Banesa me qira',name:'Garsoniere pranë detit',store:'Qira Durrës',city:'Durrës',price:290,unit:'muaj',emoji:'🏡',description:'Listim demonstrues; nuk është rezervim real.'},
+  {id:'h2',kind:'Banesa me qira',name:'Garsoniere pranë detit',store:'Qira Durrës',city:'Durrës',price:290,unit:'muaj',emoji:'🏡',description:"Listim; nuk është rezervim real."},
   {id:'s1',kind:'Shërbime',name:'Pastrim banese',store:'Shërbime Elbasani',city:'Elbasan',price:45,unit:'shërbim',emoji:'🧹',description:'Kërko ofertë sipas sipërfaqes dhe kushteve.'},
-  {id:'property1',kind:'Prona',name:'Apartament në shitje',store:'Prona Shembull',city:'Tiranë',price:95000,unit:'pronë',emoji:'🏘️',description:'Shitje prone demonstrative. Nuk kryhet rezervim ose pagesë.'},
+  {id:'property1',kind:'Prona',name:'Apartament në shitje',store:'Prona Shembull',city:'Tiranë',price:95000,unit:'pronë',emoji:'🏘️',description:"Shitje prone. Nuk kryhet rezervim ose pagesë."},
   {id:'job1',kind:'Punë',name:'Kërkohet barist',store:'Kafe Demo',city:'Durrës',price:0,unit:'muaj',emoji:'💼',description:'Shpallje pune fiktive. Orari dhe paga diskutohen vetëm në simulim.'},
-  {id:'s2',kind:'Shërbime',name:'Riparim celulari',store:'Phone Lab',city:'Prishtinë',price:20,unit:'nga',emoji:'📱',description:'Çmim orientues demonstrues; ofruesi konfirmon koston.'}
+  {id:'s2',kind:'Shërbime',name:'Riparim celulari',store:'Phone Lab',city:'Prishtinë',price:20,unit:'nga',emoji:'📱',description:"Çmim orientues; ofruesi konfirmon koston."}
  ];
  function read(){try{const v=JSON.parse(localStorage.getItem(KEY)||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{return {}}}
  const restored=read();
@@ -41,7 +41,7 @@
   const cities=[...new Set(rows.map(p=>typeof p.city==='string'?p.city:'').filter(Boolean))];
   const kinds=[...new Set(rows.map(p=>p.kind||p.type))];
   const stock=rows.filter(p=>p.type==='Produkte'&&Number.isFinite(p.quantity)&&p.quantity>0).length;
-  return `<section class="ils-business-profile"><span data-i18n-direct>${clean(shopMessage('businessDemo','Profil biznesi · DEMO'))}</span><h2 data-user-content>${clean(name)}</h2><p data-i18n-direct>${clean(shopMessage('businessFictional','Të dhëna fiktive; identiteti nuk është verifikuar.'))}</p><p data-ily-business-status data-i18n-direct>${clean(window.IllyrianI18n?.t('identity:declared')||'Biznes i deklaruar · DEMO')}</p><button type="button" data-ily-identity-guide data-i18n-direct>${clean(window.IllyrianI18n?.t('identity:guideLink')||'Kupto statusin e biznesit')}</button><dl><dt data-i18n-direct>${clean(shopMessage('city','Qyteti'))}</dt><dd data-user-content>${clean(cities.join(', '))}</dd><dt data-i18n-direct>${clean(shopMessage('businessHours','Orari'))}</dt><dd data-hours data-i18n-direct>${clean(shopMessage(known?'hoursExample':'hoursUnknown',known?'Hën–Sht 09:00–18:00 (shembull)':'Orari nuk është dhënë'))}</dd><dt data-i18n-direct>${clean(shopMessage('businessLocation','Vendndodhja opsionale'))}</dt><dd data-i18n-direct>${clean(shopMessage('locationPrivate','Adresa e saktë nuk është publikuar. GPS nuk kërkohet.'))}</dd></dl><p data-contact data-i18n-direct>${clean(shopMessage('contactDemo','Kontakt vetëm në simulim. Nuk dërgohet mesazh real.'))}</p><p data-i18n-direct>${kinds.map(x=>clean(categoryLabel(x))).join(' · ')}</p><p data-i18n-direct>${rows.length} ${clean(shopMessage('businessOffers','oferta demonstrative'))} · ${stock?stock+' '+clean(shopMessage('businessStock','oferta me stok demonstrues')):clean(shopMessage('availabilityUnknown','Disponueshmëria nuk është konfirmuar'))}</p></section>`;
+  return `<section class="ils-business-profile"><span data-i18n-direct>${clean(shopMessage('businessDemo',"Profil biznesi"))}</span><h2 data-user-content>${clean(name)}</h2><p data-i18n-direct>${clean(shopMessage('businessFictional','Të dhëna fiktive; identiteti nuk është verifikuar.'))}</p><p data-ily-business-status data-i18n-direct>${clean(window.IllyrianI18n?.t('identity:declared')||"Biznes i deklaruar")}</p><button type="button" data-ily-identity-guide data-i18n-direct>${clean(window.IllyrianI18n?.t('identity:guideLink')||'Kupto statusin e biznesit')}</button><dl><dt data-i18n-direct>${clean(shopMessage('city','Qyteti'))}</dt><dd data-user-content>${clean(cities.join(', '))}</dd><dt data-i18n-direct>${clean(shopMessage('businessHours','Orari'))}</dt><dd data-hours data-i18n-direct>${clean(shopMessage(known?'hoursExample':'hoursUnknown',known?'Hën–Sht 09:00–18:00 (shembull)':'Orari nuk është dhënë'))}</dd><dt data-i18n-direct>${clean(shopMessage('businessLocation','Vendndodhja opsionale'))}</dt><dd data-i18n-direct>${clean(shopMessage('locationPrivate','Adresa e saktë nuk është publikuar. GPS nuk kërkohet.'))}</dd></dl><p data-contact data-i18n-direct>${clean(shopMessage('contactDemo','Kontakt vetëm në simulim. Nuk dërgohet mesazh real.'))}</p><p data-i18n-direct>${kinds.map(x=>clean(categoryLabel(x))).join(' · ')}</p><p data-i18n-direct>${rows.length} ${clean(shopMessage('businessOffers',"oferta"))} · ${stock?stock+' '+clean(shopMessage('businessStock',"oferta me stok")):clean(shopMessage('availabilityUnknown','Disponueshmëria nuk është konfirmuar'))}</p></section>`;
  };
  window.IllyrianShopDiscovery=Object.freeze({searchText,businessProfile});
  const price=p=>p.kind==='Punë'?(Number(p.price)>0?money(p.price)+' '+clean(shopMessage('salaryBasis','/muaj · orientuese')):clean(shopMessage('salaryUnknown','Paga nuk është deklaruar'))):money(p.price)+(p.kind==='Banesa me qira'?'/muaj':p.unit==='nga'?' nga':'');
@@ -64,7 +64,7 @@
  const cartItems=()=>Object.entries(state.cart).map(([id,qty])=>({p:byId(id),qty:Math.min(99,Math.max(0,Number(qty)||0))})).filter(x=>x.p&&x.p.kind==='Produkte'&&x.qty>0);
  const cartTotal=()=>cartItems().reduce((n,x)=>n+x.p.price*x.qty,0);
  const btn=(action,text,cls='ils-btn')=>`<button class="${cls}" data-ils="${action}">${text}</button>`;
- const status=()=>'<p class="ils-demo-note">DEMO · Listimet janë fiktive. Nuk kryhen pagesa, dërgesa ose kontakte reale.</p>';
+ const status=()=>"<p class=\"ils-demo-note\">Listimet janë fiktive. Nuk kryhen pagesa, dërgesa ose kontakte reale.</p>";
  function browse(){
   const data=visible(),foundShops=shops();
   return `<section class="ils-splash"><span>MARKETPLACE SHQIPTAR · PROTOTIP</span><h2>Gjej produktin në disa dyqane.</h2><p>Produkte, biznese lokale, makina, banesa me qira dhe shërbime.</p></section>
@@ -81,9 +81,9 @@
  }
  function detail(){const p=byId(state.selected);if(!p)return '<div class="ils-empty">Listimi nuk ekziston.</div>';
   return `<button class="ils-text-link" data-ils="browse">← Kthehu te rezultatet</button><div class="ils-product-cover" aria-hidden="true">${clean(p.emoji)}</div><span class="ils-kind">${clean(categoryLabel(p.kind))} · ${clean(p.city)}</span><h2 data-user-content>${clean(p.name)}</h2>${window.IllyrianGovernance?.reportButton('shop','listing',p.id,p.name)||''}<h3 class="ils-price">${price(p)}</h3><p class="ils-description" data-user-content>${clean(p.description)}</p><div class="ils-seller"><small>Shitësi / dyqani</small><strong data-user-content>${clean(storeName(p)||'Dyqan i papërcaktuar')}</strong><button data-ils="store" data-value="${clean(storeName(p))}">Shiko listimet e këtij dyqani →</button><button data-ils="business" data-value="${clean(storeName(p))}" data-i18n-direct>${clean(shopMessage('viewBusiness','Shiko biznesin'))}</button></div>
-   ${p.kind==='Produkte'?btn('add','+ Shto në shportë'):btn('contact','Kërko informacion (demo)')}
+   ${p.kind==='Produkte'?btn('add','+ Shto në shportë'):btn('contact',"Kërko informacion")}
    ${p.owned?btn('edit','Ndrysho listimin','ils-btn ils-secondary')+btn('delete','Fshi listimin','ils-btn ils-secondary'):''}
-   <div class="ils-info"><strong>Transaksion demonstrues</strong><p>Nuk ka pagesë reale, shpërndarje të dhënash apo verifikim shitësi. Kontakto vetëm brenda simulimit.</p></div>`;
+   <div class="ils-info"><strong>Transaksion </strong><p>Nuk ka pagesë reale, shpërndarje të dhënash apo verifikim shitësi. Kontakto vetëm brenda simulimit.</p></div>`;
  }
  function business(){const rows=all().filter(p=>storeName(p)===state.business);return `<button class="ils-text-link" data-ils="browse">← Kthehu te Shop</button>${businessProfile(state.business,rows)}${window.IllyrianBusinessPresentation?.staff('shop',state.business)||''}${window.IllyrianBusinessPresentation?.controls('shop',state.business)||''}<button class="ils-btn" data-ils="business-catalog" data-i18n-direct>${clean(shopMessage('businessCatalog','Shiko ofertat e biznesit'))}</button>${status()}`;}
  function syncKind(form){if(!form)return;const job=form.elements.kind.value==='Punë',input=form.elements.price;input.required=!job;input.min=job?'0':'0.5';const label=form.querySelector('[data-price-label]');if(label)label.textContent=shopMessage(job?'salaryOptional':'listingPrice',job?'Paga orientuese € (opsionale)':'Çmimi (€)');}
@@ -97,19 +97,19 @@
  <label>Qyteti<select name="city">${option(CITIES.slice(1),p?.city||'Tiranë')}</select></label>
  <label><span data-price-label data-i18n-direct>Çmimi (€)</span><input name="price" type="number" required min="0.5" max="10000000" step="0.01" value="${p?.price||''}" placeholder="p.sh. 25"></label>
  <label>Përshkrimi<textarea name="description" maxlength="450" rows="4" placeholder="Karakteristikat, gjendja, kushtet…">${clean(p?.description||'')}</textarea></label>
- <button class="ils-btn" type="submit">${editing?'Ruaj ndryshimet':'Publiko vetëm në demo'}</button></form>${status()}`;
+ <button class="ils-btn" type="submit">${editing?'Ruaj ndryshimet':"Publiko vetëm lokalisht"}</button></form>${status()}`;
  }
  function my(){return `<button class="ils-text-link" data-ils="browse">← Kthehu te Shop</button><h2>Listimet e mia</h2><p class="ils-description">Krijohen, redaktohen dhe fshihen vetëm lokalisht në pajisjen tënde.</p><div class="ils-results">${state.listings.length?state.listings.map(tile).join(''):'<div class="ils-empty">Ende nuk ke publikuar listime.</div>'}</div>${btn('sell','+ Shto listim')}`;}
  function cart(){const rows=cartItems(),total=cartTotal(),fee=total*0.05;
   return `<button class="ils-text-link" data-ils="browse">← Kthehu te Shop</button><h2>Shporta ime</h2>
-   <p class="ils-description">Shporta pranon vetëm produkte për demonstrim. Makina dhe qiratë kanë kërkesa kontakti të ndara.</p>
+ <p class="ils-description">Shporta pranon vetëm produkte për demonstrim. Makina dhe qiratë kanë kërkesa kontakti të ndara.</p>
    ${rows.length?rows.map(({p,qty})=>`<div class="ils-cart-row"><span>${clean(p.emoji)}</span><div><strong>${clean(p.name)}</strong><small>${clean(p.store)} · ${money(p.price)} × ${qty}</small></div><button data-ils="remove-cart" data-id="${clean(p.id)}">Hiq</button></div>`).join(''):'<div class="ils-empty">Shporta është bosh.</div>'}
    ${rows.length?`<div class="ils-checkout"><div><span>Vlera totale</span><strong>${money(total)}</strong></div><p>Shembull ilustrues me komision platforme <b>5%</b>: ${money(fee)} për platformën dhe ${money(total-fee)} për shitësit, para kostove dhe taksave. <strong>Kjo normë nuk është miratuar si tarifë reale.</strong></p>${btn('checkout','Simulo porosinë')}</div>`:''}
   ${status()}`;
  }
- function confirmation(){return `<div class="ils-success"><span>✓</span><h2>Veprimi u regjistrua vetëm në demo</h2><p>Nuk është kryer pagesë, rezervim ose kontakt me shitësin.</p>${btn('browse','Vazhdo të kërkosh')}</div>`;}
+ function confirmation(){return `<div class="ils-success"><span>✓</span><h2>Veprimi u regjistrua vetëm lokalisht</h2><p>Nuk është kryer pagesë, rezervim ose kontakt me shitësin.</p>${btn('browse','Vazhdo të kërkosh')}</div>`;}
  const page=()=>state.view==='browse'?browse():state.view==='detail'?detail():state.view==='business'?business():state.view==='sell'||state.view==='edit'?form():state.view==='my'?my():state.view==='cart'?cart():confirmation();
- function render(refocus){if(!layer||!state.open)return;const prev=document.activeElement;const id=prev?.id;const wasIn=prev&&layer.contains(prev);layer.innerHTML=header(state.view==='browse'?'Kërko nga të gjitha dyqanet':'Shfletim demonstrues')+`<section class="ils-body">${page()}</section>`;syncKind(layer.querySelector('#ils-sell-form'));if(refocus&&wasIn){const next=id?layer.querySelector('#'+id):null;(next||layer.querySelector('button,input,select,textarea'))?.focus({preventScroll:true})}}
+ function render(refocus){if(!layer||!state.open)return;const prev=document.activeElement;const id=prev?.id;const wasIn=prev&&layer.contains(prev);layer.innerHTML=header(state.view==='browse'?'Kërko nga të gjitha dyqanet':"Shfletim")+`<section class="ils-body">${page()}</section>`;syncKind(layer.querySelector('#ils-sell-form'));if(refocus&&wasIn){const next=id?layer.querySelector('#'+id):null;(next||layer.querySelector('button,input,select,textarea'))?.focus({preventScroll:true})}}
  function notify(message){if(!layer)return;const old=layer.querySelector('.ils-toast');if(old)old.remove();const div=document.createElement('div');div.className='ils-toast';div.role='status';div.textContent=message;layer.appendChild(div);if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>div.remove(),3500)}
  function show(){opener=document.activeElement;state.open=true;state.view='browse';state.store='';layer=document.createElement('section');layer.id='illyrian-shop-layer';layer.className='ils-overlay';layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');layer.setAttribute('aria-label','ILLYRIAN Shop');document.querySelector('#phone')?.appendChild(layer);for(const sel of ['#screen','#navbar','.head']){const el=document.querySelector('#phone > '+sel);if(el)el.inert=true}render();layer.querySelector('#ils-search')?.focus({preventScroll:true});}
  function close(){state.open=false;layer?.remove();layer=null;for(const sel of ['#screen','#navbar','.head']){const el=document.querySelector('#phone > '+sel);if(el)el.inert=false}if(opener?.isConnected)opener.focus({preventScroll:true});else document.querySelector('[data-ilshop-open],#navbar button')?.focus({preventScroll:true});window.dispatchEvent(new CustomEvent('illyrian:shop:closed',{detail:{source:'shop'}}));}
@@ -118,7 +118,7 @@
    if(screen.querySelector('[data-ilshop-open]'))return;
    const home=screen.querySelector('.stories,.v15-studio');const explore=screen.querySelector('#finder');
    if(!home&&!explore)return;
-   const entry=document.createElement('div');entry.className='ils-entry';entry.innerHTML=`<div><span>ILLYRIAN SHOP · DEMO v1.7</span><strong>Gjej produkte, makina dhe banesa.</strong><small>Kërko dhe krahaso listime nga dyqane të ndryshme.</small></div><button type="button" data-ilshop-open="1">Hap Shop →</button>`;
+   const entry=document.createElement('div');entry.className='ils-entry';entry.innerHTML=`<div><span>ILLYRIAN SHOP · v1.7</span><strong>Gjej produkte, makina dhe banesa.</strong><small>Kërko dhe krahaso listime nga dyqane të ndryshme.</small></div><button type="button" data-ilshop-open="1">Hap Shop →</button>`;
    if(explore){const heading=screen.querySelector('.section-header');(heading||explore.parentElement).insertAdjacentElement('afterend',entry)}else{const posts=[...screen.querySelectorAll(':scope > .post')],composer=screen.querySelector(':scope > .stories + .compose');(screen.querySelector(':scope > .empty')||posts[posts.length-1]||screen.querySelector(':scope > .filters')||composer||home).insertAdjacentElement('afterend',entry)}
  }
  const screen=document.getElementById('screen');if(!screen||!document.getElementById('phone'))return;
@@ -139,12 +139,12 @@
   if(action==='store'){state.store=button.dataset.value||'';state.view='browse';render();return}
   if(action==='clear-store'){state.store='';render();return}
   if(action==='detail'){state.selected=id;state.view='detail';render();return}
-  if(action==='add'){const p=byId(state.selected);if(!p||p.kind!=='Produkte')return;if(!transact(()=>{state.cart[p.id]=Math.min(99,(Number(state.cart[p.id])||0)+1)}))return;render();notify(shopMessage('addedCartNotice','Produkti u shtua në shportën demonstrative.'));return}
+  if(action==='add'){const p=byId(state.selected);if(!p||p.kind!=='Produkte')return;if(!transact(()=>{state.cart[p.id]=Math.min(99,(Number(state.cart[p.id])||0)+1)}))return;render();notify(shopMessage('addedCartNotice',"Produkti u shtua në shportën."));return}
   if(action==='remove-cart'){if(!transact(()=>{delete state.cart[id]}))return;render();return}
   if(action==='checkout'){if(!cartItems().length)return;if(!transact(()=>{state.orders.unshift({created:Date.now(),total:cartTotal(),lines:cartItems().length,status:'DEMO'});state.orders=state.orders.slice(0,20);state.cart={}}))return;state.view='confirmation';render();return}
   if(action==='contact'){const p=byId(state.selected);if(!p)return;if(!transact(()=>{state.requests.unshift({id:p.id,at:Date.now()});state.requests=state.requests.slice(0,30)}))return;state.view='confirmation';render();return}
   if(action==='edit'){const p=byId(state.selected);if(!p?.owned)return;state.view='edit';render();return}
-  if(action==='delete'){const p=byId(state.selected);if(!p?.owned||!confirm(shopMessage('confirmDelete','Ta fshijmë këtë listim demonstrues?')))return;if(!transact(()=>{state.listings=state.listings.filter(x=>x.id!==p.id);delete state.cart[p.id]}))return;state.selected=null;state.view='my';render();return}
+  if(action==='delete'){const p=byId(state.selected);if(!p?.owned||!confirm(shopMessage('confirmDelete',"Ta fshijmë këtë listim?")))return;if(!transact(()=>{state.listings=state.listings.filter(x=>x.id!==p.id);delete state.cart[p.id]}))return;state.selected=null;state.view='my';render();return}
  },true);
  document.addEventListener('input',event=>{if(!state.open||event.target?.id!=='ils-search')return;const pos=event.target.selectionStart;const value=event.target.value;const scroll=layer.querySelector('.ils-body')?.scrollTop||0;state.query=value;render();const input=layer.querySelector('#ils-search');if(input){input.focus({preventScroll:true});try{input.setSelectionRange(pos,pos)}catch{}}if(layer.querySelector('.ils-body'))layer.querySelector('.ils-body').scrollTop=scroll;},true);
  document.addEventListener('change',event=>{if(!state.open)return;if(event.target?.matches?.('#ils-sell-form [name=kind]')){syncKind(event.target.form);return}if(event.target?.id==='ils-city'){state.city=event.target.value;render()}else if(event.target?.id==='ils-sort'){state.sort=event.target.value;render()}},true);
@@ -152,7 +152,7 @@
   if(!CATEGORIES.slice(1).includes(kind)||name.length<4||store.length<2||!CITIES.slice(1).includes(city)||!Number.isFinite(price)||price<(kind==='Punë'?0:0.5)||price>1e7){notify(shopMessage('invalidListing','Kontrollo kategorinë, emrin, dyqanin, qytetin dhe çmimin.'));return}
   const data={kind,name:name.slice(0,90),store:store.slice(0,70),city,price:Math.round(price*100)/100,description:String(f.get('description')||'').slice(0,450),emoji:kind==='Makina'?'🚗':kind==='Banesa me qira'||kind==='Prona'?'🏠':kind==='Punë'?'💼':kind==='Shërbime'?'🛠️':'📦',owned:true,unit:kind==='Banesa me qira'?'muaj':'copë'};
   const current=state.view==='edit'?byId(state.selected):null;if(state.view==='edit'&&!current?.owned)return;
-  if(!current&&state.listings.length>=30){notify(shopMessage('maxListings','Maksimumi 30 listime demonstrative.'));return}
+  if(!current&&state.listings.length>=30){notify(shopMessage('maxListings',"Maksimumi 30 listime."));return}
   if(!current)data.id='user-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);
   if(!transact(()=>{if(current)Object.assign(current,data);else state.listings.unshift(data)}))return;
   state.selected=data.id||state.selected;state.view='my';render();notify(shopMessage('listingSaved','Listimi u ruajt vetëm në këtë shfletues.'));

@@ -5,7 +5,7 @@
  const clean=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const load=key=>{try{const x=JSON.parse(localStorage.getItem(key)||'null');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch{return {}}};
  const array=(x,limit)=>Array.isArray(x)?x.filter(v=>v&&typeof v==='object'&&!Array.isArray(v)).slice(0,limit):[];
- const TEAM_USERS={owner:'Arta Demo',admin:'Beni Demo',support:'Drita Demo',catalog:'Ilir Demo',guest:'Elira Demo'};
+ const TEAM_USERS={owner:'Arta',admin:'Beni',support:'Drita',catalog:'Ilir',guest:'Elira'};
  const TEAM_ROLES=['owner','admin','catalog','support','viewer'];
  const knownTeamUser=id=>typeof id==='string'&&Object.hasOwn(TEAM_USERS,id);
  function normalTeams(input){
@@ -39,7 +39,7 @@
  const b=(act,t,extra='')=>'<button type="button" data-ig6="'+clean(act)+'" '+extra+'>'+clean(t)+'</button>';
  const notice=()=>state.notice?'<p class="ig6-note" role="status">'+clean(state.notice)+'</p>':'';
  const sampleCases=[
-  {id:'sample-1',target:'Listim ilustrues për makinë',reason:'Çmim i dyshimtë',detail:'Raport demonstrues: kërkohet dokumentacion.',status:'pending',source:'shembull'},
+  {id:'sample-1',target:'Listim ilustrues për makinë',reason:'Çmim i dyshimtë',detail:"Raport : kërkohet dokumentacion.",status:'pending',source:'shembull'},
   {id:'sample-2',target:'Ofertë ilustrative dyqani',reason:'Fotografi e pasaktë',detail:'Shembull për procesin e apelimit.',status:'restricted',source:'shembull'}
  ];
  // Source stores are read-only projections. Only decisions live in Governance.
@@ -68,7 +68,7 @@
  };
  const explanation=(key)=>({
   declared:{label:'Të dhëna të deklaruara',text:'Shitësi ose organizatori ka shkruar këto të dhëna; platforma nuk ka kryer kontrolle të identitetit apo stokut.'},
-  sample:{label:'Rrjedhë demonstrative',text:'Ky është një shembull i prodhuar për dizajn, jo provë për një person ose biznes real.'},
+  sample:{label:"Rrjedhë",text:'Ky është një shembull i prodhuar për dizajn, jo provë për një person ose biznes real.'},
   pending:{label:'Në pritje të shqyrtimit',text:'Një raportim ose kërkesë kontrolli është regjistruar vetëm në këtë shfletues; askush nuk po shqyrton automatikisht.'}
  })[key];
  const identityText=key=>window.IllyrianI18n?.t('identity:'+key)||key;
@@ -78,7 +78,7 @@
   const cards=['declared','sample','pending'].map(key=>{const x=explanation(key);return '<article class="ig6-card"><h4>'+clean(x.label)+'</h4><p>'+clean(x.text)+'</p>'+b('explain:'+key,'Pse e shoh këtë?')+'</article>'}).join('');
   return '<h3>Besimi me shpjegim — IN9-06</h3>'+
    '<p>Transparenca duhet të tregojë <b>çfarë dimë, çfarë nuk dimë dhe kush e ka kontrolluar</b>. Nuk japim simbole “i verifikuar” pa proces të vërtetë.</p>'+
-   '<div class="ig6-warning"><strong>Asnjë shitës, biznes apo pjesëmarrës real nuk është verifikuar në këtë demo.</strong></div>'+
+   "<div class=\"ig6-warning\"><strong>Asnjë shitës, biznes apo pjesëmarrës real nuk është verifikuar në këtë pajisje.</strong></div>"+
    identityGuide()+cards+'<p class="ig6-muted">Për produktin real nevojiten nivele të qarta verifikimi, burime provash, skadim verifikimi dhe mekanizëm apelimi.</p>';
  };
  const reasonCodes=['Informacion i pasaktë','Mashtrim i dyshuar','Spam','Shkelje privatësie','Përmbajtje e papërshtatshme','impersonation','harassment','threat','misleadingAd','harmfulActivity'];
@@ -89,14 +89,14 @@
   '<label>'+clean(safetyText('reason'))+'<select name="reason">'+reasonCodes.map(code=>'<option value="'+clean(code)+'">'+clean(reasonText(code))+'</option>').join('')+'</select></label>'+
   '<label>'+clean(safetyText('detail'))+'<textarea name="detail" maxlength="240" rows="2" data-user-content></textarea></label>'+
   '<button type="submit">'+clean(safetyText('save'))+'</button></form>';
- const statusLabels={pending:'Në pritje',restricted:'Kufizuar (demo)',dismissed:'Mbyllur pa masë',more:'Duhet sqarim',reinstated:'Kufizimi u hoq'};
+ const statusLabels={pending:'Në pritje',restricted:"Kufizuar",dismissed:'Mbyllur pa masë',more:'Duhet sqarim',reinstated:'Kufizimi u hoq'};
  const knownStatus=s=>Object.prototype.hasOwnProperty.call(statusLabels,s);
  const statusName=s=>knownStatus(s)?safetyText(s):(typeof s==='string'&&s?s:statusLabels.pending);
  const statusMarkup=s=>'<span data-case-status'+(!knownStatus(s)&&typeof s==='string'&&s?' data-user-content':'')+'>'+clean(statusName(s))+'</span>';
  const caseCards=()=>{
   const role=state.role==='moderator';
   return allCases().map(c=>'<article class="ig6-card" data-case-id="'+clean(c.id)+'"><h4 data-user-content>'+clean(c.target)+'</h4>'+
-   '<p>'+clean(reasonText(c.reason))+' · '+clean(c.source||'Raport demonstrues')+'</p>'+
+   '<p>'+clean(reasonText(c.reason))+' · '+clean(c.source==='Social · DEMO'?'Social':c.source||"Raport")+'</p>'+
    (c.detail?'<p data-user-content>'+clean(c.detail)+'</p>':'')+
    '<p><b>Status:</b> '+statusMarkup(c.status)+'</p>'+
    (c.reasonNote?'<p><b>Arsye vendimi:</b> <span data-user-content>'+clean(c.reasonNote)+'</span></p>':'')+
@@ -107,7 +107,7 @@
  const reports=()=>{
   return '<h3>Raportime, vendime dhe apelime</h3><p>Çdo vendim duhet të ketë arsye. Veprimet e moderatorit të këtij paneli nuk fshehin përmbajtje reale dhe nuk prekin server.</p>'+
    '<div class="ig6-roles">'+b('role:visitor','Si përdorues',state.role==='visitor'?'class="chosen"':'')+
-    b('role:moderator','Si moderator demo',state.role==='moderator'?'class="chosen"':'')+'</div>'+
+    b('role:moderator',"Si moderator",state.role==='moderator'?'class="chosen"':'')+'</div>'+
    reportForm()+localUpdates()+safetyGuide()+'<h4>Rastet e regjistruara</h4>'+caseCards()+
    '<p class="ig6-muted" data-i18n-direct>'+clean(safetyText('projection'))+'</p>';
  };
@@ -120,18 +120,18 @@
     '<p><b>Arsyeja:</b> '+clean(c.reason)+'</p><p><b>Statusi:</b> '+statusMarkup(c.status)+'</p>'+
     '<p>'+clean(c.detail||'Nuk ka shpjegim shtesë.')+'</p>'+
    (mod?'<form id="ig6-decision" class="ig6-form"><label>Vendimi<select name="decision">'+
-      '<option value="more">Kërko sqarim</option><option value="restricted">Kufizo në demo</option>'+
+      "<option value=\"more\">Kërko sqarim</option><option value=\"restricted\">Kufizo lokalisht</option>"+
       '<option value="dismissed">Mbylle pa masë</option><option value="reinstated">Hiq kufizimin</option></select></label>'+
       '<label>Arsye e shkruar (e detyrueshme)<textarea name="note" required minlength="10" maxlength="240" rows="3"></textarea></label>'+
       '<button type="submit">Regjistro vendimin</button></form>':
       '<form id="ig6-appeal" class="ig6-form"><label>Arsyeja e apelimit<textarea name="text" required minlength="10" maxlength="240" rows="3"></textarea></label>'+
-      '<button type="submit">Regjistro apelimin (demo)</button></form>');
+      "<button type=\"submit\">Regjistro apelimin </button></form>");
  };
  const appealPanel=()=>{
   const mod=state.role==='moderator';
-  return '<h3>Apelimet</h3><p>Apelimi krijon një rrjedhë të veçantë shqyrtimi. Çdo vendim mbetet demonstrues.</p>'+
+  return "<h3>Apelimet</h3><p>Apelimi krijon një rrjedhë të veçantë shqyrtimi. Vendimet ruhen vetëm në këtë pajisje.</p>"+
    '<div class="ig6-roles">'+b('role:visitor','Si përdorues',!mod?'class="chosen"':'')+
-    b('role:moderator','Si moderator demo',mod?'class="chosen"':'')+'</div>'+
+    b('role:moderator',"Si moderator",mod?'class="chosen"':'')+'</div>'+
    (state.appeals.length?state.appeals.slice().reverse().map(x=>'<article class="ig6-card"><h4>Apelimi '+clean(x.id.slice(-6))+'</h4>'+
      '<p>'+clean(x.text)+'</p><p>Rasti: '+clean(x.caseId)+' · '+clean(x.status||'pending')+'</p>'+
      (x.response?'<p><b>Arsye e përgjigjes:</b> '+clean(x.response)+'</p>':'')+
@@ -159,7 +159,7 @@
  const defaultTeam=scope=>({source:scope.source,store:scope.store,members:[
   {userId:'owner',role:'owner',status:'active',public:false},{userId:'admin',role:'admin',status:'active',public:false},
   {userId:'support',role:'support',status:'active',public:false},{userId:'catalog',role:'catalog',status:'active',public:false}
- ],threads:['t1','t2'].map((id,i)=>({id,customer:'Klient Demo '+(i+1),subject:i?'Orari i dyqanit':'Kafe espresso 250 g',status:'open',assignedTo:'',messages:[{id:id+'-customer',sender:'customer',text:i?'Cili është orari?':'A është ende oferta e disponueshme?',at:'2026-10-26',actorId:''}]}))});
+ ],threads:['t1','t2'].map((id,i)=>({id,customer:"Klient "+(i+1),subject:i?'Orari i dyqanit':'Kafe espresso 250 g',status:'open',assignedTo:'',messages:[{id:id+'-customer',sender:'customer',text:i?'Cili është orari?':'A është ende oferta e disponueshme?',at:'2026-10-26',actorId:''}]}))});
  const currentTeam=()=>{const s=businessScope();return s&&(state.businessTeams.find(t=>t.source===s.source&&t.store===s.store)||defaultTeam(s))};
  const activeMember=(team,id)=>team?.members.find(m=>m.userId===id&&m.status==='active');
  const capabilities={owner:['catalog','products','prices','orders','ordersRead','messages','staff','audit'],admin:['catalog','products','prices','orders','ordersRead','messages','audit'],catalog:['catalog','products','prices'],support:['catalog','ordersRead','messages'],viewer:['catalog']};
@@ -261,8 +261,8 @@
        '<p>Inventari nuk është i sinkronizuar me Shop bazë.</p>'+b('tab:trust','Shiko kriteret e besimit')+'</article>':
     state.role==='employer'?'<article class="ig6-card"><h4>Panel punëdhënësi</h4><p>Postimet e punës janë vetëm drafte lokale; aplikimet e kandidatëve nuk janë reale.</p>'+
        draftForm('employer','Pozicion pune')+
-       '<p><b>Kandidat shembull:</b> Aplikim demonstrues — '+clean(state.applicant)+'</p>'+
-       b('applicant:shortlisted','Kalimi në shortlist (demo)')+b('applicant:declined','Refuzo kandidatin (demo)')+'</article>':
+       "<p><b>Kandidat shembull:</b> Aplikim "+clean(state.applicant==='Në listën e shkurtër (demo)'?'Në listën e shkurtër':state.applicant==='I refuzuar (demo)'?'I refuzuar':state.applicant)+'</p>'+
+       b('applicant:shortlisted',"Kalimi në shortlist")+b('applicant:declined',"Refuzo kandidatin")+'</article>':
     '<article class="ig6-card"><h4>Paneli i organizatorit</h4>'+
        '<p>Aktivitete të regjistruara në këtë pajisje: '+activities.length+'</p>'+
        '<p>Kërkesa pjesëmarrjeje të regjistruara: '+rqs.length+'</p>'+
@@ -292,7 +292,7 @@
   const oldForm=preserveForm?root.querySelector('form'):null,oldFields=oldForm?[...oldForm.elements].filter(e=>e.name).map(e=>({name:e.name,value:e.value})):[];
   const before=document.activeElement,act=before?.dataset?.ig6,focusId=before?.id,focusName=before?.name,formId=before?.form?.id;
   root.innerHTML='<div class="ig6-shade" data-ig6="close"></div><section class="ig6-panel" role="dialog" aria-modal="true" aria-label="'+clean(feedback('title','Besimi dhe menaxhimi'))+'">'+
-   '<header><div><small>ILLYRIAN · DEMO v1.7</small><h2>Besimi dhe menaxhimi</h2></div>'+b('close','✕ Mbyll')+'</header>'+
+   "<header><div><small>ILLYRIAN · v1.7</small><h2>Besimi dhe menaxhimi</h2></div>"+b('close','✕ Mbyll')+'</header>'+
    '<p class="ig6-warning">Asnjë rol nuk është i verifikuar; kjo faqe nuk kryen moderim, pagesa ose vendime reale.</p>'+tabs()+
    notice()+view()+'<footer>Vetëm demonstrim në pajisje. Për prodhim kërkohen audit, autorizime dhe proces apelimi i sigurt.</footer></section>';
   restoreBusiness();
@@ -347,8 +347,8 @@
   }
   if(k.startsWith('applicant:')&&state.role==='employer'){
     const val=k.slice(10);if(!['shortlisted','declined'].includes(val))return;
-    state.applicant=val==='shortlisted'?'Në listën e shkurtër (demo)':'I refuzuar (demo)';
-    log('Gjendja e kandidatit demonstrues',val);message(feedback('applicantUpdated','Statusi i kandidatit u ndryshua vetëm në këtë panel.'));return;
+    state.applicant=val==='shortlisted'?"Në listën e shkurtër":"I refuzuar";
+    log("Gjendja e kandidatit",val);message(feedback('applicantUpdated','Statusi i kandidatit u ndryshua vetëm në këtë panel.'));return;
   }
  };
  function onSubmit(form){
@@ -369,7 +369,7 @@
    if(pendingAppeal(c.id))return;
    const entry=storeCase(c);if(!entry){state.notice=safetyText('limit');render(true);return}
    entry.status=decision;entry.reasonNote=note;entry.reviewedAt=stamp();
-   log('Vendim i moderatorit demo: '+decision,c.id);message(feedback('decisionSaved','Vendimi demonstrues u regjistrua me arsye.'),'reports');return;
+   log("Vendim i moderatorit : "+decision,c.id);message(feedback('decisionSaved',"Vendimi u regjistrua me arsye."),'reports');return;
   }
   if(form.id==='ig6-appeal'){
    if(state.role!=='visitor')return;
@@ -377,7 +377,7 @@
    if(!c||!canAppeal(c)||t.length<10||state.appeals.length>=30){state.notice=feedback('appealInvalid','Apelimi kërkon shpjegim të paktën 10 shkronja.');render();return}
    if(state.appeals.some(x=>x.caseId===c.id&&x.status==='pending')){state.notice=feedback('appealPending','Ekziston një apelim në pritje për këtë rast.');render();return}
    const id='a'+unique();state.appeals.push({id,caseId:c.id,text:t,status:'pending',created:stamp()});log('Apelim i krijuar',c.id);
-   message(feedback('appealSaved','Apelimi u ruajt vetëm në demo.'),'appeals');return;
+   message(feedback('appealSaved',"Apelimi u ruajt vetëm lokalisht."),'appeals');return;
   }
   if(form.id==='ig6-appeal-review'){
    if(state.role!=='moderator')return;
@@ -386,7 +386,7 @@
    const base=allCases().find(c=>c.id===a.caseId);
    if(decision==='accepted'){if(!base)return;const c=storeCase(base);if(!c){state.notice=safetyText('limit');render(true);return}c.status='reinstated';c.reasonNote=note;c.reviewedAt=stamp()}
    a.status=decision;a.response=note;a.reviewedAt=stamp();
-   log('Vendim apelimi demo: '+decision,a.id);message(feedback('responseSaved','Përgjigjja e apelimit u regjistrua.'),'appeals');return;
+   log("Vendim apelimi : "+decision,a.id);message(feedback('responseSaved','Përgjigjja e apelimit u regjistrua.'),'appeals');return;
   }
   if(form.id==='ig6-draft'){
    const kind=v('kind'),title=v('title'),note=v('note');

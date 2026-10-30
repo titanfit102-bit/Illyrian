@@ -13,14 +13,14 @@
   {id:'tirana-makers',name:'Krijuesit e Tiranës',city:'Tiranë',privacy:'public',members:34,about:'Punëtori dhe bashkëpunim me rregulla të qarta.'}
  ];
  const mapSeeds=[
-  {id:'m1',kind:'activity',name:'Takim i komunitetit',city:'Tiranë',detail:'Aktivitet demonstrues publik'},
-  {id:'m2',kind:'business',name:'Market Arbër',city:'Tiranë',detail:'Produkte ushqimore · dyqan demonstrues'},
-  {id:'m3',kind:'business',name:'Urban Steps',city:'Tiranë',detail:'Atlete · dyqan demonstrues'},
-  {id:'m4',kind:'activity',name:'Praktikë shqip–italisht',city:'Milano',detail:'Aktivitet demonstrues publik'},
-  {id:'m5',kind:'business',name:'Auto Durrësi',city:'Durrës',detail:'Automjete · ofrues demonstrues'},
-  {id:'m6',kind:'activity',name:'Punëtori portofoli',city:'Shkodër',detail:'Aktivitet demonstrues publik'},
-  {id:'m7',kind:'business',name:'Phone Lab',city:'Prishtinë',detail:'Riparime · dyqan demonstrues'},
-  {id:'m8',kind:'activity',name:'Takim shqiptarësh',city:'Romë',detail:'Aktivitet demonstrues publik'}
+  {id:'m1',kind:'activity',name:'Takim i komunitetit',city:'Tiranë',detail:"Aktivitet publik"},
+  {id:'m2',kind:'business',name:'Market Arbër',city:'Tiranë',detail:"Produkte ushqimore · dyqan"},
+  {id:'m3',kind:'business',name:'Urban Steps',city:'Tiranë',detail:"Atlete · dyqan"},
+  {id:'m4',kind:'activity',name:'Praktikë shqip–italisht',city:'Milano',detail:"Aktivitet publik"},
+  {id:'m5',kind:'business',name:'Auto Durrësi',city:'Durrës',detail:"Automjete · ofrues"},
+  {id:'m6',kind:'activity',name:'Punëtori portofoli',city:'Shkodër',detail:"Aktivitet publik"},
+  {id:'m7',kind:'business',name:'Phone Lab',city:'Prishtinë',detail:"Riparime · dyqan"},
+  {id:'m8',kind:'activity',name:'Takim shqiptarësh',city:'Romë',detail:"Aktivitet publik"}
  ];
  const escaped=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const stored=(key)=>{try{const v=JSON.parse(localStorage.getItem(key)||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{return {}}};
@@ -67,7 +67,7 @@
  const groupPage=()=>{
   const g=currentGroup(),s=state.membership[g.id]||'none',owner=state.role==='owner',visible=g.privacy==='public'||s==='accepted'||owner;
   return '<h3 data-i18n-direct>'+ui('groupTitle','Komunitete me rregulla dhe role')+'</h3><p>'+ui('groupIntro','Në një komunitet privat vetëm anëtarët e pranuar shohin përmbajtjen. Ky është një shembull i kontrolleve të aksesit, jo siguri serveri.')+'</p>'+
-  '<div class="il4-role">'+b('role:visitor','Si kërkues',!owner?'class="chosen"':'')+b('role:owner','Si moderator demo',owner?'class="chosen"':'')+'</div>'+
+  '<div class="il4-role">'+b('role:visitor','Si kërkues',!owner?'class="chosen"':'')+b('role:owner',"Si moderator",owner?'class="chosen"':'')+'</div>'+
   '<div class="il4-tabs il4-people">'+groups.map(g=>b('group:'+g.id,g.name,g.id===state.selected?'aria-current="page"':'')).join('')+'</div>'+
   '<article class="il4-card"><h4 data-user-content>'+escaped(g.name)+'</h4><p>'+escaped(g.city)+' · '+(g.privacy==='private'?'Komunitet privat':'Komunitet publik')+' · '+g.members+' anëtarë shembull</p>'+
   '<p><strong>Status:</strong> '+escaped(statusLabel(s))+'</p>'+
@@ -81,7 +81,7 @@
  const upcoming=()=>{const x=stored(PLANS),arr=Array.isArray(x.events)?x.events:[];return arr.filter(v=>v&&typeof v.title==='string'&&v.privacy==='public'&&!v.cancelled&&window.IllyrianActivityTime.resolve(v)!==null&&window.IllyrianActivityTime.resolve(v)>Date.now()).slice(0,12)};
  const shopItems=()=>{const data=stored(SHOP),arr=Array.isArray(data.listings)?data.listings:[];return arr.filter(v=>v&&typeof v.store==='string'&&typeof v.city==='string'&&v.city.length<70).slice(0,12)};
  const pins=()=>{
-  const live=upcoming().map((e,i)=>({id:'plan-'+i,kind:'activity',name:e.title,city:e.city,detail:'Aktivitet publik në demo',source:'created'}));
+  const live=upcoming().map((e,i)=>({id:'plan-'+i,kind:'activity',name:e.title,city:e.city,detail:"Aktivitet publik lokalisht",source:'created'}));
   const stores=shopItems().map((e,i)=>({id:'shop-'+i,kind:'business',name:e.store,city:e.city,detail:e.name||'Listim lokal',source:'created'}));
   const all=[...mapSeeds,...live,...stores].filter(v=>cities.includes(v.city));
   const query=state.search.trim().toLocaleLowerCase('sq');
@@ -97,7 +97,7 @@
   '<label data-i18n-direct>'+ui('mapSearch','Kërko')+'<input name="q" maxlength="60" value="'+escaped(state.search)+'" placeholder="'+ui('mapPlaceholder','P.sh. kafe, futboll, dyqan')+'"></label>'+
   '<button type="submit" data-i18n-direct>'+ui('mapFilter','Filtro')+'</button></form>'+
   '<div class="il4-map" aria-label="'+ui('mapAria','Skemë orientuese e rezultateve')+'"><div class="il4-grid-lines"></div>'+
-  '<div class="il4-map-label" data-i18n-direct>ILLYRIAN · DEMO · '+(state.city===cities[0]?ui('mapAll',state.city):escaped(state.city))+'</div>'+
+  '<div class="il4-map-label" data-i18n-direct>ILLYRIAN · '+(state.city===cities[0]?ui('mapAll',state.city):escaped(state.city))+'</div>'+
   list.slice(0,16).map((p,i)=>pin(p,i,selected?.id===p.id)).join('')+
   (list.length?'':'<p class="il4-no-pins">'+ui('mapNoResults','Nuk u gjetën shembuj për filtrat.')+'</p>')+'</div>'+
   (selected?'<article class="il4-card"><h4 data-user-content>'+escaped(selected.name)+'</h4><p>'+escaped(selected.city)+' · '+(selected.kind==='business'?ui('mapBusiness','Biznes'):ui('mapActivity','Aktivitet'))+'</p><p data-user-content>'+escaped(selected.detail)+'</p></article>':'')+

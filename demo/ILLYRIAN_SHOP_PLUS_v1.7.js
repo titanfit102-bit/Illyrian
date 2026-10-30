@@ -7,19 +7,19 @@
  const CITIES=['Të gjitha','Tiranë','Durrës','Shkodër','Vlorë','Elbasan','Prishtinë'];
  const SEED=[
   {id:'k1',type:'Produkte',name:'Kafe espresso 250 g',sku:'espresso-250g',store:'Market Arbër',city:'Tiranë',price:5.5,quantity:19,details:'Paketim 250 g, kafe e bluar, shembull.',promoted:false},
-  {id:'k2',type:'Produkte',name:'Kafe espresso 250 g',sku:'espresso-250g',store:'Shije Shqiptare',city:'Tiranë',price:5.2,quantity:7,details:'Paketim 250 g, ofertë demonstrative.',promoted:true},
-  {id:'k3',type:'Produkte',name:'Kafe espresso 250 g',sku:'espresso-250g',store:'Mini Market Bora',city:'Durrës',price:5.8,quantity:0,details:'Produkti demonstrues aktualisht pa stok.',promoted:false},
+  {id:'k2',type:'Produkte',name:'Kafe espresso 250 g',sku:'espresso-250g',store:'Shije Shqiptare',city:'Tiranë',price:5.2,quantity:7,details:"Paketim 250 g, ofertë.",promoted:true},
+  {id:'k3',type:'Produkte',name:'Kafe espresso 250 g',sku:'espresso-250g',store:'Mini Market Bora',city:'Durrës',price:5.8,quantity:0,details:"Produkti aktualisht pa stok.",promoted:false},
   {id:'k4',type:'Produkte',name:'Atlete sportive',sku:'atlete-standarde',store:'Urban Steps',city:'Tiranë',price:48,quantity:5,details:'Atlete përditshmërie; madhësitë konfirmohen te shitësi.',promoted:false},
   {id:'k5',type:'Produkte',name:'Mjaltë mali 500 g',sku:'mjalte-500g',store:'Bletaria Drini',city:'Tiranë',price:10,quantity:12,details:'Kavanoz 500 g, ilustrim.',promoted:false},
   {id:'v1',type:'Makina',name:'Volkswagen Golf 7',sku:'',store:'Auto Durrësi',city:'Durrës',price:9800,year:2017,mileage:142000,fuel:'Naftë',details:'1.6 TDI, të dhëna të sajuara.',promoted:false},
   {id:'v2',type:'Makina',name:'Toyota Yaris Hybrid',sku:'',store:'Auto Tirana',city:'Tiranë',price:11600,year:2019,mileage:91000,fuel:'Hibrid',details:'Automjet shembull, pa dokumentacion real.',promoted:true},
   {id:'v3',type:'Makina',name:'Fiat Panda',sku:'',store:'Auto Shkodra',city:'Shkodër',price:4200,year:2015,mileage:165000,fuel:'Benzinë',details:'Automjet demonstrativ.',promoted:false},
   {id:'h1',type:'Banesa me qira',name:'Apartament 2+1',sku:'',store:'Banesa Tirana',city:'Tiranë',price:540,area:82,rooms:'2+1',period:'muaj',details:'Komuna e Parisit, karakteristikat janë ilustrative.',promoted:false},
-  {id:'h2',type:'Banesa me qira',name:'Garsoniere pranë detit',sku:'',store:'Qira Durrës',city:'Durrës',price:290,area:38,rooms:'Studio',period:'muaj',details:'Qira demonstrative, jo ofertë e vlefshme.',promoted:false},
+  {id:'h2',type:'Banesa me qira',name:'Garsoniere pranë detit',sku:'',store:'Qira Durrës',city:'Durrës',price:290,area:38,rooms:'Studio',period:'muaj',details:"Qira, jo ofertë e vlefshme.",promoted:false},
   {id:'h3',type:'Banesa me qira',name:'Apartament familjar',sku:'',store:'Banesa Vlora',city:'Vlorë',price:440,area:70,rooms:'1+1',period:'muaj',details:'Vetëm shembull.',promoted:false},
   {id:'property-plus',type:'Prona',name:'Ambient për shitje',store:'Hapësira Demo',city:'Prishtinë',price:78000,area:65,rooms:'1+1',details:'Pronë fiktive në shitje; pa rezervim ose pagesë.',promoted:false},
   {id:'job-plus',type:'Punë',name:'Kërkohet shitës në dyqan',store:'Tregti Demo',city:'Tiranë',price:0,details:'Kërkim punonjësi vetëm për demonstrim. Paga dhe kushtet nuk janë konfirmuar.',promoted:false},
-  {id:'s1',type:'Shërbime',name:'Pastrim banese',sku:'',store:'Shërbime Elbasani',city:'Elbasan',price:45,details:'Çmimi orientues demonstrues.',promoted:false}
+  {id:'s1',type:'Shërbime',name:'Pastrim banese',sku:'',store:'Shërbime Elbasani',city:'Elbasan',price:45,details:"Çmimi orientues.",promoted:false}
  ];
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  // Preserve the initial persisted version for cross-tab optimistic checks.
@@ -100,10 +100,10 @@
   }
   return [...groups.entries()].filter(([_,items])=>items.length>1).map(([sku,items])=>({sku,items:items.sort((a,b)=>a.price-b.price)}));
  };
- const chip=p=>(p.promoted?'<span class="isp-sponsored" data-i18n-direct>'+ui('promoted','PROMOVUAR · DEMO')+'</span>':'');
+ const chip=p=>(p.promoted?'<span class="isp-sponsored" data-i18n-direct>'+ui('promoted',"PROMOVUAR")+'</span>':'');
  const card=p=>'<article class="isp-card"><div class="isp-typeline"><span data-i18n-direct>'+typeLabel(p.type)+'</span>'+chip(p)+'</div><h4 data-user-content>'+esc(p.name)+'</h4>'+
   '<strong>'+price(p)+'</strong><p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+
-  (p.type==='Produkte'?'<p><span data-i18n-direct>'+ui('inventory','Inventari:')+'</span> '+(numeric(p.quantity)>0?numeric(p.quantity)+' <span data-i18n-direct>'+ui('units','copë (demo)')+'</span>':'<span data-i18n-direct>'+ui('outOfStockDemo','Pa stok (demo)')+'</span>')+'</p>':
+  (p.type==='Produkte'?'<p><span data-i18n-direct>'+ui('inventory','Inventari:')+'</span> '+(numeric(p.quantity)>0?numeric(p.quantity)+' <span data-i18n-direct>'+ui('units',"copë")+'</span>':'<span data-i18n-direct>'+ui('outOfStockDemo',"Pa stok")+'</span>')+'</p>':
    p.type==='Makina'?'<p><span data-i18n-direct>'+ui('yearShort','Viti')+'</span> '+esc(p.year||'–')+' · '+esc(p.mileage??'–')+' km · <span data-i18n-direct>'+fuelLabel(p.fuel)+'</span>'+'</p>':
    property(p.type)?'<p>'+esc(p.rooms||'–')+' · '+esc(p.area||'–')+' m²'+(p.type==='Banesa me qira'?' · <span data-i18n-direct>'+periodLabel(p.period)+'</span>':'')+'</p>':'')+
   btn('item:'+p.id,feedback('detailsSeller','Detajet dhe shitësi'),'data-i18n-direct')+
@@ -123,7 +123,7 @@
    '<div class="isp-actions"><button type="submit" data-i18n-direct>'+ui('applyFilters','Apliko filtrat')+'</button>'+btn('clear-filters',feedback('clear','Pastro'),'data-i18n-direct')+'</div></form>';
  const catalog=()=>{
   const result=safeItems(),sets=productSets();
-  return '<div class="isp-hero"><b data-i18n-direct>'+ui('catalogTag','ILLYRIAN SHOP · KËRKIM I AVANCUAR')+'</b><h2 data-i18n-direct>'+ui('headline','Gjej produktin, jo vetëm një reklamë.')+'</h2><p data-i18n-direct>'+ui('catalogIntro','Krahaso dyqanet dhe shiko karakteristikat e ofertave. Çdo listim është demonstrues.')+'</p></div>'+
+  return '<div class="isp-hero"><b data-i18n-direct>'+ui('catalogTag','ILLYRIAN SHOP · KËRKIM I AVANCUAR')+'</b><h2 data-i18n-direct>'+ui('headline','Gjej produktin, jo vetëm një reklamë.')+'</h2><p data-i18n-direct>'+ui('catalogIntro',"Krahaso dyqanet dhe shiko karakteristikat e ofertave.")+'</p></div>'+
    '<nav class="isp-kinds">'+TYPES.map(x=>pill(x,x===state.type)).join('')+'</nav>'+filters()+
    (state.shop?'<p class="isp-active"><span data-i18n-direct>'+ui('storeFilter','Dyqani:')+'</span> <span data-user-content>'+esc(state.shop)+'</span> '+btn('clear-store',feedback('removeStoreFilter','Hiq filtrin'),'data-i18n-direct')+'</p>':'')+
    '<div class="isp-rowhead"><h3>'+result.length+' <span data-i18n-direct>'+ui('offersCount','oferta')+'</span></h3><span>'+new Set(result.map(x=>x.store)).size+' <span data-i18n-direct>'+ui('sellersCount','shitës/dyqane')+'</span></span></div>'+
@@ -138,7 +138,7 @@
  const itemView=()=>{
   const p=all().find(x=>x.id===state.selected);
   if(!p)return '<p data-i18n-direct>'+ui('itemMissing','Listimi nuk ekziston.')+'</p>'+btn('catalog',feedback('itemBack','Kthehu'),'data-i18n-direct');
-  const detail=p.details?'<p data-user-content>'+esc(p.details)+'</p>':'<p data-i18n-direct>'+ui('itemDemoDescription','Oferta është demonstrative.')+'</p>';
+  const detail=p.details?'<p data-user-content>'+esc(p.details)+'</p>':'<p data-i18n-direct>'+ui('itemDemoDescription',"Shiko të dhënat e ofertës.")+'</p>';
   const attributes=p.type==='Makina'?
    '<p><span data-i18n-direct>'+ui('itemYear','Viti:')+'</span> '+esc(p.year||'–')+' · <span data-i18n-direct>'+ui('itemMileage','Kilometra:')+'</span> '+esc(p.mileage??'–')+' · <span data-i18n-direct>'+ui('itemFuel','Karburanti:')+'</span> <span data-i18n-direct>'+fuelLabel(p.fuel)+'</span></p>':
    property(p.type)?
@@ -151,20 +151,20 @@
    btn('store:'+p.store,feedback('itemSellerCatalog','Katalogu i dyqanit'),'data-i18n-direct')+
    btn('report:'+p.id,feedback('itemReport','Raporto listimin'),'data-i18n-direct')+
    (p.owned?btn('edit:'+p.id,feedback('itemEdit','Ndrysho listimin'),'data-i18n-direct'):'')+
-   '</article><p class="isp-muted" data-i18n-direct>'+ui('itemDisclaimer','Asnjë pagesë ose kontakt real. Makina dhe banesa nuk rezervohen në këtë demo.')+'</p>';
+   '</article><p class="isp-muted" data-i18n-direct>'+ui('itemDisclaimer',"Asnjë pagesë ose kontakt real. Makina dhe banesa nuk rezervohen në këtë pajisje.")+'</p>';
  };
  const storesView=()=>{
   const sellers=[...new Set(all().map(x=>x.store))].sort((a,b)=>a.localeCompare(b,'sq'));
   return '<h3 data-i18n-direct>'+ui('storesHeading','Dyqanet e vogla')+'</h3><p data-i18n-direct>'+ui('storesIntro','Çdo dyqan ka katalogun e ofertave të veta. Inventari këtu është vetëm provë.')+'</p>'+
   sellers.map(x=>{
     const rows=all().filter(p=>p.store===x),cities=[...new Set(rows.map(p=>p.city))].join(', ');
-    return '<article class="isp-card"><h4 data-user-content>'+esc(x)+'</h4><p>'+esc(cities)+' · '+rows.length+' <span data-i18n-direct>'+ui('demoListings','listime demonstrative')+'</span></p>'+
+    return '<article class="isp-card"><h4 data-user-content>'+esc(x)+'</h4><p>'+esc(cities)+' · '+rows.length+' <span data-i18n-direct>'+ui('demoListings',"listime")+'</span></p>'+
      '<p>'+rows.filter(p=>p.type==='Produkte'&&numeric(p.quantity)>0).length+' <span data-i18n-direct>'+ui('storeStockExamples','produkte në stok (shembull)')+'</span></p>'+btn('store:'+x,feedback('openShopCatalog','Hap katalogun'),'data-i18n-direct')+'</article>'
   }).join('');
  };
  const storeView=()=>{
   const rows=all().filter(p=>p.store===state.shop);
-  return btn('stores',feedback('allShops','← Të gjitha dyqanet'),'data-i18n-direct')+'<h3 data-user-content>'+esc(state.shop)+'</h3><p>'+rows.length+' <span data-i18n-direct>'+ui('demoOffers','oferta demonstrative; identiteti tregtar nuk është verifikuar.')+'</span></p>'+
+  return btn('stores',feedback('allShops','← Të gjitha dyqanet'),'data-i18n-direct')+'<h3 data-user-content>'+esc(state.shop)+'</h3><p>'+rows.length+' <span data-i18n-direct>'+ui('demoOffers',"oferta; identiteti tregtar nuk është verifikuar.")+'</span></p>'+
     (window.IllyrianShopDiscovery?.businessProfile(state.shop,rows)||'')+(window.IllyrianBusinessPresentation?.staff('shopPlus',state.shop)||'')+(window.IllyrianBusinessPresentation?.controls('shopPlus',state.shop)||'')+rows.map(card).join('')+
     '<p class="isp-muted" data-i18n-direct>'+ui('sponsoredNote','Ofertat e sponsorizuara janë të etiketuara. Nuk kemi vlerësim të besueshmërisë së shitësit.')+'</p>';
  };
@@ -186,7 +186,7 @@
  const create=()=>{
   const editing=state.editId&&state.items.find(p=>p.id===state.editId);
   const p=editing||{type:'Produkte',name:'',store:'',city:'Tiranë',price:'',quantity:1,year:'',mileage:'',area:'',rooms:'',period:'muaj',details:''};
-  return '<h3 data-i18n-direct>'+(editing?ui('formEditOffer','Redakto ofertën'):ui('formPublishOffer','Publiko ofertë në demo'))+'</h3><p data-i18n-direct>'+ui('formListingIntro','Produkte, makina, banesa dhe shërbime. Listimet ruhen vetëm në pajisjen tënde.')+'</p>'+
+  return '<h3 data-i18n-direct>'+(editing?ui('formEditOffer','Redakto ofertën'):ui('formPublishOffer',"Publiko ofertë lokalisht"))+'</h3><p data-i18n-direct>'+ui('formListingIntro','Produkte, makina, banesa dhe shërbime. Listimet ruhen vetëm në pajisjen tënde.')+'</p>'+
   '<form id="isp-create" class="isp-fields">'+
   '<label data-i18n-direct>'+ui('formCategory','Kategoria')+'<select name="type">'+TYPES.slice(1).map(x=>'<option data-i18n-direct value="'+esc(x)+'" '+(p.type===x?'selected':'')+'>'+typeLabel(x)+'</option>').join('')+'</select></label>'+
   '<label data-i18n-direct>'+ui('name','Emri')+'<input name="name" minlength="4" maxlength="90" required value="'+esc(p.name)+'"></label>'+
@@ -200,7 +200,7 @@
   '<label data-isp-property'+categoryField('Banesa me qira')+' data-i18n-direct>'+ui('formPropertyType','Lloji i banesës')+'<input name="rooms" maxlength="30" value="'+esc(p.rooms||'')+'" placeholder="2+1"></label>'+
   '<label'+categoryField('Banesa me qira')+' data-i18n-direct>'+ui('formPeriod','Periudha e qirasë')+'<select name="period"><option value="muaj" '+(p.period==="javë"?'':'selected')+'>'+ui('formPerMonth','Për muaj')+'</option><option value="javë" '+(p.period==="javë"?'selected':'')+'>'+ui('formPerWeek','Për javë')+'</option></select></label>'+
   '<label class="isp-span" data-i18n-direct>'+ui('formDescription','Përshkrimi')+'<textarea name="details" maxlength="450" rows="3">'+esc(p.details||'')+'</textarea></label>'+
-  '<div class="isp-span"><button type="submit" data-i18n-direct>'+(editing?ui('formSaveChanges','Ruaj ndryshimet'):ui('formPublish','Publiko në demo'))+'</button></div></form>'+
+  '<div class="isp-span"><button type="submit" data-i18n-direct>'+(editing?ui('formSaveChanges','Ruaj ndryshimet'):ui('formPublish',"Publiko lokalisht"))+'</button></div></form>'+
   '<p class="isp-muted" data-i18n-direct>'+ui('formIdentityNote','Nuk ruhet asnjë dokument identiteti, numër telefoni, pagesë ose adresë e saktë.')+'</p>';
  };
  const board=()=>{
@@ -213,20 +213,20 @@
    '<label data-i18n-direct>'+ui('formBudget','Buxheti maksimal €')+'<input name="budget" type="number" min="1" max="10000000" required></label>'+
    '<label data-i18n-direct>'+ui('formDeadline','Afati')+'<select name="days"><option value="7">'+ui('formSevenDays','7 ditë')+'</option><option value="14">'+ui('formFourteenDays','14 ditë')+'</option><option value="30">'+ui('formThirtyDays','30 ditë')+'</option></select></label>'+
    '<label class="isp-span" data-i18n-direct>'+ui('formRequestDetails','Detajet')+'<textarea name="details" rows="2" maxlength="240" placeholder="'+ui('formDetailPlaceholder','Karakteristikat e kërkuara')+'"></textarea></label>'+
-   '<div class="isp-span"><button data-i18n-direct type="submit">'+ui('formPublishRequest','Publiko kërkesën në demo')+'</button></div></form>'+
+   '<div class="isp-span"><button data-i18n-direct type="submit">'+ui('formPublishRequest',"Publiko kërkesën lokalisht")+'</button></div></form>'+
    (active.length?active.map(n=>'<article class="isp-card"><h4 data-user-content>'+esc(n.title)+'</h4><p>'+'<span data-i18n-direct>'+typeLabel(n.type)+'</span> · '+esc(n.city)+' · <span data-i18n-direct>'+ui('boardBudget','buxheti')+'</span> '+money(n.budget)+'</p>'+
     '<p data-user-content>'+esc(n.details||'')+'</p><small><span data-i18n-direct>'+ui('boardExpires','Skadon:')+'</span> '+esc(new Intl.DateTimeFormat(window.IllyrianI18n?.language||'sq',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(n.expires)))+'</small>'+
-    btn('respond:'+n.id,feedback('boardRespond','Përgjigju si dyqan (demo)'),'data-i18n-direct')+(state.answers.filter(a=>a.needId===n.id).slice(-2).map(a=>'<p class="isp-reply"><span data-i18n-direct>'+ui('boardReply','Përgjigje demo:')+'</span> <span data-user-content>'+esc(a.text)+'</span></p>').join(''))+
+    btn('respond:'+n.id,feedback('boardRespond',"Përgjigju si dyqan"),'data-i18n-direct')+(state.answers.filter(a=>a.needId===n.id).slice(-2).map(a=>'<p class="isp-reply"><span data-i18n-direct>'+ui('boardReply',"Përgjigje :")+'</span> <span data-user-content>'+esc(a.text)+'</span></p>').join(''))+
     (n.owned?btn('remove-need:'+n.id,feedback('boardRemove','Fshi kërkesën'),'data-i18n-direct'):'')+'</article>').join(''):'<p class="isp-empty" data-i18n-direct>'+ui('boardEmpty','Ende pa kërkesa lokale. Publiko një shembull.')+'</p>')+
    '<p class="isp-muted" data-i18n-direct>'+ui('boardDisclaimer','Kërkesat nuk dërgohen te shitësit e vërtetë dhe skadojnë automatikisht.')+'</p>';
  };
  const reasonLabel=code=>{const known={'Informacion i pasaktë':'formReasonInaccurate','Mashtrim i dyshuar':'formReasonFraud','Listim i dyfishuar':'formReasonDuplicate','Përmbajtje e papërshtatshme':'formReasonInappropriate'};return Object.prototype.hasOwnProperty.call(known,code)?ui(known[code],code):esc(code);};
  const moderation=()=>{
   return '<h3 data-i18n-direct>'+ui('modHeading','Raportime dhe etiketa të promovimit')+'</h3><p data-i18n-direct>'+ui('modIntro','Përmbajtja e reklamuar duhet të shënohet; raportimet janë prova lokale.')+'</p>'+
-   '<div class="isp-hero"><b data-i18n-direct>'+ui('modTransparency','TRANSPARENCË')+'</b><p data-i18n-direct>'+ui('modDisclosure','“PROMOVUAR · DEMO” shënon listimet e sponsorizuara fiktive. Në produktin real do të kërkohet politikë reklamash, raportime, shqyrtim dhe apelim.')+'</p></div>'+
+   '<div class="isp-hero"><b data-i18n-direct>'+ui('modTransparency','TRANSPARENCË')+'</b><p data-i18n-direct>'+ui('modDisclosure',"“PROMOVUAR · ” shënon listimet e sponsorizuara fiktive. Në produktin real do të kërkohet politikë reklamash, raportime, shqyrtim dhe apelim.")+'</p></div>'+
    '<p><span data-i18n-direct>'+ui('modReportCount','Raportime lokale:')+'</span> '+state.flags.length+'</p>'+
-   '<button type="button" data-ily-report-center data-i18n-direct>'+esc(window.IllyrianI18n?.t('safety:center')||'Governance · DEMO')+'</button>'+
-   (state.flags.length?state.flags.slice(-15).reverse().map(f=>'<article class="isp-card"><p><b data-user-content>'+esc(f.target)+'</b> · '+'<span data-i18n-direct>'+reasonLabel(f.reason)+'</span></p><small data-i18n-direct>'+esc(window.IllyrianGovernance?.flagStatus(f)||feedback('modPending','Në shqyrtim (simulim, jo moderator real)'))+'</small></article>').join(''):'<p class="isp-empty" data-i18n-direct>'+ui('modEmpty','Asnjë raportim demonstrues.')+'</p>');
+   '<button type="button" data-ily-report-center data-i18n-direct>'+esc(window.IllyrianI18n?.t('safety:center')||"Governance")+'</button>'+
+   (state.flags.length?state.flags.slice(-15).reverse().map(f=>'<article class="isp-card"><p><b data-user-content>'+esc(f.target)+'</b> · '+'<span data-i18n-direct>'+reasonLabel(f.reason)+'</span></p><small data-i18n-direct>'+esc(window.IllyrianGovernance?.flagStatus(f)||feedback('modPending','Në shqyrtim (simulim, jo moderator real)'))+'</small></article>').join(''):'<p class="isp-empty" data-i18n-direct>'+ui('modEmpty',"Asnjë raportim.")+'</p>');
  };
  const checkout=()=>{
   const product=all().find(p=>p.type==='Produkte'&&numeric(p.quantity)>0);
@@ -239,7 +239,7 @@
    '<p><b data-i18n-direct>'+ui('sellerNet','Te shitësi, përpara kostove/taksave:')+'</b> '+money(v-fee)+'</p>'+
    btn('sample-order',feedback('simulateOrder','Simulo porosinë (pa pagesë)'),'data-i18n-direct')+
    '</article>'+
-   (state.sampleOrders.slice(-5).reverse().map(o=>'<article class="isp-card"><p><span data-i18n-direct>'+ui('demoOrder','Porosia demo')+'</span> '+esc(o.id)+' · <span data-i18n-direct>'+(o.status==='E krijuar në demo'?ui('statusCreated',o.status):o.status==='Kërkesë anulimi/kthimi (demo)'?ui('statusReturn',o.status):esc(o.status))+'</span></p>'+
+   (state.sampleOrders.slice(-5).reverse().map(o=>'<article class="isp-card"><p><span data-i18n-direct>'+ui('demoOrder',"Porosia")+'</span> '+esc(o.id)+' · <span data-i18n-direct>'+(o.status==='E krijuar në demo'?ui('statusCreated',o.status):o.status==='Kërkesë anulimi/kthimi (demo)'?ui('statusReturn',o.status):esc(o.status))+'</span></p>'+
    btn('sample-cancel:'+o.id,feedback('cancelReturn','Anulo / kërko kthim'),'data-i18n-direct')+
    '</article>').join(''))+
    '<p class="isp-muted" data-i18n-direct>'+ui('checkoutWarning','5% nuk është tarifë e miratuar. Nuk ka transaksione, faturë, dërgesë, identitet apo rimbursim real. Ligjet dhe kostot duhen verifikuar përpara lansimit.')+'</p>';
@@ -248,22 +248,22 @@
   const n=state.needs.find(x=>x.id===state.needIndex);
   if(!n)return '<p data-i18n-direct>'+ui('respondMissing','Kërkesa nuk u gjet.')+'</p>'+btn('needs',feedback('respondBack','Kthehu'),'data-i18n-direct');
   return '<h3><span data-i18n-direct>'+ui('respondHeading','Përgjigje për:')+'</span> <span data-user-content>'+esc(n.title)+'</span></h3><p><span data-i18n-direct>'+ui('respondBudget','Buxheti:')+'</span> '+money(n.budget)+' · '+esc(n.city)+'</p>'+
-   '<form id="isp-answer"><label data-i18n-direct>'+ui('respondMessage','Mesazhi demonstrues')+'<textarea name="text" maxlength="180" minlength="5" required placeholder="'+ui('respondPlaceholder','P.sh. Dyqani ka një alternativë.')+'"></textarea></label><button data-i18n-direct type="submit">'+ui('respondSave','Ruaj përgjigjen në demo')+'</button></form>'+
+   '<form id="isp-answer"><label data-i18n-direct>'+ui('respondMessage',"Mesazhi")+'<textarea name="text" maxlength="180" minlength="5" required placeholder="'+ui('respondPlaceholder','P.sh. Dyqani ka një alternativë.')+'"></textarea></label><button data-i18n-direct type="submit">'+ui('respondSave',"Ruaj përgjigjen lokalisht")+'</button></form>'+
    '<p data-i18n-direct>'+ui('respondDisclaimer','Ky mesazh nuk u dërgohet blerësve ose dyqaneve reale.')+'</p>';
  };
  const report=()=>{
   const x=all().find(p=>p.id===state.selected);
-  return '<h3 data-i18n-direct>'+ui('formReportListing','Raporto listimin')+'</h3><p data-user-content>'+(x?.name?esc(x.name):ui('reportPlaceholder','Listimi demonstrues'))+'</p>'+
+  return '<h3 data-i18n-direct>'+ui('formReportListing','Raporto listimin')+'</h3><p data-user-content>'+(x?.name?esc(x.name):ui('reportPlaceholder',"Listimi"))+'</p>'+
   '<form id="isp-report"><label data-i18n-direct>'+ui('formReason','Arsyeja')+'<select name="reason"><option data-i18n-direct value="Informacion i pasaktë">'+ui('formReasonInaccurate','Informacion i pasaktë')+'</option><option data-i18n-direct value="Mashtrim i dyshuar">'+ui('formReasonFraud','Mashtrim i dyshuar')+'</option><option data-i18n-direct value="Listim i dyfishuar">'+ui('formReasonDuplicate','Listim i dyfishuar')+'</option><option data-i18n-direct value="Përmbajtje e papërshtatshme">'+ui('formReasonInappropriate','Përmbajtje e papërshtatshme')+'</option></select></label>'+
   '<label data-i18n-direct>'+ui('formOptionalDescription','Përshkrim opsional')+'<textarea name="detail" maxlength="180"></textarea></label>'+
-  '<button type="submit" data-i18n-direct>'+ui('formSaveReport','Ruaj raportimin (demo)')+'</button></form>';
+  '<button type="submit" data-i18n-direct>'+ui('formSaveReport',"Ruaj raportimin")+'</button></form>';
  };
  const page=()=>state.tab==='catalog'?catalog():state.tab==='stores'?(state.shop?storeView():storesView()):
   state.tab==='item'?itemView():state.tab==='create'?create():state.tab==='needs'?board():
   state.tab==='respond'?respond():state.tab==='report'?report():state.tab==='moderation'?moderation():checkout();
  const render=()=>{if(!overlay||!state.open)return;
   overlay.innerHTML='<div class="isp-shade" data-isp="close"></div><section class="isp-panel" role="dialog" aria-modal="true" aria-label="'+ui('dialogLabel','ILLYRIAN Shop i avancuar')+'">'+
-  '<header><div><small>ILLYRIAN · DEMO v1.7</small><h2 data-i18n-direct>'+ui('title','Shop i avancuar')+'</h2></div>'+btn('close',feedback('closeDialog','✕ Mbyll'),'data-i18n-direct')+'</header>'+
+  "<header><div><small>ILLYRIAN · v1.7</small><h2 data-i18n-direct>"+ui('title','Shop i avancuar')+'</h2></div>'+btn('close',feedback('closeDialog','✕ Mbyll'),'data-i18n-direct')+'</header>'+
   '<nav class="isp-nav">'+[['catalog',feedback('search','Kërko')],['stores',feedback('stores','Dyqanet')],['needs',feedback('needs','Kërkoj…')],['checkout',feedback('orders','Porositë')],['moderation',feedback('reports','Raportime')]].map(([a,b])=>btn('tab:'+a,b,'data-i18n-direct '+(state.tab===a?'aria-current="page"':''))).join('')+'</nav>'+
   (state.notice?'<p class="isp-notice" role="status">'+esc(state.notice)+'</p>':'')+
   page()+'<footer data-i18n-direct>'+ui('footer','Të dhëna fiktive · Nuk ka pagesa, rezervime, dërgesa ose kontakte reale.')+'</footer></section>';
@@ -377,7 +377,7 @@
   if(form.id==='isp-answer'){
    const need=state.needs.find(n=>n.id===state.needIndex),txt=v('text').slice(0,180);
    if(!need||Date.parse(need.expires)<Date.now()||txt.length<5||state.answers.length>=50){validationError(form,'answerInvalid','Kërkesa ose mesazhi nuk është i vlefshëm.','text');return}
-   state.answers.push({needId:need.id,text:txt});message(feedback('answerSaved','Përgjigjja u ruajt vetëm në demo.'),()=>{state.tab='needs'});return;
+   state.answers.push({needId:need.id,text:txt});message(feedback('answerSaved',"Përgjigjja u ruajt vetëm lokalisht."),()=>{state.tab='needs'});return;
   }
   if(form.id==='isp-report'){
    const allowed=['Informacion i pasaktë','Mashtrim i dyshuar','Listim i dyfishuar','Përmbajtje e papërshtatshme'],reason=v('reason');

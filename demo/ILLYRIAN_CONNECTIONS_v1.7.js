@@ -63,7 +63,7 @@
     ].map(([id,ico,t,sub])=>'<button class="ilc-tile" data-ilc="view:'+id+'"><span>'+ico+'</span><strong>'+t+'</strong><small>'+sub+'</small></button>').join('')+
     '</div><p class="ilc-muted">Të gjitha të dhënat janë shembuj; asnjë mesazh, takim ose ftesë nuk i dërgohet një personi real.</p>';
   function citiesView(){
-    const matched=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:'Organizatori i demos',meet:e.place,guide:e.conditions,first:true}))].filter(e=>e.city===state.home||e.city===state.origin);
+    const matched=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:"Organizatori i aplikacionit",meet:e.place,guide:e.conditions,first:true}))].filter(e=>e.city===state.home||e.city===state.origin);
     return '<h3>Dy vendet e mia</h3><p>Zgjidh manualisht qytetin ku jeton dhe qytetin me të cilin dëshiron të mbash lidhje. Kjo nuk tregon vendndodhjen reale.</p>'+
       '<form id="ilc-cities"><label>Qyteti ku jeton<select name="home">'+cities(state.home)+'</select></label>'+
       '<label>Qyteti i dytë / vendlindja<select name="origin">'+cities(state.origin)+'</select></label>'+
@@ -75,7 +75,7 @@
   const interestView=()=>{
     const expired=!!state.choice&&(!Number.isFinite(Date.parse(state.choice.expires))||Date.parse(state.choice.expires)<=Date.now());
     const current=!expired?state.choice:null;
-    return '<h3>Nga interesi te plani</h3><p>Shëno një interes dhe një interval. Kur ka interes të mjaftueshëm demonstrues, mund t\'i përgatisësh organizatorit një draft — pa publikim automatik.</p>'+
+    return "<h3>Nga interesi te plani</h3><p>Shëno një interes dhe një interval. Kur ka interes të mjaftueshëm, mund t'i përgatisësh organizatorit një draft — pa publikim automatik.</p>"+
       (expired?'<p class="ilc-note">Interesi i mëparshëm ka skaduar dhe nuk përdoret më.</p>':'')+
       (current?'<article class="ilc-chosen"><b>Zgjedhja jote aktive:</b> '+h(TOPICS.find(t=>t.id===current.topic)?.label||'')+
       ' · '+h(current.slot)+' · '+h(current.city)+'<p>Skadon: '+h(String(current.expires).slice(0,10))+'</p>'+
@@ -85,7 +85,7 @@
       '<label>Koha e preferuar<select name="slot">'+
       (TOPICS.find(t=>t.id===current?.topic)||TOPICS[0]).slots.map(t=>'<option value="'+h(t)+'"'+(current?.slot===t?' selected':'')+'>'+h(t)+'</option>').join('')+
       '</select></label><label>Afati<select name="days"><option value="3">3 ditë</option><option value="7">7 ditë</option></select></label>'+
-      '<button type="submit">Shpreh interesin (demo)</button></form>'+
+      "<button type=\"submit\">Shpreh interesin </button></form>"+
       '<div id="ilc-matches">'+interestMatches()+'</div>'+notice()+
       '<p class="ilc-muted">Numrat e interesit janë shembuj fiktivë. Nuk ka rekomandime AI, njoftim te organizatorë realë ose konfirmim pjesëmarrjeje.</p>'+button('overview','Kthehu te zgjedhjet');
   };
@@ -97,15 +97,15 @@
     const sameCity=topic.city===current.city;
     const count=sameCity?topic.count+1:1;
     const ready=count>=topic.goal;
-    return '<article class="ilc-match"><b>'+h(topic.icon+' '+topic.label)+'</b><p>'+h(current.city)+' · '+count+'/'+topic.goal+' interesime demonstrative</p>'+
+    return '<article class="ilc-match"><b>'+h(topic.icon+' '+topic.label)+'</b><p>'+h(current.city)+' · '+count+'/'+topic.goal+" interesime </p>"+
       '<p>'+h(current.slot)+'</p>'+
       (ready?'<p>Ka mjaft interes fiktiv për të propozuar një aktivitet. <b>Nuk është rezervim.</b></p>'+
       button('draft-topic:'+topic.id,'Përgatit draftin e planit'): '<p>Interesi nuk mjafton ende. Nuk do të krijohet plan automatikisht.</p>')+
       '</article>';
   }
   const firstView=()=>{
-    const list=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:'Organizatori demonstrues',meet:e.place,guide:e.conditions,first:true}))].slice(0,20);
-    return '<h3>Hera e parë</h3><p>Informacion i qartë për personat që nuk njohin askënd në një aktivitet. Deklarimi që vjen për herë të parë është privat në këtë demo.</p>'+
+    const list=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:"Organizatori",meet:e.place,guide:e.conditions,first:true}))].slice(0,20);
+    return "<h3>Hera e parë</h3><p>Informacion i qartë për personat që nuk njohin askënd në një aktivitet. Deklarimi që vjen për herë të parë është privat në këtë pajisje.</p>"+
       list.map(e=>'<article class="ilc-first"><strong data-user-content>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p><p><b>Personi pritës:</b> '+h(e.host)+'</p>'+
       '<p><b>Ku takohemi:</b> <span data-user-content>'+h(e.meet)+'</span></p><p data-user-content>'+h(e.guide)+'</p>'+
       '<label class="ilc-check"><input type="checkbox" data-ilc-first="'+h(e.id)+'"'+(state.welcome[e.id]?' checked':'')+'/> Dua udhëzim si pjesëmarrës i ri (ruhet vetëm në këtë pajisje)</label></article>').join('')+notice()+button('overview','Kthehu te zgjedhjet');
@@ -127,8 +127,8 @@
     '<p class="ilc-muted">Draftet kërkojnë konfirmim dhe publikim manual nga organizatori.</p>'+notice()+button('overview','Kthehu te zgjedhjet');
   function markup(){
     const body=state.view==='cities'?citiesView():state.view==='interest'?interestView():state.view==='welcome'?firstView():state.view==='repeat'?repeatView():state.view==='together'?togetherView():overview();
-    return '<div class="ilc-shade" data-ilc="close"></div><section class="ilc-sheet" role="dialog" aria-modal="true" aria-label="'+h(feedback('activities','Lidhjet dhe aktivitetet demonstrative'))+'">'+
-      '<header><span>ILLYRIAN · DEMO v1.7</span>'+button('close','✕ Mbyll')+'</header>'+body+'</section>';
+    return '<div class="ilc-shade" data-ilc="close"></div><section class="ilc-sheet" role="dialog" aria-modal="true" aria-label="'+h(feedback('activities',"Lidhjet dhe aktivitetet"))+'">'+
+      "<header><span>ILLYRIAN · v1.7</span>"+button('close','✕ Mbyll')+'</header>'+body+'</section>';
   }
   function render(){
     if(!root)return;
@@ -180,7 +180,7 @@
       }
     } else if(action.startsWith('together:')){
       const t=TOPICS.find(x=>x.id===action.slice(9));
-      if(t){draft({title:t.name,kind:t.kind,city:state.home,conditions:'Aktivitet demonstrues me rezultat të vogël konkret. Koha dhe vendi kërkojnë konfirmim.',source:'together'});return}
+      if(t){draft({title:t.name,kind:t.kind,city:state.home,conditions:"Aktivitet me rezultat të vogël konkret. Koha dhe vendi kërkojnë konfirmim.",source:'together'});return}
     }
     render();
   }
@@ -289,7 +289,7 @@
       else if(!e.shiftKey&&(document.activeElement===items.at(-1)||!root.contains(document.activeElement))){e.preventDefault();items[0].focus();}
     },true);
     window.addEventListener('illyrian:language-changed',()=>{
-      if(state.open)root?.querySelector('.ilc-sheet')?.setAttribute('aria-label',feedback('activities','Lidhjet dhe aktivitetet demonstrative'));
+      if(state.open)root?.querySelector('.ilc-sheet')?.setAttribute('aria-label',feedback('activities',"Lidhjet dhe aktivitetet"));
     });
     new MutationObserver(()=>{if(!state.open)queueMicrotask(sync)}).observe(screen,{childList:true,subtree:false});
     queueMicrotask(sync);

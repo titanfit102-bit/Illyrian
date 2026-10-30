@@ -66,7 +66,7 @@
     <label data-i18n-direct>${ui('formPrivacy','Dukshmëria')}<select name="privacy">${choose(['public','private'],v.privacy,visibilityKey)}</select></label>
     <label data-i18n-direct>${ui('formConditions','Kushtet')}<textarea name="conditions" maxlength="240">${escape(v.conditions)}</textarea></label>
     <p class="ilp-muted" data-i18n-direct>${ui('formInfo','Aktiviteti është vetëm provë. Nuk publikohen vendndodhje personale apo kërkesa reale.')}</p>
-    <p id="ilp-error" role="alert"></p><button type="submit" data-i18n-direct>${e?ui('formSave','Ruaj ndryshimet'):ui('formPublish','Publiko aktivitetin (demo)')}</button>${button('list',feedback('formBack','Kthehu'),'data-i18n-direct')}</form>`;
+    <p id="ilp-error" role="alert"></p><button type="submit" data-i18n-direct>${e?ui('formSave','Ruaj ndryshimet'):ui('formPublish',"Publiko aktivitetin")}</button>${button('list',feedback('formBack','Kthehu'),'data-i18n-direct')}</form>`;
   };
   const requestStatus=code=>feedback(({pending:'requestPending',accepted:'requestAccepted',declined:'requestDeclined',waitlist:'requestWaitlist',withdrawn:'requestWithdrawn'})[code]||'requestUnknown',String(code||''));
   const detail=()=>{
@@ -92,7 +92,7 @@
     }
     const mayChat=owner||my?.status==='accepted';
     if(mayChat){
-      html+='<h4>'+ui('groupChat','Biseda e grupit — demo')+'</h4><div class="ilp-chat">'+(state.messages.filter(m=>m.eventId===e.id).slice(-15).map(m=>'<p><b data-user-content>'+escape(m.name)+':</b> <span data-user-content>'+escape(m.text)+'</span></p>').join('')||'<p>'+ui('noMessages','Ende pa mesazhe.')+'</p>')+'</div>';
+      html+='<h4>'+ui('groupChat',"Biseda e grupit")+'</h4><div class="ilp-chat">'+(state.messages.filter(m=>m.eventId===e.id).slice(-15).map(m=>'<p><b data-user-content>'+escape(m.name)+':</b> <span data-user-content>'+escape(m.text)+'</span></p>').join('')||'<p>'+ui('noMessages','Ende pa mesazhe.')+'</p>')+'</div>';
       if(!ended)html+='<form id="ilp-chat-form"><input name="message" maxlength="280" placeholder="'+ui('writeGroup','Shkruaj në grup...')+'" aria-label="'+ui('groupMessage','Mesazhi në grup')+'" required><button type="submit">'+ui('sendAction','Dërgo')+'</button></form>';
       else html+='<p class="ilp-muted">'+ui('readOnly','Biseda është vetëm për lexim.')+'</p>';
     }else html+='<p class="ilp-muted">'+ui('access','Biseda është e disponueshme vetëm pas pranimit.')+'</p>';
@@ -133,7 +133,7 @@
     if(k.startsWith('detail:')){state.id=k.slice(7);state.view='detail';state.notice='';render();return}
     if(!e)return;
     if(k==='edit'&&owner&&!closed(e)){state.edit=e.id;draft=null;state.view='form';render();return}
-    if(k==='cancel'&&owner&&!closed(e)){if(!window.confirm(feedback('cancelConfirm','Anulo aktivitetin demonstrues?')))return;e.cancelled=true;notice(feedback('cancelled','Aktiviteti u anulua.'));return}
+    if(k==='cancel'&&owner&&!closed(e)){if(!window.confirm(feedback('cancelConfirm',"Anulo aktivitetin?")))return;e.cancelled=true;notice(feedback('cancelled','Aktiviteti u anulua.'));return}
     if(k==='join'&&!owner&&!closed(e)&&e.privacy==='public'&&!self(e.id)){
       if(state.requests.length>=200)return notice(feedback('requestLimit','Kufiri i provës u arrit.'));
       state.requests.push({id:'r'+Date.now().toString(36),eventId:e.id,name:'Profili im',status:free(e)>0?'pending':'waitlist'});
@@ -149,14 +149,14 @@
     if(act==='accept'&&r.status==='pending'&&free(e)>0){r.status='accepted';notice(feedback('acceptedNotice','Kërkesa u pranua.'))}
     else if(act==='decline'&&r.status==='pending'){r.status='declined';notice(feedback('declinedNotice','Kërkesa u refuzua.'))}
     else if(act==='promote'&&r.status==='waitlist'&&free(e)>0){r.status='pending';notice(feedback('promotedNotice','Nga lista e pritjes në kërkesë normale; pranim jo automatik.'))}
-    else if(act==='attendance'&&r.status==='accepted'){state.attendance=state.attendance.includes(id)?state.attendance.filter(x=>x!==id):[...state.attendance,id];notice(feedback('attendanceNotice','Evidencë demonstrative e përditësuar.'))}
+    else if(act==='attendance'&&r.status==='accepted'){state.attendance=state.attendance.includes(id)?state.attendance.filter(x=>x!==id):[...state.attendance,id];notice(feedback('attendanceNotice',"Evidencë e përditësuar."))}
   }
   function submit(form){
     if(form.id==='ilp-chat-form'){
       const e=event(state.id),r=self(e?.id),txt=String(new FormData(form).get('message')||'').trim().slice(0,280);
       if(!e||closed(e)||!txt||(state.role!=='organizer'&&r?.status!=='accepted'))return;
       state.messages.push({eventId:e.id,name:state.role==='organizer'?'Organizatori':'Profili im',text:txt});
-      state.messages=state.messages.slice(-100);notice(feedback('messageSavedNotice','Mesazhi u ruajt vetëm në demo.'));return;
+      state.messages=state.messages.slice(-100);notice(feedback('messageSavedNotice',"Mesazhi u ruajt vetëm lokalisht."));return;
     }
     if(form.id!=='ilp-form'||state.role!=='organizer')return;
     const data=new FormData(form);
@@ -175,21 +175,21 @@
     if(e){if(closed(e)||v.capacity<accepted(e.id).length)return error(feedback('belowAcceptedError','Kapaciteti nuk mbulon pjesëmarrësit e pranuar.'));Object.assign(e,v);}
     else{if(state.events.length>=24)return error(feedback('eventLimit','Kufiri i demonstrimit u arrit.'));e={id:'p'+Date.now().toString(36),...v,cancelled:false};state.events.unshift(e);}
     if(!save()){error(state.notice);return}
-    state.id=e.id;state.edit=null;draft=null;state.view='detail';state.notice=feedback('eventSavedNotice','Aktiviteti u ruajt në demonstrim.');render();
+    state.id=e.id;state.edit=null;draft=null;state.view='detail';state.notice=feedback('eventSavedNotice',"Aktiviteti u ruajt lokalisht.");render();
   }
   function sync(){
     const screen=document.querySelector('#screen');if(!screen)return;
     const shown=!!screen.querySelector('.v10-event-tabs')||/Plane që na bashkojnë|Planet e mia/i.test(screen.querySelector('h2')?.textContent||'');
     if(!shown)return;
     if(!screen.querySelector('[data-ilp-entry]')){
-      const wrap=document.createElement('div');wrap.className='ilp-entry';wrap.innerHTML='<strong>Krijo dhe menaxho aktivitete</strong><p>Plan, kërkesa, kapacitet dhe biseda në grup · demo</p><button type="button" data-ilp-entry="1">Hap panelin →</button>';
+      const wrap=document.createElement('div');wrap.className='ilp-entry';wrap.innerHTML="<strong>Krijo dhe menaxho aktivitete</strong><p>Plan, kërkesa, kapacitet dhe biseda në grup</p><button type=\"button\" data-ilp-entry=\"1\">Hap panelin →</button>";
       const first=screen.querySelector('.v10-event-tabs')||screen.firstElementChild;first?.parentElement?.insertBefore(wrap,first);
     }
     let cards=screen.querySelector('#ilp-created-list');
     const visible=state.events.filter(e=>e.id!=='demo-football'&&e.privacy==='public');
     if(!visible.length){cards?.remove();return}
     if(!cards){cards=document.createElement('section');cards.id='ilp-created-list';screen.appendChild(cards)}
-    const markup='<h3>Aktivitete të krijuara në demo</h3>'+visible.map(e=>`<article class="ilp-card"><strong data-user-content>${escape(e.title)}</strong><p>${escape(e.city)} · ${escape(e.date)}</p><button type="button" data-ilp-open="${escape(e.id)}">Hap planin →</button></article>`).join('');
+    const markup="<h3>Aktivitete të krijuara lokalisht</h3>"+visible.map(e=>`<article class="ilp-card"><strong data-user-content>${escape(e.title)}</strong><p>${escape(e.city)} · ${escape(e.date)}</p><button type="button" data-ilp-open="${escape(e.id)}">Hap planin →</button></article>`).join('');
     if(cards.innerHTML!==markup)cards.innerHTML=markup;
   }
   function onLocaleChange(){
@@ -285,7 +285,7 @@
       state.edit=null;
       state.role='organizer';
       open();
-      state.notice=feedback('draftNotice','Draft demonstrues. Konfirmo vendin, datën, orën, kapacitetin dhe kushtet përpara publikimit.');
+      state.notice=feedback('draftNotice',"Draft. Konfirmo vendin, datën, orën, kapacitetin dhe kushtet përpara publikimit.");
       state.view='form';
       render();
     });
