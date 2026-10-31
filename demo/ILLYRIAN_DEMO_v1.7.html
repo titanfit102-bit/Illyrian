@@ -2350,7 +2350,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  const galleryCard=item=>{
   const sponsored=item.sponsored?'<span data-i18n-direct data-ily-commerce-sponsored class="p17-sponsored">'+esc(window.IllyrianI18n?.t('commerce:sponsored')||'Sponsorizuar')+'</span>':'';
   const pict=item.src?'<img src="'+media(item.src)+'" loading="lazy" alt="'+e(item.text||t("openPost"))+'"/>':'<div class="p17-tile-text">'+e(item.text||t("emptyImage"))+'</div>';
-  return '<button type="button" class="p17-tile" data-p17-action="open-media" data-id="'+e(item.id)+'" data-kind="'+e(item.kind)+'" aria-label="'+e(item.text||t("openPost"))+'">'+pict+sponsored+(item.kind!=="post"?'<span class="p17-tile-kind">'+icon("play",16)+'</span>':'')+'</button>';
+  return '<button type="button" class="p17-tile" data-user-content data-p17-action="open-media" data-id="'+e(item.id)+'" data-kind="'+e(item.kind)+'" aria-label="'+e(item.text||t("openPost"))+'">'+pict+sponsored+(item.kind!=="post"?'<span class="p17-tile-kind">'+icon("play",16)+'</span>':'')+'</button>';
  };
  const highlights=()=>{
   const entries=hList();
@@ -2358,7 +2358,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   return '<div class="p17-highlights" aria-label="'+e(t("collections"))+'">'+add+entries.map(h=>{
     const first=h.items[0];
     const src=first?(safePhoto(first.photo)?first.photo:(IMAGES[first.sample]||"")):"";
-    return '<button type="button" class="p17-hl" data-p17-action="highlight-view" data-id="'+e(h.id)+'"><span class="p17-hl-round">'+(src?'<img src="'+media(src)+'" alt="" loading="lazy"/>':icon("camera",21))+'</span><span>'+e(h.title)+'</span></button>';
+    return '<button type="button" class="p17-hl" data-user-content data-p17-action="highlight-view" data-id="'+e(h.id)+'"><span class="p17-hl-round">'+(src?'<img src="'+media(src)+'" alt="" loading="lazy"/>':icon("camera",21))+'</span><span>'+e(h.title)+'</span></button>';
   }).join("")+'</div>';
  };
  const stats=()=>'<div class="p17-stats"><div><b>'+state.posts.length+'</b><small>'+t("posts")+'</small></div><div title="'+e(t("noFollowers"))+'"><b>0</b><small>'+t("followers")+'</small></div><div><b>'+state.follows.length+'</b><small>'+t("following")+'</small></div></div>';
@@ -2466,7 +2466,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   if(action==="open-media"){
    const kind=b.dataset.kind;
    if(kind==="post"){openModal("p17-post",id);return}
-   if(kind==="myreel"){state.modal={type:"v15-view",kind:"reel",id};state.story=0;state.reelOpen=false;render({scroll:true});return}
+   if(kind==="myreel"){v8Action("v15-view",id,"reel");return}
    if(kind==="friendReel"){state.modal=null;state.reelOpen=true;state.reelIndex=Math.max(0,Number(id)||0);render({scroll:true});return}
   }
   if(action==="open-event"){openModal("event",id);return}
