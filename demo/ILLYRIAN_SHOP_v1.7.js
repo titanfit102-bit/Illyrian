@@ -115,7 +115,7 @@
  function close(){state.open=false;layer?.remove();layer=null;for(const sel of ['#screen','#navbar','.head']){const el=document.querySelector('#phone > '+sel);if(el)el.inert=false}if(opener?.isConnected)opener.focus({preventScroll:true});else document.querySelector('[data-ilshop-open],#navbar button')?.focus({preventScroll:true});window.dispatchEvent(new CustomEvent('illyrian:shop:closed',{detail:{source:'shop'}}));}
  function openFromEntry(event){event.preventDefault();event.stopPropagation();if(!state.open)show();}
  // Mundësi opens the same Shop catalog; no duplicate Home control.
- function openFromOpportunities(category){if(!state.open)show();const next=category==='Shërbime'?'Shërbime':'Të gjitha';if(state.category!==next||state.store){state.category=next;state.store='';render()}return true;}
+ function openFromOpportunities(category){if(!state.open)show();const next=category==='Shërbime'?'Shërbime':'Të gjitha';if(state.category!==next||state.store){state.category=next;state.store='';render()}layer?.querySelector('#ils-search')?.focus({preventScroll:true});return true;}
  window.IllyrianShopUI=Object.freeze({openFromOpportunities});
  function inject(){const screen=document.getElementById('screen');if(!screen||state.open)return;
    if(screen.querySelector('[data-ilshop-open]'))return;
