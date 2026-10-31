@@ -1,0 +1,35 @@
+name: ILLYRIAN security
+on:
+  pull_request:
+    branches: [demo/v1.7-illyrian-shop]
+  push:
+    branches: [demo/v1.7-illyrian-shop]
+  workflow_dispatch:
+  schedule:
+    - cron: '23 7 * * 1'
+permissions:
+  contents: read
+concurrency:
+  group: illyrian-security-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  security-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Verify detector rejection and scan tracked files
+        run: |
+          python3 scripts/security/check.py --self-test
+          python3 scripts/security/check.py
+      - name: Install locked audit inventory without lifecycle scripts
+        run: npm ci --prefix security --ignore-scripts --no-fund --no-audit
+      - name: Validate syntax and audited vendor identity
+        run: node scripts/security/syntax.cjs
+      - name: Reject known high or critical dependency advisories
+        run: npm audit --prefix security --audit-level=high

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Panoramë qyteti në perëndim">
+<defs><linearGradient id="sky" x2=".27" y2="1"><stop stop-color="#11152d"/><stop offset=".3" stop-color="#60385d"/><stop offset=".62" stop-color="#f57c67"/><stop offset="1" stop-color="#f4ba81"/></linearGradient><radialGradient id="sun"><stop stop-color="#fffad7"/><stop offset=".3" stop-color="#ffeab8"/><stop offset="1" stop-color="#ffaf7e" stop-opacity="0"/></radialGradient><linearGradient id="haze" x2="0" y2="1"><stop stop-color="#a85c78" stop-opacity=".18"/><stop offset="1" stop-color="#101725" stop-opacity=".85"/></linearGradient></defs>
+<path fill="url(#sky)" d="M0 0h1200v430H0z"/><circle cx="818" cy="196" r="170" fill="url(#sun)"/><circle cx="819" cy="201" r="36" fill="#ffe5ba" opacity=".9"/>
+<path fill="#563a62" d="M0 242 75 195 147 229 246 162 320 210 385 153 480 224 572 176 653 213 740 154 818 205 910 169 980 214 1090 177 1200 223v207H0z"/>
+<path fill="#372f50" d="M0 270 109 242 170 258 295 199 357 233 455 211 560 260 665 223 740 262 864 217 981 271 1080 228 1200 255v175H0z"/>
+<path fill="url(#haze)" d="M0 219h1200v211H0z"/>
+<g fill="#222337"><path d="M0 328h49v102H0zm63-36h59v138H63zm72 8h37v130h-37zm47-41h77v171h-77zm89 53h31v118h-31zm44-33h48v151h-48zm61 22h87v129h-87zm103-42h44v171h-44zm59 41h51v130h-51zm64-27h72v157h-72zm82 43h44v114h-44zm55-64h69v178h-69zm83 51h62v127h-62zm75-29h46v156h-46zm60 50h77v106h-77zm92-81h46v187h-46zm58 42h54v145h-54z"/></g>
+<g fill="#e9a67c" opacity=".65"><path d="M18 350h9v3h-9zm42 8h6v3h-6zm44-42h6v3h-6zm89-29h11v3h-11zm9 18h7v3h-7zm51 15h10v3h-10zm61 9h8v3h-8zm35-41h7v3h-7zm16 38h6v3h-6zm88-4h9v3h-9zm18-21h8v3h-8zm78 43h8v3h-8zm16-15h8v3h-8zm58-15h9v3h-9zm18 22h8v3h-8zm66-48h8v3h-8zm15 31h8v3h-8zm71-9h9v3h-9zm18 22h8v3h-8zm63-41h7v3h-7zm20 24h7v3h-7zm75-30h9v3h-9zm72 23h7v3h-7zm60-36h8v3h-8z"/></g>
+<path fill="#121928" d="M0 379q124-26 212-3t190 6q158-24 254-4t177-1q160-21 367-3v56H0z"/>
+<path stroke="#ffc9a3" opacity=".36" stroke-width="2" d="M0 289q240-8 428 0t405-4q240-9 367 0"/>
+</svg>

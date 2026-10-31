@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1100" viewBox="0 0 1440 1100" role="img" aria-labelledby="title desc"><title id="title">ILLYRIAN Android · Njoftimet dhe Bubbles — propozim 6.2</title><desc id="desc">Gjashtë pamje skematike me të dhëna fiktive. Light dhe Dark: lock screen i redaktuar, bisedë e zgjeruar, dhe bubble e aktivizuar nga përdoruesi. Nuk janë kapje ekrani ose implementim native.</desc>
+<rect x="0" y="0" width="1440" height="1100" rx="0" fill="#F6F3F5" stroke="none"/>
+<text x="36" y="46" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="700" fill="#A1123A">ILLYRIAN / SPECIFIKIM 6.2</text>
+<text x="36" y="88" font-family="DejaVu Sans, sans-serif" font-size="31" font-weight="700" fill="#24141D">Android · Njoftimet dhe Bubbles</text>
+<text x="36" y="119" font-family="DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#685B65">MOCKUP SKEMATIK · JO OS CAPTURE · JO FUNKSION NATIVE · TË DHËNA FIKTIVE</text>
+<text x="36" y="146" font-family="DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#685B65">OS kontrollon përmasat, fontet, zgjerimin, tastierën dhe autentikimin. Pamja përfundimtare kërkon test fizik.</text>
+<text x="36" y="200" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">A01 / LIGHT</text>
+<text x="36" y="227" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#241C23">E kyçur · privatësi</text>
+<rect x="36" y="244" width="438" height="280" rx="24" fill="#E9E3EA" stroke="none"/>
+<text x="56" y="272" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">ILLYRIAN</text>
+<text x="56" y="306" font-family="DejaVu Sans, sans-serif" font-size="30" font-weight="500" fill="#241C23">12:41</text>
+<rect x="52" y="326" width="406" height="123" rx="20" fill="#FFFFFF" stroke="none"/>
+<text x="68" y="353" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">ILLYRIAN</text>
+<text x="68" y="381" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#241C23">Ke një njoftim të ri</text>
+<text x="68" y="408" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#6E626D">Hap për të parë përmbajtjen.</text>
+<text x="36" y="551" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#685B65">Pa emër, avatar ose tekst privat.</text>
+<text x="36" y="574" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#685B65">Tap → zhbllokim sipas OS → qasje e verifikuar.</text>
+<text x="498" y="200" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">A02 / LIGHT</text>
+<text x="498" y="227" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#241C23">Quick Reply · pas zhbllokimit</text>
+<rect x="498" y="244" width="438" height="280" rx="24" fill="#E9E3EA" stroke="none"/>
+<text x="518" y="272" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">ILLYRIAN</text>
+<rect x="514" y="287" width="406" height="207" rx="20" fill="#FFFFFF" stroke="none"/>
+<circle cx="552" cy="325" r="22" fill="#E6CCD6"/><path d="M536 341 Q552 322 568 341" fill="#7D3B56"/><circle cx="552" cy="321" r="9" fill="#C18261"/><path d="M543 320 Q548 302 562 318 L559 322 Q552 312 543 320" fill="#33212A"/>
+<text x="585" y="321" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="600" fill="#241C23">Arta K. · Plan futbolli</text>
+<text x="585" y="344" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#6E626D">2 mesazhe · tani</text>
+<text x="530" y="382" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#241C23">A takohemi te hyrja?</text>
+<text x="530" y="461" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#AA1742">Dërgo</text>
+<rect x="529" y="391" width="375" height="43" rx="10" fill="#E9E3EA" stroke="#DED5DF"/>
+<text x="542" y="419" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#241C23">Po, po vij.</text>
+<text x="498" y="551" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#685B65">Avatar/preview vetëm kur lejohet qasja.</text>
+<text x="498" y="574" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#685B65">Mbyllja/largimi nuk shënon mesazhet të lexuara.</text>
+<text x="960" y="200" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">A03 / LIGHT</text>
+<text x="960" y="227" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#241C23">Bubble · vetëm me zgjedhje</text>
+<rect x="960" y="244" width="438" height="280" rx="24" fill="#E9E3EA" stroke="none"/>
+<text x="980" y="272" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">ILLYRIAN</text>
+<circle cx="1343" cy="297" r="22" fill="#E6CCD6"/><path d="M1327 313 Q1343 294 1359 313" fill="#7D3B56"/><circle cx="1343" cy="293" r="9" fill="#C18261"/><path d="M1334 292 Q1339 274 1353 290 L1350 294 Q1343 284 1334 292" fill="#33212A"/>
+<rect x="979" y="336" width="398" height="163" rx="18" fill="#FFFFFF" stroke="none"/>
+<text x="996" y="364" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="600" fill="#241C23">Arta K. · Bisedë</text>
+<text x="996" y="394" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#241C23">A takohemi te hyrja?</text>
+<rect x="992" y="418" width="279" height="50" rx="12" fill="#E9E3EA" stroke="#DED5DF"/>
+<text x="1005" y="450" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#6E626D">Shkruaj…</text>
+<text x="1290" y="450" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="700" fill="#AA1742">Dërgo</text>
+<text x="960" y="551" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#685B65">Vetëm kur pajisja dhe përdoruesi e lejojnë.</text>
+<text x="960" y="574" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#685B65">Fallback: njoftim standard; pa overlay permission.</text>
+<text x="36" y="623" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">A04 / DARK</text>
+<text x="36" y="650" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#241C23">E kyçur · privatësi</text>
+<rect x="36" y="667" width="438" height="280" rx="24" fill="#151219" stroke="none"/>
+<text x="56" y="695" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#BFB1BC">ILLYRIAN</text>
+<text x="56" y="729" font-family="DejaVu Sans, sans-serif" font-size="30" font-weight="500" fill="#F7F2F5">12:41</text>
+<rect x="52" y="749" width="406" height="123" rx="20" fill="#242128" stroke="none"/>
+<text x="68" y="776" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#BFB1BC">ILLYRIAN</text>
+<text x="68" y="804" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#F7F2F5">Ke një njoftim të ri</text>
+<text x="68" y="831" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#BFB1BC">Hap për të parë përmbajtjen.</text>
+<text x="36" y="974" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#685B65">Pa emër, avatar ose tekst privat.</text>
+<text x="36" y="997" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#685B65">Tap → zhbllokim sipas OS → qasje e verifikuar.</text>
+<text x="498" y="623" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">A05 / DARK</text>
+<text x="498" y="650" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#241C23">E zgjeruar · pas zhbllokimit</text>
+<rect x="498" y="667" width="438" height="280" rx="24" fill="#151219" stroke="none"/>
+<text x="518" y="695" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#BFB1BC">ILLYRIAN</text>
+<rect x="514" y="710" width="406" height="207" rx="20" fill="#242128" stroke="none"/>
+<circle cx="552" cy="748" r="22" fill="#E6CCD6"/><path d="M536 764 Q552 745 568 764" fill="#7D3B56"/><circle cx="552" cy="744" r="9" fill="#C18261"/><path d="M543 743 Q548 725 562 741 L559 745 Q552 735 543 743" fill="#33212A"/>
+<text x="585" y="744" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="600" fill="#F7F2F5">Arta K. · Plan futbolli</text>
+<text x="585" y="767" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#BFB1BC">2 mesazhe · tani</text>
+<text x="530" y="805" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#F7F2F5">A takohemi te hyrja?</text>
+<text x="530" y="833" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#F7F2F5">Leon: Po, në 18:00.</text>
+<path d="M530 852 H904" stroke="#4D424F"/>
+<text x="530" y="884" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#FFB1C6">Përgjigju</text>
+<text x="697" y="884" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#FFB1C6">Hap bisedën</text>
+<text x="498" y="974" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#685B65">Avatar/preview vetëm kur lejohet qasja.</text>
+<text x="498" y="997" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#685B65">Mbyllja/largimi nuk shënon mesazhet të lexuara.</text>
+<text x="960" y="623" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#6E626D">A06 / DARK</text>
+<text x="960" y="650" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#241C23">Bubble · vetëm me zgjedhje</text>
+<rect x="960" y="667" width="438" height="280" rx="24" fill="#151219" stroke="none"/>
+<text x="980" y="695" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" fill="#BFB1BC">ILLYRIAN</text>
+<circle cx="1343" cy="720" r="22" fill="#E6CCD6"/><path d="M1327 736 Q1343 717 1359 736" fill="#7D3B56"/><circle cx="1343" cy="716" r="9" fill="#C18261"/><path d="M1334 715 Q1339 697 1353 713 L1350 717 Q1343 707 1334 715" fill="#33212A"/>
+<rect x="979" y="759" width="398" height="163" rx="18" fill="#242128" stroke="none"/>
+<text x="996" y="787" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="600" fill="#F7F2F5">Arta K. · Bisedë</text>
+<text x="996" y="817" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#F7F2F5">A takohemi te hyrja?</text>
+<rect x="992" y="841" width="279" height="50" rx="12" fill="#151219" stroke="#4D424F"/>
+<text x="1005" y="873" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#BFB1BC">Shkruaj…</text>
+<text x="1290" y="873" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="700" fill="#FFB1C6">Dërgo</text>
+<text x="960" y="974" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#685B65">Vetëm kur pajisja dhe përdoruesi e lejojnë.</text>
+<text x="960" y="997" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#685B65">Fallback: njoftim standard; pa overlay permission.</text>
+<rect x="36" y="1033" width="1368" height="42" rx="10" fill="#EDE5EB" stroke="none"/>
+<text x="52" y="1060" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#59404F">Aktivitete · Komente · Përmendje · Shop → kategori të veçanta; pa Reply kur objekti nuk është bisedë.</text>
+</svg>

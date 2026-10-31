@@ -1,0 +1,12 @@
+{
+  "name": "illyrian-security-inventory",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Audit inventory only; runtime remains vendored. CI verifies vendor parity.",
+  "dependencies": {
+    "i18next": "25.7.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.1"
+  }
+}

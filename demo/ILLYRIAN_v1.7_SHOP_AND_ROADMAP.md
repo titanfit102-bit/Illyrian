@@ -1,5 +1,52 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+**Profile — hyrjet e miratuara,31 tetor2026:** pa ig6-entry/il4-entry pas galerisë. Ingranazhi → Privatësia përdor preferencat ekzistuese; Ndihma dhe mbështetja hap tabs reports/appeals të Governance ekzistues, me kthim/fokus te Settings. Profile → Mundësi lexon vetëm listimet `owned===true` nga adapterët Shop/Shop Plus dhe hap origjinalin, pa kopje storage ose menu të plotë Mundësi. Pa listime personale nuk shfaqet seksion menaxhimi; planet personale lexohen nga adapter-i Plans dhe aktivitetet e lidhura ekzistuese ruhen. Settings → Komunitetet e mia hap anëtarësimet; numri Duke ndjekur hap listën personale, pa rikthyer blloqe të mëdha. Komunitetet/harta/Zbulo dhe Calendar/Plane & Aktivitete nuk ndryshohen. QA: sq/en/it,Light/Dark,locale live,Tab/Escape/fokus,privatësia ekzistuese,storage i pandryshuar,emrat UGC literalë dhe përjashtimi i listimeve të huaja; rolet reale/privatësia server-side BACKEND.
+
+**Vendosja e Settings — 31 tetor2026:** Profile→header→Cilësimet ekzistuese; pa ikonë Njoftimesh të dukshme në këtë faqe dhe pa ingranazh të dyfishtë pranë redaktimit. Home→Njoftimet ekzistuese. Pranim: sq/en/it, hapje/Escape/fokus dhe rikthim te Home pa ndryshim storage ose unread.
+
+**Faza1 — përputhja me referencën, 31 tetor 2026:** cover/avatar/statistika në raportet e fotografisë; emri dhe veprimet bashkë; bio/chips/Highlights/skeda kompakte; galeri3 kolona me foto të qarta dhe metadata ilustruese; Light/Dark. Mbaj target44px me sipërfaqe vizuale më të vogla. Profili i papersonalizuar shfaq personazhin Arta; mos mbishkruaj të dhëna personale ose navbar. Fazat2–5 ruajnë boshllëqet e dokumentuara. Provat te CURRENT_STATE.
+
+**Profili premium — audit i pesë fazave, 31 tetor 2026:** burimi fillestar `490faf940d2a120cc66c2a4c4ca2c38717d70c12`, Draft PR #1. Commit `8c2dc18` shtoi bashkë pjesë të fazave 1–4; prania e kodit nuk mbyll fazat. Browser run 41147981062 u anulua pas dështimeve të regjistruara, Security 41147981129 SUCCESS. Pronari autorizoi më pas pesë korrigjimet e auditit mbi `e094213`: Following, komunitetet personale, planet te Mundësi, foto preview/crop/Ruaj-Anulo dhe Highlights të plota në kufijtë DEMO. Ky autorizim nuk mbyll QA fizik/pranimin final. Pa ndryshim header/navbar, backend ose Production.
+
+| Faza / kriteri i ruajtur nga referenca e pronarit | Gjendja e verifikuar / puna e mbetur |
+|---|---|
+| 1 — kopertinë, avatar i mbivendosur, tri statistika, emër/bio/veprime dhe një strukturë; Light/Dark, 320/360/390/430px; navbar i pandryshuar | `.p17-profile` dhe CSS i izoluar ekzistojnë. Stabilizuar kontrollet 44px, lexueshmëria/skedat me tastierë, ruajtja e draftit gjatë gjuhës dhe treguesi i sponsorizimit në miniatura. Prova portrait/landscape/desktop, sq/en/it dhe Light/Dark PASS në kufijtë e regjistruar te CURRENT_STATE; arkivi i screenshot-eve te indeksi QA. Kopertina fillestare është fotografike sipas kërkesës më të re; pranimi vizual i pronarit mbetet OPEN. Pa pretendim përfundimi 100% vizual. |
+| 2 — personalizim dhe identitet | IMPLEMENTUAR NË DEMO: fushat ekzistuese, avatar/cover me preview, zoom/ripozicionim/Ruaj-Anulo/Escape; quota Retry, stale decode/snapshot guards dhe ruajtja e tekstit të papërfunduar. Kontrata/dimensionet te blueprint. OPEN: provat fizike/kufijtë e memories native dhe unifikimi i preferencës së qytetit për APK; qyteti manual ekzistues nuk ndryshohet. |
+| 3 — Story Highlights | IMPLEMENTUAR NË DEMO: krijim/shikim/ndryshim/fshirje, cover i zgjedhshëm, renditje Story-sh/koleksionesh, viewer-i ekzistues Stories. Snapshot-et historike ruhen; arkivi i referencuar ruan Story-t e reja pas largimit nga lista aktive pa kopje të dyfishta. Kufijtë6×4 janë DEMO; lifecycle/server retention real BACKEND. |
+| 4 — galeri me tri kolona dhe Postime/Reels/Të ruajtura/Të pëlqyera/Mundësi | IMPLEMENTUAR NË DEMO brenda provave: pesë skedat, viewer-at ekzistues, listimet personale Shop/Shop Plus dhe planet personale Plans pa kopje. Following dhe Komunitetet e mia rikthejnë lidhjet e profilit të vjetër. Saved/Liked vetëm pronarit. OPEN: modeli i roleve/autorësisë/privatësisë reale, metadata/paging i plotë i galerisë dhe përshtatja premium e profileve të tjera; nuk shtohen nga ky autorizim. |
+| 5 — integrim dhe pranim | PARTIAL/OPEN: provat reale të CI dhe screenshot-eve, ruajtja/ringarkimi/anulimi/invalid media/quota; tastierë, kontrast, reduced motion, safe areas, sq/en/it dhe regresionet Home/Stories/Reels/Messages/Zbulo/Shop/Mundësi. Kontrollet fizike dhe pranimi final vizual bëhen në telefonin e pronarit; browser PASS nuk i zëvendëson. |
+
+**Rendi i vazhdimit:** verifiko pesë korrigjimet e miratuara → shqyrtim vizual i pronarit në Preview → QA fizik/pranim dhe vetëm më pas boshllëqet e mbetura të profilit sipas autorizimit. Ripërdor kodin ekzistues; emri/ikona/logoa, navbar-i, keys dhe të dhënat historike ruhen. Pa zgjerim automatik në backend/native/investitor/release.
+
+**Portretet e profileve (30 tetor 2026):** Për 5 personazhet bazë, përdor foto sintetike të ndryshme, WebP lokale; avatarët dhe imazhet e Stories/Reels/Postimeve përputhen sipas identitetit. Mos shto etiketa DEMO në secilin profil; identitetet ilustrative deklarohen te Settings → About. Mos mbishkruaj foto personale të ruajtura. Testi Playwright verifikon src, ngarkimin e fotove dhe Reel-in e Besës.
+
+**Vendimi Home, 30 tetor 2026:** Hiq nga Kryefaqja shkurtoret e dyfishuara Biznese/Punë, linkun Hap Shop, bllokun më vete Reels për ty, Krijo një moment dhe shënimin vizual të prototipit. Biznese/Punë/Tregu/Shërbime mbeten te Mundësi; Tregu/Shërbime hapin drejtpërdrejt Shop-in ekzistues (pa hyrje të fshehur Home), ndërsa Shop ruan hyrjen e vet në Zbulo. Reels e miqve paraqiten si miniatura me simbol ▶ brenda Stories dhe hapin indeksin përkatës te Reels; Story-t ekzistuese mbeten veç. Shiriti «Çfarë po mendon?» mbetet krijuesi i vetëm i dukshëm në Home; funksionet e Story/Reel, profili, modulet dhe të dhënat nuk fshihen. Testet UI/rrugët dhe CI/Preview verifikohen mbi SHA e re; pa ndryshim APK/backend/Production.
+
+**Story im — 30 tetor 2026, UX e miratuar:** nëse nuk ka Story të ruajtur, prekja e «Story im» hap editorin ekzistues dhe kërkon menjëherë kamerën me `capture=environment` (shfletuesi/OS mund të hapë zgjedhës fotografish); anulimi nuk publikon asgjë dhe heq atributin capture. Nëse ka Story lokal, prekja hap shikuesin ekzistues v1.6 të Story-t më të ri. Pamja e rrethit tregon fotografinë e Story-t kur ekziston. Nuk ndryshohen storage keys, afatet historike, përpunimi i fotografive, logjika e publikimit ose funksionet e tjera; kamerë native APK mbetet për fazën reale. Test i ri browser dhe verifikim CI/Preview pas ruajtjes.
+
+**Feed UI, 30 tetor 2026 (vendim i pronarit):** shiriti poshtë çdo postimi «Përmbajtje / Pse po e shoh?» hiqet plotësisht, përfshirë dritaren/handler-in e tij. Postimet ruajnë Pëlqe/Komento/Shpërndaj/Ruaj dhe menuja «Më shumë» ruan Fshihe/Raporto. Asnjë ndryshim në ruajtje, filtra/renditje, privatësi ose DEMO→APK. Test i fokusuar në Home sq/en/it dhe menunë e postimit; provat CI verifikohen LIVE pas commit-it.
+
+**Copy — vendim i miratuar30 tetor2026:** vetëm një shënim DEMO te About; hiq përsëritjet e ndërfaqes në çdo modul. Ruaj mesazhet e sakta për rezultatet lokale/nuk u dërgua/pa pagesë reale dhe informacionin ⓘ për mosverifikimin. Mos prek UGC, historikun, keys/IDs ose statuset e ruajtura; statuse të njohura ndryshojnë vetëm etiketën e shfaqur. Gjendja/testet/Preview te CURRENT_STATE; specifikimi te blueprint. Nuk është kalim në fazën APK ose autorizim investitor/merge/Production.
+
+**Home30 tetor — kërkesë aktive:** hiq profilin sipër, qendërzo ILLYRIAN, + majtas për kamerën. DEMO: +/Kalendari majtas dhe Mundësi/Njoftime djathtas; capture=environment në editorin ekzistues, draft i ruajtur pa auto-publish. Kamera reale e detyruar nuk premtohet në browser; APK camera direct PLANNED sipas blueprint-it. QA: qendër/44px320/390/landscape, sq/en/it, cancel dhe foto sintetike pa auto-publish; CI/Preview verifikohen në dorëzim. Kamera fizike Android/iPhone OPEN. Pa modul tjetër ose ndryshim stores/IDs/backend/native/merge/Production.
+
+**Home reference — implementim/verifikim DEMO përfunduar në kufijtë e raportuar:** runtime/QA `cfb0420`, Browser40971394865 SUCCESS:381 Chromium/16 WebKit/12 classifier actual; Security40971394860 SUCCESS. Screenshot-et89/exactSHA inspektuar Light/Dark390/mobile320/desktop1280/landscape844, artifact12940748245 (skadon12 nëntor; arkiv afatgjatë OPEN). Preview READY/exactSHA/target:null; browser auth review BLOCKED, visual nga CI. Dokumentet e këtij mbyllimi nuk ndryshojnë runtime-in dhe CI reuse nuk quhet riekzekutim. Hapi pasues: kontrolli vizual i pronarit në Kryefaqe; fizik Android/iPhone/TalkBack/VoiceOver/performance reale OPEN. Shop/Plans dhe stores historike ruhen; PDF A.1 jo udhëzues implementimi. Pa modul tjetër/merge/main/Production ose DEMO për investitorë pa autorizimin përkatës.
+
+Home QA2:40970014876/0466567 dha380 PASS/1 FAIL; Security40970014878 SUCCESS. Testet e reja Home sq/en/it Light/Dark kaluan. Pritja e sfondit përfundimtar Dark u shtua për të shmangur matjen gjatë transition .15s; pa ndryshim runtime ose ulje të pragut AA4.5. Suite përfundimtare ende për verifikim.
+
+Home reference QA: run40968539317/0e913685376 PASS/5 FAIL, WebKit SKIPPED. Korrigjuar namespace i etiketave `home:`, pritshmëritë italiane/locatorët e qytetit dhe kontrolli i paletës Dark me prag AA4.5 të pandryshuar. Testet Home kontrollojnë tekstet konkrete sq/en/it dhe screenshot Për ty pa toast. CI pas korrigjimit dhe kontrolli vizual i screenshot-eve mbeten për verifikim; Preview browser login u bllokua nga kontrolli automatik, pa anashkalim.
+
+## Vendimi aktual — Plane & Aktivitete, 29 tetor2026
+
+**Kryefaqja — referenca e pronarit:** header me katër veprime ekzistuese, Stories mbi composer, tri zgjedhje Për ty/Duke ndjekur/Afër teje dhe Më të rejat dytësore; postime me media në gjerësinë e feed-it. Nav pesë tab-e me etiketa Home, dark pothuajse i zi dhe Light përkatës. Refotografia jep stilin/hierarkinë, jo numra, badge real ose carousel të sajuar. A.1 nuk është burim implementimi. Pranim: kontrolle të arritshme, pa overflow320/390/landscape, ndryshim locale/theme pa humbje, rrjedha foto/reel/city/profil/Shop të ruajtura; prova CI/Preview në CURRENT_STATE/dorëzim.
+
+Pronari autorizoi një ndryshim të kufizuar: në Mundësi hiqet shortcut-i `Aktivitetet` (Aktivitetet e tua), ndërsa `Plane` riemërtohet **Plane & Aktivitete** (en:Plans & Activities;it:Piani & Attività). Shtatë hyrje; route/key `Plane` dhe Events ruhen. Të gjitha/Kërkesat e mia/Të pranuara mbeten të arritshme brenda modulit, me fokus te tab-i aktiv. Pa ndryshim të stores/IDs, kërkesave, pjesëmarrjes, historikut ose thirrjeve të tjera `v10-my-plans`. Ky vendim mbizotëron ndaj përshkrimeve historike me tetë hyrje; nuk miraton ridizajnimin global A.1, backend, main/Production/merge ose DEMO-n e avancuar për investitorët. Parent ac0224d; QA e prekur, CI dhe Preview verifikohen në dorëzim, jo PASS i supozuar ose fizik.
+
+> **Active scope — 26 October 2026:** owner-private DEMO testing; source repository PUBLIC. Follow [permanent DEMO/APK policy](../AGENTS.md#demo-vs-apk--permanent-owner-policy) and [knowledge map](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#14-knowledge-preservation-and-demoapk-boundary--26-october-2026). Phase 7/8 and M0–M5 remain; historical checkpoints below are not current tasks. F06 enforcement is deferred to the real-app phase, not a DEMO development blocker. Advanced backend/native requirements are documented, not implemented in DEMO. Existing tests, CI and release gates are unchanged.
+
+**Scope aktual, 28 tetor:** [Programi6](#programme-6), vetëm6.2 — specifikim/mockup/test-plan njoftimesh native;6.1 është dorëzuar me OPEN të deklaruara.6.3–6.5 mbeten të planifikuara; Shop/Smart Social nuk rihapen. Gjendja LIVE/provat: CURRENT_STATE.
+
+
 **Data e nisjes:** 21 tetor 2026  
 **Burimi:** kërkesa eksplicite e përdoruesit për t'i ndërtuar të gjitha funksionet e mbetura të demos, plus ILLYRIAN Shop (produkte, dyqane të vogla, makina, banesa me qira dhe kërkim ndër-dyqanesh), me vazhdim fazë pas faze.  
 **Status i përditësuar më 22 tetor 2026:** Paketat 1–6 janë implementuar si DEMO; Paketa 7 ka kaluar kriterin funksional automatik në Chromium (32/32 skenarë Playwright, ku 2 suita përmbajnë 126/126 + 147/147 kontrolle QA). Janë prodhuar 42 pamje për evidencë vizuale, por kontrolli fizik/manual në telefon dhe miratimi i dizajnit mbeten HAPUR. Për Paketën 8 ekziston blueprint arkitekturor v0.1, jo backend apo produkt real i implementuar. Historiku i fazave më poshtë mbetet i pandryshuar.  
@@ -579,3 +626,440 @@ U verifikuan gjashtë katalogët en/sq/it, secili me 290 çelësa në 15 namespa
 - GitHub Actions run [#39852708170](https://github.com/titanfit102-bit/Illyrian/actions/runs/39852708170), commit `7d7b3dbf3ae7a4744c5dad4e2f75fac548b00dcb`, **completed/success: 53/53 teste Playwright PASS (1.9m)**. Kjo suitë përfshin teste të reja për formatimin EUR në sq/en/it, titujt e Shop/Plans/Privacy/Governance në secilën gjuhë, ruajtjen e preferencës, fallback, pluralizimin dhe regresionet e mëparshme. Nuk është certifikim i 100% të çdo teksti historik në DEMO.
 - **Vercel Preview nuk është sinkronizuar me kodin më të ri:** statusi i Vercel për commit-in dokumentues `bb2794e67c1f8cf68ea5eeb4325f38813645682b` është `failure` me destinacion `upgradeToPro=build-rate-limit`. Preview-i i verifikuar READY ishte ende mbi commit-in `fbd04ad37c653a233617a7464ad6a15a550c9b4a`; kështu ndryshimet e formatimit EUR dhe testet shtesë mund të mos jenë publikuar atje. Ky është **kufizim deploy/plan**, jo dështim i suite-s Chromium. Nuk u ndryshuan pagesa, plan, domain apo Production për ta anashkaluar kufirin.
 - **Kufiri i mbulimit gjuhësor:** 290 çelësa secila nga 3 gjuhët dhe 15 namespace janë të verifikuar, por nuk është mbyllur lokalizimi i çdo dialogu, formulari, gjendjeje bosh ose gabimi. Ka nevojë për inspektim më të thellë të përmbajtjes UI në gjuhët en/it, migrim nga lookup trashëgimie në çelësa direkt dhe testim final në telefon.
+
+
+## Cikli i18n 3 — Shop runtime feedback (22 tetor 2026; audit i pavarur)
+
+- Audit i lidhur me HEAD bazë `015ce439e7c6d736149c6c300391586517664f62`; dega `main` e pandryshuar në `9f91b5c083b4482a70a2149483cc799360e6102c` në çastin e auditit. Repository u konfirmua **PUBLIC**, ndryshe nga përshkrimi i vjetër “private”: kontrolli i ekspozimit është detyrë sigurie para backend-it real.
+- CI historike #39852708170 u verifikua nga logu: **53 passed (1.9m)** mbi SHA `7d7b3db...`. Nuk certifikon të gjitha rrugët e UI.
+- Vercel READY i fundit i verifikuar ishte SHA `fbd04ad...`, jo HEAD; statusi Vercel në HEAD është **failure / build-rate-limit**. Nuk ka deployment të ri të deklaruar.
+- Zbulim konkret: `demo/ILLYRIAN_SHOP_v1.7.js` kishte gjashtë mesazhe runtime (toast, validim, ruajtje, konfirmim fshirjeje) vetëm në shqip. U migruan në `IllyrianI18n.t('shop:*')` pa prekur kategoritë, produktet, ruajtjen lokale, vlerat e filtrave ose emrat e përdoruesve.
+- U shtuan gjashtë çelësa semantikë në çdo katalog `en/sq/it` (296 total në secilën gjuhë), me pasqyra te `demo/i18n` identike. U shtuan tre skenarë Chromium për mesazhin e shtimit në shportë, validimin e formularit dhe ruajtjen e listimit në `sq/en/it`; totali i parashikuar është 56 teste, por rezultati final duhet marrë nga run i commit-it të ri.
+- Kodi dhe workflow i testimit u vendosën vetëm te `feat/i18n-shop-feedback-20261022` (commit `3e3e651e1bc8a7cb07e1561f9b194bf300c81042`). Asnjë merge në demo/main, asnjë Production. CI e veçuar: https://github.com/titanfit102-bit/Illyrian/actions/runs/39857060705 .
+- **Për vazhdim:** kërko rezultatin final të CI; nëse dështon, rregullo testin/kodin në këtë degë dhe ri-verifiko. Pastaj vazhdo me përkthimin direkt të formave/erroreve në Plans, Connections, Shop Plus, Privacy, Governance dhe UI kryesore. Audit i plotë visual/a11y dhe telefon fizik mbeten OPEN.
+
+
+
+## Architecture proposal integration / execution gate — 23 October 2026
+The owner approved the **compatible principles** from Master Architecture Upgrade and Shop Addendum 02 after independent GPT Work critique, not wholesale implementation. Full classified decisions/open gates are at `architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md` §10 and `MASTER_HANDOFF.md` (2026-10-23 addendum); they replace neither this existing timeline nor Phase 8 M0–M5.
+
+- NOW (DEMO P0): fix i18n Shop category/city form values and other affected controls; 54/56 Chromium results are not a PASS; ensure storage failures are not incorrectly reported as saved; isolate user content from legacy phrase translator; strengthen PR CI, only branch PR.
+- THEN (DEMO P1-D): complete sq/en/it with semantic keys across screens, forms, notices; keep illustrative financial/privacy/analytics paths clearly simulated; audit Shop/Shop Plus state consistency, Settings, browser regression, 7 viewports, accessibility and physical phone screenshots.
+- REAL APP DESIGN: unified account with scoped capabilities and authorization; shared analytics, notification, moderation and multilingual architecture; Shop canonical seller/shop/listing model with three transaction flows, social→listing deep references. Prefer modular backend and evaluate RN/Expo versus Web/PWA using evidence, without vendor lock-in.
+- CONDITIONAL: Shop discovery/inquiries as a narrow MVP differentiator must be pilot-validated. Payments/commissions, full video/DM/dashboards and scaling remain later, gated by economics, legality, privacy and performance. Demo 5% is illustrative only.
+- Not decided: first target country/city, public code visibility/licensing, stack/provider, launch scope, operations budget and payments. No irreversible configuration or merge, no projects outside ILLYRIAN.
+- Independent report: `ILLYRIAN_MASTER_ARCHITECTURE_REVIEW_AND_EXECUTION_PLAN` dated 22 Oct 2026 (Work read-only, snapshot `4a951e4...`). Treat its facts as time-bound and its recommendations as proposals, not blanket approvals.
+
+
+### P0-D progress — Shop select value / UGC fix (23 October 2026)
+Documented accepted architecture in blueprint §10 and handoff. Corrected Shop form/category and city option values to remain stable across translations, and excluded user listing title/seller/description from automatic UI translation. Regression tests extended to 57. **Actions #39865986736: 57/57 passed (Chromium, code SHA `db574224d4849775224fb6ee4df0247aa2f18c46`).** PR #1 stays Draft; no merge, production or main changes. Remaining DEMO gates: localStorage failure rollback, other select values, full semantic localization, mobile/visual/a11y and current Vercel candidate verification.
+
+
+
+### P0-D execution checkpoint — 23 October 2026, verified 65/65
+- Draft PR #1 latest code/test SHA `b0a85f1119149d092328ae912d79299a87b9862f` passed [Chromium Actions #39868919668](https://github.com/titanfit102-bit/Illyrian/actions/runs/39868919668): **65/65 PASS (2.1m)**. Eight tests added after historical 57/57.
+- Corrected Shop base local persistence to rollback failure atomically for create/edit/delete/cart/checkout/inquiry; no false success or discard of prior persisted state.
+- Shop Plus, Connections and Governance now restore last committed in-memory persisted snapshot after storage failure, with corrected Connections success flags. Added explicit values for selected multilingual forms and reason/time selectors, preserving legacy literal data codes.
+- No branch merge, `main` or Production update. Existing demo features remain. Coverage still incomplete for many locale strings, full UGC exclusion, screen reader/mobile/visual review, current Vercel Preview, and consolidated Shop+Shop Plus domain. No claim that 65/65 = finished product.
+- Next P0/P1-D path: audit residual dynamic strings and data-valued controls; preserve unsaved field contents in secondary forms after quota errors; CI PR checks including root i18n path; Vercel candidate verification without plan purchase; manual phone screenshot review after stabilization. Product Phase 8 M0–M5 remains DESIGN/validation, not backend shipped.
+
+
+
+### P1-D localization progress — Connections/Governance (23 Oct 2026)
+Following P0 Shop storage hardening (65/65), updated two additional modules with semantic sq/en/it runtime feedback (23 new keys total), catalog mirrors at **319 keys per locale**, and scoped protection for user-written reports/drafts. Six new Chromium tests cover all three locales, validation, persisted stable values and unchanged user text. **GitHub Actions #39930979544 on code+test SHA `f5478b1716289bec575dfd5e23cd4294132dfcad`: 71/71 PASS (2.1m).** No code copied across other projects, no merges or deployment.
+The scoped CI workflow now includes root `i18n/**` changes in push path filters. Follow-up: Shop Plus dynamic forms/errors, Plans/Privacy, UGC exclusions, locale switching while dialogs are open, PR gating, visual/accessibility QA, Vercel Preview refresh, and the owner's full phone screenshot review. This is not full multilingual certification or production readiness.
+
+
+
+### P1-D Shop Plus localization checkpoint — 23 October 2026
+- Localized 18 Shop Plus dynamic feedback strings for sq/en/it, reaching **337 keys/locale** with 15 namespaces and identical root/demo bundles.
+- Hardened failure UX: failed browser storage writes preserve unsaved form input and prevent false success navigation for Shop Plus listing, request, answer and report flows.
+- Scoped UGC exclusions now cover Shop Plus listing identities/descriptions, buyer requests/answers, reports and shop identifiers. Existing `type/city/reason` values remain stable.
+- Added nine Chromium browser tests since 71 baseline: multilingual feedback and data contract, failed-save retry, UGC unchanged on language switch. **Actions #39935174398 (commit `893538c33dd7cdecf9aa77e359a999d649a7a247`): 80/80 PASS (2.4m).**
+- Branch `feat/i18n-shop-feedback-20261022` / Draft PR #1 only; no merge into DEMO, main or Production. Not a deployment or native-phone acceptance.
+- Next: Plans, Privacy, static Shop Plus UI strings, semantic option labels, remaining forms/dynamic messages, full screen/a11y/visual QA, current Vercel Preview identity and physical device screenshot review. Real backend and live commerce remain gated separately.
+
+
+### P1-D static Shop Plus form localization — 23 October 2026
+- Added **37 sq/en/it form-label and select-display translations** while preserving technical `option.value` and local browser state. Root/demo catalog mirrors have **374 keys per language**, 15 namespaces.
+- Nine new Playwright cases across sq/en/it validate listing creation fields, rental periods, buyer deadline options, report reasons and switching the active language while forms retain user input.
+- **CI #39937253596: 89/89 Chromium PASS (2.6m)**, code/test SHA `429927296870ea6b6d6ca1e90ab3cb4726cb307d`; this is not physical-phone or full i18n coverage.
+- Note: Static fields are currently localized through the existing DOM phrase adapter backed by keys, not direct semantic bindings. Full Shop Plus prose remains under review. Next implementation phases: Plans and Privacy runtime strings/persistence regressions; broader UI/UGC, accessibility/visual, Preview and owner's phone screenshots. No merge/Production.
+
+
+### P1-D Plans verification checkpoint — 23 October 2026
+- 18 new direct localized runtime keys for Plans in sq/en/it, reaching **392 keys/locale**, root/demo synchronized; existing `plans:localStorageError` reused.
+- P0 Plans: failed local writes no longer retain mutated events, join requests, attendance or group messages; failed create/edit keeps form values and shows a storage error without claiming completion. Event titles excluded from transient DOM i18n phrase changes in selected views.
+- Six added QA cases (89→95), including quota failure, cancel rollback, en/it success/validation and storage error messages; [Actions #39938445963](https://github.com/titanfit102-bit/Illyrian/actions/runs/39938445963), tested SHA `8c2ebfd57227f6f4f22ffa377a2067f83022c072`: **95/95 PASS (2.7m)**.
+- Next: Privacy module, remaining static Plans/Shop Plus copy, full UGC/screen reader/mobile/visual QA; verify Vercel Preview and owner phone screenshots. No merge, production, payments, provisioning or branch integration.
+
+
+### P1-D Privacy localization and persistence checkpoint — 23 October 2026
+- Added 26 privacy-map direct semantic sq/en/it keys, synchronized root and demo catalogs at **418 keys/locale**, 15 namespaces. Statuses, follow/group actions, map kinds, state feedback and storage errors now localized in tested paths.
+- Refused browser writes roll back simulated follow/membership state and do not report false success; important **not** to treat client roles as production permission enforcement. Stable `select.value` codes preserved.
+- Targeted UGC protection for selected map names/descriptions and public activity titles; removed duplicated status announcement.
+- Added six browser scenarios since 95 baseline. **CI #39939993711**, code+tests SHA `2048ca78c9d062cb2afa8028251a6f600456c36a`: **101/101 PASS (2.7m)**. Prior 98/101 run led to legitimate duplicate-notice fix.
+- Draft PR #1 remains unmerged. Next: residual static UI strings and direct-key consistency for Privacy/Plans/Shop Plus, full UGC audit, visual/a11y/device QA, Vercel candidate identity, owner's phone screenshots, then app-real M0–M5 decisions.
+
+
+### P1-D Privacy static UI / direct-key compatibility (23 Oct 2026)
+- Added 17 new sq/en/it `privacy:*` keys (435/locale; 15 namespaces), converted scoped Privacy & Map navigation/warnings/header/group/map/state UI to direct semantic translations and preserved unsubmitted map input/focus through live locale changes. Maintained canonical city/filter/status IDs and user-owned text.
+- Critical bug discovered by expanded tests: old DOM phrase adapter retranslated direct Italian `Profili` to `Profilo`. Fixed with explicit `[data-i18n-direct]` boundary in root and demo adapters, distinct from the `[data-user-content]` content exclusion.
+- Nine new Playwright cases since 101 baseline; current **Actions #39944600826 at `d803758ee14cfaa26bc5cab4eee8e27571d5a535` = 110/110 PASS, 2.9m**. Prior failures prompted a real source fix, no test deletion. **PR #1 stays DRAFT/unmerged; no main/Production changes.**
+- Next: direct binding/static copy in Plans/Shop Plus and remaining Privacy blocks; global UGC audit; Android/phone, responsive/keyboard/screenreader, Vercel candidate checks, owner screenshot review. Simulated UI roles are not security backend controls.
+
+
+### P1-D Plans form multilingual integration — 23 October 2026
+- 25 direct semantic translated Plans form keys for sq/en/it; **460 keys/locale**, 15 namespaces and matching root/demo bundles.
+- Listing of stored kinds/cities/visibility codes stays unchanged; visible event form labels, placeholders, option captions and submit action are localized. Explicit `data-i18n-direct` prevents double-translation.
+- Live locale switching retains unsaved event form fields, canonical selection, focus, chat draft and validation text, with no false submission. Targeted user-authored venue/conditions/messages/events are shielded by `data-user-content`.
+- Five added Chromium browser scenarios. [Actions #39946187468](https://github.com/titanfit102-bit/Illyrian/actions/runs/39946187468), exact tested commit `5961a1d90a25b8d7768fe022ec3de3f3760e78a7`: **115/115 PASS (3.0m)**; no tests removed. Draft PR #1 remains unmerged; main/DEMO integration/Production were not modified.
+- Remaining work: more static Plans/Shop Plus/Privacy UI, Shop Plus semantic direct-key conversion, complete UGC inventory, visual/a11y/mobile QA, real Preview verification and owner phone screenshot acceptance. Release/real-app gates unchanged.
+
+
+### P1-D Shop Plus direct-key migration — 23 October 2026
+- Converted key static Shop Plus form, report, buyer need, catalog filter and navigation UI from phrase-based localization into explicit `shopPlus:*` / `shop:*` calls, with `data-i18n-direct` contract; **no new locale keys**. Root/demo locale bundles remain **460 keys/locale, 15 namespaces**.
+- All category, city, sort, period, report-reason, day-count and stored domain IDs stay unchanged; only display labels translate in sq/en/it. Currency remains existing locale-aware EUR formatting.
+- Switching language while Shop Plus is open retains unsaved form text, numeric inputs, dropdown values, checkboxes and focus without submitting a draft. Existing localStorage quota rollback and scoped UGC protections were preserved.
+- Eight new browser tests (115 to 123). Verified [Actions #39948438751](https://github.com/titanfit102-bit/Illyrian/actions/runs/39948438751) on tested code/test SHA `82b62fd06b724e5436a5ed7bbc51b2aa32e1de0f`: **123/123 Playwright Chromium PASS, 2.8m**. Root/demo catalog parity and JS syntax passed.
+- OPEN: further Shop Plus static copy (catalog, shops, product cards, simulation checkout), additional Plans and Privacy fragments, complete UGC inventory, visual/a11y/mobile QA, Vercel Preview SHA, owner review via phone screenshots. Draft PR #1 must remain unmerged; no main/Production modification.
+
+
+### P1-D Shop Plus catalog, merchants and simulated orders — 23 October 2026
+- Added 39 direct sq/en/it catalog/stock/offer/shop/checkout display keys without changing canonical domain data; total **499 keys/locale, 15 namespaces** and identical root/demo bundles.
+- Product and seller names in updated cards/compare listings remain user-originated; promoted badges and inventory labels translate, but no stock verification or real selling exists. Sellers show demonstrative listings only.
+- Simulated checkout continues using illustrative 5% fee, no real payment/delivery/refund. Stored order statuses are unchanged historical codes; translated display labels are applied only at render, with unknown statuses preserved rather than mislabeled.
+- Eight extra Playwright scenarios (123→131), [Actions #39968158271](https://github.com/titanfit102-bit/Illyrian/actions/runs/39968158271), tested SHA `5fe384f89c5ad958825b52c81c6599dd055e1ad2`, **131/131 PASS (3.3m)**. A prior selector-only test regression was fixed without deleting tests.
+- Still OPEN: further static strings in item detail, buyer-request board and replies, moderation/reporting, rental time labels, plus remaining Plans/Privacy UI, accessibility/responsiveness/global UGC and real Preview/physical-phone acceptance. Draft PR #1 remains unmerged. Do not touch main/DEMO integration/Production without explicit approval.
+
+
+### Phase 3 integration checkpoint — 25 October 2026
+
+Existing IN9-02/03/04/05/07 and IL-029 were reused; no separate numbered 3.2 checkpoint was found at the pre-change HEAD. [Phase 3 QA](../docs/PHASE3_INTEGRATION_QA.md) records the new bounded source, tests, Preview and remaining gates: shared community post/comment journeys, School & University category, canonical Plans draft/reference, truthful failed-write behavior, optional GPS/manual cities, city-zone wall times and expiry boundaries. Existing stores/IDs and repeat-as-draft behavior remain; no separate Forum or recurring/notification backend. [Blueprint §13](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#13-social-community-and-activity-api-contracts--phase-3-design) extends future backend contracts only. Phase 1/manual/F06/release HOLD and the original Phase 7/8/M0–M5 sequence remain authoritative.
+
+
+## Marketplace programme — owner request, 26 October 2026
+
+### Kërkesat kanonike dhe gjurmueshmëria — konsolidim 27 tetor 2026
+
+Dy programet mbeten të ndara. Pesë inkrementet Shop janë dorëzuar në kufijtë DEMO; te Smart Social rakordimi/specifikimi 5.1 dhe regjistrimi PERFORMANCE FIRST janë përfunduar. **5.2 u hap më pas nga pronari: analizë/model i specifikuar dhe korrigjim i kufizuar DEMO (§21). 5.3: cikli lokal i fotografisë i korrigjuar dhe kontratat reale të specifikuara (§22); 5.4: ngarkim gradual i bisedave, matje dhe kontrata reale të dorëzuara (§23).** DEMO e dorëzuar nuk do të thotë backend, moderim/verifikim real, Pro, pilot ose pranim fizik i përfunduar. Gjendja/provat aktuale janë te [CURRENT_STATE](../CURRENT_STATE.md); vendimet/autorizimet afatgjata te [MASTER_HANDOFF](../MASTER_HANDOFF.md).
+
+**Burimet e verifikuara përpara redaktimit:** të dy origjinalet gjenden në commit-in `77a6d01a5079a887cb90f762b76e375009d8d794`, skedari `demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`, blob `9b8a00bbc477875c024b477021de7feab865a3ec`. [S = Shop, rreshtat 697–955][source-shop]; [N = Smart Social, rreshtat 958–1496][source-social]. Origjinali rikuperohet me `git show 77a6d01a5079a887cb90f762b76e375009d8d794:demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md`. Nuk rishkruhet histori dhe nuk krijohet kopje arkivore paralele; pjesa e roadmap-it përpara këtyre programeve ruhet e pandryshuar.
+
+Matricat burim→ID→kërkesë/destinacion më poshtë u përgatitën përpara ndryshimit dhe kontrollohen me diff pas tij. **48 zëra kanonikë mbulojnë 398 rreshtat jo bosh të pjesës së konsoliduar**; përsëritjet operative kanë një destinacion të përbashkët G1–G4/PF1. Numri i rreshtave është kontroll mbulimi, jo zëvendësim i shqyrtimit të kuptimit. Referencat e paqarta ruhen si SHQYRTIM. “SPECIFIKUAR/BACKEND” do të thotë kontratë pa shërbim të ndërtuar; “VENDIM” nuk është miratim. Kërkesat/prioriteti/pranimi ruhen këtu; kontratat ekzistuese vetëm referohen: [Shop §15][b15], [social commerce §16][b16], [staf §17][b17], [identitet/Pro §18][b18], [moderim §19][b19], [5.1 §20][b20].
+
+### Shop — qëllimi
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH0 | S:697–711 | Marketplace i integruar me rrjetin social: zbulim biznesesh, katalog i unifikuar, social commerce/promovime, staf, verifikim dhe besim/siguri/moderim. Pesë faza në rend; numërim i pavarur nga QA historike 1/3/7/8. Funksionet ekzistuese ruhen; pa dublime ose barazim DEMO=shërbim real. | Pesë inkrementet DEMO të dorëzuara brenda kufijve të provave; shih historikun H2–H5 dhe §§15–19. |
+
+### Shop 1 — marketplace
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH1-A | S:713–721 | Zbulim dyqanesh/biznesesh/produktesh/shërbimesh; kërkim sipas emrit, kategorisë, produktit, qytetit dhe nevojës; filtra të kuptueshëm dhe profile me orare, kontakt, vendndodhje opsionale, oferta/disponueshmëri. Shqyrtimi përdor Shop/Plus, raportin strategjik dhe modelet social-commerce pa ribërë funksione. | DEMO discovery/profile/search të dorëzuara; oraret/kontakti/disponueshmëria fiktive ose të panjohura. Realiteti i tyre BACKEND; §15. |
+| SH1-B | S:723–725 | Vlerësim Listë/Hartë me GPS jo të detyrueshëm; një ILLYRIAN Shop real me më të mirat e Shop/Plus, pa katalogë, produkte ose porosi të dyfishuara. | Listë DEMO; harta/provider pret VENDIM. Katalogu real i vetëm SPECIFIKUAR/BACKEND, jo bashkim DEMO; §15. |
+| SH1-C | S:727–731 | Ruaj Produkte, Makina, Prona, Qira, Shërbime dhe Kërkoj; Punë për shpallje/kërkim punonjësish, pa platformë punësimi/rekrutim kompleks pa nevojë të provuar. Filtra/formularë sipas kategorisë; fusha makine/prone jo te produktet e zakonshme. | DEMO e dorëzuar; domain codes historike ruhen. Rekrutimi real/MVP pret VENDIM; §15. |
+| SH1-D | S:733–737 | Model i unifikuar për APK, pa bashkim mekanik/destruktiv localStorage. 5% është ilustrim, jo tarifë e miratuar; porositë/pagesat/kthimet/promovimet fiktive dallohen nga realet. Dokumento kontratat dhe pranimin sipas G2. | Kufizim aktiv; katalogu/API/pranimi SPECIFIKUAR, shërbimi BACKEND dhe monetizimi VENDIM; §15. |
+
+### Shop 2 — social commerce
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH2-A | S:739–745 | Promovim transparent e i sigurt në Feed, Search, Shop, profile dhe përmbajtjen sociale; sponsorizimi dallohet nga organikja, pagesa nuk është verifikim besueshmërie. | Shembuj/disclosure DEMO të dorëzuara; reklamimi real i paaktivizuar; §16. |
+| SH2-B | S:747–753 | Etiketa biznesi në foto/postim dhe produkti/shërbimi hapin profilin/listimin përkatës; Reel/Story lidhet me produkt ose aktivitet. Trajto fshirjen, skadimin dhe padisponueshmërinë. | DEMO e dorëzuar me referenca të burimit; lidhjet ekzistuese të aktivitetit ruhen; §16. |
+| SH2-C | S:755–759 | Në aplikacionin real: ID autoritative, pronësi, privatësi, miratim dhe moderim. Në DEMO vetëm mekanizma të sigurt; pa reklamim me para, pagesa ose abonime. | SPECIFIKUAR/BACKEND; kufizimi komercial aktiv; §16. |
+| SH2-D | S:761–763 | Pranim: etiketa, navigim, disponueshmëri, shfaqje reklamash dhe lidhje me përmbajtjen sociale në GitHub Actions; kontrata ekran/veprim/objekt/status/leje/test sipas G2. | Prova DEMO te CURRENT_STATE, jo certifikim real; §16. |
+
+### Shop 3 — staf dhe inbox
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH3-A | S:765–777 | Biznesi menaxhohet nga disa persona me llogari personale, pa password/llogari të përbashkëta. Pronari fton/shton/largon; role për produkte, çmime, porosi, mesazhe dhe administrim. Vetëm të autorizuarit menaxhojnë staf/të dhëna sensitive. | Rrjedha fiktive stafi DEMO; matricë lejesh SPECIFIKUAR, identitet/ACL reale BACKEND; §17. |
+| SH3-B | S:779–787 | Inbox biznesi: të autorizuarit përgjigjen si dyqani; klienti nuk duhet të shohë detyrimisht profilin personal. Çdo administrator zgjedh dukshmërinë publike të stafit; zgjedhja nuk fsheh identitetin nga pronari, auditimi ose detyrimet ligjore. Regjistro aktorin e çdo përgjigjeje/ndryshimi. | DEMO e dorëzuar, e ndarë nga Messages personale; audit/identitet real BACKEND; §17. |
+| SH3-C | S:789–797 | Caktim bisedash, shmangie përgjigjesh të dyfishta, njoftime dhe revokim i menjëhershëm aksesi. Integro Shop me panelin ekzistues; databazë/API/ACL server-side/UI/teste Android+iOS të specifikuara, pa module paralele. | Caktim/rol/reply lokal DEMO; realtime/revoke atomik/notification delivery BACKEND; §17. |
+| SH3-D | S:799–803 | Vetëm rrjedha DEMO të autorizuara e të testuara në Actions; mos i paraqit si autorizim server-side. Pa llogari të përbashkëta, ekspozim mesazhesh private jashtë lejeve ose backend pa infrastrukturë/autorizim. | Kufizim aktiv; prova te CURRENT_STATE, kontrata §17. |
+
+### Shop 4 — identitet dhe Pro
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH4-A | S:805–819 | Regjistrim/kërkesë verifikimi identiteti e pronësie me kontrolle proporcionale. Dallo profil të zakonshëm, biznes të deklaruar dhe të verifikuar; shenja me kuptim të saktë në profile/postime/biznese. Verifikim vetëm pas kontrolleve reale të dokumentuara, pa garanci cilësie/transaksioni/sigurie absolute; shenjat DEMO shënohen si të tilla. | Sqarimi vizual DEMO i dorëzuar; regjistrim/verifikim real SPECIFIKUAR/BACKEND; §18. |
+| SH4-B | S:821–827 | Verifikimi bazë i pavarur nga abonimi/pagesa; kontrolle periodike, skadim, humbje/revokim dhe apelim; mbrojtje nga dokumente false, imitim biznesi dhe keqpërdorim shenjash. Tarifë e mundshme kontrolli manual vetëm transparente, e justifikuar dhe e pavarur nga rezultati. | SPECIFIKUAR/BACKEND; tarifë/provider/politikë reale VENDIM, pa aktivizim; §18. |
+| SH4-C | S:829–837 | Business Pro opsional: statistika, mjete menaxhimi, katalog i avancuar dhe promovime të etiketuara. Status abonimi veç verifikimit; analizë modeli biznesi, ligjore, UX, kontrata/teste. Vetëm propozime; pa çmime finale, pagesa, abonime ose ndryshim vendimesh pa miratim. | PLANNED/propozim, jo Pro i implementuar; §18. |
+| SH4-D | S:839 | Kontrollo statuset demonstrative ekzistuese, shmang dublime dhe verifiko përmirësimet e autorizuara në GitHub Actions. | Prova DEMO te CURRENT_STATE; kriteri mbetet për ndryshimet e ardhshme. |
+
+### Shop 5 — besim dhe moderim
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SH5-A | S:841–853 | Raportim për profile false, mashtrime Shop, postime/video abuzive, mesazhe të padëshiruara, ngacmime, kërcënime, reklama mashtruese, komente/aktivitete problematike. Report→review→decision→notification→appeal unifikon Social, Communities, Plans, Shop: ID të qëndrueshme, role, arsye/audit dhe pa statuse kontradiktore. | Overlay/read projections DEMO i dorëzuar; jo moderim real. ID individuale/evidence/enforcement BACKEND; §19. |
+| SH5-B | S:855–861 | Block, mute, privacy settings, kontrolle kontakti, anti-spam dhe mbrojtje të cenueshmish; politika moshe/sigurie sipas funksionit/platformës. Ndalo pikëzimin arbitrar sipas pasurisë/shpenzimeve. | Block/mute/preferenca lokale DEMO; mbrojtja reale BACKEND, politikat e moshës VENDIM; §19. |
+| SH5-C | S:863–875 | Role administrative/ACL server-side, audit, ruajtje/trajtim provash, apelime/afate përgjigjeje; modele/API/procese/teste sigurie. Integro panelin e suportit të Detyrës 6B, pa admin/moderim të dytë ose dublime; vetëm DEMO e sigurt, pa pretendim vendimi real. | Governance ekzistues ripërdoret; “Detyra 6B” referencë e paidentifikuar, ruhet për SHQYRTIM. Operacionet/SLA BACKEND/VENDIM; §19. |
+| SH5-D | S:877 | Pranim: rrjedhat ekzistuese dhe ndryshimet e reja në GitHub Actions; implementimi ndahet nga plani. | Prova të kufizuara DEMO te CURRENT_STATE; funksionet reale nuk deklarohen të përfunduara. |
+
+### Rregulla të përbashkëta — referenca kanonike
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| G1 | S:879–891; N:1220; N:1426–1438 | Para ndryshimit: CURRENT_STATE, MASTER_HANDOFF, blueprint/roadmap, raporti strategjik dhe dokumentet/kodi relevant Social, Shop/Plus, Messages, Admin, Governance, Privacy; LIVE branch/HEAD/Draft PR/Actions/teste/autorizime. Klasifiko implementim, DEMO, plan dhe hipotezë; ruaj dizajn/vendime, mos përsërit punë ose dokumente/module. | Rregull kanonik: AGENTS “Identify the correct project”, “DEMO vs APK”, “Per-change engineering gate”. |
+| G2 | S:893–903; N:1440–1454 | Vetëm ndryshime të sigurta/autorizuara, me regresione dhe integrime ekzistuese/të reja në Actions, ndikim performance/siguri/privacy/a11y. DEMO nuk zëvendëson backend/validim real. APK: ekranet, veprimet, modelet/objektet, statuset, rolet/lejet, API/UI/access, kritere pranimi dhe teste Android/iOS/sigurie. | Politika në AGENTS; kontratat në blueprint §§15–20 dhe §§8/12–13, jo backend i ndërtuar. |
+| G3 | S:905–917; N:1042; N:1116; N:1246; N:1390; N:1464–1496 | Çdo inkrement domethënës i verifikuar ka gjurmë në GitHub: ndryshim/implementim, prova/teste/rezultate, SHA, vendim/arsye, kufizim/problem/hap pasues dhe matje para/pas kur relevante. Përditëso dokumentet ekzistuese sipas rolit, kontratat/APK kur preken; ruaj historikun dhe rikuperimin e PERFORMANCE FIRST. | AGENTS “Lossless documentation and traceability”; CURRENT_STATE=status/hapi, MASTER_HANDOFF=vendime/kontekst, blueprint=kontrata, roadmap=kërkesa. Udhëzimi i ri i konsolidimit zëvendëson kopjimin fjalë për fjalë, jo kërkesat. |
+| G4 | S:919–935; N:1244; N:1248; N:1392; N:1456–1462 | Dega e autorizuar/Draft PR; pa main/Production/merge, projekte të tjera, shkelje vendimesh ose ndryshime madhore/destruktive/rreziku jashtë miratimit. Backend/infrastrukturë, shërbime me pagesë, pagesa/abonime/reklama reale/funksione komerciale kërkojnë miratim e infrastrukturë përkatëse; analiza e nevojës/alternativave paraprin shpenzimin. | Kufij aktivë në AGENTS dhe autorizimet MASTER_HANDOFF; F06 i shtyrë për fazën reale. |
+
+<a id="programme-phase-2--current-authorization-26-october-2026"></a>
+<a id="programme-phase-3--current-authorization-26-october-2026"></a>
+<a id="programme-phase-4--current-authorization-27-october-2026"></a>
+<a id="programme-phase-5-authorization--27-october-2026"></a>
+
+### Historiku i autorizimeve Shop
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| H2 | S:938–940 | Pas ndalesës së fazës 1, pronari hapi vetëm fazën 2; ndalesë para 3. Ruhen lidhjet e aktiviteteve, katalogët/të dhënat dhe funksionet e tjera; pa aktivizim komercial. | HISTORIK i përmbushur, jo scope aktiv; kontrata §16, provat CURRENT_STATE. |
+| H3 | S:943–945 | Pas fazës 2, u autorizua vetëm 3; ndalesë para 4. Governance Work/Business ekzistues; pa panel paralel, import DM personale ose bashkim katalogësh. | HISTORIK i përmbushur; fazat 4–5 u hapën më pas; kontrata §17. |
+| H4 | S:948–950 | Pas fazës 3, u autorizua vetëm 4; ndalesë para 5. Qartësi e shenjave me core/Shop/Governance dhe specifikime Pro; pa përpunim real identiteti, abonime ose çmime. | HISTORIK i përmbushur; kontrata §18. |
+| H5 | S:953–955 | Pas fazës 4, u autorizua 5 dhe ndalesa pas saj. Governance si suport/review/appeal ekzistues; 6B e pazgjidhur, pa shpikje. Pa backend, aktivizim me pagesë ose release automatik. | HISTORIK i përmbushur; kontrata §19. Nuk autorizon program të ri. |
+
+## Smart social programme — owner source 27 October 2026
+
+### Smart Social — scope dhe varësi
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS0 | N:958–986 | Program i veçantë: integrim social, thjeshtim produkti/të dhënave, media profesionale dhe performancë Android/iOS/desktop. Krahaso me punën ekzistuese dhe dokumento vetëm diferencën; ruaj 100% kërkesat unike, vendimet, funksionet/dizajnin/arkitekturën. Autorizimi fillestar vetëm 5.1 + PERFORMANCE FIRST, ndalesë para 5.2; 5.2–5.4 specifikime të ardhshme, jo implementim. | 5.1 përfundoi vetëm si rakordim/specifikim, pa kod të ri; PERFORMANCE FIRST në AGENTS. Shop nuk rihapet. Kufijtë e inbox/design/rekomandimeve në SS1-A/B; kufijtë DEMO/F06/merge/Production në G1–G4. |
+
+### 5.1 — integrimi social
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS1-A | N:988–1000 | Rekomandimet K1–K8 dhe O1–O8/N1–N3 shqyrtohen pa mbingarkim: ndaji miratimet, hipotezat dhe implementimet. Postim/Reel→aktivitet, biznes, produkt, kërkesë ose bisedë përkatëse; asnjë rekomandim nuk autorizon automatikisht zbatim. | RAKORDUAR: O1–O8 kushtore, lidhje me raportin dhe hartë në §20. K1–K8/N1–N3 u identifikuan më pas gjatë6.1 në raportin e24 tetorit (blueprint §24); rekomandime për SHQYRTIM, jo miratime ose kode të këmbyeshme me O/IN9. |
+| SS1-B | N:1002–1016 | Inbox veprimesh/kërkesash/konfirmimesh; lidhje Feed/Plans/Messages/Shop, statuse të kuptueshme aktivitet/listim/kërkesë, privatësi/dukshmëri për çdo veprim, kërkim/filtra drejt rezultatit dhe ripërdorim funksionesh. Inbox personal/biznes/moderim nuk bashkohen në një burim pa kontrata aksesi të miratuara (N978). | Rrjedhat ekzistuese DEMO ripërdoren; action-inbox mbetet PROPOZIM/VENDIM me burime/leje të ndara, jo implementim; §20. |
+| SS1-C | N:1018–1040 | Vetëm rrjedha DEMO të testueshme; pa pretendim server-side/realtime/transaksioni. Backend/validim përdoruesish ruhet në kontrata/pranim APK, jo zgjidhje të rreme. Pranim: navigim ndërmodule, statuse, përmbajtje private, block, gjuhë, rikuperim drafti, përmbajtje e padisponueshme; hipotezat nuk janë vendime/dorëzime. | Rakordimi/specifikimi i përfunduar; prova të kufizuara ekzistuese dhe pranimi real i hapur në §20/CURRENT_STATE. |
+
+### 5.2 — thjeshtimi dhe modeli autoritativ
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS2-A | N:1044–1058 | Shqyrto ekranet, butonat, filtrat/mekanizmat e panevojshëm ose të dyfishtë pa humbur funksione të miratuara; dokumento konflikte gjendjeje Feed/Shop/Shop Plus/Plans/Connections/Privacy-Map/Governance. Përcakto çfarë bashkohet, thjeshtohet ose shtyhet sipas vendimeve ekzistuese. | ANALIZUAR: matrica e konflikteve dhe vendimet RETAIN/CORRECT/DEFER në blueprint §21; pa heqje funksionesh. |
+| SS2-B | N:1060–1090 | Një burim autoritativ për çdo përdorues, listim, aktivitet, mesazh, raportim dhe vendim moderimi; secili me ID, pronar, status, leje aksesi dhe rregulla konkurrence. Produkti në Reel/Feed/Message referon të njëjtin listim Shop; i njëjti parim për aktivitete në shumë module. | SPECIFIKUAR/BACKEND në §21, duke referuar §§3/13/15–20; pa migrim/store merge ose backend të ndërtuar. |
+| SS2-C | N:1092–1114; N:1118 | Mos kopjo mekanikisht arkitekturën DEMO në APK, mos hiq funksione të dobishme, mos bëj ndryshim madhor/destruktiv pa miratim. Ruaj vendime/arsye, kontrata/pranim dhe ndaje projektimin nga implementimi. Pranim DEMO për çdo ndryshim të autorizuar: përputhshmëri referencash, statusesh dhe të dhënash ekzistuese. | DEMO: korrigjim i statusit/hartës Privacy/Plans dhe regresione përkatëse; provat te CURRENT_STATE. Pranimi server/native mbetet NOT RUN; §21. |
+
+### 5.3 — sistemi profesional i medias
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS3-A | N:1120–1144 | Shpejtësi, cilësi vizuale, stabilitet/siguri foto/video edhe në telefona të dobët/internet të ngadaltë. Scope: upload, Feed, Stories/Reels, foto profili, Messages, foto produkti/biznesi dhe etiketat e tyre. Ruaj dizajnin e miratuar në “Detyrën 2”; pa ndryshim dizajni në mungesë miratimi. | ANALIZUAR në §22: ruhet dizajni aktiv; “Detyra 2” mbetet SHQYRTIM, pa supozim miratimi. |
+| SS3-B | N:1146–1164 | Sipas nevojës DEMO: kompresim, madhësi imazhi/thumbnails/formate moderne; streaming/video adaptive kur justifikohen; lazy loading/pagination/cache; rrjet i dobët/offline; kufij memorie/baterie; upload i ndërprerë/retry/dështim ruajtjeje; kuota skedarësh/media përdoruesi e biznesi; fshirje dhe gabime. | DEMO: lifecycle i përbashkët për foto, cleanup/gabime/zgjedhje të vjetra dhe avatar quota. Renditions/cache/streaming reale SPECIFIKUAR/BACKEND në §22, pa infrastrukturë të re. |
+| SS3-C | N:1166–1178 | Media private me kontroll aksesi; validim skedarësh, heqje sipas rastit e metadata-ve sensitive, moderim/raportim. Asnjë premtim se kopjimi i medias private është absolutisht i pamundur. | SPECIFIKUAR/BACKEND në §22; kontrollet lokale të skedarit mbeten të kufizuara, pa garanci reale privacy/metadata. |
+| SS3-D | N:1180–1198 | Kontrata Android/iOS, backend, storage, përpunim video, njoftime, integrim Feed/Shop dhe strategji cache/thumbnails/compression/streaming; dallo teknologji të propozuara nga të miratuara. | SPECIFIKUAR/BACKEND në §22; provider/stack/licenca/operacione kërkojnë VENDIM. |
+| SS3-E | N:1200–1218 | Matje/pranim për hapjen, ngarkimin Feed/Stories/Reels, madhësinë e medias, memorien, baterinë, ekranet e vogla dhe rrjetet e ngadalta. | Kritere dhe plan matjeje në §22; vetëm prova deterministe lokale të lifecycle/madhësisë. Baseline/buxhete/pajisje reale OPEN/NOT RUN. |
+| SS3-F | N:1222–1242 | Përmirësime të kontrolluara pa dëmtuar funksione/dizajn; pranim: ngarkim, gabime, ndërprerje, retry, performancë, aksesueshmëri, privatësi, kufij dhe fshirje media. Inspektimi paraprak G1; analizë nevoje/alternativash dhe miratim infrastrukture G4; dokumentim APK G3. | DEMO e kufizuar dhe regresione media/tagging; prova te CURRENT_STATE. Pranimi backend/physical NOT RUN; §22. |
+
+### 5.4 — performanca
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| SS4-A | N:1250–1290 | Android/iOS/desktop të shpejtë/reaktivë brenda kufijve realë pajisje/rrjet: hapje, navigim, Feed, Stories/Reels, Messages, Communities, Plans, Search, Shop, profile dhe funksione të tjera. Scroll/animacione të rrjedhshme, feedback vizual i menjëhershëm; synim 60 FPS në pajisje përfaqësuese që e mbështesin. | DEMO: baseline për modulet dhe ngarkimi gradual personal në §23; synimi 60 FPS/pranimi Android/iOS mbetet OPEN/NOT RUN. |
+| SS4-B | N:1292–1314 | Biseda të gjata me ngarkim gradual, sinkronizim efikas dhe pa humbje të dhënash; lazy loading, pagination, cache, preloading selektiv dhe optimizim foto/video vetëm kur përfitimi është i matshëm. | DEMO: 50 mesazhe fillimisht, histori më e vjetër me batch-e pa ndryshuar të dhënat. Sync/cache/preload/virtualizim real SPECIFIKUAR/BACKEND, vetëm pas matjes; §23/§22. |
+| SS4-C | N:1316–1334 | APK real: kërkim/databazë/API/komunikim backend pa kërkesa të tepërta; menaxho memorie/bateri, rrjet të dobët, ndërprerje/rikuperim; shmang renderime/llogaritje të panevojshme, lista virtuale për përmbajtje shumë të gjatë kur nevojitet. | SPECIFIKUAR/BACKEND në §23: cursor/delta/outbox, leje/limite, query/index/cache dhe lifecycle; pa implementim backend ose ndryshim madhor arkitekture. |
+| SS4-D | N:1336–1376 | Objektiva të matshëm për hapjen, UI, scroll, navigim, search dhe dërgim mesazhesh. Mat baseline→ngadalësim→prioritet ndikimi→optimizim→krahasim para/pas/regresione; Android mesatar, iPhone, rrjet i ngadaltë dhe lista të mëdha. Pa pajisje: NOT RUN/OPEN, jo PASS. DEMO veç APK; Chromium nuk provon native. APK i pandërtuar merr plan/kritere, jo rezultate; pa sakrifikuar siguri/privacy/a11y/saktësi/funksione. | MATUR: krahasim i kontrolluar browser para/pas, fixture 5,000 mesazhe dhe regresione në §23/CURRENT_STATE. Pranim fizik/native/rrjet real NOT RUN; buxhetet §8 mbeten propozime. |
+| SS4-E | N:1378–1388 | Për çdo modul dokumento objektivat, rezultatet, kufizimet dhe testet e performancës; matjet/commit-et/vendimet/hapat pasues sipas G3. | DOKUMENTUAR: tabela për çdo modul me objektiva, matje, teste/kufizime dhe plan pranimi te §23; provat e commit/CI dhe hapi pasues te CURRENT_STATE. |
+
+### Standardi i përhershëm
+
+| ID | Burimi origjinal | Kërkesa / kriteri i pranimit | Statusi / destinacioni |
+|---|---|---|---|
+| PF1 | N:1394–1424 | Shpejtësia/efikasiteti/stabiliteti gjatë gjithë zhvillimit; çdo veçori/ndryshim vlerëson performance/UI/memorie/bateri proporcionalisht. Optimizimi është pjesë e implementimit/testimit, pa cenuar siguri/privacy/a11y/saktësi. Standardi rikuperohet në vazhdim; materialet e reja sipas rolit të dokumentit/G3. | REGJISTRUAR: AGENTS “PERFORMANCE FIRST”; CURRENT_STATE/MASTER_HANDOFF/blueprint §20 referojnë rregullin, nuk krijojnë kopje politike. |
+
+[source-shop]: https://github.com/titanfit102-bit/Illyrian/blob/77a6d01a5079a887cb90f762b76e375009d8d794/demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#L697-L955
+[source-social]: https://github.com/titanfit102-bit/Illyrian/blob/77a6d01a5079a887cb90f762b76e375009d8d794/demo/ILLYRIAN_v1.7_SHOP_AND_ROADMAP.md#L958-L1496
+[b15]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#15-marketplace-programme--phase-1-shop-26-october-2026
+[b16]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#16-marketplace-programme--phase-2-social-commerce-26-october-2026
+[b17]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#17-marketplace-programme--phase-3-business-team-and-shared-inbox-26-october-2026
+[b18]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#18-marketplace-programme--phase-4-identity-verification-and-business-pro-27-october-2026
+[b19]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#19-marketplace-programme--phase-5-trust-safety-and-unified-moderation-27-october-2026
+[b20]: ../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#20-smart-social-programme--task-51-and-performance-first-27-october-2026
+
+<a id="programme-6"></a>
+## Programi 6 — MVP, DEMO → APK dhe gatishmëria reale
+
+Burimi: kërkesa e plotë e pronarit, 27 tetor 2026, “MASTER MVP SPECIFICATION, DEMO → APK, NOTIFICATIONS, ACCOUNT RECOVERY, ADMIN PANEL & APK READINESS”, me autorizimin fillestar **vetëm6.1; ndalo para6.2**, të përmbushur në `f3d8af4dbc0f63dda0b4a957c90daa11e704e86f`. Në checkpoint-in vijues pronari hapi vetëm6.2 me “Vazhdo6.2”; ndalesa u përmbush në `8258d2e`. 6.3 u dorëzua në `9a8b065`; “Vazhdo6.4” hap vetëm6.4. Ndalesa para6.5 u përmbush në `a5d6bba`; “Vazhdo6.5” hap konsolidimin final/raportin në blueprint §28, pa zbatim real backend/admin/APK. Programi mbyllet si dokumentacion, jo release. Matrica më poshtë ruan kërkesat unike të gjithë programit; përsëritjet operative referojnë AGENTS. Krahasimi burim→destinacion u përgatit përpara redaktimit. Burimet ekzistuese mbeten të rikuperueshme në [checkpoint-in fb9ef1a](https://github.com/titanfit102-bit/Illyrian/tree/fb9ef1a8f08dbc0713ff7e647db8c855eaa9ff6f); nuk rishkruhet historiku dhe nuk kopjohen prompt-et.
+
+Program i veçantë nga Shop 1–5 dhe Smart Social 5.1–5.4; numrat 6.1–6.5 nuk zëvendësojnë Paketën historike 6 Governance ose gates Phase 7/8/M0–M5. Referencat historike “6A/6B” nuk provojnë implementim ose ekuivalencë: përmbajtja notifications/recovery/support mbulohet nga ky program, por identiteti i detyrave të vjetra mbetet OPEN.
+
+### Matrica e kërkesave dhe kufijve
+
+| ID | Kërkesa unike / kriteri i pranimit | Destinacioni dhe statusi |
+|---|---|---|
+| 6P-01 | Konsolido produktin, hartën DEMO→APK, notifications, recovery/Help, admin/support dhe kontratat/pranimin real në dokumentet ekzistuese; pa rikrijim vendimesh nga chat-e të vjetra, humbje, dublime ose fshirje historiku. Pesë faza; tani vetëm 6.1, pa kod/dizajn DEMO; ruaj 6.2–6.5 të planifikuara. | Blueprint §§24–25; kufiri fillestar6.1 u përmbush, scope aktiv6.2 sipas CURRENT_STATE/MASTER_HANDOFF. |
+| 6P-02 | Dallo IMPLEMENTUAR NË DEMO, VERIFIKUAR, MIRATUAR PËR APK, PROPOZUAR, OPEN. DEMO/CI nuk provojnë DB/backend/native/siguri reale ose miratim MVP/platforme/arkitekture. Boshllëqet mbeten eksplicite. | Standardi në blueprint §24; i zbatueshëm në të pesë fazat. |
+| 6P-03 | Para ndryshimit verifiko repository/degë/HEAD/commit/Draft PR/CI/teste, autorizime, kod/arkitekturë, dokumente/raporte/vendime. Pas ndryshimit: diff, prova, vendime, boshllëqe/hap pasues dhe ruajtje e rilexim real në GitHub. Ruaj ndarjen e projekteve; vetëm demonstrime sintetike të izoluara kur autorizohen, pa i quajtur shërbime reale. Pa main/Production/merge, infrastrukturë/shërbime me pagesë, backend/native, akses real admin/reset/email/SMS ose veprime destruktive jashtë autorizimit; dizajni pret miratimin përkatës. | AGENTS politikat ekzistuese + autorizimet MASTER_HANDOFF; nuk krijon leje të reja. |
+| 6.1-01 | Lexo burimet ekzistuese, kodin/rrjedhat/testet dhe raportin ILLYRIAN_PRAN_MASTER_PRODUCT_INNOVATION_REVIEW nëse gjendet; plotëso vetëm boshllëqet. Mos shpik miratime ose rindërto specifikimin nga zero. | Raporti u identifikua/lexua; blueprint §24 dhe MVP më poshtë. VERIFIKUAR vetëm si analizë burimesh. |
+| 6.1-02 | MVP 1.0: përfshirje/përjashtime, role, rrjedha dhe kritere përfundimi; dallohen vendimet ekzistuese nga propozimet dhe vendimet që mungojnë. | Tabela MVP më poshtë; versioni final i scope-it OPEN, jo MIRATUAR PËR APK si paketë. |
+| 6.1-03 | Për ekran/buton/formular/veprim: ruhet/ridizajnohet/zëvendësohet/lidhet me backend; qëllim, sjellje, ekran, veprim, të dhëna, autorizim, success/error/empty/loading, teste/pranim. Mos pretendo mbulim të çdo instance nëse mungon. | Blueprint §24: hartë e familjeve, kontrata e përbashkët, burime dhe regjistër boshllëqesh. |
+| 6.1-04 | Përfshi notifications/recovery/admin si varësi të 6.2–6.4, pa i zbatuar; ruaj vendimet/testet/commit-et dhe gjendjen te dokumentet kanonike, verifiko GitHub dhe ndalo para 6.2. | Kërkesat poshtë, CURRENT_STATE; detyra 6.1 dorëzon bazën dokumentuese me OPEN. |
+| 6.2-01 | Mockup/spec: lock screen, avatar/emër/preview, pamje e zgjeruar, Quick Reply, Light/Dark dhe identitet ILLYRIAN brenda UI native; hapje/zgjerim/mbyllje/largim. | SPECIFIKUAR/PROPOZUAR: blueprint §25, dy SVG/12 gjendje Light/Dark; jo UI native e implementuar. |
+| 6.2-02 | Android Chat Bubbles vetëm kur OS i mbështet dhe përdoruesi i aktivizon; grupim sipas bisedës dhe njoftime aktivitetesh, komentesh, përmendjesh e Shop. | SPECIFIKUAR: §25 capability/category matrix; Android bubble opsionale, iOS fallback. Native NOT RUN. |
+| 6.2-03 | Përgjigje direkte pa hapur app vetëm kur lejohet; zhbllokim/Face ID/biometri kur kërkohet. Pa anashkalim sigurie, Accessibility Services, overlays ose mekanizma invazivë për funksione të ndaluara. | SPECIFIKUAR: §25 actions/privacy/fallback; mekanizmat OS të verifikuar si dokumentacion, jo në ILLYRIAN. |
+| 6.2-04 | Ruajtje/sinkronizim mesazhesh në disa pajisje, deduplikim, status dorëzimi i dalluar nga leximi/pranimi dhe autorizim server-side. | SPECIFIKUAR: §25 outbox/job/attempt/delta/read-watermark; ripërdor §§13/21/23. Backend NOT RUN. |
+| 6.2-05 | Silent notifications, mute, quiet hours, kategori të preferuara, privatësi lock screen, grupim/deduplikim dhe anti-spam. | SPECIFIKUAR/PROPOZUAR: §25 preference/quiet-hours/privacy/dedup/anti-spam; default-et/politikat presin vendim. |
+| 6.2-06 | Verifiko dokumentacionin zyrtar aktual Android/Apple; kontrata push/API/events, token management, conversation IDs, permissions, delivery states, autorizime dhe parametra privatësie. | SPECIFIKUAR: §25 NAPI01–08, registration binding dhe12 grupe burimesh zyrtare të kontrolluara28 tetor2026; provider/SDK real OPEN. |
+| 6.2-07 | Dorëzo mockup/spec, kufizime platformash, plan testesh/kritere Android+iOS dhe hapa implementimi native; verifiko kod/degë/HEAD/PR/teste dhe regjistro prova/vendime/commit/hapa. | DORËZUAR si dizajn/plan: §25 native sequence + NQ01–24; kontrollet native/API/fizike NOT RUN. Provat dokumentuese/CI te CURRENT_STATE. |
+| 6.2-08 | DEMO pa backend/native të përfunduar; vetëm pamje/spec reale dhe simulim browser i izoluar nëse autorizohet, i etiketuar qartë. Pa ndryshim dizajni pa Detyrën 2, Production ose shërbime me pagesë. | RESPEKTUAR: pa ndryshim dizajni/runtime ose simulim browser/push real. Vetëm SVG statike të etiketuara; “Detyra2” OPEN, kufiri6P-03 aktiv. |
+| 6.3-01 | Rrjedha: password/email i harruar; humbje email-i; telefon i ndryshuar/humbur; Google/Apple login; pajisje e humbur; llogari e bllokuar/komprometuar; ndryshim email-i; support ticket kur automatika dështon. | SPECIFIKUAR/PROPOZUAR: blueprint §26 R01–R08; koncepti v7 mbetet jo-funksional, metodat varen nga zgjedhja/enrollment real. |
+| 6.3-02 | Verifikim pronësie, kode/lidhje njëpërdorimëshe dhe mbrojtje takeover; as Owner/stafi nuk shohin password ekzistues; pa pronësi të provuar nuk autorizohet recovery. | SPECIFIKUAR: §26 proof/grant/R-SEC1–6; ticket contact≠ownership, pa proof të mjaftueshëm nuk ka transferim. Jo kontroll real i implementuar. |
+| 6.3-03 | sq/en/it: Help Center/FAQ, password reset, kontakte të verifikuara, sesione, raportim problemesh, status ticket-i dhe komunikim suporti. | DORËZUAR si draft: §26,16 Help artikuj dhe12 gjendje UI në sq/en/it, sesione/kontakte/ticket/status/reply. UI/përkthime të certifikuara dhe shërbime NOT RUN. |
+| 6.3-04 | Verifiko OWASP aktual; përgjigje kundër enumeration, rate limits/anti-abuse, MFA admin, role/ACL server-side. | SPECIFIKUAR: §26,7 grupe burimesh zyrtare OWASP të kontrolluara27 tetor2026 UTC; uniform intake/anti-abuse/MFA admin/ACL. Vlerat konkrete dhe zbatimi OPEN. |
+| 6.3-05 | Audit trail/arsye për ndryshime sensitive, njoftime pas ndryshimit të kredencialeve, akses minimal në PII dhe politika retention/fshirjeje tickets. | SPECIFIKUAR: §26 audit/reason/notice/minPII dhe tabela retention/fshirjeje; afatet/operatorët/politika e provës OPEN para aktivizimit. |
+| 6.3-06 | Inspekto çfarë ekziston; dorëzo UI flows, DB/API, autorizime, procedura dhe teste sigurie. Vetëm demonstrim sintetik i autorizuar; pa recovery/reset, email/SMS ose llogari reale pa infrastrukturë/autorizim. Regjistro prova/vendime/commit/hapa. | DORËZUAR si dizajn/plan: §26 UI/modele, RAPI01–12, procedura dhe RQ01–24 NOT RUN. Burimet/CI te CURRENT_STATE; pa DEMO simulation/kod ose shërbime reale. |
+| 6.4-01 | Panel privat: kërkim username/ID/identifikues të lejuar me kontakte të maskuara; tickets/histori/recovery, raporte/apele, probleme teknike/bugs. | SPECIFIKUAR/PROPOZUAR: blueprint §27 PUI02–08/PAPI02–09, kërkim me case-purpose dhe kontakte të maskuara; një workspace mbi autoritetet ekzistuese. Pa panel real. |
+| 6.4-02 | Prioritete, përgjegjës, afate, statistika suporti dhe njoftime urgjente; Owner/Support/Moderator me leje të ndryshme, audit për veprime sensitive. | SPECIFIKUAR: §27 PC01–14/PUI09–12, assignment/priority/work-clock, statistika dhe urgent ack/escalation. Afatet/SLA/operatorët/politikat konkrete OPEN para aktivizimit. |
+| 6.4-03 | Pa impersonation/login si përdoruesi, zbulim mesazhesh private ose ndryshim identiteti jashtë procedurës së kontrolluar. Kontrollet server-side, MFA, minimizim PII, audit dhe trajtim i sigurt. | SPECIFIKUAR: §27 leje për çdo objekt/veprim, MFA/step-up, audit minimal dhe revokim. Impersonation/password/DM/override identiteti të ndaluara; enforcement real NOT RUN. |
+| 6.4-04 | Në real: përdoruesi sheh vetëm funksionet e autorizuara; pa panele prove moderator/biznes/shitës/punëdhënës/organizator. Biznes/listime→Shop, organizator/aktivitete→Plans, punë→Shop/Punë. Owner/Support/Moderator privat veç UI publike, me autorizim server-side. | SPECIFIKUAR: §27 surface map; Shop/Plans/Punë sipas capability, staff boundary veç UI publike. Nuk ndryshohet navigimi/rolet e DEMO-s tani. |
+| 6.4-05 | Integro raportimet/moderimin/panelet ekzistuese pa kopje; mos hiq mjetet e QA nga DEMO pa alternativë funksionale. | RESPEKTUAR në dizajn/diff: §27 ripërdor §§17/19/21/26, pa databazë/panel/queue paralel dhe pa heqje QA. Runtime/IDs/storage të pandryshuara. |
+| 6.4-06 | Inspekto kod/dokumente; dorëzo dizajn paneli, DB/API, UI flows, model lejesh, kontrolle sigurie dhe checklist ndërtimi. Vetëm demonstrime sintetike të autorizuara; jo akses real admin. Regjistro ndryshime/teste/vendime/commit/hapa. | DORËZUAR si dokumentacion: §27,12 familje UI/12 API/modele/checklist dhe PQ01–24 NOT RUN. Kod/burime/HEAD/CI verifikohen në CURRENT_STATE; jo akses real admin ose simulim i ri. |
+| 6.5-01 | Kontrollo rezultatet 6.1–6.4 pa supozuar përfundim; identitet/role/leje dhe autoritet unik për users/listings/activities/messages. | VERIFIKUAR si analizë burimesh: §28 tabela6.1–6.4 dhe krahasimi LIVE; autoritetet §§21/25–27 mbeten të vetme. Pa implementim real të supozuar. |
+| 6.5-02 | Entitete/pronësi/statuse/tranzicione, API/transaksione/gabime/teste integriteti; ruajtje e sigurt, konkurrencë/parandalim konfliktesh. Për funksion: ekran, veprim, model, API, leje, gabime, teste; pa transferim mekanik DEMO. | SPECIFIKUAR/PROPOZUAR: §28 CC01–18/common contract me ekran/veprim/model/API/ACL/gabime/AQ01–18. Executable schemas dhe inventari për çdo control IN mbeten OPEN (B02/B03). |
+| 6.5-03 | Data/zona kohore; dërgim/konfirmim/sync/retry mesazhesh; privatësi/dukshmëri/consent, GPS opsional/qytet manual; block/report/moderim/audit/ACL. | KONSOLIDUAR: §28 CC02/05/06/09/11/12 dhe time/message/privacy reconciliation; ripërdor §§13/19/21/23/25. Backend/native/security ekzekutim NOT RUN. |
+| 6.5-04 | Lifecycle/retention/fshirje media/të dhënash; backup/restore/migrime; fshirje dhe eksport llogarie. | SPECIFIKUAR/PROPOZUAR: §28 DataRequest/export/delete/tombstones, BackupManifest/RestoreRun/MigrationRun dhe RPO/RTO. Afatet/provider/operacione/teste reale OPEN. |
+| 6.5-05 | Kritere të matshme performance dhe plan pranimi: funksione/rrjedha kritike, Android/iOS sipas fazave të miratuara, a11y/siguri/performance/offline/reconnect/integritet/publikim. | DORËZUAR si plan: §28 matrica matjeve dhe GQ01–12, fazat sipas miratimit, AQ01–18 me NQ/RQ/PQ/M01–M18 ekzistuese. Buxhetet kandidate jo të miratuara; pranim real HOLD. |
+| 6.5-06 | Dallo teste reale nga simulimet. Chromium PASS nuk provon APK; telefon fizik, screenreader, Preview/release të pakontrolluara mbeten OPEN deri në evidencë. Verifiko kod/dokumente/raporte/vendime/commit/PR/CI. | VERIFIKUAR vetëm brenda provave: §28 ledger CI/commit/PR/burime; testet browser të ripërdorura dallohen. Native/fizike/screenreader/restore dhe Preview interaction/release pa provë mbeten OPEN. |
+| 6.5-07 | Konsolido burimet ekzistuese dhe dorëzo raport gatishmërie APK, boshllëqe/kontrolle të papërfunduara/hapa të saktë dhe konfirmim ruajtjeje GitHub. Pa deklaruar backend/DB/siguri/APK të përfunduar pa prova ose ndryshuar çfarë kërkon miratim. | DORËZUAR si raport kanonik: §28 verdict HOLD,12 gaps me hapa/pronarë të propozuar dhe kufij; CURRENT_STATE ruan provat e ruajtjes/CI. Pa dokument paralel, backend/DB/APK/release claim. |
+
+<a id="mvp-10--specifikim-për-vendim-jo-scope-i-miratuar"></a>
+<a id="mvp-owner-decision"></a>
+### MVP 1.0 — vendimi aktual i pronarit B01
+
+**28 tetor2026 (Europe/Rome), pas auditit7.5 në `7edc9db`. MIRATUAR PËR APK si drejtim i versionit fillestar, jo implementim ose leje ndërtimi/publikimi.** Pas shpjegimit të paketës së propozuar, pronari pranoi propozimin për momentin dhe kërkoi diskutim të ri për versionin e avancuar për investitorët. Ky vendim zëvendëson statusin e mëparshëm “i pamiratuar” vetëm për zgjedhjet e mëposhtme; historiku i propozimit ruhet në parent `7edc9db`.
+
+- **IN:** llogari/profil, Plans dhe bisedat e lidhura me aktivitetet; recovery/Help, report/block, moderim privat dhe njoftime bazë si mbështetje e këtij cikli.
+- **LATER:** Shop, Stories/Reels, Pro, reklama dhe pagesa; iOS pas Android. Asnjë funksion nuk hiqet nga DEMO ose dokumentacioni.
+- **Tregu/audienca/platformat/gjuhët:** Shqipëri,18+, Android fillimisht, sq/en/it. Ky është target produkti, jo kufizim teknik i implementuar, politikë ligjore e adoptuar, age-assurance e përfunduar ose zgjedhje framework/provider-i. Qytetet, OS/pajisjet dhe afatet ende OPEN.
+- **Kufiri i investitorëve — vendim i detyrueshëm:** përpara përgatitjes/ndërtimit të DEMO-s së avancuar për investitorët, ChatGPT duhet të rikthejë diskutimin me pronarin dhe të kërkojë miratim të ri për funksionet, shtrirjen dhe paraqitjen. Miratimi i tanishëm nuk bartet automatikisht te ajo DEMO; mos e nis ose zgjero si scope të miratuar. Ky është gate projekti, jo njoftim/monitorim automatik në sfond.
+
+B01 është **PARTIAL: drejtimi i mësipërm i miratuar; specifikimi i ekzekutueshëm ende i paplotë**. Rolet/boundaries/rrjedhat e detajuara, Feed/Communities, liria e DM, media/attachments, metoda auth, push/Quick Reply/bubbles, OS/device matrix dhe protokolli i suksesit nuk u zgjodhën nga ky miratim. Plotëso C0/B02 dhe propozimet teknike B03 për slice-in e zgjedhur, duke ruajtur OPEN pa shtuar/hequr scope në heshtje. Pa native/backend/setup/shpenzim/main/Production/merge ose politikë publike të aktivizuar.
+
+**MIRATUAR PËR APK si parime:** ekosistem ILLYRIAN, një identitet me capabilities scoped, katalog i vetëm Shop/Plus, ID autoritative, privacy/server authorization, i18n/UGC, pagesa të ndara dhe gates ekzistuese (blueprint §10). Miratimi B01 më sipër cakton vetëm versionin fillestar; nuk miraton gjithë DEMO-n, stack-un, provider-in ose publikimin.
+
+| Familja / qëllimi dhe rrjedha kandidate | Roli / harta | Përfshirja në MVP 1.0 |
+|---|---|---|
+| Hyrje reale → profil minimal → preferenca/privatësi/sesione | Visitor/Member; A01–A08 | IN — MIRATUAR PËR APK: llogari/profil; auth/fushat/consent/të drejtat e vizitorit OPEN për C0. |
+| Zbulim përmbajtjeje/komuniteti → postim tekst/foto → koment/ndjekje | Member/staf komuniteti scoped; A09–A14/A26–A28 | OPEN — Feed/postime/komente/Communities nuk u përcaktuan veçmas nga paketa Plans; mos i shto ose përjashto automatikisht. |
+| Zbulo Plan → kërkesë → pranim/listë pritjeje → bisedë → anulim/tërheqje | Member/Organizer; A29–A36 | IN — MIRATUAR PËR APK: Plans/aktivitete si cikli i parë; detajet e rrjedhës/lejeve/gjendjeve dhe C0 OPEN. |
+| Bisedë e autorizuar, draft/outbox/retry/history | Anëtar bisede; A22–A24 | IN për bisedat e lidhura me aktivitetet — MIRATUAR PËR APK; DM i lirë/attachments/receipts/typing dhe kontratat përfundimtare OPEN. |
+| Media minimale foto, avatar dhe kontroll aksesi/fshirje | Autor/pronar; A08/A12/A15–A21 | LATER: Stories/Reels; minimumi foto/avatar për profil/Plans dhe kontrollet e medias duhen detajuar në C0. Jo heqje nga DEMO. |
+| Shop discovery → listim → inquiry/Kërkoj; menaxhim nga Shop | Visitor/Member/Seller; A40–A46 | LATER — Shop në fazë pasuese; ruaj katalogun unik dhe specifikimet, pa zgjedhje kategorish ose launch tregtar tani. |
+| Staf biznesi/inbox i përbashkët/verifikim/Pro | Business capabilities; A47–A49 | LATER — stafi i avancuar i biznesit/verifikimi/Pro dhe ads nuk janë pjesë e paketës fillestare të miratuar. |
+| Njoftime për veprime dhe preferenca, hapje e sigurt | Marrës i autorizuar; A25/A37; 6.2 | IN — MIRATUAR PËR APK: njoftime bazë për slice-in; push/Quick Reply/bubbles/SDK/defaults mbeten OPEN, jo miratim i gjithë6.2. |
+| Recovery/Help/ticket dhe sesione | Member/Support; A02/A52; 6.3 | IN — MIRATUAR PËR APK: recovery/Help; metoda/provider/politika dhe detajet ticket/sesione plotësohen sipas§26, pa aktivizim real. |
+| Report/block/appeal dhe operim privat | Member/Moderator/Support/Owner; A38/A50–A53 | IN — MIRATUAR PËR APK: report/block dhe moderim privat; kufijtë e roleve, apelimi, procedurat dhe operatorët OPEN sipas§§26–28. Pa akses staf në DM private. |
+| Gjuhë sq/en/it, theme, qytet manual/GPS opsional, a11y/performance | Çdo rol; A03/A06/A39/A54 | IN: sq/en/it; theme/qytet manual/GPS opsional dhe a11y/performance ruajnë kontratat. Android fillimisht, iOS LATER; OS/pajisje/thresholds OPEN. |
+
+**Përjashtime/kufij të vendosur:** pa transaksione/pagesa/payouts/abonime/reklamim real pa gates M4 dhe miratim; 5% vetëm ilustrues. Pa copy fixtures→llogari/listime reale, shared passwords, privilegje nga UI, publikim koordinatash personale live ose score besimi sipas pasurisë/shpenzimit. QA switches/reset/social demo dhe role fiktive nuk shpërndahen si privilegje përdoruesi real; mjetet DEMO ruhen tani.
+
+**Përjashtime MVP të PROPOZUARA, ende jo vendime pronari:** video/recommendations të avancuara, calls/livestream, të gjitha vertikalet Shop njëkohësisht, katër dashboards të plota, hartë më vete, AI ranking, locked media/gifts/wallet/AURA/dating economics dhe zgjerim masiv. Raporti §9/§11 është rekomandim; mos e përdor këtë listë për të hequr funksione DEMO ose ndryshuar PRAN. Kufijtë ekzistues kundër wealth scoring/private tracking mbeten detyrues pavarësisht propozimeve.
+
+**Kriteri i përfundimit të specifikimit MVP:** pronari vendos familjet IN/OUT/LATER dhe tregun/audiencën/moshën; zgjedh platformën/fazat/stack/auth/operatorët/buxhetin; çdo funksion IN ka kontratën §24, leje/gjendje/teste dhe OPEN kritik të zgjidhur. **Kriteri i përfundimit të aplikacionit:** shërbimet/klienti real, testet negative/integriteti/restore, telefon/screenreader/performance/offline dhe gates M1–M5 me sign-off; jo përfundimi i kësaj analize. Asnjëri nuk është arritur vetëm nga 6.1.
+
+### 6.1 — dorëzimi dhe hapi pasues
+
+Baza MVP dhe harta e familjeve A01–A54 janë konsoliduar te ky seksion/blueprint §24; kontratat ekzistuese referohen. Boshllëqet fushë→API/rol/gjendje/test për çdo instancë mbeten në regjistrin §24; **nuk pretendohet specifikim shterues i çdo butoni/ekrani**. 34 grupet e kërkesave të burimit kanë destinacion më sipër, pa aktivizuar fazat e tjera. Ndalesa6.1 u përmbush; specifikimi6.2 është te blueprint §25 dhe specifikimi6.3 i autorizuar veçmas te§26. Paneli6.4 është projektuar në§27;6.5 konsolidon kontratat dhe raportin HOLD në§28. Implementimi real dhe gates e tyre mbeten OPEN.
+
+
+### 6.2 — dorëzimi i specifikimit, 28 tetor2026
+
+Tetë kërkesat6.2-01…08 ruhen në matricën më sipër dhe lidhen me [blueprint §25](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-62): kufij Android/iOS të verifikuar nga dokumentacioni zyrtar; dy mockup-e SVG me12 gjendje,8 kontrata logjike API, regjistrim/token/pronësi, privacy/delivery/sync/quiet-hours dhe24 skenarë pranimi. Këto janë specifikime/propozime, jo backend/native i ndërtuar, miratim MVP/platforme/provider-i ose prova në telefon. Dizajni/kodi/QA i DEMO-s ruhen. Default-et, SDK/provider/device matrix, private enrichment dhe ekzekutimi NQ01–24 mbeten OPEN. Ndalesa historike para6.3 u përmbush në `8258d2e`; inkrementi6.2 nuk hapi recovery/Help/admin. Autorizimi i veçantë6.3 është më poshtë.
+
+
+### Dorëzimi6.3 dhe porta pasuese
+
+[Blueprint §26](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-63) plotëson gjashtë kërkesat6.3 si specifikim/propozim: rrjedha/UI/Help sq/en/it, kontrata/procedura/retention dhe teste.6.2 mbetet specifikim në§25;6.4 është projektuar më pas në§27;6.5 ka raport dokumentues në§28, pa pranim real. Nuk është miratuar release scope/stack/provider dhe nuk janë kryer reset, dërgime reale ose teste sigurie native/API. Vlerat e policy-ve kritike, pronësia e provuar/operatorët, implementimi dhe provat reale mbeten OPEN. Ndalesa historike para6.4 u përmbush në `9a8b065`; pa ndryshime runtime/QA fixtures/panele aktive për dokumentacionin6.3.
+
+
+### Dorëzimi6.4 dhe porta pasuese
+
+Gjashtë kërkesat6.4 ruhen në matricë dhe lidhen me [blueprint §27](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-64): një workspace privat mbi domain-et ekzistuese;12 familje ekranesh,14 rreshta lejesh,12 familje API, modele/procedura dhe24 skenarë pranimi. Janë PROPOZUAR, jo panel/API/admin real. Shop/Plans/Punë dhe mjetet QA ruhen; pa privilegje nga rolet lokale. Politikat/afatet/mbulimi/provider/MFA-bootstrap/retention dhe të gjitha PQ reale mbeten OPEN/NOT RUN. Ndalesa para6.5 u përmbush në `a5d6bba`;6.5 tani verifikon rezultatet/kontratat dhe jep raportin në§28 pa supozuar implementim. Provat/commit/CI/Preview ruhen te CURRENT_STATE.
+
+
+### Dorëzimi6.5 — mbyllja dokumentuese e programit
+
+[Blueprint §28](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-65) është raporti i vetëm përfundimtar i gatishmërisë:6.1–6.4 janë të verifikuara si dokumentacion brenda provave;18 familje kontratash kritike/AQ01–18, lifecycle export/delete/backup/restore/migration, matje dhe12 gates lidhen me burimet ekzistuese. **APK real: HOLD/OPEN**, jo build-ready/specifikim shterues i çdo ekrani. B01–B12 ruajnë miratimet/skemat/implementimet/testet/operacionet e munguara dhe hapat e saktë; mos krijo backlog tjetër paralel.
+
+Hapi B01 mori miratimin fillestar të dokumentuar te [tabela MVP](#mvp-owner-decision): Plans/biseda dhe mbështetja, Shqipëri18+, Android pastaj iOS, sq/en/it; Shop/Stories/Reels/Pro/ads/pagesa LATER. Mbeten C0/rolet/rrjedhat/OS/suksesi dhe B02/B03/politikat/operatorët, pastaj autorizim i veçantë real-build. Për DEMO-n e avancuar për investitorët kërkohet diskutim dhe miratim i ri para ndërtimit. Programi6/7 mbetet i mbyllur si dokumentacion; pa6.6/7.6, merge ose release automatik.
+
+<a id="programme-7"></a>
+## Programi7 — documentation audit, Android/iOS guide, privacy/legal drafts and final readiness
+
+Burimi është kërkesa e plotë e pronarit më28 tetor2026, “MASTER DOCUMENTATION AUDIT, ANDROID/iOS BUILD GUIDE, PRIVACY, LEGAL COMPLIANCE & FINAL APK READINESS”. Trajtohet si pesë faza të një programi; autorizimi fillestar ishte **vetëm7.1, ndalo para7.2**, i përmbushur në `5385f30838406ba9b3aebf6471b8efd2266695a9`. “Vazhdo7.2” u përmbush në `2d343eeed398ac0832440629542f96e01e7a991e`; “vazhdo me7.3” u përmbush në `44f424829c9034af597429e752d731d8edd902c0`; “vazhdo me7.4” u përmbush në `0c19089e750176bbfe53e94d670942999161a242`; tani “vazhdo me7.5” hap vetëm auditin final7.5, pastaj programi ndalon. Nuk është Faza7 historike e QA-së ose një miratim i APK-së. Prerequisite6 u verifikua nga burimet/commit-et/CI LIVE deri në `44052899c6735da2695ff4cd6cb9664e90fa74be`: të pesë increment-et dokumentuese janë dorëzuar me boshllëqe eksplicite; nuk pretendohet specifikim shterues ose implementim real. Nëse do të gjendej fazë6 dokumentuese e padorëzuar,7 do të mbetej i planifikuar me varësi; ky kontroll nuk e barazon HOLD-in e APK-së me mungesë të raportit6.5.
+
+Matrica ruan35 grupe kërkesash unike të të gjithë tekstit; përsëritjet e procedurës referojnë7P/AGENTS. Para ndryshimit, burimet README/continuity/blueprint/roadmap dhe historia u krahasuan me checkpoint-in e saktë; auditimi i7.1 është në [blueprint §29](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-71).7.2 u dorëzua si udhëzues kushtor në§30;7.3 u dokumentua në§31,7.4 në§32 dhe7.5 tani në§33; nuk hapet ndërtim real dhe nuk implementohen nga regjistrimi i kërkesave. Specifikimet/verifikimet e Programit6, Shop dhe Smart Social ruhen në destinacionet ekzistuese.
+
+| ID | Kërkesa e pronarit / kufiri | Destinacioni, statusi dhe hapi |
+|---|---|---|
+| 7P-01 | Verifiko GitHub LIVE/HEAD/degë/PR/CI/kod/teste/burime, statusin real të6/7 dhe programeve ekzistuese. Mos supozo përfundim; ruaj7 të planifikuar me varësi nëse6 dokumentues është i papërfunduar. Pesë faza, pa humbje kërkesash. | §29 prerequisite/evidence;7.1 lejohet si audit dokumentues pas6.5, gatishmëria reale mbetet HOLD. |
+| 7P-02 | Vetëm dokumentacion: pa kod DEMO/aplikacioni, arkitekturë të miratuar të ndryshuar, main/Production/merge, destruktivitet, infrastrukturë me pagesë, publikim app, politika publike/pagesa/kontrata/vendime ligjore të aktivizuara pa miratim. | Kufizim aktiv AGENTS/CURRENT_STATE/MASTER_HANDOFF për të pesë fazat. |
+| 7P-03 | Përmirëso në vend, pa dokumente paralele/dublime/fshirje historie; mos përsërit punë të verifikuar ose bëj ndryshim vetëm sepse kërkohet një detyrë. Lëre të pandryshuar materialin e qartë/të saktë. | §29 DA/actions; ruhet arkivi/Git dhe burimi kanonik për çdo temë. |
+| 7P-04 | Ekzistenca nuk provon plotësi. Mos shpik komanda/konfigurime/teknologji/vendime/prova; dallo draft/propozim/OPEN nga implementimi. Mos shpall Production/APK ready pa kritere. Regjistri VERIFIED/PARTIAL/MISSING/OPEN me prova/rrezik/hapa. | §29 audit dokumentues dhe§33 regjistri final FC01–28/raporti; §28 B/GQ mbeten autoriteti, gatishmëria reale HOLD. |
+| 7P-05 | Pas ndryshimeve domethënëse të verifikuara ruaj CURRENT_STATE dhe MASTER_HANDOFF si vazhdimësi, README kur preket, roadmap dhe dokumentet përkatëse. Regjistro arsye/ndryshime/burime/prova/teste/commit/histori/vendime/boshllëqe/rrisk/hap pasues; verifiko ruajtjen reale GitHub. | Role ekzistuese AGENTS; HEAD/readback/CI te CURRENT_STATE dhe raporti i dorëzimit, jo kopje paralel. |
+| 7.1-01 | Audito state/handoff/README, blueprint/arkitekturë/roadmap/vendime, MVP1.0/map DEMO→APK, DB/API/privacy/security/testim/publikim/kod/teste; plotëso6 vetëm ku ka boshllëk të provuar, pa përsëritur dorëzimet. | DORËZUAR si audit §29 DA01–14;6.5 dhe boshllëqet e tij mbeten autoritative, pa ndryshim real-app. |
+| 7.1-02 | README pikë hyrjeje: identitet/histori vendimesh/objektiv/arkitekturë/strukturë repository/rend leximi/degë e burime autoritative, DEMO kundrejt real, udhëzim vazhdimi dhe referenca testesh/kontrollesh/dokumentacioni për bisedë të re ChatGPT. | Përmirësuar README ekzistues; §29 DA01 dhe testet e lidhjeve/readback. |
+| 7.1-03 | Identifiko dokumente të munguara, informacion të paplotë, kundërshti, dublime dhe vendime të paqarta; ndrysho vetëm çfarë duhet dhe shpjego çfarë u përmirësua. | DA01–14 me status/provë/kufi; mungesat e7.2–7.5 planifikohen, nuk maskohen si të mbyllura. |
+| 7.1-04 | Verifiko rezultatet/burimet LIVE, ruaj realisht, raporto ndryshimet/testet/OPEN/hapin; përfundo7.1 dhe ndalo para7.2. | CURRENT_STATE/dorëzim; pa hapje automatike faze ose implementimi. |
+| 7.2-01 | Arkitektura/teknologjitë e zgjedhura ose alternativat OPEN; struktura Android/iOS; instalim/konfigurim i mjedisit të zhvillimit. | DORËZUAR si udhëzues kushtor: §30 vendimet/struktura logjike dhe TG01–08. Alternativat§4 ruhen; stack/toolchain/native folders/instalim real OPEN/NOT RUN. |
+| 7.2-02 | Variabla mjedisi/sekrete dhe ndarje Development/Preview/Staging/Production; dokumentim konfigurimi pa ekspozuar ose aktivizuar sekrete/mjedise. | SPECIFIKUAR/PROPOZUAR: §30 matrica Development/Preview/Staging/Production, kontrata config/sekrete/isolation. Pa env values/files ose shërbim të aktivizuar. |
+| 7.2-03 | Nënshkrim/certifikata, versionim dhe migrime DB, CI/CD/kontrolle sigurie/rollback. | SPECIFIKUAR/PROPOZUAR: §30 signing/version/manifest, BP01–12, migrime dhe rollback sipas§28; procedura store/backend/DB të dalluara. Native CI/keys/cert/provider/execution OPEN. |
+| 7.2-04 | Komanda build/test vetëm kur teknologjia është vendosur; teste në pajisje fizike, publikim Google Play/Apple App Store dhe përditësime pas publikimit. Pa komanda/vendime të shpikura; nëse materialet janë të sakta lëri, për përmirësime jep para/pas e prova para fazës tjetër. | DORËZUAR dokumentacion: §30 CMD01–08 nga burimi DEMO, native commands OPEN, device/store/update sequence dhe10 grupe burimesh zyrtare. Para/pas/OPEN teDA10/CURRENT_STATE; pa build/publish/infra. Ndalo para7.3. |
+| 7.3-01 | Rregulla teknike auth/ACL: kush sheh/ndryshon çdo kategori të dhënash, GPS gjithmonë opsional/qytet manual, consent dhe revokim lejesh. | DORËZUAR si specifikim: §31 PV01–16/consent, indeksi i kontratave §§5/13/21/25–28. Auth/ACL/GPS real dhe PT01–12 NOT RUN; defaults/fushat/bazat OPEN. |
+| 7.3-02 | Ruajtje/eksport/fshirje, siguri/lifecycle media/mesazhe, report/block/moderim/audit/kufij aksesi/incidente; përputhje me DEMO→APK dhe kontratat ekzistuese. | KONSOLIDUAR në§31: kontratat ekzistuese lifecycle/export/delete/media/DM/report/audit, procedura rights/incident dhe PT01–12. Pa skema/writers paralelë ose promovim sigurie reale; retention/operatorë/kontrolle OPEN. |
+| 7.3-03 | Strukturë/draft i politikës publike për përdoruesit; dallo verifikuar/propozuar/OPEN, mos mirato provider/shërbime/afate/praktika përpunimi të pakonfirmuara. | DORËZUAR draft publik PPN01–14 në§31, DRAFT / NOT EFFECTIVE. VERIFIKUAR kufijtë DEMO/source/host; praktikat e ardhshme PROPOZUAR/OPEN. Controller/contact/baza/provider/transferime/afate/teksti final/përkthimet OPEN. |
+| 7.3-04 | Identifiko shqyrtimin ligjor para publikimit; verifiko burimet/statusin aktual, ruaj historinë dhe mos përsërit punë. Pa kod ose aktivizim politike publike pa miratim. | SPECIFIKUAR PG01–10/PS01–06: shqyrtim juridik profesional, prova praktike dhe miratim Owner para aktivizimit. CURRENT_STATE/dorëzim për LIVE/readback/CI; ndalo para7.4, pa kod ose politikë aktive. |
+| 7.4-01 | Përgjegjësi shitësi: produkt/përshkrim/çmim/stok/dërgesë/garanci dhe detyrime ndaj blerësit. | DORËZUAR si draft/specifikim: §32 LR01–06/SE01–07/SR01–06 për mallra, përshkrim/çmim/stok, përmbushje/garanci dhe detyrime. Ligji/kategoria/modeli/praktikat reale OPEN, jo kontratë aktive. |
+| 7.4-02 | Përgjegjësi blerësish/përdoruesish për veprime/publikime/respektim rregullash. | SPECIFIKUAR LR07/TU03–04: përdorim/publikim i ligjshëm, të drejtat në përmbajtje dhe respektimi i rregullave; pa transferuar detyrime platforme ose heqje të të drejtave detyruese. |
+| 7.4-03 | Përgjegjësi ILLYRIAN për funksionimin/privatësinë/sigurinë/moderimin/raportimet dhe detyrimet ligjore të platformës. | SPECIFIKUAR LR08–10/LD01–04: shërbim/privatësi/siguri/moderim/raportime/detyrime sipas rolit real. Pa përjashtim absolut ose legal compliance PASS; §31 mbetet burimi i privatësisë. |
+| 7.4-04 | Dallo platformë lidhëse blerës–shitës nga administrimi i pagesave/porosive/dërgesave/rimbursimeve; identitet/status shitësi dhe pala kontraktuese kur kërkohet. | DORËZUAR LM01–04: discovery/inquiry, kontratë në app pa fonde, managed commerce, platforma si palë; klasifikimi nga funksioni/prezantimi. Identitet/status tregtar–privat/palë kontraktuese në LR02/SR01; modeli/tregjet OPEN, M4 mbetet gated. |
+| 7.4-05 | Draftet: Kushtet e Përdorimit, Kushtet për Shitësit, Rregullat ILLYRIAN Shop, politika ankesash dhe deklarata përgjegjësie. | DORËZUAR pesë drafte në§32: TU01–08, SE01–07, SR01–06, CP01–06, LD01–04; DRAFT / NOT EFFECTIVE. Pa kopje paralele, pranim/kontratë/politikë të aktivizuar. |
+| 7.4-06 | Analizo Shqipërinë dhe tregjet BE: mbrojtje konsumatori, privatësi dhe detyrime platformash online me burime aktuale/prova/vendime OPEN. | ANALIZË KUSHTORE JD01–08/LS01–09 për Shqipëri/BE: konsumatorë, e-commerce/hosting/DSA, privacy, GPSR dhe review sipas tregut. Kufijtë e retrieval/konsolidimit shënohen; aktualiteti kombëtar/shqyrtimi juridik profesional OPEN. |
+| 7.4-07 | Procedura ankesash/mashtrimesh/përmbajtjeje të paligjshme/mosmarrëveshjesh/bashkëpunimi me autoritete kur kërkohet. | SPECIFIKUAR LP01–06: ankesa/mashtrim/siguri produkti/notice/appeal/dispute/autoritet/incidente mbi domain-et ekzistuese. Pa DM/privilegje të reja, panel ose endpoint publik; operatorë/afate/bindings reale OPEN dhe LT01–10 NOT RUN. |
+| 7.4-08 | Pa përjashtime absolute përgjegjësie; dallo draft nga politikë e miratuar, shqyrtim juridik para publikimit. Mos aktivizo pagesa/kontrata tregtare/politika të reja pa miratim. | Kufiri ruhet në LD/LG01–10: draftet joaktive, pa përjashtim absolut, kërkohet shqyrtim juridik profesional dhe miratim Owner para adoptimit/publikimit. Pa pagesa/kontrata aktive; ndalo para7.5. |
+| 7.5-01 | Për çdo funksion të miratuar verifiko funksion→ekran→rrjedhë→data→API→auth→test→pranim; plotëso boshllëqe vetëm me prova, vendime pronari OPEN me alternativa. | AUDITUAR/PARTIAL: §24 A01–54 kanë kolonë trace C0/CC/AQ/API/test, me skema/kontrolle të paplotësuara OPEN. §33 FC04/05: IN/OUT/LATER/platform scope ende i pamiratuar; jo specifikim shterues. |
+| 7.5-02 | Gjetjet e konfirmuara të auditimeve korrigjohen ose marrin status; arkitekturë e unifikuar reale Shop/Shop Plus dhe Plans/Events/Connections. | VERIFIKUAR brenda provave: §33 FC06/07/23, domain-et unike Shop/Activity dhe statuset e auditimeve ekzistuese; implementimi real/mapping dhe provat globale ende PARTIAL/OPEN. Pa refaktor/kod. |
+| 7.5-03 | sq/en/it në çdo modul, përfshirë gabime/formularë/dialogë, me prova të përshtatshme. | AUDITUAR/PARTIAL FC18:782 keys/19 namespaces/locale dhe mirrors identike; shembuj sq/en/it/CI dhe inventory të ruajtura. Jo certifikim i çdo moduli/gabimi/formulari/dialogu; review/teste reale OPEN. |
+| 7.5-04 | Navigim/a11y/mobile/desktop me prova; dallo gjendje aktuale nga checkpoint historik. | AUDITUAR/PARTIAL FC19/20: prova browser/source/viewport, checkpoint-e historike të dalluara. M01–M18/telefon/screenreader/current Preview interaction NOT TESTED/OPEN; jo PASS nga metadata. |
+| 7.5-05 | Kontroll README/repository/degë/dokumente autoritative/build guide dhe rezultatet6/7 pa supozuar përfundim. | VERIFIKUAR dokumentarisht FC01–03/15/27: README/repo/degë/arkitekturë/build guide dhe rezultate6/7 me boshllëqe. Native bindings/artefaktet reale MISSING/OPEN sipas§30/FC27. |
+| 7.5-06 | Required checks, branch protection, QA fizik dhe miratim Owner përpara release; respekto autorizimet merge/Production/high-risk. | LIVE FC24/28: CI job names dhe rulesets[]/protected:false, F06 i shtyrë. QA fizike/signing/store/Owner release OPEN; pa settings/merge/Production të ndryshuara. |
+| 7.5-07 | Screenshot-e/vendime/prova ruhen qëndrueshëm, jo vetëm në artefakte CI që skadojnë. | PLOTËSUAR për baseline-in FC25:87 JPEG+inventory origjinale nga40601069212/8258d2e, dy ZIP me API digest/source/run/member index në dokumentin ekzistues QA. Histori/vendime Git ruhen; jo çdo set historik/fizik i arkivuar. |
+| 7.5-08 | Ikona origjinale e pandryshuar, emri publik ILLYRIAN, pa Forum të veçantë; “Shkolla & Universiteti” brenda Communities. | VERIFIKUAR bounded FC26: favicon hash identik me integrimin015ce439, titulli/emri ILLYRIAN, pa forum shell tab, c4 education/locale tests në Communities; pa ndryshim runtime/dizajni. |
+| 7.5-09 | Dallo simulimet nga funksionet reale; Chromium PASS nuk mjafton, Production/APK-ready kërkon kriteret/provat reale. | RESPEKTUAR: §33 dallon dokumentim/DEMO/prova browser nga native/API/physical/restore. Build-start dhe APK/Production HOLD; pa readiness PASS nga Chromium ose ekzistenca e dokumenteve. |
+| 7.5-10 | Dorëzo dokumentet e kontrolluara/përmirësuara, mangësitë/korrigjimet/OPEN, hartën dokumentare APK, testet/provat/readiness/rreziqet/hapat dhe udhëzimin e saktë për ChatGPT që nis build-in. Regjistër VERIFIED/PARTIAL/MISSING/OPEN me prova/rrezik/hap për çdo element; master continuity/saving7P-05. | DORËZUAR si audit §33:28 FC status/provë/rrezik/hap, hartë/handoff/order dhe kufij; current/master/README/roadmap/device index konsoliduar. Source/readback/PR/CI/Preview LIVE te CURRENT_STATE/dorëzimi; ndalo pas7.5. |
+
+### Dorëzimi7.1 dhe ndalesa
+
+README u përmirësua në vend dhe §29 ruan auditin/kufijtë e14 elementeve. Burimet e qarta, link-et e vlefshme, parimet, kontratat6, security statuses dhe historia nuk rishkruhen vetëm për të bërë ndryshime. DA09–11 regjistrojnë plotësi të pjesshme/mungesa për fazat e ardhshme;7.1 nuk është përfundimi i gjithë paketës7. Ndalesa para7.2 u përmbush në `5385f30`; pronari hapi më pas vetëm7.2. APK/Production readiness mbetet HOLD. Provat/commit/readback/CI/Preview të7.1 ruhen te CURRENT_STATE dhe dorëzimi.
+
+
+### Dorëzimi7.2 — udhëzues kushtor, jo build i ekzekutuar
+
+[Blueprint §30](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-72) plotëson DA10 pa manual paralel:8 hapa setup,4 klasa mjedisesh,8 referenca komandash DEMO ekzistuese,12 checkpoints të build/release që lidhen me GQ ekzistuese dhe10 grupe burimesh zyrtare. Para7.2 kishte kryesisht kërkesa/gates native; tani ka strukturë/procedurë kushtore, izolim config/sekretesh, signing/version/manifest, migrime/device/store/update dhe kufij rollback-u. Stack/provider/native path/komanda/SDK/app IDs/keys/accounts/politika/operatorë dhe çdo ekzekutim native mbeten OPEN/NOT RUN. Nuk u zgjodh ose ndërtua klient/backend, nuk ndryshoi kodi/arkitektura e miratuar/CI dhe nuk u aktivizua shërbim/politikë/pagesë. Ndalesa para7.3 u përmbush në `2d343ee`; pronari hapi më pas vetëm7.3.7.4–7.5 mbeten të planifikuara. Provat/commit/readback/CI/Preview janë te CURRENT_STATE.
+
+
+### Dorëzimi7.3 — privatësi teknike dhe draft publik joaktiv
+
+[Blueprint §31](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-73) konsolidon16 kategori të dhënash me akses/leje/lifecycle dhe referenca të kontratave ekzistuese, procedurën e consent/rights/incidenteve dhe draftin publik PPN01–14. Para7.3 mungonte drafti publik; tani ekziston vetëm si DRAFT / NOT EFFECTIVE, me10 publication gates,12 privacy cases reale NOT RUN dhe6 grupe burimesh zyrtare. Verifikimi proporcional i të drejtave dallohet nga rikuperimi i llogarisë, afatet ligjore nga SLA, OS permission nga consent; GPS manual/opsional dhe kufijtë e DM/stafit ruhen.
+
+Controller/contact/market/baza ligjore/provider/transferime/retention/mosha/operatorë, praktikat reale, përkthimet dhe shqyrtimi juridik/miratimi i publikimit mbeten OPEN. Pa kod/dizajn/backend/akses/reset/email/SMS/konfigurim ose aktivizim politike; security statuses dhe kontratat e sakta të mëparshme ruhen. Kërkesat e të pesë fazave mbeten të plota; Ndalesa para7.4 u përmbush në `44f4248`; pronari hapi më pas vetëm7.4;7.5 PLANIFIKUAR dhe APK HOLD. Provat/commit/readback/CI/Preview janë te CURRENT_STATE dhe dorëzimi.
+
+
+### Dorëzimi7.4 — modeli dhe përgjegjësitë ligjore, jo politika në fuqi
+
+[Blueprint §32](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-74) plotëson DA11:4 modele të dalluara marketplace,10 grupe përgjegjësish,8 fusha review Shqipëri–BE,6 procedura të lidhura me Support/Safety dhe pesë draftet ligjore të kërkuara (31 klauzola).10 LG gates/10 LT raste reale NOT RUN/9 grupe burimesh zyrtare. Para7.4 kishte kufij/reference, ndërsa draftet dhe analiza mungonin si dorëzime; tani janë në të njëjtin blueprint, pa dokument/panel paralel.
+
+Operator/treg/model/MVP/moshë/kategori, ligji aktual kombëtar/transpozimi/përjashtimet, të dhënat e detyrueshme të palëve, proceset/operatorët/afatet dhe përkthimet/miratimet OPEN. Nuk deklarohet imunitet nga etiketa ndërmjetës, pagesa jashtë app ose madhësia e vogël; ruhen detyrimet e platformës dhe mjetet juridike. Pa kod/dizajn/shërbim/pagesë/kontratë/politikë aktive; shqyrtim juridik profesional dhe miratim Owner para adoptimit. Ndalesa para7.5 u përmbush në `0c19089`; pronari hapi më pas vetëm7.5. APK HOLD. Commit/readback/CI/Preview te CURRENT_STATE/dorëzimi; kërkesat e programeve dhe historia ruhen.
+
+
+### Dorëzimi7.5 — mbyllja dokumentuese e Programit7
+
+[Blueprint §33](../architecture/ILLYRIAN_PRODUCT_V1_BLUEPRINT.md#task-75) kontrollon6/7 me28 elemente VERIFIED/PARTIAL/MISSING/OPEN, hartën dokumentare dhe udhëzimin për ChatGPT që do të nisë zhvillimin real. Kolona e re në54 rreshtat ekzistues A lidh familjet me C0/kontrata/teste/pranim dhe lë fushat/API/kontrollet e pambuluara OPEN. [Indeksi QA](../docs/DEMO_V1_7_DEVICE_QA_ACCEPTANCE.md#durable-browser-evidence) ruan87 pamje CI dhe inventory origjinale në dy ZIP me hash/proveniencë, pa rikrijim pamjesh ose dizajni.
+
+Programi7 përfundon auditin/paketën dokumentare të autorizuar, jo specifikimin e plotë të një release-i të miratuar ose implementim real. Build-start/APK/Production HOLD: B01 scope/platform/market/age, pastaj B02/C0/B03 stack dhe B04/B11 politika/operatorë, autorizim i veçantë real-build dhe B05–B12 zbatim/prova/pranim. Gjuhët globale/telefon/screenreader/real backend/native/integrity/restore/security/store mbeten PARTIAL/MISSING/OPEN sipas provave; privacy/legal drafts joaktive. Nuk ka7.6 ose ndërtim/merge/publikim automatik.35/34/48 grupet e kërkesave dhe historia ruhen. Commit/readback/CI/Preview te CURRENT_STATE/dorëzimi.

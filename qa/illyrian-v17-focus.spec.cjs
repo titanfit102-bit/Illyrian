@@ -32,3 +32,500 @@ for(const [w,h] of [[390,844],[844,390],[1280,800]]){
     await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
   });
 }
+
+
+// Shop Plus has an independent modal stack and keyboard trap; test real key
+// events in narrow portrait, landscape and desktop-sized preview.
+for(const [width,height] of [[320,568],[390,844],[844,390],[1280,800]]){
+ test('Shop Plus actual Tab wrapping and layered Escape - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
+  const opener=page.locator('#illyrian-shop-layer [data-isp-open]').first();
+  await opener.focus();
+  await expect(opener).toBeFocused();
+  await opener.click();
+  const root=page.locator('#isp-root');
+  await expect(root).toBeVisible();
+  const dialog=root.locator('[role="dialog"][aria-modal="true"]');
+  await expect(dialog).toHaveCount(1);
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+  const focusable=root.locator('button:not([disabled]):visible,input:not([disabled]):visible,select:not([disabled]):visible,textarea:not([disabled]):visible');
+  const first=focusable.first(),last=focusable.last();
+  await expect(first).toBeFocused();
+  await last.focus();
+  await page.keyboard.press('Tab');
+  await expect(first).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(last).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(root).toHaveCount(0);
+  await expect(opener).toBeFocused();
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+ });
+}
+
+
+// Screen review follow-up: actionable controls below the fold and outside the
+// initial horizontal-nav viewport must remain reachable in narrow screens.
+for(const [width,height] of [[320,568],[844,390]]){
+ test('Shop Plus offscreen submit and Reports remain reachable - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  const root=page.locator('#isp-root');
+  await expect(root).toBeVisible();
+
+  // Horizontal tabs should be accessible even when the final tab is clipped.
+  const reportTab=root.locator('[data-isp="tab:moderation"]');
+  await reportTab.scrollIntoViewIfNeeded();
+  await expect(reportTab).toBeInViewport();
+  await reportTab.click();
+  await expect(root.locator('[data-isp="tab:moderation"]')).toHaveAttribute('aria-current','page');
+
+  // Returning to the catalog allows navigating to the listing form.
+  await root.locator('[data-isp="tab:catalog"]').click();
+  await root.locator('[data-isp="create"]').click();
+  const form=root.locator('#isp-create');
+  await expect(form).toBeVisible();
+  const submit=form.locator('button[type="submit"]');
+  await submit.scrollIntoViewIfNeeded();
+  await expect(submit).toBeInViewport();
+  await submit.focus();
+  await expect(submit).toBeFocused();
+  const panel=root.locator('.isp-panel');
+  expect(await panel.evaluate(el=>el.scrollTop)).toBeGreaterThan(0);
+  await page.keyboard.press('Escape');
+  await expect(root).toHaveCount(0);
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+ });
+}
+
+
+// Shop Plus category-specific fields follow accessible keyboard order; fields
+// from other categories stay in the DOM to preserve drafts but must not enter
+// the tab sequence. Actual browser Tab events (no synthetic focus movement).
+for(const [width,height] of [[320,568],[844,390]]){
+ test('Shop Plus category-specific fields follow accessible keyboard order - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  const root=page.locator('#isp-root');
+  await root.locator('[data-isp="create"]').click();
+  const form=root.locator('#isp-create');
+  await expect(form).toBeVisible();
+  const options=[
+   {type:'Produkte',next:'quantity'},
+   {type:'Makina',next:'year'},
+   {type:'Banesa me qira',next:'area'},
+   {type:'Shërbime',next:'details'}
+  ];
+  const specific=['quantity','year','mileage','area','rooms','period'];
+  for(const {type,next} of options){
+   await form.locator('select[name="type"]').selectOption(type);
+   await expect(form.locator('[name="'+next+'"]')).toBeVisible();
+   for(const name of specific.filter(n=>n!==next)){
+    const visible=type==='Makina'&&name==='mileage'
+      ||type==='Banesa me qira'&&(name==='rooms'||name==='period');
+    if(!visible)await expect(form.locator('[name="'+name+'"]')).toBeHidden();
+   }
+   await form.locator('[name="price"]').focus();
+   await expect(form.locator('[name="price"]')).toBeFocused();
+   await page.keyboard.press('Tab');
+   await expect(form.locator('[name="'+next+'"]')).toBeFocused();
+  }
+  // Opening and closing this modal must restore the underlying Shop layer.
+  await page.keyboard.press('Escape');
+  await expect(root).toHaveCount(0);
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+ });
+}
+
+
+// Non-Shop Plus modal actual keyboard trap across compact layouts.
+// This guards module boundaries that have independent focus implementations:
+// Connections, Privacy/Map and Governance. No data is published or persisted.
+for(const [width,height] of [[320,568],[844,390]]){
+ for(const config of [
+  {name:'Connections',screen:'events',open:'[data-ilc-entry]',root:'#ilc-root',dialog:'.ilc-sheet',closed:'hidden'},
+  {name:'Privacy/Map',screen:'explore',open:'#il4-entry [data-il4-entry]',root:'#il4-root',dialog:'.il4-panel',closed:'hidden'},
+  {name:'Governance',screen:'explore',open:'#ig6-entry [data-ig6="open"]',root:'#ig6-root',dialog:'.ig6-panel',closed:'detached'}
+ ]){
+  test('Non-Shop Plus modal actual keyboard trap across compact layouts - '+config.name+' '+width+'x'+height,async({page})=>{
+   await page.setViewportSize({width,height});
+   await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+   const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+   if(await guest.isVisible()){
+    await guest.click();
+    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+   }
+   if(config.screen==='events')await page.locator('.head [data-act="tab"][data-val="events"]').click();
+   else await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+   const opener=page.locator(config.open).first();
+   await opener.focus();
+   await expect(opener).toBeFocused();
+   await opener.click();
+   const root=page.locator(config.root);
+   await expect(root).toBeVisible();
+   await expect(root.locator(config.dialog)).toHaveAttribute('role','dialog');
+   await expect(root.locator(config.dialog)).toHaveAttribute('aria-modal','true');
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+   const controls=root.locator('button:not([disabled]):visible,input:not([disabled]):visible,select:not([disabled]):visible,textarea:not([disabled]):visible');
+   const first=controls.first(),last=controls.last();
+   await expect(first).toBeFocused();
+   await last.focus();
+   await expect(last).toBeFocused();
+   await page.keyboard.press('Tab');
+   await expect(first).toBeFocused();
+   await page.keyboard.press('Shift+Tab');
+   await expect(last).toBeFocused();
+   await page.keyboard.press('Escape');
+   if(config.closed==='detached')await expect(root).toHaveCount(0);
+   else await expect(root).toBeHidden();
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+   await expect(opener).toBeFocused();
+  });
+ }
+}
+
+
+// Accessible modal names follow sq/en/it without re-rendering unsent state.
+// Language is UI-only. Assert exact semantic catalog keys, focus, inert status,
+// and module localStorage, not a phrase-adapter's incidental text replacement.
+for(const config of [
+ {name:'Connections',tab:'events',opener:'[data-ilc-entry]',dialog:'#ilc-root .ilc-sheet',key:'connections:activities',storage:'illyrian_demo_v17_connections'},
+ {name:'Plans',tab:'events',opener:'[data-ilp-entry]',dialog:'#ilp-root .ilp-panel',key:'plans:title',storage:'illyrian_demo_v17_plans'},
+ {name:'Governance',tab:'explore',opener:'#ig6-entry [data-ig6="open"]',dialog:'#ig6-root .ig6-panel',key:'governance:title',storage:'illyrian_demo_v17_governance'}
+]){
+ test('Accessible modal names follow sq/en/it without re-rendering unsent state - '+config.name,async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+  if(config.tab==='events')await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  else await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+  const opener=page.locator(config.opener).first();
+  await opener.click();
+  const dialog=page.locator(config.dialog);
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveAttribute('role','dialog');
+  await expect(dialog).toHaveAttribute('aria-modal','true');
+  // Initial focus follows the close control; after language updates any
+  // focusable control inside the dialog is valid, but background focus is not.
+  await expect(dialog.locator('header button')).toBeFocused();
+  const before=await page.evaluate(key=>localStorage.getItem(key),config.storage);
+  for(const lang of ['sq','en','it','sq']){
+   await page.evaluate(language=>window.IllyrianI18n.changeLanguage(language),lang);
+   const label=await page.evaluate(key=>window.IllyrianI18n.t(key),config.key);
+   await expect(dialog).toHaveAttribute('aria-label',label);
+   if(config.name==='Plans'){
+    const roleLabel=await page.evaluate(()=>window.IllyrianI18n.t('plans:role'));
+    await expect(dialog.locator('nav').first()).toHaveAttribute('aria-label',roleLabel);
+   }
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+   // Focus repair is scheduled before the next paint, not during input events.
+   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>resolve())));
+   const focus=await dialog.evaluate(node=>{
+    const active=document.activeElement;
+    return {inside:node.contains(active),tag:active?.tagName||'none',id:active?.id||'',action:active?.getAttribute('data-ilp')||''};
+   });
+   expect(focus.inside,config.name+' dialog focus must remain inside on '+lang+': '+JSON.stringify(focus)).toBe(true);
+   expect(await page.evaluate(key=>localStorage.getItem(key),config.storage)).toBe(before);
+  }
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(opener).toBeFocused();
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+ });
+}
+
+
+// Built-in Reels actual keyboard trap and focus return, complementing
+// existing visual/44px hit-target assertions. No publish/share is triggered.
+for(const [width,height] of [[390,844],[844,390]]){
+ test('Built-in Reels actual keyboard trap and focus return - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  const opener=page.locator('#navbar [data-act="open-reels"]');
+  await opener.focus();
+  await expect(opener).toBeFocused();
+  await opener.click();
+  const overlay=page.locator('#layer .v4-reel-overlay');
+  await expect(overlay).toBeVisible();
+  await expect(overlay).toHaveAttribute('role','dialog');
+  await expect(overlay).toHaveAttribute('aria-modal','true');
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+  const buttons=overlay.locator('button:not([disabled]):visible');
+  const first=buttons.first(),last=buttons.last();
+  await expect(first).toBeFocused();
+  await last.focus();
+  await expect(last).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(first).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(last).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(overlay).toHaveCount(0);
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+  await expect(opener).toBeFocused();
+ });
+}
+
+
+// Built-in Stories keyboard focus across navigation and Escape.
+// Exercises the original story-open button after DOM re-render and verifies
+// focus containment when moving to the next story; no publishing is triggered.
+for(const [width,height] of [[390,844],[844,390]]){
+ test('Built-in Stories keyboard focus across navigation and Escape - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  const opener=page.locator('#screen [data-act="story"][data-val="1"]').first();
+  await opener.focus();
+  await expect(opener).toBeFocused();
+  await opener.click();
+  const story=page.locator('#layer .story-overlay');
+  await expect(story).toBeVisible();
+  await expect(story).toHaveAttribute('role','dialog');
+  await expect(story).toHaveAttribute('aria-modal','true');
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+  const first=story.locator('button:not([disabled]):visible').first();
+  const last=story.locator('button:not([disabled]):visible').last();
+  await expect(first).toBeFocused();
+  await last.focus();
+  await page.keyboard.press('Tab');
+  await expect(first).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(last).toBeFocused();
+  await story.locator('[data-act="nextStory"]').click();
+  await expect(story).toBeVisible();
+  expect(await story.evaluate(node=>node.contains(document.activeElement))).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(story).toHaveCount(0);
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+  await expect(opener).toBeFocused();
+ });
+}
+
+
+// Reels Feed opener focus distinguishes heading and first thumbnail even
+// though both controls use action=open-reels and id=0. Both button-close and
+// Escape-close must return focus to the actual starting control after repaint.
+for(const [width,height] of [[390,844],[844,390]]){
+ for(const config of [
+  {name:'Reels navigation',selector:'#navbar [data-act="open-reels"]'},
+  {name:'Story Reel preview',selector:'#screen > .stories .story-reel-preview[data-id="0"]'}
+ ]){
+  test('Reels Feed opener focus distinguishes heading and first thumbnail - '+config.name+' '+width+'x'+height,async({page})=>{
+   await page.setViewportSize({width,height});
+   await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+   const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+   if(await guest.isVisible()){
+    await guest.click();
+    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+   }
+   const opener=page.locator(config.selector);
+   await expect(opener).toBeVisible();
+   for(const closeMode of ['button','Escape']){
+    await opener.focus();
+    await expect(opener).toBeFocused();
+    await opener.click();
+    const overlay=page.locator('#layer .v4-reel-overlay');
+    await expect(overlay).toBeVisible();
+    await expect(overlay).toHaveAttribute('aria-modal','true');
+    await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+    if(closeMode==='button')await overlay.locator('[data-act="reel-close"]').click();
+    else await page.keyboard.press('Escape');
+    await expect(overlay).toHaveCount(0);
+    await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+    await expect(opener).toBeFocused();
+   }
+  });
+ }
+}
+
+
+// Reel-to-profile and chat restores internal focus when returning to Reel,
+// without disrupting the focus return to the navbar when Reel finally closes.
+// Test real keyboard events with both the explicit Back button and Escape.
+for(const [width,height] of [[390,844],[844,390]]){
+ for(const [action,description] of [['reel-chat','chat'],['reel-person','profile']]){
+  test('Reel-to-profile and chat restores internal focus - '+description+' '+width+'x'+height,async({page})=>{
+   await page.setViewportSize({width,height});
+   await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+   const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+   if(await guest.isVisible()){
+    await guest.click();
+    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+   }
+   const opener=page.locator('#navbar [data-act="open-reels"]');
+   await opener.focus();
+   await expect(opener).toBeFocused();
+   await opener.click();
+   const reel=page.locator('#layer .v4-reel-overlay');
+   const trigger=reel.locator('[data-act="'+action+'"]');
+   for(const closeMode of ['back','Escape']){
+    await expect(reel).toBeVisible();
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    const modal=page.locator('#layer .modal[role="dialog"][aria-modal="true"]');
+    await expect(modal).toBeVisible();
+    await expect(reel).toHaveCount(0);
+    if(closeMode==='back')await modal.locator('[data-act="v16-reel-back"]').click();
+    else await page.keyboard.press('Escape');
+    await expect(reel).toBeVisible();
+    await expect(modal).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+    await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+   }
+   await page.keyboard.press('Escape');
+   await expect(reel).toHaveCount(0);
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+   await expect(opener).toBeFocused();
+  });
+ }
+}
+
+
+// M17 pre-device probe only: 200% document font scaling in desktop Chromium.
+// This catches modal-control reachability regressions but does NOT certify
+// Android/iPhone OS text-size settings, browser pinch zoom or screen readers.
+for(const [width,height] of [[390,844],[844,390]]){
+ test('M17 emulated 200% root text size keeps Shop Plus and Plans reachable - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await expect(page.locator('#v7-auth.visible')).toHaveCount(0);
+  // Force a CSS root-font-scale probe; do not claim this changes all px-based
+  // styles or reproduces the physical phone accessibility setting.
+  const scaled=await page.evaluate(()=>{
+   document.documentElement.style.setProperty('font-size','200%','important');
+   return parseFloat(getComputedStyle(document.documentElement).fontSize);
+  });
+  expect(scaled).toBeGreaterThanOrEqual(30);
+
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
+  await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+  await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+  const root=page.locator('#isp-root');
+  await expect(root.locator('[role="dialog"][aria-modal="true"]')).toBeVisible();
+  await root.locator('[data-isp="create"]').click();
+  const form=root.locator('#isp-create');
+  await expect(form).toBeVisible();
+  await form.locator('select[name="type"]').selectOption('Makina');
+  await expect(form.locator('[name="year"]')).toBeVisible();
+  await expect(form.locator('[name="quantity"]')).toBeHidden();
+  // The visible close control must remain genuinely clickable at increased size.
+  await root.locator('header button[data-isp="close"]').click();
+  await expect(root).toHaveCount(0);
+  await page.locator('#illyrian-shop-layer [data-ils="back"]').click();
+  await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
+
+  await page.locator('.head [data-act="tab"][data-val="events"]').click();
+  await page.locator('[data-ilp-entry]').first().click();
+  const plans=page.locator('#ilp-root');
+  await expect(plans).toBeVisible();
+  await plans.locator('button[data-ilp="close"]').click();
+  await expect(plans).toBeHidden();
+  await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+  // Document-wide sideways scroll is not a legitimate replacement for
+  // independently scrollable tabs inside an overlay.
+  const bounds=await page.evaluate(()=>({
+   scroll:document.documentElement.scrollWidth,
+   client:document.documentElement.clientWidth
+  }));
+  expect(bounds.scroll,'document overflows horizontally after closing dialogs').toBeLessThanOrEqual(bounds.client+4);
+ });
+}
+
+
+// M17 200% text-size probe includes Connections, Privacy, Governance. This is a browser CSS-font probe, NOT
+// actual OS text scaling, physical device QA or real TalkBack/VoiceOver.
+for(const [width,height] of [[320,568],[844,390]]){
+ test('M17 200% text size keeps Connections Privacy Governance close and navigation reachable - '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});
+  await page.goto('/ILLYRIAN_DEMO_v1.7.html',{waitUntil:'load'});
+  const guest=page.locator('#v7-auth.visible [data-v7="guest"]');
+  if(await guest.isVisible()){
+   await guest.click();
+   await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
+  }
+  await expect(page.locator('#v7-auth.visible')).toHaveCount(0);
+  const px=await page.evaluate(()=>{
+   document.documentElement.style.setProperty('font-size','200%','important');
+   return parseFloat(getComputedStyle(document.documentElement).fontSize);
+  });
+  expect(px).toBeGreaterThanOrEqual(30);
+  const cases=[
+   {name:'Connections',tab:'events',entry:'[data-ilc-entry]',root:'#ilc-root',panel:'.ilc-sheet',close:'button[data-ilc="close"]'},
+   {name:'Privacy/Map',tab:'explore',entry:'#il4-entry [data-il4-entry]',root:'#il4-root',panel:'.il4-panel',close:'button[data-il4="close"]'},
+   {name:'Governance',tab:'explore',entry:'#ig6-entry [data-ig6="open"]',root:'#ig6-root',panel:'.ig6-panel',close:'button[data-ig6="close"]'}
+  ];
+  for(const item of cases){
+   if(item.tab==='events')await page.locator('.head [data-act="tab"][data-val="events"]').click();
+   else await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
+   await page.locator(item.entry).first().click();
+   const root=page.locator(item.root),panel=root.locator(item.panel);
+   await expect(panel,item.name+' modal opens at 200%').toBeVisible();
+   await expect(panel).toHaveAttribute('role','dialog');
+   await expect(panel).toHaveAttribute('aria-modal','true');
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',true);
+   const close=root.locator(item.close);
+   await expect(close).toBeVisible();
+   await close.scrollIntoViewIfNeeded();
+   await close.click();
+   await expect(root).toBeHidden();
+   await expect(page.locator('#screen')).toHaveJSProperty('inert',false);
+  }
+  const bounds=await page.evaluate(()=>({
+   client:document.documentElement.clientWidth,
+   scroll:document.documentElement.scrollWidth
+  }));
+  expect(bounds.scroll,'no document-wide sideways overflow after scaled overlays').toBeLessThanOrEqual(bounds.client+4);
+ });
+}

@@ -30,12 +30,29 @@
     open:false,view:'overview',notice:'',selected:'city-1'
   };
   let root=null,opener=null,inertSnapshot=[];
-  const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({home:state.home,origin:state.origin,choice:state.choice,welcome:state.welcome}));return true}catch{state.notice='Hapësira lokale është plot; ndryshimi nuk u ruajt.';return false}};
-  const eventData=()=>{const doc=read(PLAN_KEY),values=Array.isArray(doc.events)?doc.events:[];return values.filter(e=>e&&e.privacy==='public'&&!e.cancelled&&typeof e.title==='string'&&!Number.isNaN(Date.parse(e.date+'T'+e.time))&&Date.parse(e.date+'T'+e.time)>Date.now()).slice(0,24)};
+  const feedback=(key,fallback)=>window.IllyrianI18n?.t('connections:'+key)||fallback;
+  const persisted=()=>({home:state.home,origin:state.origin,choice:state.choice,welcome:state.welcome});
+  let lastSaved=JSON.stringify(persisted());
+  // Prevent an old tab from silently overwriting newer saved preferences.
+  let lastPersistedRaw=null;try{lastPersistedRaw=localStorage.getItem(KEY)}catch{}
+  const persist=()=>{try{
+    if(localStorage.getItem(KEY)!==lastPersistedRaw){
+      Object.assign(state,JSON.parse(lastSaved));
+      state.notice=feedback('storageConflict','Të dhënat u ndryshuan në një skedë tjetër. Rifresko faqen dhe provo përsëri.');
+      return false;
+    }
+    const next=JSON.stringify(persisted());
+    localStorage.setItem(KEY,next);lastSaved=next;lastPersistedRaw=next;return true;
+  }catch{
+    Object.assign(state,JSON.parse(lastSaved));
+    state.notice=feedback('storageFull','Hapësira lokale është plot; ndryshimi nuk u ruajt.');return false;
+  }};
+  const eventData=()=>{const doc=read(PLAN_KEY),values=Array.isArray(doc.events)?doc.events:[];return values.filter(e=>e&&e.privacy==='public'&&!e.cancelled&&typeof e.title==='string'&&window.IllyrianActivityTime.resolve(e)!==null&&window.IllyrianActivityTime.resolve(e)>Date.now()).slice(0,24)};
   const button=(action,label)=>'<button type="button" data-ilc="'+h(action)+'">'+h(label)+'</button>';
   const cities=(current)=>CITIES.map(c=>'<option value="'+h(c)+'"'+(c===current?' selected':'')+'>'+h(c)+'</option>').join('');
   const header='<div class="ilc-title"><b>ILLYRIAN · LIDHJET REALE</b><h2>Nga interesi te takimi</h2><p>Katër rrugë për të gjetur njerëz dhe për të organizuar aktivitete.</p></div>';
-  const notice=()=>state.notice?'<p class="ilc-note" role="status">'+h(state.notice)+'</p>':'';
+  const notice=()=>'<p class="ilc-note" role="status" aria-atomic="true"'+(state.notice?'':' hidden')+'>'+h(state.notice)+'</p>';
+  const showNotice=()=>{const el=root?.querySelector('.ilc-note[role="status"]');if(el){el.textContent=state.notice;el.hidden=!state.notice}};
   const overview=()=>header+notice()+
     '<div class="ilc-grid">'+[
       ['cities','🌍','Dy vendet e mia','Shiko përmbajtje nga dy qytete të zgjedhura.'],
@@ -46,19 +63,19 @@
     ].map(([id,ico,t,sub])=>'<button class="ilc-tile" data-ilc="view:'+id+'"><span>'+ico+'</span><strong>'+t+'</strong><small>'+sub+'</small></button>').join('')+
     '</div><p class="ilc-muted">Të gjitha të dhënat janë shembuj; asnjë mesazh, takim ose ftesë nuk i dërgohet një personi real.</p>';
   function citiesView(){
-    const matched=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:'Organizatori i demos',meet:e.place,guide:e.conditions,first:true}))].filter(e=>e.city===state.home||e.city===state.origin);
+    const matched=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:"Organizatori i aplikacionit",meet:e.place,guide:e.conditions,first:true}))].filter(e=>e.city===state.home||e.city===state.origin);
     return '<h3>Dy vendet e mia</h3><p>Zgjidh manualisht qytetin ku jeton dhe qytetin me të cilin dëshiron të mbash lidhje. Kjo nuk tregon vendndodhjen reale.</p>'+
       '<form id="ilc-cities"><label>Qyteti ku jeton<select name="home">'+cities(state.home)+'</select></label>'+
       '<label>Qyteti i dytë / vendlindja<select name="origin">'+cities(state.origin)+'</select></label>'+
       '<button type="submit">Ruaj qytetet</button></form>'+notice()+
       '<h4>Mundësi nga dy zonat e tua</h4><div class="ilc-results">'+
-      (matched.length?matched.map(e=>'<article><strong>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p>'+button('welcome:'+e.id,'Si do të më presin?')+'</article>').join(''):'<p>Nuk ka ende shembuj aktivitetesh në këto dy qytete.</p>')+
+      (matched.length?matched.map(e=>'<article><strong data-user-content>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p>'+button('welcome:'+e.id,'Si do të më presin?')+'</article>').join(''):'<p>Nuk ka ende shembuj aktivitetesh në këto dy qytete.</p>')+
       '</div><p class="ilc-muted">Nuk përdorim GPS; qytetet e zgjedhura nuk publikohen te profilet e të tjerëve.</p>'+button('overview','Kthehu te zgjedhjet');
   }
   const interestView=()=>{
-    const expired=state.choice?.expires&&new Date(state.choice.expires).getTime()<=Date.now();
+    const expired=!!state.choice&&(!Number.isFinite(Date.parse(state.choice.expires))||Date.parse(state.choice.expires)<=Date.now());
     const current=!expired?state.choice:null;
-    return '<h3>Nga interesi te plani</h3><p>Shëno një interes dhe një interval. Kur ka interes të mjaftueshëm demonstrues, mund t\'i përgatisësh organizatorit një draft — pa publikim automatik.</p>'+
+    return "<h3>Nga interesi te plani</h3><p>Shëno një interes dhe një interval. Kur ka interes të mjaftueshëm, mund t'i përgatisësh organizatorit një draft — pa publikim automatik.</p>"+
       (expired?'<p class="ilc-note">Interesi i mëparshëm ka skaduar dhe nuk përdoret më.</p>':'')+
       (current?'<article class="ilc-chosen"><b>Zgjedhja jote aktive:</b> '+h(TOPICS.find(t=>t.id===current.topic)?.label||'')+
       ' · '+h(current.slot)+' · '+h(current.city)+'<p>Skadon: '+h(String(current.expires).slice(0,10))+'</p>'+
@@ -66,37 +83,37 @@
       '<form id="ilc-interest"><label>Çfarë dëshiron? <select name="topic">'+TOPICS.map(t=>'<option value="'+h(t.id)+'"'+(current?.topic===t.id?' selected':'')+'>'+h(t.icon+' '+t.label)+'</option>').join('')+'</select></label>'+
       '<label>Qyteti<select name="city">'+cities(current?.city||state.home)+'</select></label>'+
       '<label>Koha e preferuar<select name="slot">'+
-      (TOPICS.find(t=>t.id===current?.topic)||TOPICS[0]).slots.map(t=>'<option'+(current?.slot===t?' selected':'')+'>'+h(t)+'</option>').join('')+
+      (TOPICS.find(t=>t.id===current?.topic)||TOPICS[0]).slots.map(t=>'<option value="'+h(t)+'"'+(current?.slot===t?' selected':'')+'>'+h(t)+'</option>').join('')+
       '</select></label><label>Afati<select name="days"><option value="3">3 ditë</option><option value="7">7 ditë</option></select></label>'+
-      '<button type="submit">Shpreh interesin (demo)</button></form>'+
+      "<button type=\"submit\">Shpreh interesin </button></form>"+
       '<div id="ilc-matches">'+interestMatches()+'</div>'+notice()+
       '<p class="ilc-muted">Numrat e interesit janë shembuj fiktivë. Nuk ka rekomandime AI, njoftim te organizatorë realë ose konfirmim pjesëmarrjeje.</p>'+button('overview','Kthehu te zgjedhjet');
   };
   function interestMatches(){
     const current=state.choice;
-    if(!current||Date.parse(current.expires)<Date.now())return '<p class="ilc-muted">Ruaj një interes për të parë nëse mund të krijohet një plan.</p>';
+    if(!current||!Number.isFinite(Date.parse(current.expires))||Date.parse(current.expires)<=Date.now())return '<p class="ilc-muted">Ruaj një interes për të parë nëse mund të krijohet një plan.</p>';
     const topic=TOPICS.find(t=>t.id===current.topic);
     if(!topic)return '';
     const sameCity=topic.city===current.city;
     const count=sameCity?topic.count+1:1;
     const ready=count>=topic.goal;
-    return '<article class="ilc-match"><b>'+h(topic.icon+' '+topic.label)+'</b><p>'+h(current.city)+' · '+count+'/'+topic.goal+' interesime demonstrative</p>'+
+    return '<article class="ilc-match"><b>'+h(topic.icon+' '+topic.label)+'</b><p>'+h(current.city)+' · '+count+'/'+topic.goal+" interesime </p>"+
       '<p>'+h(current.slot)+'</p>'+
       (ready?'<p>Ka mjaft interes fiktiv për të propozuar një aktivitet. <b>Nuk është rezervim.</b></p>'+
       button('draft-topic:'+topic.id,'Përgatit draftin e planit'): '<p>Interesi nuk mjafton ende. Nuk do të krijohet plan automatikisht.</p>')+
       '</article>';
   }
   const firstView=()=>{
-    const list=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:'Organizatori demonstrues',meet:e.place,guide:e.conditions,first:true}))].slice(0,20);
-    return '<h3>Hera e parë</h3><p>Informacion i qartë për personat që nuk njohin askënd në një aktivitet. Deklarimi që vjen për herë të parë është privat në këtë demo.</p>'+
-      list.map(e=>'<article class="ilc-first"><strong>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p><p><b>Personi pritës:</b> '+h(e.host)+'</p>'+
-      '<p><b>Ku takohemi:</b> '+h(e.meet)+'</p><p>'+h(e.guide)+'</p>'+
+    const list=[...SAMPLE,...eventData().map(e=>({id:e.id,name:e.title,city:e.city,kind:e.kind,host:"Organizatori",meet:e.place,guide:e.conditions,first:true}))].slice(0,20);
+    return "<h3>Hera e parë</h3><p>Informacion i qartë për personat që nuk njohin askënd në një aktivitet. Deklarimi që vjen për herë të parë është privat në këtë pajisje.</p>"+
+      list.map(e=>'<article class="ilc-first"><strong data-user-content>'+h(e.name)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p><p><b>Personi pritës:</b> '+h(e.host)+'</p>'+
+      '<p><b>Ku takohemi:</b> <span data-user-content>'+h(e.meet)+'</span></p><p data-user-content>'+h(e.guide)+'</p>'+
       '<label class="ilc-check"><input type="checkbox" data-ilc-first="'+h(e.id)+'"'+(state.welcome[e.id]?' checked':'')+'/> Dua udhëzim si pjesëmarrës i ri (ruhet vetëm në këtë pajisje)</label></article>').join('')+notice()+button('overview','Kthehu te zgjedhjet');
   };
   const repeatView=()=>{
     const values=read(PLAN_KEY),events=Array.isArray(values.events)?values.events.filter(e=>e&&!e.cancelled).slice(0,24):[];
     return '<h3>Organizo sërish</h3><p>Përdor një aktivitet të mëparshëm vetëm si pikënisje. Data, vendi, ora dhe kapaciteti duhen konfirmuar përpara publikimit; asnjë pjesëmarrës nuk ftohet automatikisht.</p>'+
-      (events.length?events.map(e=>'<article class="ilc-repeat"><strong>'+h(e.title)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p>'+
+      (events.length?events.map(e=>'<article class="ilc-repeat"><strong data-user-content>'+h(e.title)+'</strong><p>'+h(e.city)+' · '+h(e.kind)+'</p>'+
       button('repeat:'+e.id,'Përgatit draftin')+'</article>').join(''):'<p>Krijo fillimisht një aktivitet në panelin e organizatorit.</p>')+
       notice()+button('overview','Kthehu te zgjedhjet');
   };
@@ -110,8 +127,8 @@
     '<p class="ilc-muted">Draftet kërkojnë konfirmim dhe publikim manual nga organizatori.</p>'+notice()+button('overview','Kthehu te zgjedhjet');
   function markup(){
     const body=state.view==='cities'?citiesView():state.view==='interest'?interestView():state.view==='welcome'?firstView():state.view==='repeat'?repeatView():state.view==='together'?togetherView():overview();
-    return '<div class="ilc-shade" data-ilc="close"></div><section class="ilc-sheet" role="dialog" aria-modal="true" aria-label="Lidhjet dhe aktivitetet demonstrative">'+
-      '<header><span>ILLYRIAN · DEMO v1.7</span>'+button('close','✕ Mbyll')+'</header>'+body+'</section>';
+    return '<div class="ilc-shade" data-ilc="close"></div><section class="ilc-sheet" role="dialog" aria-modal="true" aria-label="'+h(feedback('activities',"Lidhjet dhe aktivitetet"))+'">'+
+      "<header><span>ILLYRIAN · v1.7</span>"+button('close','✕ Mbyll')+'</header>'+body+'</section>';
   }
   function render(){
     if(!root)return;
@@ -149,7 +166,7 @@
     if(action==='close')return close();
     if(action==='overview')state.view='overview';
     else if(action.startsWith('view:'))state.view=action.slice(5);
-    else if(action==='clear-interest'){state.choice=null;persist();state.view='interest';state.notice='Interesi dhe disponueshmëria u hoqën.';}
+    else if(action==='clear-interest'){state.choice=null;const saved=persist();state.view='interest';if(saved)state.notice=feedback('interestRemoved','Interesi dhe disponueshmëria u hoqën.');}
     else if(action.startsWith('welcome:')){state.view='welcome';}
     else if(action.startsWith('repeat:')){
       const id=action.slice(7);
@@ -163,7 +180,7 @@
       }
     } else if(action.startsWith('together:')){
       const t=TOPICS.find(x=>x.id===action.slice(9));
-      if(t){draft({title:t.name,kind:t.kind,city:state.home,conditions:'Aktivitet demonstrues me rezultat të vogël konkret. Koha dhe vendi kërkojnë konfirmim.',source:'together'});return}
+      if(t){draft({title:t.name,kind:t.kind,city:state.home,conditions:"Aktivitet me rezultat të vogël konkret. Koha dhe vendi kërkojnë konfirmim.",source:'together'});return}
     }
     render();
   }
@@ -171,18 +188,18 @@
     const data=new FormData(form);
     if(form.id==='ilc-cities'){
       const a=String(data.get('home')),b=String(data.get('origin'));
-      if(!CITIES.includes(a)||!CITIES.includes(b)){state.notice='Qytetet nuk njihen.';render();return}
-      if(a===b){state.notice='Zgjidh dy qytete të ndryshme për këtë shembull.';render();return}
-      state.home=a;state.origin=b;state.notice='Dy qytetet u ruajtën në pajisje.';persist();render();return;
+      if(!CITIES.includes(a)||!CITIES.includes(b)){state.notice=feedback('citiesUnknown','Qytetet nuk njihen.');render();return}
+      if(a===b){state.notice=feedback('citiesDistinct','Zgjidh dy qytete të ndryshme për këtë shembull.');render();return}
+      state.home=a;state.origin=b;state.notice=feedback('citiesSaved','Dy qytetet u ruajtën në pajisje.');if(persist())render();else showNotice();return;
     }
     if(form.id==='ilc-interest'){
       const id=String(data.get('topic')),topic=TOPICS.find(t=>t.id===id);
       const city=String(data.get('city')),slot=String(data.get('slot')),days=Number(data.get('days'));
-      if(!topic||!CITIES.includes(city)||!topic.slots.includes(slot)||![3,7].includes(days)){state.notice='Zgjedhje të pavlefshme.';render();return}
+      if(!topic||!CITIES.includes(city)||!topic.slots.includes(slot)||![3,7].includes(days)){state.notice=feedback('interestInvalid','Zgjedhje të pavlefshme.');render();return}
       const expires=new Date(Date.now()+days*86400000).toISOString();
       state.choice={topic:id,city,slot,expires};
-      state.notice='Interesi u ruajt vetëm në pajisje, me skadim.';
-      persist();render();
+      state.notice=feedback('interestSaved','Interesi u ruajt vetëm në pajisje, me skadim.');
+      if(persist())render();else showNotice();
     }
   }
   function sync(){
@@ -249,17 +266,17 @@
       if(e.target.name==='topic'){
         const topic=TOPICS.find(t=>t.id===e.target.value);
         const select=root.querySelector('#ilc-interest select[name="slot"]');
-        if(select&&topic)select.innerHTML=topic.slots.map(t=>'<option>'+h(t)+'</option>').join('');
+        if(select&&topic)select.innerHTML=topic.slots.map(t=>'<option value="'+h(t)+'">'+h(t)+'</option>').join('');
       }
     });
     root.addEventListener('change',e=>{
       const item=e.target.closest('[data-ilc-first]');
       if(!item)return;
       state.welcome[item.dataset.ilcFirst]=!!item.checked;
-      persist();
-      state.notice=item.checked?'Shënimi privat u ruajt në pajisje. Organizatori nuk u njoftua.':'Shënimi privat u hoq.';
+      if(persist())state.notice=item.checked?feedback('privateNoteSaved','Shënimi privat u ruajt në pajisje. Organizatori nuk u njoftua.'):feedback('privateNoteRemoved','Shënimi privat u hoq.');
+      else item.checked=Boolean(state.welcome[item.dataset.ilcFirst]);
       const status=root.querySelector('.ilc-note[role="status"]');
-      if(status)status.textContent=state.notice;
+      if(status){status.textContent=state.notice;status.hidden=!state.notice;}
     });
     root.addEventListener('submit',e=>{e.preventDefault();onSubmit(e.target)});
     document.addEventListener('keydown',e=>{
@@ -271,6 +288,9 @@
       if(e.shiftKey&&(document.activeElement===items[0]||!root.contains(document.activeElement))){e.preventDefault();items.at(-1).focus();}
       else if(!e.shiftKey&&(document.activeElement===items.at(-1)||!root.contains(document.activeElement))){e.preventDefault();items[0].focus();}
     },true);
+    window.addEventListener('illyrian:language-changed',()=>{
+      if(state.open)root?.querySelector('.ilc-sheet')?.setAttribute('aria-label',feedback('activities',"Lidhjet dhe aktivitetet"));
+    });
     new MutationObserver(()=>{if(!state.open)queueMicrotask(sync)}).observe(screen,{childList:true,subtree:false});
     queueMicrotask(sync);
   }

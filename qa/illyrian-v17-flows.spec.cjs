@@ -31,6 +31,7 @@ for(const [w,h] of sizes){
     await openDemo(page,w,h);
     // Shop and nested Shop Plus; Escape must isolate the topmost dialog.
     await nav(page,'home');
+    await page.locator('#navbar [data-val="explore"]').click();
     await page.locator('[data-ilshop-open]').first().click();
     await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
     await backgroundInert(page);
@@ -95,7 +96,7 @@ for(const [w,h] of [[390,844],[844,390],[1280,800]]){
     await page.emulateMedia({colorScheme:'light'});
     await openDemo(page,w,h);
     await nav(page,'profile');
-    await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
+    await page.locator('#phone > .head [data-ily-profile-settings]').click();
     await page.locator('#layer [data-act="v6-settings-section"][data-val="theme"]').click();
     const key='illyrian_demo_v09_state';
     const initial=await page.evaluate(k=>localStorage.getItem(k),key);
