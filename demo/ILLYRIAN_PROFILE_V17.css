@@ -103,3 +103,6 @@
 #phone #screen .p17-settings:before{left:6px;right:6px}
 #phone #screen .p17-avatar-camera{isolation:isolate;background:transparent;border:0;box-shadow:none;right:-8px;bottom:-6px}
 #phone #screen .p17-avatar-camera:before{content:"";position:absolute;inset:6px;border-radius:50%;background:#141720;border:1.5px solid #b6bac8;box-shadow:0 0 0 2px var(--bg);z-index:-1}
+
+/* Profile settings replace the header notification control only on Profile. */
+#phone > .head [data-val="notifications"][hidden]{display:none!important}

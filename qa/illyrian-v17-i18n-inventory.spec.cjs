@@ -77,7 +77,7 @@ test('List untranslated visible UI labels across main views',async({page})=>{
  await page.locator('#navbar [data-act="open-reels"]').click();await capture('reels');
  await page.locator('#layer [data-act="reel-close"]').click();
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await capture('profile');
- const setup=page.locator('#screen [data-act="modal"][data-val="settings"]');
+ const setup=page.locator('#phone > .head [data-ily-profile-settings]');
  if(await setup.isVisible()){
    await setup.click();await capture('settings');
    await page.locator('#layer [data-act="v6-settings-section"][data-val="language"]').click();

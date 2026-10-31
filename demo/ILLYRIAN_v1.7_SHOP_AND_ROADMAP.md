@@ -1,5 +1,7 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+**Vendosja e Settings — 31 tetor2026:** Profile→header→Cilësimet ekzistuese; pa ikonë Njoftimesh të dukshme në këtë faqe dhe pa ingranazh të dyfishtë pranë redaktimit. Home→Njoftimet ekzistuese. Pranim: sq/en/it, hapje/Escape/fokus dhe rikthim te Home pa ndryshim storage ose unread.
+
 **Faza1 — përputhja me referencën, 31 tetor 2026:** cover/avatar/statistika në raportet e fotografisë; emri dhe veprimet bashkë; bio/chips/Highlights/skeda kompakte; galeri3 kolona me foto të qarta dhe metadata ilustruese; Light/Dark. Mbaj target44px me sipërfaqe vizuale më të vogla. Profili i papersonalizuar shfaq personazhin Arta; mos mbishkruaj të dhëna personale ose navbar. Fazat2–5 ruajnë boshllëqet e dokumentuara. Provat te CURRENT_STATE.
 
 **Profili premium — audit i pesë fazave, 31 tetor 2026:** burimi fillestar `490faf940d2a120cc66c2a4c4ca2c38717d70c12`, Draft PR #1. Commit `8c2dc18` shtoi bashkë pjesë të fazave 1–4; prania e kodit nuk mbyll fazat. Browser run 41147981062 u anulua pas dështimeve të regjistruara, Security 41147981129 SUCCESS. Kjo vijimësi autorizon auditin dhe stabilizimin e fazës së nisur, jo vazhdimin automatik të gjithë programit. Pa ndryshim header/navbar, backend ose Production.

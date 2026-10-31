@@ -212,7 +212,7 @@ async function ready(page){
 }
 async function languageSettings(page){
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
- await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
+ await page.locator('#phone > .head [data-ily-profile-settings]').click();
  await page.locator('#layer [data-act="v6-settings-section"][data-val="language"]').click();
  await expect(page.locator('#layer [data-illyrian-language]')).toHaveCount(3);
 }
@@ -2035,7 +2035,7 @@ for(const [lang,error] of [
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
-  await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
+  await page.locator('#phone > .head [data-ily-profile-settings]').click();
   await page.locator('#layer [data-act="v6-settings-section"][data-val="privacy"]').click();
   const check=page.locator('#layer [data-v6-pref="privateProfile"]');
   const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
@@ -2227,7 +2227,7 @@ for(const [lang,warning,confirm] of [
    return data;
   },keys);
   await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
-  await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
+  await page.locator('#phone > .head [data-ily-profile-settings]').click();
   await page.locator('#layer [data-act="v6-settings-section"][data-val="about"]').click();
   await expect(page.locator('#layer')).toContainText("ILLYRIAN · DEMO v1.7");
   await page.locator('#layer [data-act="v6-reset-confirm"]').click();
@@ -3376,7 +3376,7 @@ for(const lang of ['sq','en','it'])test('Presentation copy has one About disclos
  await expect(page.locator('#isp-root header')).not.toContainText(/\bdemo\b/i);
  await page.locator('#isp-root header [data-isp="close"]').click();await page.keyboard.press('Escape');
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
- await page.locator('#screen [data-act="modal"][data-val="settings"]').click();
+ await page.locator('#phone > .head [data-ily-profile-settings]').click();
  await page.locator('#layer [data-act="v6-settings-section"][data-val="about"]').click();
  await expect(page.locator('#phone [data-demo-disclosure]')).toHaveCount(1);
  await expect(page.locator('[data-demo-disclosure]')).toHaveText('ILLYRIAN · DEMO v1.7');

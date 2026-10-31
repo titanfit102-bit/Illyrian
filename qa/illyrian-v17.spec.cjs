@@ -737,8 +737,8 @@ for(const [width,height] of [[320,568],[360,780],[390,844],[430,932],[844,390],[
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await expect(profile).toBeVisible();
   expect(await profile.locator('.p17-cover').evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(110);
-  for(const selector of ['.p17-cover-change','.p17-avatar-camera','.p17-edit','.p17-settings','.p17-person-name [data-ily-identity-badge]']){
-   const r=await profile.locator(selector).boundingBox();expect(r.width).toBeGreaterThanOrEqual(44);expect(r.height).toBeGreaterThanOrEqual(44);
+  for(const selector of ['.p17-cover-change','.p17-avatar-camera','.p17-edit','#phone > .head [data-ily-profile-settings]','.p17-person-name [data-ily-identity-badge]']){
+   const r=await (selector.startsWith("#phone")?page.locator(selector):profile.locator(selector)).boundingBox();expect(r.width).toBeGreaterThanOrEqual(44);expect(r.height).toBeGreaterThanOrEqual(44);
   }
   const geometry=await profile.evaluate(el=>({left:el.getBoundingClientRect().left,right:el.getBoundingClientRect().right,children:[...el.querySelectorAll('.p17-person-top,.p17-identity,.p17-tabs')].map(x=>({left:x.getBoundingClientRect().left,right:x.getBoundingClientRect().right,overflow:x.scrollWidth>x.clientWidth+1}))}));
   for(const child of geometry.children){expect(child.left).toBeGreaterThanOrEqual(geometry.left);expect(child.right).toBeLessThanOrEqual(geometry.right+1);expect(child.overflow).toBe(false)}
@@ -824,4 +824,20 @@ for(const mode of ['light','dark'])test('Reference profile positions actions bes
  if(mode==='dark')await expect(page.locator('.p17-profile')).toHaveCSS('background-color','rgb(7, 9, 11)');
  await page.locator('#screen').evaluate(x=>x.scrollTop=0);
  await page.screenshot({path:'qa-results/visual/profile-reference-'+mode+'.png',animations:'disabled'});
+});
+
+for(const [lang,label] of [['sq','Cilësimet'],['en','Settings'],['it','Impostazioni']])test('Profile header moves Settings and retains Home notifications '+lang,async({page})=>{
+ await openDemo(page,390,844);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+ const notices=page.locator('#phone > .head [data-val="notifications"]');
+ await expect(notices).toBeVisible();
+ const state=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.locator('#navbar [data-val="profile"]').click();
+ const gear=page.locator('#phone > .head [data-ily-profile-settings]');
+ await expect(gear).toBeVisible();await expect(gear).toHaveAttribute('aria-label',label);await expect(notices).toBeHidden();
+ await expect(page.locator('#screen .p17-settings,#screen [data-val="settings"]')).toHaveCount(0);
+ await gear.click();await expect(page.locator('#layer .modal')).toBeVisible();
+ await page.keyboard.press('Escape');await expect(gear).toBeFocused();
+ await page.locator('#navbar [data-val="home"]').click();await expect(notices).toBeVisible();await expect(gear).toHaveCount(0);
+ await notices.click();await expect(page.locator('#layer .modal')).toBeVisible();await page.keyboard.press('Escape');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(state);
 });
