@@ -115,7 +115,7 @@
     sync();
   }
   const open=(id)=>{if(state.open)return;trigger=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.notice='';state.view=id?'detail':'list';if(id)state.id=id;render();root.querySelector('header button')?.focus()};
-  const close=()=>{state.open=false;render();inertSnapshot.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertSnapshot=[];if(trigger?.isConnected)trigger.focus()};
+  const close=()=>{state.open=false;render();inertSnapshot.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertSnapshot=[];if(trigger?.isConnected)trigger.focus();window.dispatchEvent(new Event('illyrian:plans:closed'))};
   const notice=s=>{
     state.notice=s;
     if(save()){render();return}
@@ -177,6 +177,11 @@
     if(!save()){error(state.notice);return}
     state.id=e.id;state.edit=null;draft=null;state.view='detail';state.notice=feedback('eventSavedNotice',"Aktiviteti u ruajt lokalisht.");render();
   }
+  const personalEvents=()=>state.events.filter(e=>e.id!=='demo-football'||self(e.id));
+  window.IllyrianPlansProfile=Object.freeze({
+    list:()=>personalEvents().map(e=>({id:e.id,title:String(e.title||''),city:String(e.city||''),date:String(e.date||''),time:String(e.time||'')})),
+    open:id=>{const e=personalEvents().find(e=>e.id===id);if(!e)return false;try{if(localStorage.getItem(KEY)!==lastPersistedRaw)return false}catch{return false}state.role=e.id==='demo-football'?'participant':'organizer';open(id);return true}
+  });
   function sync(){
     const screen=document.querySelector('#screen');if(!screen)return;
     const shown=!!screen.querySelector('.v10-event-tabs')||/Plane që na bashkojnë|Planet e mia/i.test(screen.querySelector('h2')?.textContent||'');

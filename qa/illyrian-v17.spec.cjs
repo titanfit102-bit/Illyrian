@@ -642,6 +642,7 @@ test('Premium profile validates cover photos and retains prior image after inval
  await page.locator('#navbar [data-val="profile"]').click();
  const image=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=72;c.height=40;const ctx=c.getContext('2d');ctx.fillStyle='#ea5b7d';ctx.fillRect(0,0,72,40);return c.toDataURL('image/png').split(',')[1]});
  await page.locator('#p17-cover-file').setInputFiles({name:'cover.png',mimeType:'image/png',buffer:Buffer.from(image,'base64')});
+ await page.locator('[data-p17-action="photo-save"]').click();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.p17Cover?.startsWith('data:image/jpeg;base64,'))).toBe(true);
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.p17Cover);
  await expect(page.locator('#screen .p17-cover')).toHaveAttribute('style',/data:image\/jpeg;base64/);
@@ -662,7 +663,7 @@ test('Premium Highlights create, view, edit and persist a Story snapshot',async(
  const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.p17Highlights);
  expect(before).toHaveLength(1);expect(before[0].items).toHaveLength(1);
  await page.locator('#screen [data-p17-action="highlight-view"]').click();
- await expect(page.locator('#layer .p17-viewer-photo')).toBeVisible();
+ await expect(page.locator('#layer .v16-media')).toBeVisible();
  await page.locator('#layer [data-p17-action="highlight-editor"]').click();
  await page.locator('#p17-title').fill('Tirana');
  await page.locator('#layer [data-p17-action="highlight-save"]').click();
@@ -764,6 +765,7 @@ test('Avatar change preserves unsaved premium profile fields',async({page})=>{
  await page.locator('#p17-tags').fill('Muzikë, Sport');
  const raw=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=40;const x=c.getContext('2d');x.fillStyle='blue';x.fillRect(0,0,40,40);return c.toDataURL('image/png').split(',')[1]});
  await page.locator('#v12-photo-file').setInputFiles({name:'portrait.png',mimeType:'image/png',buffer:Buffer.from(raw,'base64')});
+ await page.locator('[data-p17-action="photo-save"]').click();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.photoData?.startsWith('data:image/jpeg;base64,'))).toBe(true);
  await expect(page.locator('#edit-name')).toHaveValue('Test Avatar');
  await expect(page.locator('#p17-handle')).toHaveValue('test.avatar');
@@ -904,4 +906,93 @@ for(const lang of ['sq','en','it'])test('Profile Opportunities shows only owned 
  await page.reload();
  await page.locator('#navbar [data-val="profile"]').click();await page.locator('#p17-tab-opportunities').click();
  await expect(page.locator('[data-p17-action="open-listing"]')).toHaveCount(0);
+});
+
+test('Profile completion: following opens stored people and communities open from Settings',async({page})=>{
+ await page.addInitScript(()=>{const k='illyrian_demo_v09_state';if(!localStorage.getItem(k))localStorage.setItem(k,JSON.stringify({follows:['arta','leon'],blocked:['leon'],joinedCommunities:['c4']}))});
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="profile"]').click();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await expect(page.locator('[data-p17-action="following"]')).toHaveCount(1);
+ await page.locator('[data-p17-action="following"]').click();await expect(page.locator('[data-p17-action="network-person"]')).toHaveCount(1);
+ await page.locator('[data-p17-action="network-person"]').click();await expect(page.locator('#layer .v11-person-hero')).toContainText('Arta');
+ await page.keyboard.press('Escape');await page.locator('[data-ily-profile-settings]').click();await page.locator('#layer [data-val="communities"]').click();
+ await expect(page.locator('#layer [data-act="v11-community-open"][data-id="c4"]')).toBeVisible();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+});
+
+test('Profile completion: Plans created locally open from Opportunities without copying records',async({page})=>{
+ await page.addInitScript(()=>{const k='illyrian_demo_v17_plans';if(!localStorage.getItem(k))localStorage.setItem(k,JSON.stringify({events:[{id:'personal-plan',title:'My personal plan',date:'2099-05-20',time:'17:00',city:'Tiranë',kind:'Sport',capacity:8,privacy:'private',place:'Park',price:0}],requests:[],messages:[],attendance:[]}))});
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="profile"]').click();await page.locator('#p17-tab-opportunities').click();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+ await expect(page.locator('[data-p17-action="open-plan"]')).toHaveCount(1);await page.locator('[data-p17-action="open-plan"]').click();await expect(page.locator('#ilp-root')).toContainText('My personal plan');
+ await page.keyboard.press('Escape');await expect(page.locator('[data-p17-action="open-plan"]')).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
+ await page.locator('[data-p17-action="open-plan"]').click();await page.locator('#ilp-root [data-ilp="edit"]').click();await page.locator('#ilp-form [name="title"]').fill('Updated personal plan');await page.locator('#ilp-form button[type="submit"]').click();await page.keyboard.press('Escape');await expect(page.locator('[data-p17-action="open-plan"]')).toContainText('Updated personal plan');await expect(page.locator('[data-p17-action="open-plan"]')).toBeFocused();
+});
+
+test('Profile completion: cover preview can cancel without saving and crop saves explicitly',async({page})=>{
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="profile"]').click();
+ const photo=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=200;c.height=100;const x=c.getContext('2d');x.fillStyle='red';x.fillRect(0,0,100,100);x.fillStyle='blue';x.fillRect(100,0,100,100);return c.toDataURL('image/png').split(',')[1]});
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const choose=()=>page.locator('#p17-cover-file').setInputFiles({name:'cover.png',mimeType:'image/png',buffer:Buffer.from(photo,'base64')});
+ await choose();await expect(page.locator('#p17-crop-preview')).toHaveCount(1);expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await page.locator('[data-p17-action="photo-cancel"]').click();expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await choose();await page.locator('#p17-crop-zoom').fill('2');await page.locator('#p17-crop-x').fill('100');await page.locator('[data-p17-action="photo-save"]').click();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.p17Cover?.startsWith('data:image/jpeg;base64,'))).toBe(true);
+});
+
+for(const lang of ['sq','en','it'])test('Profile completion: avatar crop keeps drafts, supports quota retry, Escape and live locale '+lang,async({page})=>{
+ await page.emulateMedia({colorScheme:lang==='sq'?'dark':'light'});await openDemo(page,320,568);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);await page.locator('#navbar [data-val="profile"]').click();await page.locator('.p17-edit').click();await page.locator('#edit-name').fill('Unsaved name');await page.locator('#p17-city').fill('Draft city');
+ const original=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const data=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=300;c.height=100;const x=c.getContext('2d');x.fillStyle='red';x.fillRect(0,0,150,100);x.fillStyle='blue';x.fillRect(150,0,150,100);return c.toDataURL('image/png').split(',')[1]});
+ const choose=()=>page.locator('#v12-photo-file').setInputFiles({name:'avatar.png',mimeType:'image/png',buffer:Buffer.from(data,'base64')});
+ await choose();await expect(page.locator('#p17-crop-preview')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('#edit-name')).toHaveValue('Unsaved name');expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(original);
+ await choose();await page.locator('#p17-crop-x').fill('100');await page.locator('#p17-crop-zoom').fill('2');await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(page.locator('#p17-crop-x')).toHaveValue('100');await expect(page.locator('#p17-crop-zoom')).toHaveValue('2');
+ if(lang==='sq')await page.screenshot({path:'qa-results/visual/profile-crop-dark-320.png',animations:'disabled'});
+ await page.evaluate(()=>{window.cropSet=Storage.prototype.setItem;window.cropFail=true;Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state'&&window.cropFail)throw new DOMException('synthetic quota','QuotaExceededError');return window.cropSet.call(this,k,v)}});
+ await page.locator('[data-p17-action="photo-save"]').click();await expect(page.locator('#p17-crop-preview')).toBeVisible();expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(original);
+ await page.evaluate(()=>window.cropFail=false);await page.locator('[data-p17-action="photo-save"]').click();await expect(page.locator('#edit-name')).toHaveValue('Unsaved name');await expect(page.locator('#p17-city')).toHaveValue('Draft city');
+ await expect.poll(()=>page.locator('.v12-avatar-large').evaluate(img=>{if(!img.complete)return false;const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(img,0,0,1,1);const v=x.getImageData(0,0,1,1).data;return img.naturalWidth===160&&v[2]>200&&v[0]<30})).toBe(true);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.name)).not.toBe('Unsaved name');
+});
+
+test('Profile completion: Highlights retain legacy snapshots, choose covers, order and share an archive through the Story viewer',async({page})=>{
+ await page.addInitScript(()=>{const k='illyrian_demo_v09_state';if(!localStorage.getItem(k))localStorage.setItem(k,JSON.stringify({profile:{name:'My profile',p17Highlights:[{id:'old-collection',title:'Historical',items:[{id:'old-story',caption:'Legacy caption',sample:'cafe'}]}]}}));const m='illyrian_demo_v15_creator';if(!localStorage.getItem(m))localStorage.setItem(m,JSON.stringify({stories:[{id:'archive-a',caption:'First <b>Story</b>',sample:'arta'},{id:'archive-b',caption:'Second Story',sample:'cafe'}],reels:[]}))});
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('[data-p17-action="highlight-view"][data-id="old-collection"]').click();await expect(page.locator('#layer .v16-media')).toBeVisible();await expect(page.locator('.v16-content')).toContainText('Legacy caption');await page.keyboard.press('Escape');
+ await page.locator('.p17-hl-add').click();await page.locator('#p17-title').fill('New collection');await page.locator('#p17-source').selectOption('archive-a');await page.locator('[data-p17-action="highlight-save"]').click();
+ const id=await page.locator('[data-p17-action="highlight-view"]').first().getAttribute('data-id');
+ await page.locator('[data-p17-action="highlight-view"]').first().click();await expect(page.locator('.v16-content')).toContainText('First <b>Story</b>');await expect(page.locator('.v16-content p b')).toHaveCount(0);
+ await page.locator('#layer [data-p17-action="highlight-editor"]').click();await page.locator('#p17-source').selectOption('archive-b');await page.locator('[data-p17-action="highlight-save"]').click();
+ await page.locator('[data-p17-action="highlight-view"]').first().click();await page.locator('#layer [data-p17-action="highlight-editor"]').click();await page.locator('#p17-highlight-cover').selectOption('archive-b');await page.locator('[data-p17-action="highlight-item-up"][data-id="1"]').click();await page.locator('[data-p17-action="highlight-save"]').click();
+ const image=page.locator('[data-p17-action="highlight-view"][data-id="'+id+'"] img');await expect.poll(()=>image.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
+ await page.locator('.p17-hl-add').click();await page.locator('#p17-title').fill('Shared archive');await page.locator('#p17-source').selectOption('archive-a');await page.locator('[data-p17-action="highlight-save"]').click();
+ let data=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile);
+ expect(Object.keys(data.p17StoryArchive).sort()).toEqual(['archive-a','archive-b']);expect(data.p17Highlights.find(h=>h.id===id).items.map(x=>x.ref)).toEqual(['archive-b','archive-a']);expect(data.p17Highlights.find(h=>h.id==='old-collection').items[0]).toMatchObject({id:'old-story',caption:'Legacy caption',sample:'cafe'});
+ await page.locator('[data-p17-action="highlight-view"]').first().click();await page.locator('#layer [data-p17-action="highlight-editor"]').click();await page.locator('[data-p17-action="highlight-move-down"]').click();await page.keyboard.press('Escape');
+ await page.evaluate(()=>localStorage.setItem('illyrian_demo_v15_creator',JSON.stringify({stories:[],reels:[]})));await page.reload();await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('[data-p17-action="highlight-view"][data-id="'+id+'"]').click();await expect(page.locator('.v16-content')).toContainText('Second Story');await expect(page.locator('[data-act="v16-delete"],[data-act="v16-send"]')).toHaveCount(0);
+ await page.locator('[data-act="v16-next"]').click();await expect(page.locator('.v16-content')).toContainText('First <b>Story</b>');await page.keyboard.press('Escape');await expect(page.locator('.p17-profile')).toBeVisible();await expect(page.locator('[data-p17-action="highlight-view"][data-id="'+id+'"]')).toBeFocused();
+});
+
+test('Profile completion: Highlights quota retry creates one archive reference and deletion preserves legacy data',async({page})=>{
+ await page.addInitScript(()=>{const k='illyrian_demo_v09_state';if(!localStorage.getItem(k))localStorage.setItem(k,JSON.stringify({profile:{name:'Owner',p17Highlights:[{id:'legacy',title:'Old',items:[{id:'old',caption:'Original',sample:'cafe'}]}]}}))});
+ await openDemo(page,390,844);await page.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=40;const x=c.getContext('2d');x.fillStyle='blue';x.fillRect(0,0,40,40);localStorage.setItem('illyrian_demo_v15_creator',JSON.stringify({stories:[{id:'photo-archive',caption:'Keep my image',photo:c.toDataURL('image/jpeg'),sample:'arta'}],reels:[]}))});await page.reload();await page.locator('#navbar [data-val="profile"]').click();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));await page.locator('.p17-hl-add').click();await page.locator('#p17-title').fill('Archive');await page.locator('#p17-source').selectOption('photo-archive');
+ await page.evaluate(()=>{window.hlSet=Storage.prototype.setItem;window.hlFail=true;Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state'&&window.hlFail)throw new DOMException('synthetic quota','QuotaExceededError');return window.hlSet.call(this,k,v)}});
+ await page.locator('[data-p17-action="highlight-save"]').click();await expect(page.locator('.toast')).toBeVisible();await expect(page.locator('#p17-title')).toHaveValue('Archive');await expect(page.locator('#p17-source')).toHaveValue('photo-archive');expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await page.evaluate(()=>window.hlFail=false);await page.locator('[data-p17-action="highlight-save"]').click();await expect(page.locator('#p17-title')).toHaveCount(0);let data=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile);expect(data.p17Highlights).toHaveLength(2);expect(Object.keys(data.p17StoryArchive)).toEqual(['photo-archive']);expect(data.p17StoryArchive['photo-archive'].photo).toMatch(/^data:image\/jpeg;base64,/);
+ await page.locator('[data-p17-action="highlight-view"]').first().click();await page.locator('#layer [data-p17-action="highlight-editor"]').click();page.once('dialog',d=>d.accept());await page.locator('[data-p17-action="highlight-delete"]').click();
+ data=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile);expect(data.p17Highlights).toHaveLength(1);expect(data.p17Highlights[0].items).toEqual([{id:'old',caption:'Original',sample:'cafe'}]);expect(data.p17StoryArchive).toEqual({});
+});
+
+test('Profile completion: delayed or stale avatar cannot overwrite a new profile state',async({page})=>{
+ await page.addInitScript(()=>{const k='illyrian_demo_v09_state';if(!localStorage.getItem(k))localStorage.setItem(k,JSON.stringify({profile:{name:'Original owner'}}))});
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="profile"]').click();await page.locator('.p17-edit').click();
+ const raw=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=40;return c.toDataURL('image/png').split(',')[1]});
+ await page.evaluate(()=>{const ImageClass=window.Image,set=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,'src').set;window.Image=function(...args){const img=new ImageClass(...args);Object.defineProperty(img,'src',{set(value){if(!window.releaseCrop&&value.startsWith('blob:'))window.releaseCrop=()=>new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});set.call(img,value)});else set.call(img,value)}});return img}});
+ await page.locator('#v12-photo-file').setInputFiles({name:'old.png',mimeType:'image/png',buffer:Buffer.from(raw,'base64')});await expect.poll(()=>page.evaluate(()=>typeof window.releaseCrop)).toBe('function');await page.keyboard.press('Escape');await page.evaluate(()=>window.releaseCrop());await expect(page.locator('#p17-crop-preview')).toHaveCount(0);
+ await page.locator('.p17-edit').click();await page.locator('#v12-photo-file').setInputFiles({name:'new.png',mimeType:'image/png',buffer:Buffer.from(raw,'base64')});await expect(page.locator('#p17-crop-preview')).toBeVisible();
+ const changed=await page.evaluate(()=>{const k='illyrian_demo_v09_state',data=JSON.parse(localStorage.getItem(k));data.profile.name='Changed in another tab';const raw=JSON.stringify(data);localStorage.setItem(k,raw);return raw});await page.locator('[data-p17-action="photo-save"]').click();await expect(page.locator('#p17-crop-preview')).toBeVisible();expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(changed);
 });

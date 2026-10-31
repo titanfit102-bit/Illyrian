@@ -106,3 +106,13 @@
 
 /* Profile settings replace the header notification control only on Profile. */
 #phone > .head [data-val="notifications"][hidden]{display:none!important}
+/* Personal entry points retain the reference layout and existing modal shell. */
+#phone #screen .p17-stats>button{min-width:0;border:0;background:transparent;padding:0;color:inherit;text-align:center;cursor:pointer;font:inherit}
+#phone #layer .p17-crop canvas{display:block;width:100%;height:auto;max-height:280px;object-fit:contain;background:var(--card2);border-radius:12px;margin:10px auto}
+#phone #layer .p17-crop label{display:block;font-size:12px;margin:9px 0 0}
+#phone #layer .p17-crop input[type=range]{display:block;width:100%;min-height:44px;accent-color:var(--red)}
+#phone #layer .p17-crop p{font-size:12px;color:var(--muted)}
+#phone #layer .p17-manage-list>div{flex-wrap:wrap}
+#phone #layer .p17-manage-list button{min-width:44px;min-height:44px}
+#phone #layer .p17-editor-order{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+#phone #layer .p17-editor-order button{border:1px solid var(--border);border-radius:8px;background:var(--card2);color:var(--ink);padding:8px}

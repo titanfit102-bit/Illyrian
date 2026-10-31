@@ -3273,10 +3273,11 @@ for(const lang of ['sq','en','it']){
   await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);const [input,preview]=await s53Open(page,'avatar');
   await page.locator('#edit-name').fill('Unsaved profile name');const before=await page.locator(preview).getAttribute('src');
   await page.evaluate(()=>{window.s53Set=Storage.prototype.setItem;window.s53Fail=true;Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state'&&window.s53Fail)throw new DOMException('Synthetic quota','QuotaExceededError');return window.s53Set.call(this,k,v)}});
-  await page.locator(input).setInputFiles(await s53Photo(page));
+  await page.locator(input).setInputFiles(await s53Photo(page));await page.locator('[data-p17-action="photo-save"]').click();
   await expect(page.locator('.toast')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('common:storageSaveFailed')));
+  await expect(page.locator('#p17-crop-preview')).toBeVisible();await page.locator('[data-p17-action="photo-cancel"]').click();
   await expect(page.locator(preview)).toHaveAttribute('src',before);await expect(page.locator('#edit-name')).toHaveValue('Unsaved profile name');
-  await page.evaluate(()=>window.s53Fail=false);await page.locator(input).setInputFiles(await s53Photo(page));await expect.poll(()=>s53Blue(page,preview)).toBe(true);
+  await page.evaluate(()=>window.s53Fail=false);await page.locator(input).setInputFiles(await s53Photo(page));await page.locator('[data-p17-action="photo-save"]').click();await expect.poll(()=>s53Blue(page,preview)).toBe(true);
   await expect(page.locator('#edit-name')).toHaveValue('Unsaved profile name');
   const dims=await page.locator(preview).evaluate(img=>[img.naturalWidth,img.naturalHeight]);expect(dims).toEqual([160,160]);
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).profile.name)).not.toBe('Unsaved profile name');

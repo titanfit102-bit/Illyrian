@@ -612,7 +612,7 @@ function v6ChatContent(id){const p=people.find(p=>p.id===id)||people[1];const in
  return drawer('Biseda',`<button class="v6-breadcrumb" data-act="v6-back-inbox">← Mesazhet</button><div class="v6-chat-person">${tinyAvatar(p.ava)}<div style="flex:1"><strong>${esc(p.name)}</strong><small>Profil · Mesazhe lokale</small></div><button class="button tiny soft" data-act="user-profile" data-id="${esc(p.id)}">Profili</button></div><div class="v6-chatbox" id="v6-chat-scroll"><div class="v6-bubble">${esc(initial)}<small>Shembull</small></div>${start?`<button type="button" class="button soft full" data-act="v54-chat-older" data-id="${esc(p.id)}" data-start="${start}">Ngarko mesazhet më të vjetra</button>`:''}${v54ChatRows(msgs.slice(start))}</div>${window.IllyrianGovernance?.reportButton('social','conversation',p.id,p.name)||''}<form id="v6-chat-form" class="v6-message-composer"><input class="field" id="v6-msg-input" maxlength="400" placeholder="Shkruaj një mesazh..." autocomplete="off" aria-label="Shkruaj mesazhin"><button type="submit" class="button" data-v6-chat-id="${esc(p.id)}" aria-label="Dërgo mesazhin">➤</button></form><p class="small">Dërgimi është vetëm simulim. Nuk ka marrëveshje për kontakt real.</p>`)
 }
 function v6AlertsContent(){const arr=v6Notifications();const n=v6UnreadAlerts();return drawer('Njoftimet',`<div class="v6-alert-banner"><span>♧</span><div>Njoftime shembull. Nuk janë push notifications dhe nuk lidhen me aktivitet real.</div></div><div class="v6-section-head"><strong>${n?n+' njoftime të palexuara':'Je në dijeni të gjithçkaje'}</strong><button class="button tiny soft" data-act="v6-read-all" ${n?'':'disabled'}>Shëno të gjitha</button></div>${arr.map(a=>{const unread=!state.v6ReadAlerts.includes(a.id);return `<button class="v6-alert-item ${unread?'new':''}" data-act="v6-open-alert" data-id="${esc(a.id)}"><span class="v6-alert-symbol">${a.symbol}</span><span class="v6-alert-body"><strong>${esc(a.title)}</strong>${esc(a.description)}<span>${esc(a.when)} · ${unread?'Pa lexuar':'Lexuar'}</span></span>${unread?'<span class="v6-unread" aria-label="Pa lexuar">·</span>':'<span style="color:var(--muted)">›</span>'}</button>`}).join('')}`)}
-function v6SettingsHome(){return drawer('Cilësimet',`<div class="v6-alert-banner">⚙ &nbsp; Preferencat e këtij aplikacioni ruhen vetëm në shfletues, kur lejohet.</div>${[['theme','◐','Pamja','Automatik, Light dhe Dark'],['language','🌐','Gjuha','Zgjidh gjuhën e ndërfaqes'],['privacy','♙','Privatësia','Dukshmëria e profilit dhe kontaktet'],['alerts','♧','Njoftimet',"Preferencat e njoftimeve"],['support','? ',esc(coreResetText('supportTitle','Ndihma dhe mbështetja')),esc(coreResetText('supportSub','Raportimet dhe apelimet e mia'))],['about','ⓘ','Rreth ILLYRIAN',"Versioni, burimi dhe kufijtë e aplikacionit"],['v7-entry','✦','Hyrja dhe prezantimi','Rihap ekranet e v0.7']].map(([key,ico,title,sub])=>`<button class="v6-nav-row" data-act="v6-settings-section" data-val="${key}"><span class="v6-nav-icon">${ico}</span><span class="v6-nav-copy"><strong>${title}</strong><span>${sub}</span></span><span>›</span></button>`).join('')}`)}
+function v6SettingsHome(){return drawer('Cilësimet',`<div class="v6-alert-banner">⚙ &nbsp; Preferencat e këtij aplikacioni ruhen vetëm në shfletues, kur lejohet.</div>${[['theme','◐','Pamja','Automatik, Light dhe Dark'],['language','🌐','Gjuha','Zgjidh gjuhën e ndërfaqes'],['privacy','♙','Privatësia','Dukshmëria e profilit dhe kontaktet'],['alerts','♧','Njoftimet',"Preferencat e njoftimeve"],['communities','◉',esc(window.IllyrianI18n?.t('profile:myCommunities')||'Komunitetet e mia'),esc(window.IllyrianI18n?.t('profile:communitiesSub')||'Anëtarësimet e tua')],['support','? ',esc(coreResetText('supportTitle','Ndihma dhe mbështetja')),esc(coreResetText('supportSub','Raportimet dhe apelimet e mia'))],['about','ⓘ','Rreth ILLYRIAN',"Versioni, burimi dhe kufijtë e aplikacionit"],['v7-entry','✦','Hyrja dhe prezantimi','Rihap ekranet e v0.7']].map(([key,ico,title,sub])=>`<button class="v6-nav-row" data-act="v6-settings-section" data-val="${key}"><span class="v6-nav-icon">${ico}</span><span class="v6-nav-copy"><strong>${title}</strong><span>${sub}</span></span><span>›</span></button>`).join('')}`)}
 function v6SubSettings(kind){let title='',inner='';const back='<button class="v6-breadcrumb" data-act="v6-settings-home">← Cilësimet</button>';
  if(kind==='theme'){title='Pamja dhe ngjyrat';inner=`<div class="v6-setting-card"><h3>Zgjidh mënyrën e pamjes</h3><p>Automatik ndjek preferencën Light/Dark të sistemit operativ. Paleta ILLYRIAN mbetet e pandryshuar.</p>${themeOptions()}</div>`}
  if(kind==='language'){title='Gjuha e aplikacionit';const lng=window.IllyrianI18n?.language||'sq';inner=`<div class="v6-setting-card"><h3>Gjuha e aplikacionit</h3><p>Gjuha ruhet në këtë pajisje. Nuk ndryshon llogarinë, mesazhet apo postimet.</p><div class="v6-language-options" role="group" aria-label="Gjuha e aplikacionit">${[['sq','Shqip'],['en','English'],['it','Italiano']].map(([code,label])=>`<button type="button" class="button ${lng===code?'':'soft'}" data-illyrian-language="${code}" aria-pressed="${lng===code}">${label}</button>`).join('')}</div></div>`;}
@@ -1651,7 +1651,7 @@ document.head.appendChild(v15Style);
 (function v16Install(){
   // ILLYRIAN v1.6: Story/Reel viewing upgrades ONLY. All media remains browser-local.
   const memory={origin:null,eventReturn:null,ownClock:null,ownTimer:null,storyClock:null,storyTimer:null,reelCommentIndex:null,reelReturn:null,gesture:null,ignoreTapUntil:0};
-  const ownList=kind=>kind==='story'?v15Stories:kind==='reel'?v15Reels:[];
+  const ownList=kind=>kind==='story'?v15Stories:kind==='reel'?v15Reels:kind==='highlight'?p17HighlightItems(p17FindHighlight(memory.highlightId)):[];
   const ownFind=(kind,id)=>ownList(kind).find(x=>x.id===id);
   const captureOrigin=()=>({tab:state.tab,scroll:Number(document.querySelector('#screen')?.scrollTop||0)});
   const restoreScroll=()=>{if(memory.origin){const el=document.querySelector('#screen');if(el)el.scrollTop=memory.origin.scroll;}};
@@ -1670,13 +1670,14 @@ document.head.appendChild(v15Style);
   const stopOwn=()=>{if(memory.ownTimer)clearTimeout(memory.ownTimer);memory.ownTimer=null;memory.ownClock=null;};
   const stopStory=()=>{if(memory.storyTimer)clearTimeout(memory.storyTimer);memory.storyTimer=null;};
   function viewOwn(kind,id,keepOrigin=false){
-    if(!['story','reel'].includes(kind)||!ownFind(kind,id)){toast('Përmbajtja nuk gjendet më në këtë pajisje.');return false;}
+    if(!['story','reel','highlight'].includes(kind)||!ownFind(kind,id)){toast('Përmbajtja nuk gjendet më në këtë pajisje.');return false;}
     if(!keepOrigin||!memory.origin)memory.origin=captureOrigin();
     memory.eventReturn=null;
     stopOwn();
     state.story=0;state.reelOpen=false;state.modal={type:'v16-view',kind,id};
     render({scroll:true});return true;
   }
+  window.addEventListener('illyrian:highlight:open',ev=>{const h=p17FindHighlight(ev.detail?.id);const items=p17HighlightItems(h);if(!items.length)return;memory.highlightId=h.id;viewOwn('highlight',items[0].id)});
   function closeOwn(){
     stopOwn();
     const origin=memory.origin;
@@ -1694,8 +1695,8 @@ document.head.appendChild(v15Style);
     const idx=list.findIndex(x=>x.id===m.id);
     if(idx<0){closeOwn();return;}
     // A completed personal Story exits; Reels retain their existing circular browsing.
-    if(m.kind==='story'&&delta>0&&idx===list.length-1){closeOwn();return;}
-    if(m.kind==='story'&&delta<0&&idx===0)return;
+    if(m.kind!=='reel'&&delta>0&&idx===list.length-1){closeOwn();return;}
+    if(m.kind!=='reel'&&delta<0&&idx===0)return;
     state.modal={type:'v16-view',kind:m.kind,id:list[(idx+delta+list.length)%list.length].id};
     stopOwn();
     render({scroll:true});
@@ -1703,7 +1704,7 @@ document.head.appendChild(v15Style);
   function progressClock(){
     if(memory.ownTimer){clearTimeout(memory.ownTimer);memory.ownTimer=null;}
     const m=state.modal;
-    if(m?.type!=='v16-view'||m.kind!=='story'){memory.ownClock=null;return;}
+    if(m?.type!=='v16-view'||m.kind==='reel'){memory.ownClock=null;return;}
     const now=Date.now(),duration=8000;
     if(!memory.ownClock||memory.ownClock.id!==m.id){
       memory.ownClock={id:m.id,played:0,started:now,paused:false};
@@ -1715,7 +1716,7 @@ document.head.appendChild(v15Style);
     const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
     if(!clock.paused&&!reduced){
       memory.ownTimer=setTimeout(()=>{
-        if(state.modal?.type!=='v16-view'||state.modal.kind!=='story'||state.modal.id!==clock.id)return;
+        if(state.modal?.type!=='v16-view'||state.modal.kind==='reel'||state.modal.id!==clock.id)return;
         shiftOwn(1);
       },Math.max(1,duration-elapsed));
     }
@@ -1758,7 +1759,7 @@ document.head.appendChild(v15Style);
   function ownViewer(){
     const m=state.modal,item=ownFind(m.kind,m.id);
     if(!item)return `<div class="v16-viewer" role="dialog" aria-modal="true"><p>Përmbajtja nuk gjendet.</p><button data-act="v16-close">Mbyll</button></div>`;
-    const isStory=m.kind==='story',list=ownList(m.kind),idx=list.findIndex(x=>x.id===m.id),event=events.find(x=>x.id===item.plan);
+    const isHighlight=m.kind==='highlight',isStory=m.kind!=='reel',list=ownList(m.kind),idx=list.findIndex(x=>x.id===m.id),event=events.find(x=>x.id===item.plan);
     const key=`${m.kind}:${item.id}`,liked=!!item.liked,bookmarked=savedOwn.includes(key),replies=commentList(key);
     const bars=isStory?`<div class="v16-progress" aria-label="Progresi i Stories">${list.map((x,i)=>`<span class="${i<idx?'v16-done':i===idx?'v16-current':''}"><i></i></span>`).join('')}</div>`:'';
     const label=isStory?"STORY":'REEL ME FOTO · JO VIDEO REALE';
@@ -1771,7 +1772,7 @@ document.head.appendChild(v15Style);
         <p${item.caption?' data-user-content':''}>${esc(item.caption)||'Momenti im në ILLYRIAN'}</p>
         ${window.IllyrianCommerce?.render(item.commerceRefs,item.commerceSponsored)||''}
         ${event?`<button class="v16-plan" data-act="v16-plan" data-id="${esc(event.id)}">${esc(event.emoji)} ${esc(event.title)} →</button>`:''}
-        <div class="v16-actions">
+        ${isHighlight?`<div class="v16-actions"><button data-act="v16-pause">${memory.ownClock?.paused?'▶':'Ⅱ'} <small>${memory.ownClock?.paused?'Vazhdo':'Ndalo'}</small></button><button data-p17-action="highlight-editor" data-id="${esc(memory.highlightId)}">${esc(window.IllyrianI18n?.t('profile:editHighlight')||'Ndrysho koleksionin')}</button></div>`:`<div class="v16-actions">
           <button data-act="v16-like" aria-pressed="${liked}" aria-label="Pëlqe">${liked?'♥':'♡'} <small>Pëlqej</small></button>
           ${isStory?`<button data-act="v16-pause" aria-label="Ndalo ose vazhdo Story">${memory.ownClock?.paused?'▶':'Ⅱ'} <small>${memory.ownClock?.paused?'Vazhdo':'Ndalo'}</small></button>`:
           `<button data-act="v16-save" aria-pressed="${bookmarked}" aria-label="Ruaj">${bookmarked?'▣':'▢'} <small>Ruaj</small></button><button data-act="v16-share" aria-label="Ndaj Reel">➤ <small>Ndaj</small></button>`}
@@ -1779,7 +1780,7 @@ document.head.appendChild(v15Style);
         </div>
         <div class="v16-comments" aria-live="polite">${replies.map(s=>`<div>Ti: ${esc(s)}</div>`).join('')}</div>
         <div class="v16-reply"><input id="v16-comment" type="text" maxlength="100" placeholder="${isStory?"Përgjigju Story":"Komento Reel"}" aria-label="Komenti "/><button data-act="v16-send" aria-label="Dërgo koment">➤</button></div>
- <div class="v16-bottom"><button data-act="v16-prev" aria-label="Përmbajtja e mëparshme">← Më parë</button><button data-act="v16-next" aria-label="Përmbajtja tjetër">Tjetra →</button></div>
+ `}<div class="v16-bottom"><button data-act="v16-prev" aria-label="Përmbajtja e mëparshme">← Më parë</button><button data-act="v16-next" aria-label="Përmbajtja tjetër">Tjetra →</button></div>
  </div>
  </div>`;
   }
@@ -1846,6 +1847,7 @@ document.head.appendChild(v15Style);
     return previousOpenModal(type,id);
   };
   function handle(action,id,val){
+    if(state.modal?.kind==='highlight'&&['v16-like','v16-delete','v16-save','v16-send','v16-plan'].includes(action))return true;
     if(action==='reel-person'||action==='reel-chat'){
       if(!state.reelOpen)return false;
       memory.reelReturn={index:state.reelIndex,tab:state.tab,scroll:Number(document.querySelector('#screen')?.scrollTop||0),focusAction:action};
@@ -1892,7 +1894,7 @@ document.head.appendChild(v15Style);
     if(action==='v16-next'){shiftOwn(1);return true;}
     if(action==='v16-pause'){
       const c=memory.ownClock;
-      if(state.modal?.type!=='v16-view'||state.modal.kind!=='story'||!c)return true;
+      if(state.modal?.type!=='v16-view'||state.modal.kind==='reel'||!c)return true;
       const now=Date.now();
       if(!c.paused)c.played=Math.min(8000,c.played+now-c.started);
       else c.started=now;
@@ -1951,7 +1953,7 @@ document.head.appendChild(v15Style);
     if(e.key==='Escape'&&state.modal?.type==='v16-view'){e.preventDefault();closeOwn();return;}
     if(isInput||e.ctrlKey||e.metaKey||e.altKey)return;
     const owned=state.modal?.type==='v16-view';
-    if(owned){const story=state.modal.kind==='story';if(e.key===(story?'ArrowRight':'ArrowDown')){e.preventDefault();shiftOwn(1);}if(e.key===(story?'ArrowLeft':'ArrowUp')){e.preventDefault();shiftOwn(-1);}return;}
+    if(owned){const story=state.modal.kind!=='reel';if(e.key===(story?'ArrowRight':'ArrowDown')){e.preventDefault();shiftOwn(1);}if(e.key===(story?'ArrowLeft':'ArrowUp')){e.preventDefault();shiftOwn(-1);}return;}
     if(state.story&&['ArrowRight','ArrowLeft'].includes(e.key)){e.preventDefault();document.querySelector(`[data-act="${e.key==='ArrowRight'?'nextStory':'prevStory'}"]`)?.click();}
     if(state.reelOpen&&['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();document.querySelector(`[data-act="${e.key==='ArrowDown'?'reel-next':'reel-prev'}"]`)?.click();}
   });
@@ -1964,7 +1966,7 @@ document.head.appendChild(v15Style);
   document.addEventListener('pointerdown',e=>{
     const target=e.target;
     if(!target?.closest||target.closest('button, a, input, textarea, select, label')){memory.gesture=null;return;}
-    const mode=state.modal?.type==='v16-view'?(state.modal.kind==='story'?'story':'reel'):state.story?'story':state.reelOpen?'reel':null;
+    const mode=state.modal?.type==='v16-view'?(state.modal.kind!=='reel'?'story':'reel'):state.story?'story':state.reelOpen?'reel':null;
     if(!mode){memory.gesture=null;return;}
     if(!target.closest('.v16-viewer, .story-overlay, .v4-reel-overlay')){memory.gesture=null;return;}
     memory.gesture={x:e.clientX,y:e.clientY,mode,at:Date.now()};
@@ -2040,12 +2042,13 @@ document.head.appendChild(v15Style);
   function focusables(root){return [...root.querySelectorAll(focusableSelector)].filter(el=>el.getClientRects().length>0&&!el.closest('[hidden],[inert]'));}
   function signature(el){
     if(!el||el===document.body||el===document.documentElement)return null;
-    return {el,id:el.id||'',act:el.dataset?.act||'',item:el.dataset?.id||'',val:el.dataset?.val||'',inNavbar:!!el.closest('#navbar'),reelRailRegion:el.closest('.v4-reels-list')?'.v4-reels-list':el.closest('.v4-reels-head')?'.v4-reels-head':''};
+    return {el,id:el.id||'',act:el.dataset?.act||'',item:el.dataset?.id||'',p17:el.dataset?.p17Action||'',val:el.dataset?.val||'',inNavbar:!!el.closest('#navbar'),reelRailRegion:el.closest('.v4-reels-list')?'.v4-reels-list':el.closest('.v4-reels-head')?'.v4-reels-head':''};
   }
   function locate(key,root){
     if(!key)return null;
     if(key.el?.isConnected&&root.contains(key.el))return key.el;
     if(key.id){const match=[...root.querySelectorAll('[id]')].find(el=>el.id===key.id);if(match)return match;}
+    if(key.p17){const match=[...root.querySelectorAll("[data-p17-action]")].find(el=>el.dataset.p17Action===key.p17&&(el.dataset.id||'')===key.item);if(match)return match;}
     if(key.act){
       const matches=[...root.querySelectorAll('[data-act]')].filter(el=>el.dataset.act===key.act&&(el.dataset.id||'')===key.item&&(el.dataset.val||'')===key.val);
       // A feed button may share the action with a navbar opener. Restore focus
@@ -2313,14 +2316,21 @@ window.IllyrianCommerceCore=Object.freeze({notice:()=>toast(window.IllyrianI18n?
 window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7Render();});
 
 
+// Resolve archived Highlight references without mutating historical snapshots.
+function p17FindHighlight(id){const rows=state.profile?.p17Highlights;return Array.isArray(rows)?rows.find(h=>h&&h.id===id):null}
+function p17HighlightItems(collection){
+ const archive=state.profile?.p17StoryArchive||{};
+ return (Array.isArray(collection?.items)?collection.items:[]).slice(0,4).map(it=>it&&typeof it==='object'?(it.ref?(Object.hasOwn(archive,it.ref)?archive[it.ref]:null):it):null).filter(it=>it&&typeof it.id==='string').map(it=>({id:it.id,caption:String(it.caption||'').slice(0,180),sample:Object.hasOwn(IMAGES,it.sample)?it.sample:'arta',photo:v15ValidMedia(it.photo)?it.photo:''}));
+}
 // Profile redesign — scoped to Profile; global header and bottom navigation are unchanged.
 (function premiumProfile(){
  const defaults={sq:{posts:"Postime",reels:"Reels",saved:"Të ruajtura",liked:"Të pëlqyera",opportunities:"Mundësi",followers:"Ndjekës",following:"Duke ndjekur",edit:"Ndrysho profilin",settings:"Cilësimet",cover:"Ndrysho kopertinën",highlight:"Shto",newHighlight:"Krijo koleksion",collections:"Koleksionet",city:"Qyteti",handle:"Emri i përdoruesit",interests:"Interesat (ndarë me presje)",save:"Ruaj ndryshimet",title:"Titulli i koleksionit",source:"Story për të shtuar",none:"Pa Story",create:"Ruaj koleksionin",add:"Shto Story",remove:"Hiq",delete:"Fshi koleksionin",next:"Tjetra",previous:"Më parë",emptyPosts:"Ende nuk ke publikuar.",emptyReels:"Ende nuk ke krijuar Reels.",emptySaved:"Nuk ke ruajtur përmbajtje.",emptyLiked:"Nuk ke pëlqyer përmbajtje.",emptyOpportunities:"Nuk ke ende aktivitete të lidhura.",emptyHighlights:"Shto Story në koleksionet e tua.",emptyImage:"Postim pa fotografi",openPost:"Shiko postimin",createPost:"Krijo postim",createReel:"Krijo Reel",createStory:"Krijo Story",profile:"Profili",coverReset:"Rikthe kopertinën",noContent:"Nuk ka ende përmbajtje.",storage:"Ndryshimi nuk u ruajt. Kontrollo hapësirën në pajisje.",badImage:"Përdor JPG, PNG ose WebP deri në 6 MB.",badHandle:"Emri i përdoruesit duhet të ketë 3–24 shkronja, numra, pika ose nënvija.",badTitle:"Vendos titullin e koleksionit (1–24 shenja).",limit:"Koleksioni arriti kufirin e fotografive.",removeConfirm:"Të fshihet ky koleksion nga pajisja?",photoSave:"Fotografia u ruajt.",coverSave:"Kopertina u ruajt.",savedStatus:"Ndryshimet u ruajtën.",notFound:"Përmbajtja nuk gjendet.",choose:"Zgjidh Story",about:"Rreth meje",privateInfo:"Këto seksione shihen vetëm nga pronari.",noFollowers:"Nuk ka ndjekës të regjistruar në këtë pajisje."},
  en:{posts:"Posts",reels:"Reels",saved:"Saved",liked:"Liked",opportunities:"Opportunities",followers:"Followers",following:"Following",edit:"Edit profile",settings:"Settings",cover:"Change cover",highlight:"Add",newHighlight:"New collection",collections:"Highlights",city:"City",handle:"Username",interests:"Interests (comma-separated)",save:"Save changes",title:"Collection title",source:"Story to add",none:"No Story",create:"Save collection",add:"Add Story",remove:"Remove",delete:"Delete collection",next:"Next",previous:"Previous",emptyPosts:"You have not posted yet.",emptyReels:"You have not created Reels yet.",emptySaved:"You have no saved posts.",emptyLiked:"You have no liked posts.",emptyOpportunities:"No linked activities yet.",emptyHighlights:"Add Stories to your collections.",emptyImage:"Text post",openPost:"Open post",createPost:"Create post",createReel:"Create Reel",createStory:"Create Story",profile:"Profile",coverReset:"Reset cover",noContent:"No content yet.",storage:"Couldn't save. Check device storage.",badImage:"Use JPG, PNG or WebP up to 6 MB.",badHandle:"Username must be 3–24 letters, numbers, dots or underscores.",badTitle:"Enter a collection title (1–24 characters).",limit:"Collection photo limit reached.",removeConfirm:"Delete this collection from the device?",photoSave:"Photo saved.",coverSave:"Cover saved.",savedStatus:"Changes saved.",notFound:"Content not found.",choose:"Choose Story",about:"About",privateInfo:"These sections are only visible to the owner.",noFollowers:"No followers recorded on this device."},
  it:{posts:"Post",reels:"Reels",saved:"Salvati",liked:"Mi piace",opportunities:"Opportunità",followers:"Follower",following:"Seguiti",edit:"Modifica profilo",settings:"Impostazioni",cover:"Cambia copertina",highlight:"Aggiungi",newHighlight:"Nuova raccolta",collections:"In evidenza",city:"Città",handle:"Nome utente",interests:"Interessi (separati da virgole)",save:"Salva modifiche",title:"Nome raccolta",source:"Storia da aggiungere",none:"Nessuna storia",create:"Salva raccolta",add:"Aggiungi Story",remove:"Rimuovi",delete:"Elimina raccolta",next:"Avanti",previous:"Indietro",emptyPosts:"Non hai ancora pubblicato.",emptyReels:"Non hai ancora creato Reels.",emptySaved:"Nessun contenuto salvato.",emptyLiked:"Nessun contenuto con Mi piace.",emptyOpportunities:"Nessuna attività collegata.",emptyHighlights:"Aggiungi Story alle tue raccolte.",emptyImage:"Post testuale",openPost:"Apri post",createPost:"Crea post",createReel:"Crea Reel",createStory:"Crea Story",profile:"Profilo",coverReset:"Ripristina copertina",noContent:"Ancora nessun contenuto.",storage:"Salvataggio non riuscito. Verifica lo spazio sul dispositivo.",badImage:"Usa JPG, PNG o WebP fino a 6 MB.",badHandle:"Il nome utente richiede 3–24 lettere, numeri, punti o trattini bassi.",badTitle:"Inserisci un nome per la raccolta (1–24 caratteri).",limit:"Raccolta al limite di foto.",removeConfirm:"Eliminare questa raccolta dal dispositivo?",photoSave:"Foto salvata.",coverSave:"Copertina salvata.",savedStatus:"Modifiche salvate.",notFound:"Contenuto non trovato.",choose:"Scegli Story",about:"Informazioni",privateInfo:"Queste sezioni sono visibili solo al proprietario.",noFollowers:"Nessun follower registrato su questo dispositivo."}};
- let section="posts";let editingCollection=null;let imageEpoch=0;
+ let section="posts";let editingCollection=null;let imageEpoch=0;let cropDraft=null;let highlightDraft=null;
  const lang=()=>{const l=window.IllyrianI18n?.language||"sq";return defaults[l]?l:"sq"};
  const t=k=>defaults[lang()][k]||defaults.sq[k]||k;
+ const ui=k=>window.IllyrianI18n?.t("profile:"+k)||k;
  const clean=(x,max=100)=>String(x??"").slice(0,max);
  const safePhoto=x=>typeof x==="string"&&x.length<=290000&&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(x);
  const owner=()=>state.profile||{};
@@ -2333,6 +2343,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(p[name]||p.plus)+'</svg>';
  };
  const keep=(next,mutatePosts=false)=>{
+  if(!coreMessageFresh())return false;
   const prior=state.profile,priorPosts=state.posts;
   state.profile={...prior,...next};
   if(mutatePosts)state.posts=priorPosts.map(p=>({...p,name:state.profile.name}));
@@ -2350,6 +2361,15 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  ];
  const sampleCard=(item,highlight=false)=>highlight?'<button type="button" class="p17-hl p17-sample-highlight" data-p17-action="sample-view" data-id="'+item.id+'" data-user-content><span class="p17-hl-round"><img src="'+media(item.src)+'" alt="" loading="lazy"/></span><span>'+e(item.text)+'</span></button>':galleryCard({...item,kind:"sample"});
 
+ const following=()=>people.filter(p=>state.follows.includes(p.id)&&!state.blocked.includes(p.id));
+ function networkView(which){
+  if(which==='followers')return drawer(t('followers'),'<p data-i18n-direct>'+esc(ui('noFollowerList'))+'</p>');
+  const rows=following();return drawer(t('following'),rows.length?rows.map(p=>'<button type="button" class="v6-nav-row" data-p17-action="network-person" data-id="'+e(p.id)+'">'+tinyAvatar(p.ava)+'<span data-user-content>'+e(p.name)+'</span><span>›</span></button>').join(''):'<p data-i18n-direct>'+esc(ui('noFollowing'))+'</p>');
+ }
+ function myCommunities(){
+  const rows=communities.filter(c=>state.joinedCommunities.includes(c.id));
+  return drawer(ui('myCommunities'),'<button class="v6-breadcrumb" data-act="v6-settings-home">← '+esc(t('settings'))+'</button>'+(rows.length?rows.map(c=>'<button type="button" class="v6-nav-row" data-act="v11-community-open" data-id="'+e(c.id)+'"><span>'+e(c.emoji)+'</span><span data-user-content>'+e(communityTitle(c))+'</span><span>›</span></button>').join(''):'<p data-i18n-direct>'+esc(ui('noCommunities'))+'</p>'));
+ }
  function galleryData(tab){
   const has=(array,id)=>Array.isArray(array)&&array.some(x=>String(x)===String(id));
   if(tab==="posts"&&!state.posts.length)return ["portrait","coast","summer","cover","coffee","mountains"].map(id=>({...samplePhotos.find(x=>x.id===id),kind:"sample"}));
@@ -2378,21 +2398,23 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   const examples=entries.length||Object.prototype.hasOwnProperty.call(owner(),"p17Highlights")?"":samplePhotos.map(x=>sampleCard(x,true)).join("");
   const add='<button type="button" class="p17-hl p17-hl-add" data-p17-action="highlight-editor" aria-label="'+e(t("newHighlight"))+'"><span class="p17-hl-round p17-hl-plus">'+icon("plus",27)+'</span><span>'+e(t("highlight"))+'</span></button>';
   return '<div class="p17-highlights" aria-label="'+e(t("collections"))+'">'+add+examples+entries.map(h=>{
-    const first=h.items[0];
+    const first=p17HighlightItems(h).find(it=>it.id===h.coverId)||p17HighlightItems(h)[0];
     const src=first?(safePhoto(first.photo)?first.photo:(IMAGES[first.sample]||"")):"";
     return '<button type="button" class="p17-hl" data-user-content data-p17-action="highlight-view" data-id="'+e(h.id)+'"><span class="p17-hl-round">'+(src?'<img src="'+media(src)+'" alt="" loading="lazy"/>':icon("camera",21))+'</span><span>'+e(h.title)+'</span></button>';
   }).join("")+'</div>';
  };
  const referenceIdentity=()=>owner().name==="Profili yt"&&!owner().p17Handle&&!owner().photoData&&!state.posts.length;
- const stats=()=>'<div class="p17-stats"><div><b>'+(referenceIdentity()?62:state.posts.length||samplePhotos.length)+'</b><small>'+t("posts")+'</small></div><div title="'+(referenceIdentity()?"":e(t("noFollowers")))+'"><b>'+(referenceIdentity()?'25.1K':'0')+'</b><small>'+t("followers")+'</small></div><div><b>'+(referenceIdentity()?611:state.follows.length)+'</b><small>'+t("following")+'</small></div></div>';
+ const stats=()=>'<div class="p17-stats"><div><b>'+(referenceIdentity()?62:state.posts.length||samplePhotos.length)+'</b><small>'+t("posts")+'</small></div><button type="button" data-p17-action="followers" title="'+(referenceIdentity()?"":e(t("noFollowers")))+'"><b>'+(referenceIdentity()?'25.1K':'0')+'</b><small>'+t("followers")+'</small></button><button type="button" data-p17-action="following"><b>'+(referenceIdentity()?611:state.follows.length)+'</b><small>'+t("following")+'</small></button></div>';
  const tabs=[["posts","grid"],["reels","play"],["saved","save"],["liked","heart"],["opportunities","activity"]];
  const ownedListings=()=>Object.entries(window.IllyrianShopTargets||{}).filter(([source])=>['shop','shopPlus'].includes(source)).flatMap(([source,adapter])=>{try{return (adapter.listings()||[]).filter(row=>row&&row.owned===true&&typeof row.id==='string'&&typeof row.name==='string').map(row=>({source,row}))}catch{return []}});
  function opportunityCards(){
   const all=events.filter(ev=>Array.isArray(state.requests)&&state.requests.includes(ev.id)||Array.isArray(state.acceptedPlans)&&state.acceptedPlans.includes(ev.id));
+  const plans=window.IllyrianPlansProfile?.list()||[];
+  const planned=plans.length?'<div class="p17-opportunities"><h3>'+esc(ui('myPlans'))+'</h3>'+plans.map(ev=>'<button type="button" data-p17-action="open-plan" data-id="'+e(ev.id)+'"><strong data-user-content>'+e(ev.title)+'</strong><small>'+e(ev.city)+' · '+e(ev.date)+' · '+e(ev.time)+'</small><span>›</span></button>').join('')+'</div>':'';
   const listings=ownedListings();
   const personal=listings.length?'<div class="p17-opportunities"><h3>'+esc(coreResetText('myListings','Biznesi dhe shpalljet e mia'))+'</h3>'+listings.map(({source,row})=>'<button type="button" data-user-content data-p17-action="open-listing" data-source="'+e(source)+'" data-id="'+e(row.id)+'"><strong>'+e(row.name)+'</strong><small>'+e(row.store||'')+' · '+e(row.city||'')+'</small><span>›</span></button>').join('')+'</div>':'';
-  if(!all.length)return personal||'<div class="p17-empty"><div>'+icon("activity",27)+'</div><p>'+e(t("emptyOpportunities"))+'</p></div>';
-  return personal+'<div class="p17-opportunities">'+all.map(ev=>'<button data-p17-action="open-event" data-id="'+e(ev.id)+'"><strong>'+e(ev.title)+'</strong><small>'+e(ev.city)+' · '+e(ev.day)+'</small><span>›</span></button>').join('')+'</div>';
+  if(!all.length)return (personal+planned)||'<div class="p17-empty"><div>'+icon("activity",27)+'</div><p>'+e(t("emptyOpportunities"))+'</p></div>';
+  return personal+planned+'<div class="p17-opportunities">'+all.map(ev=>'<button data-p17-action="open-event" data-id="'+e(ev.id)+'"><strong>'+e(ev.title)+'</strong><small>'+e(ev.city)+' · '+e(ev.day)+'</small><span>›</span></button>').join('')+'</div>';
  }
  function renderProfile(){
   const p=owner(),handle=typeof p.p17Handle==="string"&&/^[a-z0-9._]{3,24}$/.test(p.p17Handle)?p.p17Handle:(referenceIdentity()?"arta.k":"illyrian");
@@ -2406,22 +2428,57 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  const previousProfile=profile;
  profile=function(){return renderProfile()};
  const oldModal=modalContent;
- function highlightEditor(){
-  const existing=hList().find(h=>h.id===editingCollection),items=existing?.items||[];
-  return drawer(existing?e(existing.title):t("newHighlight"),'<div class="p17-editor"><label for="p17-title">'+e(t("title"))+'</label><input class="field" id="p17-title" maxlength="24" value="'+e(existing?.title||"")+'"/><label for="p17-source">'+e(t("source"))+'</label><select id="p17-source" class="field"><option value="">'+e(t("none"))+'</option>'+v15Stories.map(st=>'<option value="'+e(st.id)+'">'+e(st.caption||"Story")+'</option>').join("")+'</select><button type="button" class="p17-modal-primary" data-p17-action="highlight-save">'+e(existing?t("add"):t("create"))+'</button>'+(items.length?'<div class="p17-manage-list">'+items.map((it,i)=>'<div><img src="'+media(safePhoto(it.photo)?it.photo:IMAGES[it.sample]||"")+'" alt=""/><span>'+e(it.caption||"Story")+'</span><button data-p17-action="highlight-remove-item" data-id="'+i+'">'+e(t("remove"))+'</button></div>').join("")+'</div>':'')+(existing?'<button class="p17-danger" data-p17-action="highlight-delete">'+e(t("delete"))+'</button>':'')+'</div>');
+ function rememberHighlight(){
+  if(!highlightDraft)return;const input=document.getElementById('p17-title');if(input)highlightDraft.title=input.value.slice(0,24);
+  const cover=document.getElementById('p17-highlight-cover');if(cover)highlightDraft.coverId=cover.value;
  }
- function highlightViewer(){
-  const h=hList().find(h=>h.id===state.modal?.id);if(!h)return drawer(t("collections"),'<p>'+e(t("notFound"))+'</p>');
-  const items=h.items||[],idx=Math.max(0,Math.min(items.length-1,Number(state.modal?.idx)||0)),it=items[idx];
-  return drawer(h.title, '<div class="p17-viewer">'+(it?'<img class="p17-viewer-photo" src="'+media(safePhoto(it.photo)?it.photo:IMAGES[it.sample]||"")+'" alt="'+e(it.caption||h.title)+'"/><p>'+e(it.caption||"")+'</p><div class="p17-view-arrows"><button data-p17-action="highlight-prev">'+e(t("previous"))+'</button><span>'+(idx+1)+' / '+items.length+'</span><button data-p17-action="highlight-next">'+e(t("next"))+'</button></div>':'<div class="p17-empty"><p>'+e(t("emptyHighlights"))+'</p></div>')+'<button class="p17-modal-primary" data-p17-action="highlight-editor" data-id="'+e(h.id)+'">'+e(t("add"))+'</button></div>');
+ function highlightEditor(){
+  const h=highlightDraft;if(!h)return '';const items=p17HighlightItems(h);
+  return drawer(editingCollection?'<span data-user-content>'+e(h.title)+'</span>':t('newHighlight'),'<div class="p17-editor"><label for="p17-title">'+e(t('title'))+'</label><input class="field" id="p17-title" maxlength="24" value="'+e(h.title)+'"/><label for="p17-source">'+e(t('source'))+'</label><select id="p17-source" class="field"><option value="">'+e(t('none'))+'</option>'+v15Stories.map(st=>'<option value="'+e(st.id)+'">'+e(st.caption||'Story')+'</option>').join('')+'</select>'+(items.length?'<label for="p17-highlight-cover">'+esc(ui('highlightCover'))+'</label><select class="field" id="p17-highlight-cover">'+items.map(it=>'<option value="'+e(it.id)+'" '+(it.id===h.coverId?'selected':'')+'>'+e(it.caption||'Story')+'</option>').join('')+'</select><div class="p17-manage-list">'+items.map((it,i)=>'<div><img src="'+media(it.photo||IMAGES[it.sample])+'" alt=""/><span data-user-content>'+e(it.caption||'Story')+'</span><button type="button" data-p17-action="highlight-item-up" data-id="'+i+'" aria-label="'+esc(ui('moveEarlier'))+'" '+(i===0?'disabled':'')+'>↑</button><button type="button" data-p17-action="highlight-item-down" data-id="'+i+'" aria-label="'+esc(ui('moveLater'))+'" '+(i===items.length-1?'disabled':'')+'>↓</button><button type="button" data-p17-action="highlight-remove-item" data-id="'+i+'">'+e(t('remove'))+'</button></div>').join('')+'</div>':'')+(editingCollection?'<div class="p17-editor-order"><button type="button" data-p17-action="highlight-move-up">'+esc(ui('moveEarlier'))+'</button><button type="button" data-p17-action="highlight-move-down">'+esc(ui('moveLater'))+'</button></div>':'')+'<button type="button" class="p17-modal-primary" data-p17-action="highlight-save">'+e(editingCollection?t('save'):t('create'))+'</button>'+(editingCollection?'<button type="button" class="p17-danger" data-p17-action="highlight-delete">'+e(t('delete'))+'</button>':'')+'</div>');
+ }
+ function photoEditor(){
+  const d=cropDraft;if(!d)return '';queueMicrotask(drawCrop);
+  return drawer(ui(d.kind==='cover'?'cropCover':'cropAvatar'),'<div class="p17-crop"><canvas id="p17-crop-preview" width="'+(d.kind==='cover'?1050:160)+'" height="'+(d.kind==='cover'?390:160)+'" role="img" aria-label="'+esc(ui('photoPreview'))+'"></canvas>'+[['zoom',1,3,.05,ui('zoom')],['x',0,100,1,ui('horizontal')],['y',0,100,1,ui('vertical')]].map(([key,min,max,step,label])=>'<label for="p17-crop-'+key+'">'+esc(label)+'</label><input id="p17-crop-'+key+'" type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+d[key]+'"/>').join('')+'<p data-i18n-direct>'+esc(ui('photoLocal'))+'</p><button type="button" class="p17-modal-primary" data-p17-action="photo-save">'+esc(t('save'))+'</button><button type="button" class="button soft full" data-p17-action="photo-cancel">'+esc(ui('cancel'))+'</button></div>');
+ }
+ function drawCrop(){
+  const c=document.getElementById('p17-crop-preview'),d=cropDraft;if(!c||!d||state.modal?.type!=='p17-photo')return;
+  const ctx=c.getContext('2d');if(!ctx)return;const r=Math.max(c.width/d.image.naturalWidth,c.height/d.image.naturalHeight)*d.zoom,w=d.image.naturalWidth*r,h=d.image.naturalHeight*r;
+  ctx.clearRect(0,0,c.width,c.height);ctx.drawImage(d.image,(c.width-w)*d.x/100,(c.height-h)*d.y/100,w,h);
+ }
+ function restorePhoto(){
+  const d=cropDraft;if(!d)return;cropDraft=null;imageEpoch++;state.modal=d.modal;render({scroll:true});
+  for(const [id,value] of d.fields){const el=document.getElementById(id);if(el)el.value=value}
+  (document.getElementById(d.kind==='avatar'?'edit-name':'p17-cover-file')||document.querySelector('.p17-edit'))?.focus({preventScroll:true});
+ }
+ async function startPhoto(file,kind){
+  const epoch=++imageEpoch,profile=state.profile,modal=state.modal,fields=[...document.querySelectorAll('#layer input[id]:not([type=file]),#layer textarea[id]')].map(el=>[el.id,el.value]);
+  if(!file||!/^image\/(?:jpeg|png|webp)$/.test(file.type)||file.size>6000000){toast(t('badImage'));return}
+  try{
+   const image=await v53Photo(file,'p17-profile',picture=>{if(picture.naturalWidth*picture.naturalHeight>32000000)throw Error('dimensions');return picture},()=>epoch===imageEpoch&&state.profile===profile&&state.modal===modal);
+   if(!image||epoch!==imageEpoch||state.profile!==profile||state.modal!==modal)return;
+   cropDraft={image,kind,profile,modal,fields,x:50,y:50,zoom:1};state.modal={type:'p17-photo'};render({scroll:true});
+  }catch{toast(t('badImage'))}
+ }
+ function savePhoto(){
+  const d=cropDraft;if(!d||d.profile!==state.profile){toast(ui('photoChanged'));return}
+  try{drawCrop();const canvas=document.getElementById('p17-crop-preview');if(!canvas)throw Error('canvas');let photo='';
+   for(const quality of [.82,.67,.46]){photo=canvas.toDataURL('image/jpeg',quality);if(photo.length<=(d.kind==='avatar'?170000:260000))break}
+   if(!safePhoto(photo)||photo.length>(d.kind==='avatar'?170000:260000))throw Error('size');
+   if(!keep(d.kind==='cover'?{p17Cover:photo}:{photoData:photo}))return;
+   restorePhoto();toast(t(d.kind==='cover'?'coverSave':'photoSave'));
+  }catch{toast(t('badImage'))}
  }
  modalContent=function(){
+  if(state.modal?.type==='p17-photo')return photoEditor();
+  if(state.modal?.type==='p17-following')return networkView('following');
+  if(state.modal?.type==='p17-followers')return networkView('followers');
+  if(state.modal?.type==='v6-settings-communities')return myCommunities();
   if(state.modal?.type==="p17-sample"){
    const item=samplePhotos.find(x=>x.id===state.modal.id);
    return drawer(item?item.text:t("notFound"),item?'<div class="p17-viewer"><img class="p17-viewer-photo" src="'+media(item.src)+'" alt="'+e(item.text)+'"/></div>':'');
   }
   if(state.modal?.type==="p17-highlight-editor")return highlightEditor();
-  if(state.modal?.type==="p17-highlight-view")return highlightViewer();
+
   if(state.modal?.type==="p17-post"){
    const item=getPost(state.modal.id);return item?drawer(t("openPost"),'<div class="p17-post-modal">'+post(item)+'</div>'):drawer(t("openPost"),'<p>'+e(t("notFound"))+'</p>');
   }
@@ -2466,31 +2523,39 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   if(v15ValidMedia(story.photo))result.photo=await shrink(story.photo,240,360,45000);
   return result;
  }
+ const archiveFor=collections=>{
+  const ids=new Set(collections.flatMap(h=>h.items.map(it=>it&&typeof it==='object'?it.ref:null).filter(Boolean)));return Object.fromEntries(Object.entries(owner().p17StoryArchive||{}).filter(([id])=>ids.has(id)));
+ };
  async function saveHighlight(){
-  const title=clean(document.getElementById("p17-title")?.value.trim(),24),storyId=document.getElementById("p17-source")?.value||"";
-  if(!title){toast(t("badTitle"));document.getElementById("p17-title")?.focus();return}
-  const existing=hList(),idx=existing.findIndex(h=>h.id===editingCollection);
-  if(idx<0&&existing.length>=6){toast(t("limit"));return}
-  const story=v15Stories.find(st=>st.id===storyId);
-  let photo=null;
-  try{photo=await snapshotStory(story)}catch{toast(t("badImage"));return}
-  const next=existing.map(h=>({...h,items:[...h.items]}));
-  const h=idx>=0?next[idx]:{id:"hl"+Date.now().toString(36),title:"",items:[]};
-  h.title=title;
-  if(photo){
-   if(h.items.length>=4){toast(t("limit"));return}
-   if(!h.items.some(item=>item.id===photo.id))h.items.push(photo);
+  if(!highlightDraft)return;rememberHighlight();const h=highlightDraft,title=clean(h.title.trim(),24),storyId=document.getElementById('p17-source')?.value||'';
+  if(!title){toast(t('badTitle'));document.getElementById('p17-title')?.focus();return}
+  const before=state.profile,existing=hList(),idx=existing.findIndex(x=>x.id===editingCollection);
+  if(idx<0&&existing.length>=6){toast(t('limit'));return}
+  const item=v15Stories.find(st=>st.id===storyId);let archive={...(owner().p17StoryArchive||{})};
+  const items=h.items.map(x=>({...x}));
+  if(item&&!p17HighlightItems(h).some(x=>x.id===item.id)){
+   if(items.length>=4){toast(t('limit'));return}
+   try{if(!Object.hasOwn(archive,item.id))archive={...archive,[item.id]:await snapshotStory(item)};items.push({id:item.id,ref:item.id})}catch{toast(t('badImage'));return}
   }
-  if(idx<0)next.unshift(h);
-  if(!keep({p17Highlights:next}))return;
-  editingCollection=null;close();toast(t("savedStatus"));
+  if(state.profile!==before||state.modal?.type!=='p17-highlight-editor'||highlightDraft!==h){toast(ui('photoChanged'));return}
+  const next=existing.map(x=>({...x,items:[...x.items]})),value={id:h.id,title,items,coverId:h.coverId||items[0]?.id||''};
+  if(idx>=0)next[idx]=value;else next.unshift(value);
+  const refs=new Set(next.flatMap(x=>x.items.map(it=>it&&typeof it==='object'?it.ref:null).filter(Boolean))),pruned=Object.fromEntries(Object.entries(archive).filter(([id])=>refs.has(id)));
+  if(!keep({p17Highlights:next,p17StoryArchive:pruned}))return;
+  editingCollection=null;highlightDraft=null;close();toast(t('savedStatus'));
  }
  function showEditor(id){
-  editingCollection=id||null;
-  state.modal={type:"p17-highlight-editor"};state.story=0;state.reelOpen=false;render({scroll:true});
+  editingCollection=id||null;const h=hList().find(x=>x.id===id);
+  highlightDraft=h?{...h,items:h.items.filter(x=>x&&typeof x==='object'&&typeof x.id==='string').map(x=>({...x}))}:{id:'hl'+Date.now().toString(36),title:'',items:[],coverId:''};
+  state.modal={type:'p17-highlight-editor'};state.story=0;state.reelOpen=false;render({scroll:true});
  }
  function handleAction(action,b){
   const id=b.dataset.id||"";
+  if(action==='following'||action==='followers'){openModal('p17-'+action);return;}
+  if(action==='network-person'){if(following().some(p=>p.id===id))openModal('user-profile',id);return;}
+  if(action==='open-plan'){if(!window.IllyrianPlansProfile?.open(id))toast(t('notFound'));return;}
+  if(action==='photo-cancel'){restorePhoto();return;}
+  if(action==='photo-save'){savePhoto();return;}
   if(action==="sample-view"){if(samplePhotos.some(x=>x.id===id))openModal("p17-sample",id);return;}
   if(action==="open-edit"){openModal("edit");return;}
   if(action==="section"){if(!tabs.some(([tab])=>tab===id))return;section=id;render({scroll:true});document.getElementById("p17-tab-"+id)?.focus({preventScroll:true});return;}
@@ -2503,28 +2568,21 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   }
   if(action==="open-listing"){const source=b.dataset.source;if(!ownedListings().some(x=>x.source===source&&x.row.id===id)||!window.IllyrianShopTargets[source].open('listing',id))toast(t("notFound"));return;}
   if(action==="open-event"){openModal("event",id);return}
-  if(action==="highlight-view"){state.modal={type:"p17-highlight-view",id,idx:0};render({scroll:true});return}
+  if(action==='highlight-view'){const h=hList().find(x=>x.id===id);if(!h)return;if(!p17HighlightItems(h).length){showEditor(id);return}window.dispatchEvent(new CustomEvent('illyrian:highlight:open',{detail:{id}}));return;}
   if(action==="highlight-editor"){showEditor(id);return}
-  if(action==="highlight-prev"||action==="highlight-next"){
-   const h=hList().find(h=>h.id===state.modal?.id);if(!h)return;
-   const count=h.items.length;if(!count)return;
-   state.modal.idx=((Number(state.modal.idx)||0)+(action==="highlight-next"?1:-1)+count)%count;
+  if(action==='highlight-save'){void saveHighlight();return;}
+  if(action==='highlight-remove-item'||action==='highlight-item-up'||action==='highlight-item-down'){
+   if(!highlightDraft)return;rememberHighlight();const i=Number(id),items=highlightDraft.items;if(!Number.isInteger(i)||i<0||i>=items.length)return;
+   if(action==='highlight-remove-item')items.splice(i,1);else{const j=i+(action==='highlight-item-up'?-1:1);if(j<0||j>=items.length)return;[items[i],items[j]]=[items[j],items[i]]}
    render({scroll:true});return;
   }
-  if(action==="highlight-save"){void saveHighlight();return}
-  if(action==="highlight-remove-item"){
-   const next=hList().map(h=>({...h,items:[...h.items]}));
-   const h=next.find(h=>h.id===editingCollection),i=Number(id);
-   if(!h||!Number.isInteger(i)||i<0||i>=h.items.length)return;
-   h.items.splice(i,1);
-   if(keep({p17Highlights:next}))render({scroll:true});
-   return;
+  if(action==='highlight-move-up'||action==='highlight-move-down'){
+   rememberHighlight();const list=hList(),i=list.findIndex(x=>x.id===editingCollection),j=i+(action==='highlight-move-up'?-1:1);if(i<0||j<0||j>=list.length)return;
+   [list[i],list[j]]=[list[j],list[i]];if(keep({p17Highlights:list})){render({scroll:true});toast(t('savedStatus'))}return;
   }
-  if(action==="highlight-delete"){
-   if(!window.confirm(t("removeConfirm")))return;
-   const next=hList().filter(h=>h.id!==editingCollection);
-   if(keep({p17Highlights:next})){editingCollection=null;close()}
-   return;
+  if(action==='highlight-delete'){
+   if(!window.confirm(t('removeConfirm')))return;const next=hList().filter(h=>h.id!==editingCollection);
+   if(keep({p17Highlights:next,p17StoryArchive:archiveFor(next)})){editingCollection=null;highlightDraft=null;close()}return;
   }
   if(action==="cover-reset"){if(keep({p17Cover:""})){close();toast(t("savedStatus"))}return;}
   if(action==="profile-save"){
@@ -2542,32 +2600,40 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   const b=event.target.closest?.("[data-p17-action]");if(!b)return;
   event.preventDefault();event.stopImmediatePropagation();handleAction(b.dataset.p17Action,b);
  },true);
- document.addEventListener("change",async event=>{
-  if(event.target?.id!=="p17-cover-file")return;
-  const file=event.target.files?.[0];if(!file)return;
-  event.target.value="";
-  const epoch=++imageEpoch;const prior=state.profile;
-  try{
-   const photo=await readCover(file);
-   if(epoch!==imageEpoch||state.profile!==prior)return;
-   if(keep({p17Cover:photo})){render({scroll:true});toast(t("coverSave"))}
-  }catch{toast(t("badImage"))}
+ document.addEventListener('change',event=>{
+  if(!['p17-cover-file','v12-photo-file'].includes(event.target?.id))return;
+  event.preventDefault();event.stopImmediatePropagation();const file=event.target.files?.[0];event.target.value='';if(file)void startPhoto(file,event.target.id==='p17-cover-file'?'cover':'avatar');
  },true);
+ document.addEventListener('input',event=>{
+  if(state.modal?.type==='p17-highlight-editor')rememberHighlight();
+  if(state.modal?.type!=='p17-photo'||!cropDraft||!event.target.id.startsWith('p17-crop-'))return;
+  const key=event.target.id.slice(9);if(!['x','y','zoom'].includes(key))return;const n=Number(event.target.value);if(!Number.isFinite(n))return;cropDraft[key]=Math.min(key==='zoom'?3:100,Math.max(key==='zoom'?1:0,n));drawCrop();
+ },true);
+ document.addEventListener('keydown',event=>{if(state.modal?.type==='p17-photo'&&event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();restorePhoto()}},true);
+ document.addEventListener('click',event=>{if(state.modal?.type==='p17-photo'&&event.target.closest('[data-act="close"]')){event.preventDefault();event.stopImmediatePropagation();restorePhoto()}},true);
  document.addEventListener("keydown",event=>{
   const tab=event.target.closest?.(".p17-tabs [role=tab]");if(!tab||!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;
   event.preventDefault();const index=tabs.findIndex(([id])=>id===tab.dataset.id);
   const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:(index+(event.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;
   handleAction("section",{dataset:{id:tabs[next][0]}});
  });
+ const refreshPersonalLinks=()=>{
+  if(state.tab!=='profile'||state.modal||state.story||state.reelOpen)return;
+  const focused=document.activeElement,action=focused?.dataset?.p17Action,id=focused?.dataset?.id;render({scroll:true});
+  if(action)(document.querySelector('[data-p17-action="'+CSS.escape(action)+'"]'+(id?'[data-id="'+CSS.escape(id)+'"]':''))||document.getElementById('p17-tab-opportunities'))?.focus({preventScroll:true});
+ };
+ window.addEventListener('illyrian:plans:closed',refreshPersonalLinks);
+ window.addEventListener('illyrian:shop:closed',refreshPersonalLinks);
  window.addEventListener("illyrian:language-changed",()=>{
   if(state.tab!=="profile"||state.story||state.reelOpen)return;
-  if(state.modal&&state.modal.type!=="edit"&&state.modal.type!=="p17-highlight-editor")return;
-  const focus=document.activeElement,focusId=focus?.id;
+  if(state.modal&&!["edit","p17-highlight-editor","p17-photo","p17-following","p17-followers","v6-settings-communities"].includes(state.modal.type))return;
+  const focus=document.activeElement,focusId=focus?.id,p17Action=focus?.dataset?.p17Action,p17Id=focus?.dataset?.id;
   const fields=[...document.querySelectorAll('#layer input[id]:not([type=file]),#layer textarea[id],#layer select[id]')].map(el=>({id:el.id,value:el.value}));
   const active=focus?.closest?.("[data-ily-identity-badge]"),expanded=active?.getAttribute("aria-expanded")==="true";
   render({scroll:true});
   fields.forEach(({id,value})=>{const field=document.getElementById(id);if(field)field.value=value});
   if(focusId)document.getElementById(focusId)?.focus({preventScroll:true});
+  else if(p17Action)document.querySelector('[data-p17-action="'+CSS.escape(p17Action)+'"]'+(p17Id?'[data-id="'+CSS.escape(p17Id)+'"]':''))?.focus({preventScroll:true});
   if(active){const next=document.querySelector("#screen .p17-person-name [data-ily-identity-badge]");next?.focus({preventScroll:true});if(expanded)next?.click()}
  });
 })();
