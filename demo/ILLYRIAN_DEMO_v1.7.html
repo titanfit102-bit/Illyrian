@@ -2319,7 +2319,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  const e=x=>esc(clean(x,2000));
  const media=x=>{const value=String(x||"");return /^\.\/assets\/profiles\/[a-z0-9_-]+\.(?:webp|svg)$/.test(value)||value.length<1000000&&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value)?esc(value):"";};
  const icon=(name,size=21)=>{
-  const p={grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',play:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 9 6 3-6 3zM3 9h18"/>',save:'<path d="M6 3h12v18l-6-4-6 4z"/>',heart:'<path d="M20.5 8.5c0 4.5-8.5 10-8.5 10S3.5 13 3.5 8.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 8.5 2.5Z"/>',activity:'<path d="M3 20V10M10 20V4M17 20v-7M22 20H2"/>',camera:'<path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2m0-14-2 2M7 17l-2 2"/>',plus:'<path d="M12 3v18M3 12h18"/>',pin:'<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2"/>',check:'<path d="m4 12 5 5L20 6"/>'};
+  const p={plane:'<path d="m3 8 7 3 4-6 3-2 2 1-6 9 5 3-1 2-6-2-4 4-2-1 2-5-5-3z"/>',cup:'<path d="M4 6h12v7a6 6 0 0 1-12 0zM16 7h3a3 3 0 0 1 0 6h-3M3 21h16"/>',users:'<circle cx="9" cy="7" r="3"/><path d="M2 21v-3a7 7 0 0 1 14 0v3M17 4a3 3 0 0 1 0 6M19 14a6 6 0 0 1 3 5v2"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',play:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 9 6 3-6 3zM3 9h18"/>',save:'<path d="M6 3h12v18l-6-4-6 4z"/>',heart:'<path d="M20.5 8.5c0 4.5-8.5 10-8.5 10S3.5 13 3.5 8.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 8.5 2.5Z"/>',activity:'<path d="M3 20V10M10 20V4M17 20v-7M22 20H2"/>',camera:'<path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/>',settings:'<path d="m9 3-1 3-3 1-2 3 2 2-1 3 3 2 2-1 3 2 3-1 1-3 3-1 1-3-2-2 1-3-3-2-2 1z"/><circle cx="11" cy="11" r="3"/>',plus:'<path d="M12 3v18M3 12h18"/>',pin:'<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2"/>',check:'<path d="m4 16-1 5 5-1L21 7l-4-4zM14 6l4 4"/>'};
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(p[name]||p.plus)+'</svg>';
  };
  const keep=(next,mutatePosts=false)=>{
@@ -2331,18 +2331,18 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  };
  const photoOf=record=>v5PhotoSrc(record);
  const samplePhotos=[
-  {id:"coast",src:"./assets/profiles/sample-coast.webp",text:"Ksamil"},
-  {id:"coffee",src:"./assets/profiles/sample-coffee.webp",text:"Kafe"},
-  {id:"mountains",src:"./assets/profiles/sample-mountains.webp",text:"Alpet shqiptare"},
-  {id:"cover",src:"./assets/profiles/sample-cover.webp",text:"Berat"},
-  {id:"portrait",src:"./assets/profiles/owner.webp",text:"Momente"},
-  {id:"summer",src:"./assets/profiles/sample-coast.webp",text:"Verë"}
+  {id:"coast",likes:"32.1K",src:"./assets/profiles/sample-coast.webp",text:"Ksamil"},
+  {id:"coffee",likes:"7.3K",src:"./assets/profiles/sample-coffee.webp",text:"Kafe"},
+  {id:"mountains",likes:"9.7K",src:"./assets/profiles/sample-mountains.webp",text:"Alpet shqiptare"},
+  {id:"cover",likes:"12.6K",src:"./assets/profiles/sample-cover.webp",text:"Berat"},
+  {id:"portrait",likes:"5.4K",src:"./assets/profiles/owner.webp",text:"Momente"},
+  {id:"summer",likes:"4.8K",src:"./assets/profiles/sample-cafe.webp",text:"Verë"}
  ];
  const sampleCard=(item,highlight=false)=>highlight?'<button type="button" class="p17-hl p17-sample-highlight" data-p17-action="sample-view" data-id="'+item.id+'" data-user-content><span class="p17-hl-round"><img src="'+media(item.src)+'" alt="" loading="lazy"/></span><span>'+e(item.text)+'</span></button>':galleryCard({...item,kind:"sample"});
 
  function galleryData(tab){
   const has=(array,id)=>Array.isArray(array)&&array.some(x=>String(x)===String(id));
-  if(tab==="posts"&&!state.posts.length)return samplePhotos.map(x=>({...x,kind:"sample"}));
+  if(tab==="posts"&&!state.posts.length)return ["portrait","coast","summer","cover","coffee","mountains"].map(id=>({...samplePhotos.find(x=>x.id===id),kind:"sample"}));
   if(tab==="posts")return state.posts.map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,sponsored:p.commerceSponsored===true}));
   if(tab==="reels")return v15Reels.map(r=>({kind:"myreel",id:r.id,src:v15Pic(r),text:r.caption}));
   if(tab==="saved"){
@@ -2361,7 +2361,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  const galleryCard=item=>{
   const sponsored=item.sponsored?'<span data-i18n-direct data-ily-commerce-sponsored class="p17-sponsored">'+esc(window.IllyrianI18n?.t('commerce:sponsored')||'Sponsorizuar')+'</span>':'';
   const pict=item.src?'<img src="'+media(item.src)+'" loading="lazy" alt="'+e(item.text||t("openPost"))+'"/>':'<div class="p17-tile-text">'+e(item.text||t("emptyImage"))+'</div>';
-  return '<button type="button" class="p17-tile" data-user-content data-p17-action="open-media" data-id="'+e(item.id)+'" data-kind="'+e(item.kind)+'" aria-label="'+e(item.text||t("openPost"))+'">'+pict+sponsored+(item.kind!=="post"&&item.kind!=="sample"?'<span class="p17-tile-kind">'+icon("play",16)+'</span>':'')+'</button>';
+  return '<button type="button" class="p17-tile" data-user-content data-p17-action="open-media" data-id="'+e(item.id)+'" data-kind="'+e(item.kind)+'" aria-label="'+e(item.text||t("openPost"))+'">'+pict+sponsored+(item.kind==="sample"?'<span class="p17-tile-likes">♥ '+e(item.likes)+'</span>':'')+(item.kind!=="post"&&item.kind!=="sample"?'<span class="p17-tile-kind">'+icon("play",16)+'</span>':'')+'</button>';
  };
  const highlights=()=>{
   const entries=hList();
@@ -2373,7 +2373,8 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
     return '<button type="button" class="p17-hl" data-user-content data-p17-action="highlight-view" data-id="'+e(h.id)+'"><span class="p17-hl-round">'+(src?'<img src="'+media(src)+'" alt="" loading="lazy"/>':icon("camera",21))+'</span><span>'+e(h.title)+'</span></button>';
   }).join("")+'</div>';
  };
- const stats=()=>'<div class="p17-stats"><div><b>'+(state.posts.length||samplePhotos.length)+'</b><small>'+t("posts")+'</small></div><div title="'+e(t("noFollowers"))+'"><b>0</b><small>'+t("followers")+'</small></div><div><b>'+state.follows.length+'</b><small>'+t("following")+'</small></div></div>';
+ const referenceIdentity=()=>owner().name==="Profili yt"&&!owner().p17Handle&&!owner().photoData&&!state.posts.length;
+ const stats=()=>'<div class="p17-stats"><div><b>'+(referenceIdentity()?62:state.posts.length||samplePhotos.length)+'</b><small>'+t("posts")+'</small></div><div title="'+(referenceIdentity()?"":e(t("noFollowers")))+'"><b>'+(referenceIdentity()?'25.1K':'0')+'</b><small>'+t("followers")+'</small></div><div><b>'+(referenceIdentity()?611:state.follows.length)+'</b><small>'+t("following")+'</small></div></div>';
  const tabs=[["posts","grid"],["reels","play"],["saved","save"],["liked","heart"],["opportunities","activity"]];
  function opportunityCards(){
   const all=events.filter(ev=>Array.isArray(state.requests)&&state.requests.includes(ev.id)||Array.isArray(state.acceptedPlans)&&state.acceptedPlans.includes(ev.id));
@@ -2381,13 +2382,13 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   return '<div class="p17-opportunities">'+all.map(ev=>'<button data-p17-action="open-event" data-id="'+e(ev.id)+'"><strong>'+e(ev.title)+'</strong><small>'+e(ev.city)+' · '+e(ev.day)+'</small><span>›</span></button>').join('')+'</div>';
  }
  function renderProfile(){
-  const p=owner(),handle=typeof p.p17Handle==="string"&&/^[a-z0-9._]{3,24}$/.test(p.p17Handle)?p.p17Handle:"illyrian";
-  const city=clean(p.p17City||"Tiranë",45);
-  const tags=Array.isArray(p.p17Tags)?p.p17Tags.filter(x=>typeof x==="string").slice(0,3):["Komunitet","Udhëtime","Ide"];
+  const p=owner(),handle=typeof p.p17Handle==="string"&&/^[a-z0-9._]{3,24}$/.test(p.p17Handle)?p.p17Handle:(referenceIdentity()?"arta.k":"illyrian");
+  const city=clean(p.p17City||(referenceIdentity()?"Prishtinë, Kosovë":"Tiranë"),45);
+  const tags=Array.isArray(p.p17Tags)?p.p17Tags.filter(x=>typeof x==="string").slice(0,3):["Udhëtime","Kafe & Food","Lifestyle"];
   const cards=galleryData(section);
   const names={posts:"emptyPosts",reels:"emptyReels",saved:"emptySaved",liked:"emptyLiked"};
   const gallery=section==="opportunities"?opportunityCards():cards.length?'<div class="p17-gallery">'+cards.map(galleryCard).join("")+'</div>':'<div class="p17-empty"><div>'+icon(section==="reels"?"play":section==="liked"?"heart":"grid",28)+'</div><p>'+e(t(names[section]))+'</p>'+(section==="posts"?'<button data-act="modal" data-val="compose">'+e(t("createPost"))+'</button>':section==="reels"?'<button data-act="v15-open" data-val="reel">'+e(t("createReel"))+'</button>':'')+'</div>';
-  return '<section class="p17-profile" aria-label="'+e(t("profile"))+'"><div class="p17-cover" style="background-image:linear-gradient(180deg,rgba(8,10,20,.03),rgba(8,10,20,.35)),url(&quot;'+media(coverSrc())+'&quot;)"><label class="p17-cover-change">'+icon("camera",17)+'<span>'+e(t("cover"))+'</span><input id="p17-cover-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="'+e(t("cover"))+'"/></label></div><div class="p17-person-top"><div class="p17-avatar-wrap"><img class="p17-avatar" src="'+media(v12AvatarSrc())+'" alt="'+e(t("profile"))+'"/><button type="button" class="p17-avatar-camera" data-p17-action="open-edit" aria-label="'+e(t("edit"))+'">'+icon("camera",19)+'</button></div>'+stats()+'</div><div class="p17-identity"><div class="p17-person-name"><h2 data-user-content>'+e(p.name||"Profili yt")+'</h2>'+identityBadge()+'</div><p class="p17-location"><span data-user-content>@'+e(handle)+'</span><span>·</span>'+icon("pin",15)+'<span data-user-content>'+e(city)+'</span></p><p class="p17-bio" data-user-content>'+e(p.bio||"")+'</p><div class="p17-actions"><button class="p17-edit" data-act="modal" data-val="edit">'+icon("check",18)+' '+e(t("edit"))+'</button><button class="p17-settings" data-act="modal" data-val="settings" aria-label="'+e(t("settings"))+'">'+icon("settings",21)+'</button></div><div class="p17-tags" data-user-content>'+tags.map(s=>'<span>'+e(s)+'</span>').join("")+'</div></div>'+highlights()+'<div class="p17-tabs" role="tablist" aria-label="'+e(t("profile"))+'">'+tabs.map(([id,ic])=>'<button type="button" role="tab" id="p17-tab-'+id+'" aria-controls="p17-gallery-panel" tabindex="'+(section===id?'0':'-1')+'" aria-selected="'+(section===id)+'" class="'+(section===id?"selected":"")+'" data-p17-action="section" data-id="'+id+'">'+icon(ic,22)+'<span>'+e(t(id))+'</span></button>').join("")+'</div><div id="p17-gallery-panel" class="p17-gallery-panel" role="tabpanel" aria-labelledby="p17-tab-'+section+'">'+gallery+'</div></section>';
+  return '<section class="p17-profile" aria-label="'+e(t("profile"))+'"><div class="p17-cover" style="background-image:linear-gradient(180deg,rgba(8,10,20,.03),rgba(8,10,20,.35)),url(&quot;'+media(coverSrc())+'&quot;)"><label class="p17-cover-change">'+icon("camera",17)+'<span>'+e(t("cover"))+'</span><input id="p17-cover-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="'+e(t("cover"))+'"/></label></div><div class="p17-person-top"><div class="p17-avatar-wrap"><img class="p17-avatar" src="'+media(v12AvatarSrc())+'" alt="'+e(t("profile"))+'"/><button type="button" class="p17-avatar-camera" data-p17-action="open-edit" aria-label="'+e(t("edit"))+'">'+icon("camera",19)+'</button></div>'+stats()+'</div><div class="p17-identity"><div class="p17-person-name"><h2 data-user-content>'+e(referenceIdentity()?"Arta K.":p.name||"Profili yt")+'</h2>'+identityBadge()+'</div><p class="p17-location"><span data-user-content>@'+e(handle)+'</span><span>·</span>'+icon("pin",15)+'<span data-user-content>'+e(city)+'</span></p><p class="p17-bio" data-user-content>'+e(referenceIdentity()?"Udhëtime, kafe, njerëz të mirë dhe jetë e bukur":p.bio||"")+'</p><div class="p17-actions"><button class="p17-edit" data-act="modal" data-val="edit">'+icon("check",18)+' '+e(t("edit"))+'</button><button class="p17-settings" data-act="modal" data-val="settings" aria-label="'+e(t("settings"))+'">'+icon("settings",21)+'</button></div><div class="p17-tags" data-user-content>'+tags.map((s,i)=>'<span>'+icon(['plane','cup','users'][i],15)+e(s)+'</span>').join("")+'</div></div>'+highlights()+'<div class="p17-tabs" role="tablist" aria-label="'+e(t("profile"))+'">'+tabs.map(([id,ic])=>'<button type="button" role="tab" id="p17-tab-'+id+'" aria-controls="p17-gallery-panel" tabindex="'+(section===id?'0':'-1')+'" aria-selected="'+(section===id)+'" class="'+(section===id?"selected":"")+'" data-p17-action="section" data-id="'+id+'">'+icon(ic,22)+'<span>'+e(t(id))+'</span></button>').join("")+'</div><div id="p17-gallery-panel" class="p17-gallery-panel" role="tabpanel" aria-labelledby="p17-tab-'+section+'">'+gallery+'</div></section>';
  }
  const previousProfile=profile;
  profile=function(){return renderProfile()};

@@ -1662,7 +1662,7 @@ test('i18n audit F10 root and demo mirror files stay byte-identical',()=>{
 test('audit F04 failed feed save preserves draft and never reports success',async({page})=>{
  await ready(page);
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
- await page.locator('#screen .p17-empty [data-act="modal"][data-val="compose"]').click();
+ await page.locator('#phone > .head [data-act="modal"][data-val="compose"]').click();
  const field=page.locator('#layer #v5-text');
  const draft='Mbyll personal post survives rejection';
  await field.fill(draft);

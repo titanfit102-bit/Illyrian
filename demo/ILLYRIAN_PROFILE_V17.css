@@ -1,45 +1,45 @@
 
 /* ILLYRIAN profile v1.7 — isolated from the global header and bottom navigation */
-#phone #screen .p17-profile{--p17-accent:#eb174c;min-width:0;min-height:100%;background:var(--bg);color:var(--ink);overflow:hidden}
+#phone #screen .p17-profile{--p17-accent:#f50050;container-type:inline-size;min-width:0;min-height:100%;background:var(--bg);color:var(--ink);overflow:hidden}
 #phone #screen .p17-profile button{font:inherit;cursor:pointer;touch-action:manipulation}
-#phone #screen .p17-cover{height:clamp(142px,42vw,190px);position:relative;background:#17121a center/cover no-repeat;overflow:hidden}
+#phone #screen .p17-cover{height:clamp(110px,30.3cqw,160px);position:relative;background:#17121a center/cover no-repeat;overflow:hidden}
 #phone #screen .p17-cover:after{content:"";position:absolute;inset:50% 0 0;pointer-events:none;background:linear-gradient(transparent,rgba(10,7,16,.36))}
-#phone #screen .p17-cover-change{display:flex;position:absolute;right:12px;top:12px;z-index:1;gap:7px;align-items:center;min-height:44px;padding:8px 11px;border:1px solid rgba(255,255,255,.25);border-radius:11px;background:rgba(13,12,19,.74);backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:700;cursor:pointer}
+#phone #screen .p17-cover-change{display:flex;position:absolute;right:14px;top:7px;z-index:1;gap:7px;align-items:center;min-height:44px;padding:6px 9px;border:1px solid rgba(255,255,255,.25);border-radius:11px;background:rgba(13,12,19,.74);backdrop-filter:blur(8px);color:#fff;font-size:10px;font-weight:700;cursor:pointer}
 #phone #screen .p17-cover-change:hover{background:rgba(16,13,22,.9)}
 #phone #screen .p17-cover-change input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 #phone #screen .p17-cover-change:focus-within{outline:2px solid #ff6b89;outline-offset:2px}
-#phone #screen .p17-person-top{display:grid;grid-template-columns:112px minmax(0,1fr);align-items:end;gap:8px;margin:-38px 15px 0;position:relative;z-index:2;min-height:116px}
-#phone #screen .p17-avatar-wrap{position:relative;width:100px;height:100px}
-#phone #screen .p17-avatar{display:block;width:100px;height:100px;object-fit:cover;object-position:center 30%;border:4px solid var(--bg);border-radius:50%;box-shadow:0 0 0 3px var(--p17-accent);background:var(--card2)}
+#phone #screen .p17-person-top{display:grid;grid-template-columns:108px minmax(0,1fr);align-items:end;gap:8px;margin:-56px 15px 0;position:relative;z-index:2;min-height:96px}
+#phone #screen .p17-avatar-wrap{position:relative;width:96px;height:96px}
+#phone #screen .p17-avatar{display:block;width:96px;height:96px;object-fit:cover;object-position:center 30%;border:3px solid var(--bg);border-radius:50%;box-shadow:0 0 0 3px var(--p17-accent);background:var(--card2)}
 #phone #screen .p17-avatar-camera{position:absolute;bottom:0;right:-4px;display:grid;place-items:center;width:38px;height:38px;border:2px solid var(--bg);border-radius:50%;background:#161722;color:#fff;box-shadow:0 4px 14px #0005}
-#phone #screen .p17-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:2px;padding:0 0 13px;min-width:0;text-align:center}
+#phone #screen .p17-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:2px;padding:0 0 5px;min-width:0;text-align:center}
 #phone #screen .p17-stats>div{min-width:0}
-#phone #screen .p17-stats b{display:block;font-size:clamp(15px,4.1vw,20px);font-weight:820;letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums}
-#phone #screen .p17-stats small{display:block;margin-top:5px;font-size:clamp(9px,2.8vw,11px);color:var(--muted);white-space:nowrap}
-#phone #screen .p17-identity{padding:12px 16px 0}
-#phone #screen .p17-person-name{display:flex;align-items:center;gap:7px;min-width:0}
-#phone #screen .p17-person-name h2{font-size:clamp(22px,6vw,27px);font-weight:850;line-height:1.17;letter-spacing:-.05em;overflow-wrap:anywhere;margin:0}
-#phone #screen .p17-location{display:flex;gap:6px;align-items:center;margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.4;min-width:0;flex-wrap:wrap}
-#phone #screen .p17-bio{font-size:13px;line-height:1.52;margin:10px 0 14px;overflow-wrap:anywhere;white-space:pre-line}
-#phone #screen .p17-actions{display:flex;gap:9px;align-items:center;margin:0 0 12px}
-#phone #screen .p17-edit,#phone #screen .p17-settings{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--ink);font-size:12px;font-weight:750;padding:8px 12px}
+#phone #screen .p17-stats b{display:block;font-size:clamp(13px,3.6cqw,17px);font-weight:820;letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums}
+#phone #screen .p17-stats small{display:block;margin-top:5px;font-size:clamp(9px,2.5cqw,11px);color:var(--muted);white-space:nowrap}
+#phone #screen .p17-identity{padding:5px 15px 0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:6px;grid-template-areas:"name actions" "location location" "bio bio" "tags tags";align-items:center}
+#phone #screen .p17-person-name{grid-area:name;display:flex;align-items:center;gap:0;min-width:0}
+#phone #screen .p17-person-name h2{font-size:clamp(18px,5cqw,24px);font-weight:850;line-height:1.17;letter-spacing:-.05em;overflow-wrap:anywhere;margin:0}
+#phone #screen .p17-location{grid-area:location;display:flex;gap:6px;align-items:center;margin:0;color:var(--muted);font-size:10.5px;line-height:1.4;min-width:0;flex-wrap:wrap}
+#phone #screen .p17-bio{grid-area:bio;font-size:11.5px;line-height:1.45;margin:6px 0 8px;overflow-wrap:anywhere;white-space:pre-line}
+#phone #screen .p17-actions{grid-area:actions;display:flex;gap:7px;align-items:center;margin:0}
+#phone #screen .p17-edit,#phone #screen .p17-settings{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--ink);font-size:11px;font-weight:750;padding:6px 9px}
 #phone #screen .p17-edit{flex:1}
 #phone #screen .p17-settings{flex:none;width:44px;padding:0}
-#phone #screen .p17-tags{display:flex;gap:7px;flex-wrap:wrap;min-height:1px}
-#phone #screen .p17-tags span{display:inline-flex;align-items:center;max-width:100%;border:1px solid var(--border);border-radius:999px;background:var(--card2);color:var(--muted);font-size:11px;padding:8px 11px;overflow-wrap:anywhere;line-height:1.2}
-#phone #screen .p17-highlights{display:flex;gap:12px;align-items:start;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;padding:20px 15px 18px}
+#phone #screen .p17-tags{grid-area:tags;display:flex;gap:8px;flex-wrap:wrap;min-height:1px}
+#phone #screen .p17-tags span{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:1;max-width:100%;border:1px solid var(--border);border-radius:999px;background:var(--card2);color:var(--ink);font-size:10.5px;padding:7px 9px;overflow-wrap:anywhere;line-height:1.2}
+#phone #screen .p17-highlights{display:flex;gap:8px;align-items:start;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;padding:10px 14px 13px}
 #phone #screen .p17-highlights::-webkit-scrollbar{display:none}
-#phone #screen .p17-hl{flex:0 0 67px;width:67px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;color:var(--ink);padding:0;scroll-snap-align:start}
-#phone #screen .p17-hl-round{height:61px;width:61px;flex:none;display:grid;place-items:center;padding:3px;border:2px solid #9898a6;border-radius:50%;background:var(--card2);overflow:hidden}
+#phone #screen .p17-hl{flex:0 0 clamp(40px,calc((100cqw - 76px)/7),60px);width:clamp(40px,calc((100cqw - 76px)/7),60px);min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;color:var(--ink);padding:0;scroll-snap-align:start}
+#phone #screen .p17-hl-round{aspect-ratio:1;width:100%;flex:none;display:grid;place-items:center;padding:2px;border:1.5px solid #9898a6;border-radius:50%;background:var(--card2);overflow:hidden}
 #phone #screen .p17-hl-round img{height:100%;width:100%;object-fit:cover;border-radius:50%}
 #phone #screen .p17-hl-plus{color:var(--ink);border-color:var(--border);background:var(--card)}
 #phone #screen .p17-hl>span:last-child{width:100%;font-size:10px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #phone #screen .p17-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;position:sticky;top:0;z-index:3;border-bottom:1px solid var(--border);background:var(--bg)}
-#phone #screen .p17-tabs button{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;min-width:0;min-height:57px;padding:7px 1px 9px;border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:700}
+#phone #screen .p17-tabs button{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;min-width:0;min-height:50px;padding:5px 1px 7px;border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:700}
 #phone #screen .p17-tabs button.selected{color:var(--ink)}
 #phone #screen .p17-tabs button.selected:after{content:"";height:2px;position:absolute;bottom:0;left:11%;right:11%;border-radius:9px;background:var(--p17-accent)}
-#phone #screen .p17-gallery-panel{min-height:200px;padding:2px 3px 18px}
-#phone #screen .p17-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+#phone #screen .p17-gallery-panel{min-height:200px;padding:3px 6px 18px}
+#phone #screen .p17-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
 #phone #screen .p17-tile{position:relative;display:block;overflow:hidden;min-width:0;aspect-ratio:1/1;border:0;padding:0;background:var(--card2);border-radius:4px;color:var(--ink)}
 #phone #screen .p17-tile>img{display:block;width:100%;height:100%;object-fit:cover}
 #phone #screen .p17-tile-text{display:flex;align-items:center;justify-content:center;overflow:hidden;width:100%;height:100%;padding:9px;background:linear-gradient(145deg,var(--card),var(--card2));font-size:10px;line-height:1.5;text-align:center;overflow-wrap:anywhere}
@@ -71,16 +71,16 @@
 #phone #layer .p17-view-arrows button{min-height:42px;min-width:85px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--ink)}
 #phone #layer .p17-view-arrows span{font-size:11px;color:var(--muted)}
 #phone #layer .p17-post-modal{padding:12px 0}
-#phone.dark #screen .p17-profile{--p17-accent:#fb1c58}
+#phone.dark #screen .p17-profile{--p17-accent:#ff0050;--bg:#07090b;--card:#11131c;--card2:#10121a;--border:#282b38;--ink:#f5f5f8;--muted:#b5b4c4}
 #phone.dark #screen .p17-cover-change{border-color:#ffffff54}
 #phone.dark #screen .p17-avatar-camera{background:#171823}
 @media(max-width:370px){
- #phone #screen .p17-person-top{grid-template-columns:96px minmax(0,1fr);margin-left:12px;margin-right:12px}
- #phone #screen .p17-avatar-wrap,#phone #screen .p17-avatar{width:94px;height:94px}
- #phone #screen .p17-stats{padding-bottom:10px}
+ #phone #screen .p17-person-top{grid-template-columns:100px minmax(0,1fr);margin-left:12px;margin-right:12px}
+ #phone #screen .p17-avatar-wrap,#phone #screen .p17-avatar{width:90px;height:90px}
+ #phone #screen .p17-stats{padding-bottom:5px}
  #phone #screen .p17-stats small{font-size:9px}
  #phone #screen .p17-tabs button{font-size:10px}
- #phone #screen .p17-highlights{gap:10px}
+ #phone #screen .p17-highlights{gap:8px}
 }
 @media(prefers-reduced-motion:reduce){#phone #screen .p17-profile *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
@@ -90,3 +90,16 @@
 #phone #screen .p17-profile button:focus-visible{outline:2px solid var(--p17-accent);outline-offset:-2px}
 #phone #screen .p17-tabs button>span{max-width:100%;overflow-wrap:anywhere;line-height:1.25;text-align:center}
 #phone #screen .p17-sponsored{position:absolute;bottom:0;left:0;right:0;padding:5px 3px;background:#000c;color:#fff;font-size:10px;line-height:1.3;overflow-wrap:anywhere}
+
+#phone #screen .p17-tile-likes{position:absolute;left:5px;bottom:5px;display:flex;align-items:center;gap:4px;color:white;font-size:11px;text-shadow:0 1px 4px #000}
+#phone #screen .p17-tile:has(.p17-tile-likes):after{content:"";position:absolute;inset:65% 0 0;background:linear-gradient(transparent,#0007);pointer-events:none}
+#phone #screen .p17-tile-likes{z-index:1}
+@media(max-width:370px){#phone #screen .p17-edit{font-size:10px;padding:5px 7px;gap:4px}#phone #screen .p17-identity{padding-left:12px;padding-right:12px}}
+/* Compact visible surfaces retain a 44px touch target. */
+#phone #screen .p17-cover-change{background:transparent;border-color:transparent;backdrop-filter:none;isolation:isolate}
+#phone #screen .p17-cover-change:before{content:"";position:absolute;inset:9px 0;border:1px solid #ffffff40;border-radius:8px;background:#0d0c13c9;z-index:-1}
+#phone #screen .p17-edit,#phone #screen .p17-settings{position:relative;isolation:isolate;background:transparent;border-color:transparent}
+#phone #screen .p17-edit:before,#phone #screen .p17-settings:before{content:"";position:absolute;inset:7px 0;border:1px solid var(--border);border-radius:8px;background:var(--card);z-index:-1}
+#phone #screen .p17-settings:before{left:6px;right:6px}
+#phone #screen .p17-avatar-camera{isolation:isolate;background:transparent;border:0;box-shadow:none;right:-8px;bottom:-6px}
+#phone #screen .p17-avatar-camera:before{content:"";position:absolute;inset:6px;border-radius:50%;background:#141720;border:1.5px solid #b6bac8;box-shadow:0 0 0 2px var(--bg);z-index:-1}

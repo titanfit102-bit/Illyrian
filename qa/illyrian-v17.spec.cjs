@@ -736,7 +736,7 @@ for(const [width,height] of [[320,568],[360,780],[390,844],[430,932],[844,390],[
  for(const lang of ['sq','en','it']){
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await expect(profile).toBeVisible();
-  expect(await profile.locator('.p17-cover').evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(142);
+  expect(await profile.locator('.p17-cover').evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(110);
   for(const selector of ['.p17-cover-change','.p17-avatar-camera','.p17-edit','.p17-settings','.p17-person-name [data-ily-identity-badge]']){
    const r=await profile.locator(selector).boundingBox();expect(r.width).toBeGreaterThanOrEqual(44);expect(r.height).toBeGreaterThanOrEqual(44);
   }
@@ -802,7 +802,7 @@ test('Profile photo examples fill an empty profile without writing personal data
   for(const image of await page.locator('.p17-gallery img,.p17-highlights img').all())await expect.poll(()=>image.evaluate(x=>x.complete&&x.naturalWidth>0)).toBe(true);
  }
  await page.locator('.p17-gallery .p17-tile').first().click();
- await expect(page.locator('#layer .p17-viewer-photo')).toHaveAttribute('src',/sample-coast.webp/);
+ await expect(page.locator('#layer .p17-viewer-photo')).toHaveAttribute('src',/owner.webp/);
  await page.keyboard.press('Escape');
  await page.locator('.p17-sample-highlight[data-id="coffee"]').click();
  await expect(page.locator('#layer .p17-viewer-photo')).toHaveAttribute('src',/sample-coffee.webp/);
@@ -810,4 +810,18 @@ test('Profile photo examples fill an empty profile without writing personal data
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('.p17-profile').screenshot({path:'qa-results/visual/profile-filled-photos.png'});
+});
+
+for(const mode of ['light','dark'])test('Reference profile positions actions beside identity and renders compact photo layout '+mode,async({page})=>{
+ await page.emulateMedia({colorScheme:mode,reducedMotion:'reduce'});await openDemo(page,390,844);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-val="profile"]').click();
+ await expect(page.locator('.p17-person-name')).toContainText('Arta K.');
+ const name=await page.locator('.p17-person-name').boundingBox(),actions=await page.locator('.p17-actions').boundingBox();
+ expect(Math.abs(name.y-actions.y)).toBeLessThan(5);expect(actions.x).toBeGreaterThan(name.x+name.width-1);
+ const cover=await page.locator('.p17-cover').boundingBox();expect(cover.height).toBeLessThan(125);
+ await expect(page.locator('.p17-gallery')).toHaveCSS('grid-template-columns',/px.*px.*px/);
+ if(mode==='dark')await expect(page.locator('.p17-profile')).toHaveCSS('background-color','rgb(7, 9, 11)');
+ await page.locator('#screen').evaluate(x=>x.scrollTop=0);
+ await page.screenshot({path:'qa-results/visual/profile-reference-'+mode+'.png',animations:'disabled'});
 });

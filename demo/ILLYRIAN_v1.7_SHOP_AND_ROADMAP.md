@@ -1,6 +1,6 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
-**Plotësim vizual i miratuar, 31 tetor 2026:** zëvendëso cover-in SVG me fotografi panoramike; paraqit 6 shembuj fotografie dhe 6 Highlights në profilin bosh, me hapje të fotografive. Përmbajtja personale ka përparësi. Implementuar/testuar lokalisht; provat CI dhe kufijtë te CURRENT_STATE/blueprint. Nuk mbyll fazat 2–5.
+**Faza1 — përputhja me referencën, 31 tetor 2026:** cover/avatar/statistika në raportet e fotografisë; emri dhe veprimet bashkë; bio/chips/Highlights/skeda kompakte; galeri3 kolona me foto të qarta dhe metadata ilustruese; Light/Dark. Mbaj target44px me sipërfaqe vizuale më të vogla. Profili i papersonalizuar shfaq personazhin Arta; mos mbishkruaj të dhëna personale ose navbar. Fazat2–5 ruajnë boshllëqet e dokumentuara. Provat te CURRENT_STATE.
 
 **Profili premium — audit i pesë fazave, 31 tetor 2026:** burimi fillestar `490faf940d2a120cc66c2a4c4ca2c38717d70c12`, Draft PR #1. Commit `8c2dc18` shtoi bashkë pjesë të fazave 1–4; prania e kodit nuk mbyll fazat. Browser run 41147981062 u anulua pas dështimeve të regjistruara, Security 41147981129 SUCCESS. Kjo vijimësi autorizon auditin dhe stabilizimin e fazës së nisur, jo vazhdimin automatik të gjithë programit. Pa ndryshim header/navbar, backend ose Production.
 
