@@ -803,6 +803,8 @@ window.ILLYRIAN_LOCALES.en={
     "return": "Cancel"
   },
   "profile": {
+    "coverResetPending": "The cover will reset when you press Save changes.",
+    "highlightOrderPending": "The order applies when you press Save.",
     "noFollowerList": "No follower list is recorded on this device. The initial character’s counters are illustrative.",
     "noFollowing": "You are not following anyone yet.",
     "myCommunities": "My communities",

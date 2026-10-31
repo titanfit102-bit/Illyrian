@@ -803,6 +803,8 @@ window.ILLYRIAN_LOCALES.it={
     "return": "Annulla"
   },
   "profile": {
+    "coverResetPending": "La copertina verrà ripristinata premendo Salva modifiche.",
+    "highlightOrderPending": "L’ordine viene applicato premendo Salva.",
     "noFollowerList": "Nessun elenco di follower è registrato su questo dispositivo. I contatori del personaggio iniziale sono illustrativi.",
     "noFollowing": "Non segui ancora nessuno.",
     "myCommunities": "Le mie comunità",

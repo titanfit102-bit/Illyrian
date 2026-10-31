@@ -803,6 +803,8 @@ window.ILLYRIAN_LOCALES.sq={
     "return": "Anulo"
   },
   "profile": {
+    "coverResetPending": "Kopertina do të rikthehet kur të shtypësh Ruaj ndryshimet.",
+    "highlightOrderPending": "Renditja zbatohet kur shtyp Ruaj.",
     "noFollowerList": "Nuk ka listë ndjekësish të regjistruar në këtë pajisje. Numrat e personazhit fillestar janë ilustrues.",
     "noFollowing": "Nuk ndjek ende persona.",
     "myCommunities": "Komunitetet e mia",

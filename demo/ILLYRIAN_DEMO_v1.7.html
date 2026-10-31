@@ -1648,6 +1648,7 @@ document.head.appendChild(v15Style);
 
 
 // ---- ILLYRIAN v1.6: isolated upgrade (preserves v1.5 sources and storage keys) ----
+let v16SavedOwnReels=()=>[];
 (function v16Install(){
   // ILLYRIAN v1.6: Story/Reel viewing upgrades ONLY. All media remains browser-local.
   const memory={origin:null,eventReturn:null,ownClock:null,ownTimer:null,storyClock:null,storyTimer:null,reelCommentIndex:null,reelReturn:null,gesture:null,ignoreTapUntil:0};
@@ -1661,6 +1662,7 @@ document.head.appendChild(v15Style);
   let savedOwn=safeRead(savedKey,[]);
   if(!Array.isArray(savedOwn))savedOwn=[];
   savedOwn=savedOwn.filter(x=>typeof x==='string').slice(0,30);
+  v16SavedOwnReels=()=>v15Reels.filter(r=>savedOwn.includes('reel:'+r.id));
   let comments=safeRead(commentKey,{});
   if(Array.isArray(comments))comments={};
   const saveValue=(key,val)=>{try{localStorage.setItem(key,JSON.stringify(val));return true;}catch{toast('Nuk ka hapësirë për këtë ndryshim.');return false;}};
@@ -2327,7 +2329,7 @@ function p17HighlightItems(collection){
  const defaults={sq:{posts:"Postime",reels:"Reels",saved:"Të ruajtura",liked:"Të pëlqyera",opportunities:"Mundësi",followers:"Ndjekës",following:"Duke ndjekur",edit:"Ndrysho profilin",settings:"Cilësimet",cover:"Ndrysho kopertinën",highlight:"Shto",newHighlight:"Krijo koleksion",collections:"Koleksionet",city:"Qyteti",handle:"Emri i përdoruesit",interests:"Interesat (ndarë me presje)",save:"Ruaj ndryshimet",title:"Titulli i koleksionit",source:"Story për të shtuar",none:"Pa Story",create:"Ruaj koleksionin",add:"Shto Story",remove:"Hiq",delete:"Fshi koleksionin",next:"Tjetra",previous:"Më parë",emptyPosts:"Ende nuk ke publikuar.",emptyReels:"Ende nuk ke krijuar Reels.",emptySaved:"Nuk ke ruajtur përmbajtje.",emptyLiked:"Nuk ke pëlqyer përmbajtje.",emptyOpportunities:"Nuk ke ende aktivitete të lidhura.",emptyHighlights:"Shto Story në koleksionet e tua.",emptyImage:"Postim pa fotografi",openPost:"Shiko postimin",createPost:"Krijo postim",createReel:"Krijo Reel",createStory:"Krijo Story",profile:"Profili",coverReset:"Rikthe kopertinën",noContent:"Nuk ka ende përmbajtje.",storage:"Ndryshimi nuk u ruajt. Kontrollo hapësirën në pajisje.",badImage:"Përdor JPG, PNG ose WebP deri në 6 MB.",badHandle:"Emri i përdoruesit duhet të ketë 3–24 shkronja, numra, pika ose nënvija.",badTitle:"Vendos titullin e koleksionit (1–24 shenja).",limit:"Koleksioni arriti kufirin e fotografive.",removeConfirm:"Të fshihet ky koleksion nga pajisja?",photoSave:"Fotografia u ruajt.",coverSave:"Kopertina u ruajt.",savedStatus:"Ndryshimet u ruajtën.",notFound:"Përmbajtja nuk gjendet.",choose:"Zgjidh Story",about:"Rreth meje",privateInfo:"Këto seksione shihen vetëm nga pronari.",noFollowers:"Nuk ka ndjekës të regjistruar në këtë pajisje."},
  en:{posts:"Posts",reels:"Reels",saved:"Saved",liked:"Liked",opportunities:"Opportunities",followers:"Followers",following:"Following",edit:"Edit profile",settings:"Settings",cover:"Change cover",highlight:"Add",newHighlight:"New collection",collections:"Highlights",city:"City",handle:"Username",interests:"Interests (comma-separated)",save:"Save changes",title:"Collection title",source:"Story to add",none:"No Story",create:"Save collection",add:"Add Story",remove:"Remove",delete:"Delete collection",next:"Next",previous:"Previous",emptyPosts:"You have not posted yet.",emptyReels:"You have not created Reels yet.",emptySaved:"You have no saved posts.",emptyLiked:"You have no liked posts.",emptyOpportunities:"No linked activities yet.",emptyHighlights:"Add Stories to your collections.",emptyImage:"Text post",openPost:"Open post",createPost:"Create post",createReel:"Create Reel",createStory:"Create Story",profile:"Profile",coverReset:"Reset cover",noContent:"No content yet.",storage:"Couldn't save. Check device storage.",badImage:"Use JPG, PNG or WebP up to 6 MB.",badHandle:"Username must be 3–24 letters, numbers, dots or underscores.",badTitle:"Enter a collection title (1–24 characters).",limit:"Collection photo limit reached.",removeConfirm:"Delete this collection from the device?",photoSave:"Photo saved.",coverSave:"Cover saved.",savedStatus:"Changes saved.",notFound:"Content not found.",choose:"Choose Story",about:"About",privateInfo:"These sections are only visible to the owner.",noFollowers:"No followers recorded on this device."},
  it:{posts:"Post",reels:"Reels",saved:"Salvati",liked:"Mi piace",opportunities:"Opportunità",followers:"Follower",following:"Seguiti",edit:"Modifica profilo",settings:"Impostazioni",cover:"Cambia copertina",highlight:"Aggiungi",newHighlight:"Nuova raccolta",collections:"In evidenza",city:"Città",handle:"Nome utente",interests:"Interessi (separati da virgole)",save:"Salva modifiche",title:"Nome raccolta",source:"Storia da aggiungere",none:"Nessuna storia",create:"Salva raccolta",add:"Aggiungi Story",remove:"Rimuovi",delete:"Elimina raccolta",next:"Avanti",previous:"Indietro",emptyPosts:"Non hai ancora pubblicato.",emptyReels:"Non hai ancora creato Reels.",emptySaved:"Nessun contenuto salvato.",emptyLiked:"Nessun contenuto con Mi piace.",emptyOpportunities:"Nessuna attività collegata.",emptyHighlights:"Aggiungi Story alle tue raccolte.",emptyImage:"Post testuale",openPost:"Apri post",createPost:"Crea post",createReel:"Crea Reel",createStory:"Crea Story",profile:"Profilo",coverReset:"Ripristina copertina",noContent:"Ancora nessun contenuto.",storage:"Salvataggio non riuscito. Verifica lo spazio sul dispositivo.",badImage:"Usa JPG, PNG o WebP fino a 6 MB.",badHandle:"Il nome utente richiede 3–24 lettere, numeri, punti o trattini bassi.",badTitle:"Inserisci un nome per la raccolta (1–24 caratteri).",limit:"Raccolta al limite di foto.",removeConfirm:"Eliminare questa raccolta dal dispositivo?",photoSave:"Foto salvata.",coverSave:"Copertina salvata.",savedStatus:"Modifiche salvate.",notFound:"Contenuto non trovato.",choose:"Scegli Story",about:"Informazioni",privateInfo:"Queste sezioni sono visibili solo al proprietario.",noFollowers:"Nessun follower registrato su questo dispositivo."}};
- let section="posts";let editingCollection=null;let imageEpoch=0;let cropDraft=null;let highlightDraft=null;
+ let section="posts";let editingCollection=null;let imageEpoch=0;let cropDraft=null;let highlightDraft=null;let highlightOrder=null;let highlightOrderDirty=false;let editDraft=null;
  const lang=()=>{const l=window.IllyrianI18n?.language||"sq";return defaults[l]?l:"sq"};
  const t=k=>defaults[lang()][k]||defaults.sq[k]||k;
  const ui=k=>window.IllyrianI18n?.t("profile:"+k)||k;
@@ -2361,10 +2363,10 @@ function p17HighlightItems(collection){
  ];
  const sampleCard=(item,highlight=false)=>highlight?'<button type="button" class="p17-hl p17-sample-highlight" data-p17-action="sample-view" data-id="'+item.id+'" data-user-content><span class="p17-hl-round"><img src="'+media(item.src)+'" alt="" loading="lazy"/></span><span>'+e(item.text)+'</span></button>':galleryCard({...item,kind:"sample"});
 
- const following=()=>people.filter(p=>state.follows.includes(p.id)&&!state.blocked.includes(p.id));
+ const following=()=>[...people,...businesses].filter(p=>state.follows.includes(p.id)&&!state.blocked.includes(p.id));
  function networkView(which){
   if(which==='followers')return drawer(t('followers'),'<p data-i18n-direct>'+esc(ui('noFollowerList'))+'</p>');
-  const rows=following();return drawer(t('following'),rows.length?rows.map(p=>'<button type="button" class="v6-nav-row" data-p17-action="network-person" data-id="'+e(p.id)+'">'+tinyAvatar(p.ava)+'<span data-user-content>'+e(p.name)+'</span><span>›</span></button>').join(''):'<p data-i18n-direct>'+esc(ui('noFollowing'))+'</p>');
+  const rows=following();return drawer(t('following'),rows.length?rows.map(p=>'<button type="button" class="v6-nav-row" data-p17-action="network-person" data-id="'+e(p.id)+'">'+(p.ava?tinyAvatar(p.ava):'<span class="v11-emblem" aria-hidden="true">'+e(p.emoji||'')+'</span>')+'<span data-user-content>'+e(p.name)+'</span><span>›</span></button>').join(''):'<p data-i18n-direct>'+esc(ui('noFollowing'))+'</p>');
  }
  function myCommunities(){
   const rows=communities.filter(c=>state.joinedCommunities.includes(c.id));
@@ -2378,7 +2380,7 @@ function p17HighlightItems(collection){
   if(tab==="saved"){
    const savedPosts=allPosts().filter(p=>has(state.bookmarks,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,sponsored:p.commerceSponsored===true}));
    const savedReels=reels.filter(r=>has(state.reelSaved,r.id)).map(r=>({kind:"friendReel",id:String(reels.indexOf(r)),src:IMAGES[r.photo]||"",text:r.label}));
-   return [...savedPosts,...savedReels];
+   return [...savedPosts,...savedReels,...v16SavedOwnReels().map(r=>({kind:"myreel",id:r.id,src:v15Pic(r),text:r.caption}))];
   }
   if(tab==="liked"){
    const a=allPosts().filter(p=>has(state.likes,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,sponsored:p.commerceSponsored===true}));
@@ -2404,7 +2406,12 @@ function p17HighlightItems(collection){
   }).join("")+'</div>';
  };
  const referenceIdentity=()=>owner().name==="Profili yt"&&!owner().p17Handle&&!owner().photoData&&!state.posts.length;
- const stats=()=>'<div class="p17-stats"><div><b>'+(referenceIdentity()?62:state.posts.length||samplePhotos.length)+'</b><small>'+t("posts")+'</small></div><button type="button" data-p17-action="followers" title="'+(referenceIdentity()?"":e(t("noFollowers")))+'"><b>'+(referenceIdentity()?'25.1K':'0')+'</b><small>'+t("followers")+'</small></button><button type="button" data-p17-action="following"><b>'+(referenceIdentity()?611:state.follows.length)+'</b><small>'+t("following")+'</small></button></div>';
+ const displayedProfile=()=>{
+  const p=owner(),reference=referenceIdentity();
+  return {name:reference?'Arta K.':clean(p.name||'Profili yt',45),bio:reference?'Udhëtime, kafe, njerëz të mirë dhe jetë e bukur':clean(p.bio||'',180),handle:typeof p.p17Handle==='string'&&/^[a-z0-9._]{3,24}$/.test(p.p17Handle)?p.p17Handle:(reference?'arta.k':'illyrian'),city:clean(p.p17City||(reference?'Prishtinë, Kosovë':'Tiranë'),45),tags:Array.isArray(p.p17Tags)?p.p17Tags.filter(x=>typeof x==='string').slice(0,3):['Udhëtime','Kafe & Food','Lifestyle']};
+ };
+ const ensureEditDraft=()=>{if(!editDraft||editDraft.modal!==state.modal)editDraft={modal:state.modal,coverReset:false};return editDraft;};
+ const stats=()=>'<div class="p17-stats"><div><b>'+(referenceIdentity()?62:state.posts.length)+'</b><small>'+t("posts")+'</small></div><button type="button" data-p17-action="followers" title="'+(referenceIdentity()?"":e(t("noFollowers")))+'"><b>'+(referenceIdentity()?'25.1K':'0')+'</b><small>'+t("followers")+'</small></button><button type="button" data-p17-action="following"><b>'+(referenceIdentity()?611:following().length)+'</b><small>'+t("following")+'</small></button></div>';
  const tabs=[["posts","grid"],["reels","play"],["saved","save"],["liked","heart"],["opportunities","activity"]];
  const ownedListings=()=>Object.entries(window.IllyrianShopTargets||{}).filter(([source])=>['shop','shopPlus'].includes(source)).flatMap(([source,adapter])=>{try{return (adapter.listings()||[]).filter(row=>row&&row.owned===true&&typeof row.id==='string'&&typeof row.name==='string').map(row=>({source,row}))}catch{return []}});
  function opportunityCards(){
@@ -2417,13 +2424,11 @@ function p17HighlightItems(collection){
   return personal+planned+'<div class="p17-opportunities">'+all.map(ev=>'<button data-p17-action="open-event" data-id="'+e(ev.id)+'"><strong>'+e(ev.title)+'</strong><small>'+e(ev.city)+' · '+e(ev.day)+'</small><span>›</span></button>').join('')+'</div>';
  }
  function renderProfile(){
-  const p=owner(),handle=typeof p.p17Handle==="string"&&/^[a-z0-9._]{3,24}$/.test(p.p17Handle)?p.p17Handle:(referenceIdentity()?"arta.k":"illyrian");
-  const city=clean(p.p17City||(referenceIdentity()?"Prishtinë, Kosovë":"Tiranë"),45);
-  const tags=Array.isArray(p.p17Tags)?p.p17Tags.filter(x=>typeof x==="string").slice(0,3):["Udhëtime","Kafe & Food","Lifestyle"];
+  const p=owner(),view=displayedProfile(),handle=view.handle,city=view.city,tags=view.tags;
   const cards=galleryData(section);
   const names={posts:"emptyPosts",reels:"emptyReels",saved:"emptySaved",liked:"emptyLiked"};
   const gallery=section==="opportunities"?opportunityCards():cards.length?'<div class="p17-gallery">'+cards.map(galleryCard).join("")+'</div>':'<div class="p17-empty"><div>'+icon(section==="reels"?"play":section==="liked"?"heart":"grid",28)+'</div><p>'+e(t(names[section]))+'</p>'+(section==="posts"?'<button data-act="modal" data-val="compose">'+e(t("createPost"))+'</button>':section==="reels"?'<button data-act="v15-open" data-val="reel">'+e(t("createReel"))+'</button>':'')+'</div>';
-  return '<section class="p17-profile" aria-label="'+e(t("profile"))+'"><div class="p17-cover" style="background-image:linear-gradient(180deg,rgba(8,10,20,.03),rgba(8,10,20,.35)),url(&quot;'+media(coverSrc())+'&quot;)"><label class="p17-cover-change">'+icon("camera",17)+'<span>'+e(t("cover"))+'</span><input id="p17-cover-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="'+e(t("cover"))+'"/></label></div><div class="p17-person-top"><div class="p17-avatar-wrap"><img class="p17-avatar" src="'+media(v12AvatarSrc())+'" alt="'+e(t("profile"))+'"/><button type="button" class="p17-avatar-camera" data-p17-action="open-edit" aria-label="'+e(t("edit"))+'">'+icon("camera",19)+'</button></div>'+stats()+'</div><div class="p17-identity"><div class="p17-person-name"><h2 data-user-content>'+e(referenceIdentity()?"Arta K.":p.name||"Profili yt")+'</h2>'+identityBadge()+'</div><p class="p17-location"><span data-user-content>@'+e(handle)+'</span><span>·</span>'+icon("pin",15)+'<span data-user-content>'+e(city)+'</span></p><p class="p17-bio" data-user-content>'+e(referenceIdentity()?"Udhëtime, kafe, njerëz të mirë dhe jetë e bukur":p.bio||"")+'</p><div class="p17-actions"><button class="p17-edit" data-act="modal" data-val="edit">'+icon("check",18)+' '+e(t("edit"))+'</button></div><div class="p17-tags" data-user-content>'+tags.map((s,i)=>'<span>'+icon(['plane','cup','users'][i],15)+e(s)+'</span>').join("")+'</div></div>'+highlights()+'<div class="p17-tabs" role="tablist" aria-label="'+e(t("profile"))+'">'+tabs.map(([id,ic])=>'<button type="button" role="tab" id="p17-tab-'+id+'" aria-controls="p17-gallery-panel" tabindex="'+(section===id?'0':'-1')+'" aria-selected="'+(section===id)+'" class="'+(section===id?"selected":"")+'" data-p17-action="section" data-id="'+id+'">'+icon(ic,22)+'<span>'+e(t(id))+'</span></button>').join("")+'</div><div id="p17-gallery-panel" class="p17-gallery-panel" role="tabpanel" aria-labelledby="p17-tab-'+section+'">'+gallery+'</div></section>';
+  return '<section class="p17-profile" aria-label="'+e(t("profile"))+'"><div class="p17-cover" style="background-image:linear-gradient(180deg,rgba(8,10,20,.03),rgba(8,10,20,.35)),url(&quot;'+media(coverSrc())+'&quot;)"><label class="p17-cover-change">'+icon("camera",17)+'<span>'+e(t("cover"))+'</span><input id="p17-cover-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="'+e(t("cover"))+'"/></label></div><div class="p17-person-top"><div class="p17-avatar-wrap"><img class="p17-avatar" src="'+media(v12AvatarSrc())+'" alt="'+e(t("profile"))+'"/><button type="button" class="p17-avatar-camera" data-p17-action="open-edit" aria-label="'+e(t("edit"))+'">'+icon("camera",19)+'</button></div>'+stats()+'</div><div class="p17-identity"><div class="p17-person-name"><h2 data-user-content>'+e(view.name)+'</h2>'+identityBadge()+'</div><p class="p17-location"><span data-user-content>@'+e(handle)+'</span><span>·</span>'+icon("pin",15)+'<span data-user-content>'+e(city)+'</span></p><p class="p17-bio" data-user-content>'+e(view.bio)+'</p><div class="p17-actions"><button class="p17-edit" data-act="modal" data-val="edit">'+icon("check",18)+' '+e(t("edit"))+'</button></div><div class="p17-tags" data-user-content>'+tags.map((s,i)=>'<span>'+icon(['plane','cup','users'][i],15)+e(s)+'</span>').join("")+'</div></div>'+highlights()+'<div class="p17-tabs" role="tablist" aria-label="'+e(t("profile"))+'">'+tabs.map(([id,ic])=>'<button type="button" role="tab" id="p17-tab-'+id+'" aria-controls="p17-gallery-panel" tabindex="'+(section===id?'0':'-1')+'" aria-selected="'+(section===id)+'" class="'+(section===id?"selected":"")+'" data-p17-action="section" data-id="'+id+'">'+icon(ic,22)+'<span>'+e(t(id))+'</span></button>').join("")+'</div><div id="p17-gallery-panel" class="p17-gallery-panel" role="tabpanel" aria-labelledby="p17-tab-'+section+'">'+gallery+'</div></section>';
  }
  const previousProfile=profile;
  profile=function(){return renderProfile()};
@@ -2431,10 +2436,11 @@ function p17HighlightItems(collection){
  function rememberHighlight(){
   if(!highlightDraft)return;const input=document.getElementById('p17-title');if(input)highlightDraft.title=input.value.slice(0,24);
   const cover=document.getElementById('p17-highlight-cover');if(cover)highlightDraft.coverId=cover.value;
+  const source=document.getElementById('p17-source');if(source)highlightDraft.selectedStory=source.value;
  }
  function highlightEditor(){
   const h=highlightDraft;if(!h)return '';const items=p17HighlightItems(h);
-  return drawer(editingCollection?'<span data-user-content>'+e(h.title)+'</span>':t('newHighlight'),'<div class="p17-editor"><label for="p17-title">'+e(t('title'))+'</label><input class="field" id="p17-title" maxlength="24" value="'+e(h.title)+'"/><label for="p17-source">'+e(t('source'))+'</label><select id="p17-source" class="field"><option value="">'+e(t('none'))+'</option>'+v15Stories.map(st=>'<option value="'+e(st.id)+'">'+e(st.caption||'Story')+'</option>').join('')+'</select>'+(items.length?'<label for="p17-highlight-cover">'+esc(ui('highlightCover'))+'</label><select class="field" id="p17-highlight-cover">'+items.map(it=>'<option value="'+e(it.id)+'" '+(it.id===h.coverId?'selected':'')+'>'+e(it.caption||'Story')+'</option>').join('')+'</select><div class="p17-manage-list">'+items.map((it,i)=>'<div><img src="'+media(it.photo||IMAGES[it.sample])+'" alt=""/><span data-user-content>'+e(it.caption||'Story')+'</span><button type="button" data-p17-action="highlight-item-up" data-id="'+i+'" aria-label="'+esc(ui('moveEarlier'))+'" '+(i===0?'disabled':'')+'>↑</button><button type="button" data-p17-action="highlight-item-down" data-id="'+i+'" aria-label="'+esc(ui('moveLater'))+'" '+(i===items.length-1?'disabled':'')+'>↓</button><button type="button" data-p17-action="highlight-remove-item" data-id="'+i+'">'+e(t('remove'))+'</button></div>').join('')+'</div>':'')+(editingCollection?'<div class="p17-editor-order"><button type="button" data-p17-action="highlight-move-up">'+esc(ui('moveEarlier'))+'</button><button type="button" data-p17-action="highlight-move-down">'+esc(ui('moveLater'))+'</button></div>':'')+'<button type="button" class="p17-modal-primary" data-p17-action="highlight-save">'+e(editingCollection?t('save'):t('create'))+'</button>'+(editingCollection?'<button type="button" class="p17-danger" data-p17-action="highlight-delete">'+e(t('delete'))+'</button>':'')+'</div>');
+  return drawer(editingCollection?'<span data-user-content>'+e(h.title)+'</span>':t('newHighlight'),'<div class="p17-editor"><label for="p17-title">'+e(t('title'))+'</label><input class="field" id="p17-title" maxlength="24" value="'+e(h.title)+'"/><label for="p17-source">'+e(t('source'))+'</label><select id="p17-source" class="field"><option value="">'+e(t('none'))+'</option>'+v15Stories.map(st=>'<option data-user-content value="'+e(st.id)+'" '+(h.selectedStory===st.id?'selected':'')+'>'+e(st.caption||'Story')+'</option>').join('')+'</select>'+(items.length?'<label for="p17-highlight-cover">'+esc(ui('highlightCover'))+'</label><select class="field" id="p17-highlight-cover">'+items.map(it=>'<option data-user-content value="'+e(it.id)+'" '+(it.id===h.coverId?'selected':'')+'>'+e(it.caption||'Story')+'</option>').join('')+'</select><div class="p17-manage-list">'+items.map((it,i)=>'<div><img src="'+media(it.photo||IMAGES[it.sample])+'" alt=""/><span data-user-content>'+e(it.caption||'Story')+'</span><button type="button" data-p17-action="highlight-item-up" data-id="'+i+'" aria-label="'+esc(ui('moveEarlier'))+'" '+(i===0?'disabled':'')+'>↑</button><button type="button" data-p17-action="highlight-item-down" data-id="'+i+'" aria-label="'+esc(ui('moveLater'))+'" '+(i===items.length-1?'disabled':'')+'>↓</button><button type="button" data-p17-action="highlight-remove-item" data-id="'+i+'">'+e(t('remove'))+'</button></div>').join('')+'</div>':'')+(editingCollection?'<div class="p17-editor-order"><button type="button" data-p17-action="highlight-move-up" '+(highlightOrder?.indexOf(editingCollection)===0?'disabled':'')+'>'+esc(ui('moveEarlier'))+'</button><button type="button" data-p17-action="highlight-move-down" '+(highlightOrder?.indexOf(editingCollection)===highlightOrder?.length-1?'disabled':'')+'>'+esc(ui('moveLater'))+'</button></div><p role="status" data-i18n-direct>'+(highlightOrderDirty?esc(ui('highlightOrderPending'))+' '+(highlightOrder.indexOf(editingCollection)+1)+' / '+highlightOrder.length:'')+'</p>':'')+'<button type="button" class="p17-modal-primary" data-p17-action="highlight-save">'+e(editingCollection?t('save'):t('create'))+'</button>'+(editingCollection?'<button type="button" class="p17-danger" data-p17-action="highlight-delete">'+e(t('delete'))+'</button>':'')+'</div>');
  }
  function photoEditor(){
   const d=cropDraft;if(!d)return '';queueMicrotask(drawCrop);
@@ -2464,7 +2470,8 @@ function p17HighlightItems(collection){
   try{drawCrop();const canvas=document.getElementById('p17-crop-preview');if(!canvas)throw Error('canvas');let photo='';
    for(const quality of [.82,.67,.46]){photo=canvas.toDataURL('image/jpeg',quality);if(photo.length<=(d.kind==='avatar'?170000:260000))break}
    if(!safePhoto(photo)||photo.length>(d.kind==='avatar'?170000:260000))throw Error('size');
-   if(!keep(d.kind==='cover'?{p17Cover:photo}:{photoData:photo}))return;
+   const view=displayedProfile(),identity=d.kind==='avatar'&&referenceIdentity()?{name:view.name,bio:view.bio,p17Handle:view.handle,p17City:view.city,p17Tags:view.tags}:{};
+   if(!keep(d.kind==='cover'?{p17Cover:photo}:{...identity,photoData:photo}))return;
    restorePhoto();toast(t(d.kind==='cover'?'coverSave':'photoSave'));
   }catch{toast(t('badImage'))}
  }
@@ -2482,11 +2489,13 @@ function p17HighlightItems(collection){
   if(state.modal?.type==="p17-post"){
    const item=getPost(state.modal.id);return item?drawer(t("openPost"),'<div class="p17-post-modal">'+post(item)+'</div>'):drawer(t("openPost"),'<p>'+e(t("notFound"))+'</p>');
   }
-  const html=oldModal();
+  let html=oldModal();
   if(state.modal?.type!=="edit")return html;
   const needle='<button class="button full" data-act="edit-save">Ruaj ndryshimet</button>';
-  const p=owner(),tags=Array.isArray(p.p17Tags)?p.p17Tags.join(", "):"Komunitet, Udhëtime, Ide";
-  const form='<div class="p17-editor-extra"><div class="fieldwrap"><label class="formlabel" for="p17-handle">'+e(t("handle"))+'</label><input class="field" id="p17-handle" maxlength="24" value="'+e(p.p17Handle||"illyrian")+'"/></div><div class="fieldwrap"><label class="formlabel" for="p17-city">'+e(t("city"))+'</label><input class="field" id="p17-city" maxlength="45" value="'+e(p.p17City||"Tiranë")+'"/></div><div class="fieldwrap"><label class="formlabel" for="p17-tags">'+e(t("interests"))+'</label><input class="field" id="p17-tags" maxlength="95" value="'+e(tags)+'"/></div><button type="button" class="button soft full" data-p17-action="cover-reset">'+e(t("coverReset"))+'</button><button type="button" class="button full" data-p17-action="profile-save">'+e(t("save"))+'</button></div>';
+  const p=displayedProfile(),tags=p.tags.join(', '),draft=ensureEditDraft();
+  html=html.replace(/(id="edit-name"[^>]*value=")[^"]*(")/,(_,a,b)=>a+esc(p.name)+b);
+  html=html.replace(/(<textarea[^>]*id="edit-bio"[^>]*>)[\s\S]*?<\/textarea>/,(_,a)=>a+esc(p.bio)+'</textarea>');
+  const form='<div class="p17-editor-extra"><div class="fieldwrap"><label class="formlabel" for="p17-handle">'+e(t("handle"))+'</label><input class="field" id="p17-handle" maxlength="24" value="'+e(p.handle)+'"/></div><div class="fieldwrap"><label class="formlabel" for="p17-city">'+e(t("city"))+'</label><input class="field" id="p17-city" maxlength="45" value="'+e(p.city)+'"/></div><div class="fieldwrap"><label class="formlabel" for="p17-tags">'+e(t("interests"))+'</label><input class="field" id="p17-tags" maxlength="95" value="'+e(tags)+'"/></div><button type="button" class="button soft full" data-p17-action="cover-reset" '+(draft.coverReset?'disabled':'')+'>'+e(t("coverReset"))+'</button><p id="p17-cover-reset-note" role="status" data-i18n-direct>'+(draft.coverReset?esc(ui('coverResetPending')):'')+'</p><button type="button" class="button full" data-p17-action="profile-save">'+e(t("save"))+'</button></div>';
   return html.includes(needle)?html.replace(needle,form):html;
  };
  async function shrink(url,w,h,max=85000){
@@ -2527,7 +2536,7 @@ function p17HighlightItems(collection){
   const ids=new Set(collections.flatMap(h=>h.items.map(it=>it&&typeof it==='object'?it.ref:null).filter(Boolean)));return Object.fromEntries(Object.entries(owner().p17StoryArchive||{}).filter(([id])=>ids.has(id)));
  };
  async function saveHighlight(){
-  if(!highlightDraft)return;rememberHighlight();const h=highlightDraft,title=clean(h.title.trim(),24),storyId=document.getElementById('p17-source')?.value||'';
+  if(!highlightDraft)return;rememberHighlight();const h=highlightDraft,title=clean(h.title.trim(),24),storyId=h.selectedStory||'';
   if(!title){toast(t('badTitle'));document.getElementById('p17-title')?.focus();return}
   const before=state.profile,existing=hList(),idx=existing.findIndex(x=>x.id===editingCollection);
   if(idx<0&&existing.length>=6){toast(t('limit'));return}
@@ -2539,20 +2548,20 @@ function p17HighlightItems(collection){
   }
   if(state.profile!==before||state.modal?.type!=='p17-highlight-editor'||highlightDraft!==h){toast(ui('photoChanged'));return}
   const next=existing.map(x=>({...x,items:[...x.items]})),value={id:h.id,title,items,coverId:h.coverId||items[0]?.id||''};
-  if(idx>=0)next[idx]=value;else next.unshift(value);
+  if(idx>=0){next[idx]=value;const rank=new Map((highlightOrder||[]).map((id,i)=>[id,i]));next.sort((a,b)=>(rank.get(a.id)??99)-(rank.get(b.id)??99))}else next.unshift(value);
   const refs=new Set(next.flatMap(x=>x.items.map(it=>it&&typeof it==='object'?it.ref:null).filter(Boolean))),pruned=Object.fromEntries(Object.entries(archive).filter(([id])=>refs.has(id)));
   if(!keep({p17Highlights:next,p17StoryArchive:pruned}))return;
   editingCollection=null;highlightDraft=null;close();toast(t('savedStatus'));
  }
  function showEditor(id){
-  editingCollection=id||null;const h=hList().find(x=>x.id===id);
+  editingCollection=id||null;highlightOrder=hList().map(x=>x.id);highlightOrderDirty=false;const h=hList().find(x=>x.id===id);
   highlightDraft=h?{...h,items:h.items.filter(x=>x&&typeof x==='object'&&typeof x.id==='string').map(x=>({...x}))}:{id:'hl'+Date.now().toString(36),title:'',items:[],coverId:''};
   state.modal={type:'p17-highlight-editor'};state.story=0;state.reelOpen=false;render({scroll:true});
  }
  function handleAction(action,b){
   const id=b.dataset.id||"";
   if(action==='following'||action==='followers'){openModal('p17-'+action);return;}
-  if(action==='network-person'){if(following().some(p=>p.id===id))openModal('user-profile',id);return;}
+  if(action==='network-person'){const row=following().find(p=>p.id===id);if(row)openModal(row.type==='Biznese'?'business-detail':'user-profile',id);return;}
   if(action==='open-plan'){if(!window.IllyrianPlansProfile?.open(id))toast(t('notFound'));return;}
   if(action==='photo-cancel'){restorePhoto();return;}
   if(action==='photo-save'){savePhoto();return;}
@@ -2577,14 +2586,16 @@ function p17HighlightItems(collection){
    render({scroll:true});return;
   }
   if(action==='highlight-move-up'||action==='highlight-move-down'){
-   rememberHighlight();const list=hList(),i=list.findIndex(x=>x.id===editingCollection),j=i+(action==='highlight-move-up'?-1:1);if(i<0||j<0||j>=list.length)return;
-   [list[i],list[j]]=[list[j],list[i]];if(keep({p17Highlights:list})){render({scroll:true});toast(t('savedStatus'))}return;
+   rememberHighlight();const list=highlightOrder||[],i=list.indexOf(editingCollection),j=i+(action==='highlight-move-up'?-1:1);if(i<0||j<0||j>=list.length)return;
+   [list[i],list[j]]=[list[j],list[i]];highlightOrderDirty=true;render({scroll:true});return;
   }
   if(action==='highlight-delete'){
    if(!window.confirm(t('removeConfirm')))return;const next=hList().filter(h=>h.id!==editingCollection);
    if(keep({p17Highlights:next,p17StoryArchive:archiveFor(next)})){editingCollection=null;highlightDraft=null;close()}return;
   }
-  if(action==="cover-reset"){if(keep({p17Cover:""})){close();toast(t("savedStatus"))}return;}
+  if(action==='cover-reset'){
+   ensureEditDraft().coverReset=true;b.disabled=true;const note=document.getElementById('p17-cover-reset-note');if(note)note.textContent=ui('coverResetPending');return;
+  }
   if(action==="profile-save"){
    const name=clean(document.getElementById("edit-name")?.value.trim(),45),bio=clean(document.getElementById("edit-bio")?.value.trim(),180);
    const handle=clean(document.getElementById("p17-handle")?.value.trim().toLowerCase().replace(/^@/,""),24);
@@ -2592,7 +2603,9 @@ function p17HighlightItems(collection){
    const tags=clean(document.getElementById("p17-tags")?.value,95).split(",").map(x=>x.trim().slice(0,20)).filter(Boolean).slice(0,3);
    if(!name){toast("Shkruaj emrin");document.getElementById("edit-name")?.focus();return}
    if(!/^[a-z0-9._]{3,24}$/.test(handle)){toast(t("badHandle"));document.getElementById("p17-handle")?.focus();return}
-   if(keep({name,bio,p17Handle:handle,p17City:city,p17Tags:tags},true)){close();toast(t("savedStatus"))}else document.getElementById("edit-name")?.focus();
+   const view=displayedProfile(),reset=ensureEditDraft().coverReset;
+   if(!reset&&name===view.name&&bio===view.bio&&handle===view.handle&&city===view.city&&JSON.stringify(tags)===JSON.stringify(view.tags)){close();toast(t('savedStatus'));return;}
+   if(keep({name,bio,p17Handle:handle,p17City:city,p17Tags:tags,...(reset?{p17Cover:''}:{})},true)){close();toast(t('savedStatus'))}else document.getElementById('edit-name')?.focus();
    return;
   }
  }

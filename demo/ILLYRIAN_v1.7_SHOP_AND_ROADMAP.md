@@ -1,6 +1,21 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
-**Profile — hyrjet e miratuara,31 tetor2026:** pa ig6-entry/il4-entry pas galerisë. Ingranazhi → Privatësia përdor preferencat ekzistuese; Ndihma dhe mbështetja hap tabs reports/appeals të Governance ekzistues, me kthim/fokus te Settings. Profile → Mundësi lexon vetëm listimet `owned===true` nga adapterët Shop/Shop Plus dhe hap origjinalin, pa kopje storage ose menu të plotë Mundësi. Pa listime personale nuk shfaqet seksion menaxhimi; planet personale lexohen nga adapter-i Plans dhe aktivitetet e lidhura ekzistuese ruhen. Settings → Komunitetet e mia hap anëtarësimet; numri Duke ndjekur hap listën personale, pa rikthyer blloqe të mëdha. Komunitetet/harta/Zbulo dhe Calendar/Plane & Aktivitete nuk ndryshohen. QA: sq/en/it,Light/Dark,locale live,Tab/Escape/fokus,privatësia ekzistuese,storage i pandryshuar,emrat UGC literalë dhe përjashtimi i listimeve të huaja; rolet reale/privatësia server-side BACKEND.
+**Profile — hyrjet e miratuara,31 tetor2026:** pa ig6-entry/il4-entry pas galerisë. Ingranazhi → Privatësia përdor preferencat ekzistuese; Ndihma dhe mbështetja hap tabs reports/appeals të Governance ekzistues, me kthim/fokus te Settings. Profile → Mundësi lexon vetëm listimet `owned===true` nga adapterët Shop/Shop Plus dhe hap origjinalin, pa kopje storage ose menu të plotë Mundësi. Pa listime personale nuk shfaqet seksion menaxhimi; planet personale lexohen nga adapter-i Plans dhe aktivitetet e lidhura ekzistuese ruhen. Settings → Komunitetet e mia hap anëtarësimet; numri Duke ndjekur hap personat dhe bizneset që ndiqen, me numërim koherent dhe rrugët ekzistuese, pa rikthyer blloqe të mëdha. Komunitetet/harta/Zbulo dhe Calendar/Plane & Aktivitete nuk ndryshohen. QA: sq/en/it,Light/Dark,locale live,Tab/Escape/fokus,privatësia ekzistuese,storage i pandryshuar,emrat UGC literalë dhe përjashtimi i listimeve të huaja; rolet reale/privatësia server-side BACKEND.
+
+**Audit i profilit, burimi `524c8de` — korrigjime të autorizuara:** rastet u riprodhuan në browser; kodi i vjetër/provat historike mbeten në Git. Statusi dhe ekzekutimet finale te CURRENT_STATE; kontrata aktive te blueprint. Pa module të reja ose ndryshim dizajni/navbar.
+
+| ID | Sjellja që kërkohet / kontrolli i pranimit |
+|---|---|
+| PF01 | Saved përfshin edhe Reels personale nga savedOwn; një hyrje, hapje e saktë, reload dhe unsave pa ndryshim keys. |
+| PF02 | Zgjedhja e Story-t të ri ruhet gjatë ndryshimit të renditjes/heqjes/locale dhe përfshihet vetëm një herë në Save. |
+| PF03 | Rikthe kopertinën ruan tekstin e papërfunduar; vetëm Ruaj ndryshimet e konfirmon, Escape anulon, quota lejon Retry. |
+| PF04 | Formulari përputhet me profilin e paraqitur (emër/bio/username/qytet/interesa); Save pa ndryshime është pa shkrim storage. |
+| PF05 | Caption-et/titujt e Story-ve mbeten literalë edhe në dropdown dhe zgjedhjen e cover-it sq/en/it; pa interpretim HTML. |
+| PF06 | Profili personal pa postime numëron0; fotografitë ilustruese ruhen dhe personazhi fillestar mban numrat e vet ilustrues. |
+| PF07 | Renditja e koleksioneve dhe emri/cover/Story-t konfirmohen në një Save; Escape anulon dhe quota nuk bën shkrim të pjesshëm. |
+| PF08 | Biznesi i ndjekur shfaqet në listë dhe hap faqen ekzistuese të biznesit; ID-të historike të panjohura nuk fshihen ose numërohen si persona. |
+
+**Status lokal PF01–PF08:** VERIFIED në182 teste Chromium (3.8m), përfshirë13 kontrolle të reja të korrigjimeve dhe regresionet e profilit/media/Plans/Settings/tastierës. CI i commit-it të ri dhe pranimi fizik mbeten të ndara; provat te CURRENT_STATE.
 
 **Vendosja e Settings — 31 tetor2026:** Profile→header→Cilësimet ekzistuese; pa ikonë Njoftimesh të dukshme në këtë faqe dhe pa ingranazh të dyfishtë pranë redaktimit. Home→Njoftimet ekzistuese. Pranim: sq/en/it, hapje/Escape/fokus dhe rikthim te Home pa ndryshim storage ose unread.
 
@@ -16,7 +31,7 @@
 | 4 — galeri me tri kolona dhe Postime/Reels/Të ruajtura/Të pëlqyera/Mundësi | IMPLEMENTUAR NË DEMO brenda provave: pesë skedat, viewer-at ekzistues, listimet personale Shop/Shop Plus dhe planet personale Plans pa kopje. Following dhe Komunitetet e mia rikthejnë lidhjet e profilit të vjetër. Saved/Liked vetëm pronarit. OPEN: modeli i roleve/autorësisë/privatësisë reale, metadata/paging i plotë i galerisë dhe përshtatja premium e profileve të tjera; nuk shtohen nga ky autorizim. |
 | 5 — integrim dhe pranim | PARTIAL/OPEN: provat reale të CI dhe screenshot-eve, ruajtja/ringarkimi/anulimi/invalid media/quota; tastierë, kontrast, reduced motion, safe areas, sq/en/it dhe regresionet Home/Stories/Reels/Messages/Zbulo/Shop/Mundësi. Kontrollet fizike dhe pranimi final vizual bëhen në telefonin e pronarit; browser PASS nuk i zëvendëson. |
 
-**Rendi i vazhdimit:** verifiko pesë korrigjimet e miratuara → shqyrtim vizual i pronarit në Preview → QA fizik/pranim dhe vetëm më pas boshllëqet e mbetura të profilit sipas autorizimit. Ripërdor kodin ekzistues; emri/ikona/logoa, navbar-i, keys dhe të dhënat historike ruhen. Pa zgjerim automatik në backend/native/investitor/release.
+**Rendi i vazhdimit:** verifiko PF01–PF08 dhe regresionet e pesë korrigjimeve të mëparshme → shqyrtim vizual i pronarit në Preview → QA fizik/pranim dhe vetëm më pas boshllëqet e mbetura të profilit sipas autorizimit. Ripërdor kodin ekzistues; emri/ikona/logoa, navbar-i, keys dhe të dhënat historike ruhen. Pa zgjerim automatik në backend/native/investitor/release.
 
 **Portretet e profileve (30 tetor 2026):** Për 5 personazhet bazë, përdor foto sintetike të ndryshme, WebP lokale; avatarët dhe imazhet e Stories/Reels/Postimeve përputhen sipas identitetit. Mos shto etiketa DEMO në secilin profil; identitetet ilustrative deklarohen te Settings → About. Mos mbishkruaj foto personale të ruajtura. Testi Playwright verifikon src, ngarkimin e fotove dhe Reel-in e Besës.
 
