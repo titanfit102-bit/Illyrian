@@ -2,6 +2,9 @@
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.it={
   "notifications": {
+      "undated": "Senza data",
+      "dateUnknown": "Data non registrata",
+      "otherDates": "Altre date",
       "title": "Notifiche",
       "subtitle": "Resta aggiornato su persone, attività e opportunità.",
       "settings": "Impostazioni",

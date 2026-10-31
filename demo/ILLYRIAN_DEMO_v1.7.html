@@ -345,7 +345,7 @@ function communityDiscussions(c){
  return `<label class="formlabel" for="community-search" data-i18n-direct>${esc(socialText('discussionSearch','Kërko në diskutime'))}</label><input class="field" id="community-search" data-act="community-search" value="${esc(state.communityQuery)}" maxlength="100"><div class="v11-community-buttonrow">${state.joinedCommunities.includes(c.id)?`<button class="button" data-act="community-compose" data-id="${c.id}" data-i18n-direct>${esc(socialText('discussionCreate',"Krijo diskutim"))}</button>`:''}</div>${posts.map(post).join('')||`<p data-i18n-direct>${esc(socialText('discussionEmpty','Ende pa diskutime për këtë kërkim.'))}</p>`}`;
 }
 
-function notice(message){state.activityLog.unshift({id:Date.now()+Math.random(),text:message,time:'Tani'});state.activityLog=state.activityLog.slice(0,15);persist()}
+function notice(message){state.activityLog.unshift({id:Date.now()+Math.random(),text:message,time:'Tani',createdAt:new Date().toISOString()});state.activityLog=state.activityLog.slice(0,15);persist()}
 function sectionsTitle(title,sub){return `<div class="section-header"><h2>${safeMark(title)}</h2><p>${safeMark(sub)}</p></div>`}
 function demoNotice(){return ''}
 function quickAction(icon,label,action,v){return `<button class="v3-quick" data-act="${action}" ${v?`data-val="${safeMark(v)}"`:''}><span>${icon}</span><b>${safeMark(label)}</b></button>`}
@@ -591,7 +591,7 @@ Object.assign(state,{
  v6Prefs:{privateProfile:false,contactPolicy:'everyone',activityInvites:true,alertMessages:true,alertActivities:true,...(isRecord(saved.v6Prefs)?saved.v6Prefs:{})}
 });
 // Reference fixtures retain historical IDs; read/follow state stays in the core store.
-const n17Fallback={"title": "Njoftimet", "subtitle": "Qëndro i përditësuar me njerëzit, aktivitetet dhe mundësitë.", "settings": "Cilësimet", "all": "Të gjitha", "people": "Njerëz", "activities": "Aktivitete", "jobs": "Punë", "system": "Sistemi", "today": "Sot", "yesterday": "Dje", "earlier": "Më herët", "markAll": "Shëno të gjitha si të lexuara", "unread": "Pa lexuar", "read": "Lexuar", "empty": "Nuk ka njoftime në këtë kategori.", "followBack": "Ndiq mbrapsht", "following": "Duke ndjekur", "back": "Kthehu te njoftimet", "localActivity": "Aktiviteti yt", "now": "Tani", "minute2": "2 min më parë", "minute12": "12 min më parë", "minute28": "28 min më parë", "hour1": "1 orë më parë", "timeYesterday": "Dje, 18:20", "timeMention": "Dje, 14:05", "timeChange": "Dje, 11:42", "days2": "2 ditë më parë", "like": "pëlqeu një postim.", "follow": "filloi të të ndjekë.", "mention": "të përmendi në një koment.", "comment": "komentoi një postim.", "planTitle": "Një plan për këtë fundjavë", "planBody": "Shiko aktivitetin “Kafe dhe njohje të reja” në Romë.", "jobTitle": "Mundësi për punë", "jobBody": "Shiko një ofertë pune.", "communityBody": "publikoi një postim të ri.", "changeTitle": "Ka një ndryshim në aktivitetin tënd.", "changeBody": "Shiko detajet e aktivitetit.", "welcomeTitle": "Mirë se erdhe në ILLYRIAN", "welcomeBody": "Zbulo njerëz dhe komunitete shqiptare."};
+const n17Fallback={"title": "Njoftimet", "subtitle": "Qëndro i përditësuar me njerëzit, aktivitetet dhe mundësitë.", "settings": "Cilësimet", "all": "Të gjitha", "people": "Njerëz", "activities": "Aktivitete", "jobs": "Punë", "system": "Sistemi", "today": "Sot", "yesterday": "Dje", "earlier": "Më herët", "markAll": "Shëno të gjitha si të lexuara", "unread": "Pa lexuar", "read": "Lexuar", "empty": "Nuk ka njoftime në këtë kategori.", "followBack": "Ndiq mbrapsht", "following": "Duke ndjekur", "back": "Kthehu te njoftimet", "localActivity": "Aktiviteti yt", "now": "Tani", "minute2": "2 min më parë", "minute12": "12 min më parë", "minute28": "28 min më parë", "hour1": "1 orë më parë", "timeYesterday": "Dje, 18:20", "timeMention": "Dje, 14:05", "timeChange": "Dje, 11:42", "days2": "2 ditë më parë", "like": "pëlqeu një postim.", "follow": "filloi të të ndjekë.", "mention": "të përmendi në një koment.", "comment": "komentoi një postim.", "planTitle": "Një plan për këtë fundjavë", "planBody": "Shiko aktivitetin “Kafe dhe njohje të reja” në Romë.", "jobTitle": "Mundësi për punë", "jobBody": "Shiko një ofertë pune.", "communityBody": "publikoi një postim të ri.", "changeTitle": "Ka një ndryshim në aktivitetin tënd.", "changeBody": "Shiko detajet e aktivitetit.", "welcomeTitle": "Mirë se erdhe në ILLYRIAN", "welcomeBody": "Zbulo njerëz dhe komunitete shqiptare.", "undated": "Pa datë", "dateUnknown": "Data nuk është regjistruar", "otherDates": "Data të tjera"};
 const n17Text=key=>window.IllyrianI18n?.t('notifications:'+key)||n17Fallback[key]||key;
 let n17Filter='all',n17Return=null;
 const v6SeedAlerts=[
@@ -605,9 +605,39 @@ const v6SeedAlerts=[
  {id:'n17-comment',category:'people',group:'earlier',person:'dion',verb:'comment',when:'days2',kind:'comments',target:'p2',thumb:'./assets/profiles/sample-coast.webp'},
  {id:'welcome',category:'system',group:'earlier',symbol:'bell',title:'welcomeTitle',description:'welcomeBody',when:'days2',kind:'explore',target:'explore'}
 ];
-function v6Notifications(){return [...state.activityLog.filter(isRecord).map(entry=>({id:'act_'+entry.id,category:'system',group:'today',symbol:'bell',title:'localActivity',description:String(entry.text??''),literal:true,when:'now',kind:'activity',target:'activity'})),...v6SeedAlerts.filter(a=>!a.person||!state.blocked.includes(a.person))]}
+// Read-only date projection: do not infer historical dates from IDs or labels like "Tani".
+function n17ActivityDate(value){
+ if(typeof value==='number'){const d=new Date(value);return Number.isFinite(d.getTime())?d:null}
+ if(typeof value!=='string')return null;
+ const raw=value.trim(),parts=/^(\d{4})-(\d{2})-(\d{2})/.exec(raw);
+ if(!parts)return null;
+ const year=Number(parts[1]),month=Number(parts[2]),day=Number(parts[3]);
+ if(year<1000||month<1||month>12||day<1||day>new Date(year,month,0).getDate())return null;
+ const wall=/^\d{4}-\d{2}-\d{2}(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(raw);
+ if(wall){
+  const h=Number(wall[1]||0),m=Number(wall[2]||0),sec=Number(wall[3]||0);if(h>23||m>59||sec>59)return null;
+  const d=new Date(year,month-1,day,h,m,sec);return d.getFullYear()===year&&d.getMonth()===month-1&&d.getDate()===day&&d.getHours()===h&&d.getMinutes()===m?d:null;
+ }
+ if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(raw))return null;
+ const d=new Date(raw);return Number.isFinite(d.getTime())?d:null;
+}
+const n17DateFormats=new Map();
+function n17ActivityMeta(entry,now){
+ const recorded=n17ActivityDate(entry.createdAt),date=recorded||n17ActivityDate(entry.time);
+ const source=recorded?entry.createdAt:entry.time,dateOnly=typeof source==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(source.trim());
+ if(!date)return {group:'undated',whenText:n17Text('dateUnknown')};
+ const today=new Date(now);today.setHours(0,0,0,0);
+ const yesterday=new Date(today);yesterday.setDate(yesterday.getDate()-1);
+ const tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);
+ const group=date>=today&&date<tomorrow?'today':date>=yesterday&&date<today?'yesterday':date<yesterday?'earlier':'otherDates';
+ const lang=window.IllyrianI18n?.language||'sq';
+ if(!n17DateFormats.has(lang))n17DateFormats.set(lang,{date:new Intl.DateTimeFormat(lang,{year:'numeric',month:'2-digit',day:'2-digit'}),clock:new Intl.DateTimeFormat(lang,{hour:'2-digit',minute:'2-digit'}),full:new Intl.DateTimeFormat(lang,{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
+ const format=n17DateFormats.get(lang)[dateOnly?'date':group==='today'||group==='yesterday'?'clock':'full'];
+ return {group,whenText:format.format(date)};
+}
+function v6Notifications(){const now=new Date();return [...state.activityLog.filter(isRecord).map(entry=>({id:'act_'+entry.id,category:'system',...n17ActivityMeta(entry,now),symbol:'bell',title:'localActivity',description:String(entry.text??''),literal:true,kind:'activity',target:'activity'})),...v6SeedAlerts.filter(a=>!a.person||!state.blocked.includes(a.person))]}
 function v6UnreadAlerts(){return v6Notifications().filter(x=>!state.v6ReadAlerts.includes(x.id)).length}
-function v6RenderBadge(){const badge=document.querySelector('.head [data-val="notifications"] .dot');if(badge){const n=v6UnreadAlerts();badge.textContent=n?String(Math.min(n,9)):'',badge.style.display=n?'grid':'none'}}
+function v6RenderBadge(){const badge=document.querySelector('.head [data-val="notifications"] .dot');if(badge){const n=v6UnreadAlerts();badge.textContent=n?String(n):'',badge.style.display=n?'grid':'none'}}
 const v6OldModal=modalContent;
 const v6ThreadSeed=[{id:'leon',avatar:'a3',name:'Leon M.',last:'Përshëndetje! Si po shkon?',time:'12:42'}, {id:'arta',avatar:'a2',name:'Arta K.',last:'Shihemi në event!',time:'Dje'}, {id:'besa',avatar:'a4',name:'Besa H.',last:'Faleminderit për ftesën.',time:'E hënë'}, {id:'dion',avatar:'a5',name:'Dion A.',last:'Shihemi te aktiviteti!',time:'Dje'}];
 function v6InboxContent(){
@@ -625,10 +655,10 @@ function v6AlertsContent(){
  const tabs=[['all','all','bell'],['people','people','user'],['activities','activities','calendar'],['jobs','jobs','briefcase'],['system','system','bell']];
  const filters=tabs.map(([id,label,icon])=>{const count=arr.filter(a=>(id==='all'||a.category===id)&&unread(a)).length;return `<button type="button" data-act="n17-filter" data-val="${id}" aria-pressed="${n17Filter===id}">${id==='all'?'':svg(icon,12)}<span>${esc(n17Text(label))}</span>${count?`<b class="n17-count">${count}</b>`:''}</button>`}).join('');
  const rows=arr.filter(a=>n17Filter==='all'||a.category===n17Filter);
- const groups=['today','yesterday','earlier'].map(group=>{const items=rows.filter(a=>a.group===group);if(!items.length)return '';return `<section class="n17-group"><h3>${esc(n17Text(group))}</h3>${items.map(a=>{
+ const groups=['today','yesterday','earlier','otherDates','undated'].map(group=>{const items=rows.filter(a=>a.group===group);if(!items.length)return '';return `<section class="n17-group"><h3>${esc(n17Text(group))}</h3>${items.map(a=>{
   const person=people.find(p=>p.id===a.person),isNew=unread(a),followed=state.follows.includes(a.person);
   const name=person?.name||a.name,title=name?`<strong data-user-content>${esc(name)}</strong> ${esc(n17Text(a.verb))}`:`<strong>${esc(n17Text(a.title))}</strong>`;
-  return `<div class="n17-row ${isNew?'new':''}" data-category="${a.category}"><button type="button" class="v6-alert-item n17-open ${isNew?'new':''}" data-act="v6-open-alert" data-id="${esc(a.id)}"><span class="n17-unread" role="img" aria-label="${esc(n17Text(isNew?'unread':'read'))}"></span><span class="n17-avatar n17-${a.category}">${person?tinyAvatar(person.ava):svg(a.symbol||'bell',21)}</span><span class="n17-body"><span>${title}</span>${a.description?`<span class="n17-description" ${a.literal?'data-user-content':''}>${esc(a.literal?a.description:n17Text(a.description))}</span>`:''}<small>${esc(n17Text(a.when))}</small></span>${a.thumb?`<img class="n17-thumb" src="${a.thumb}" alt="" loading="lazy" width="40" height="40">`:''}</button>${a.follow?`<button type="button" class="n17-follow" data-act="n17-follow" data-id="${esc(a.person)}" ${followed?'disabled':''}>${esc(n17Text(followed?'following':'followBack'))}</button>`:''}</div>`;
+  return `<div class="n17-row ${isNew?'new':''}" data-category="${a.category}"><button type="button" class="v6-alert-item n17-open ${isNew?'new':''}" data-act="v6-open-alert" data-id="${esc(a.id)}"><span class="n17-unread" role="img" aria-label="${esc(n17Text(isNew?'unread':'read'))}"></span><span class="n17-avatar n17-${a.category}">${person?tinyAvatar(person.ava):svg(a.symbol||'bell',21)}</span><span class="n17-body"><span>${title}</span>${a.description?`<span class="n17-description" ${a.literal?'data-user-content':''}>${esc(a.literal?a.description:n17Text(a.description))}</span>`:''}<small>${esc(a.whenText??n17Text(a.when))}</small></span>${a.thumb?`<img class="n17-thumb" src="${a.thumb}" alt="" loading="lazy" width="40" height="40">`:''}</button>${a.follow?`<button type="button" class="n17-follow" data-act="n17-follow" data-id="${esc(a.person)}" ${followed?'disabled':''}>${esc(n17Text(followed?'following':'followBack'))}</button>`:''}</div>`;
  }).join('')}</section>`}).join('');
  const inside=`<p class="n17-subtitle">${esc(n17Text('subtitle'))}</p><div class="n17-filters" role="group" aria-label="${esc(n17Text('title'))}">${filters}</div><div class="n17-list" tabindex="0">${groups||`<p class="n17-empty" role="status">${esc(n17Text('empty'))}</p>`}</div><footer class="n17-footer"><button type="button" data-act="v6-read-all" ${n?'':'disabled'}>${svg('check',16)}${esc(n17Text('markAll'))}</button></footer>`;
  return drawer(n17Text('title'),inside).replace('class="overlay"','class="overlay n17-overlay"').replace('class="modal"','class="modal n17-modal" data-i18n-direct').replace('<button class="icon-button" data-act="close"',`<button type="button" class="n17-settings" data-act="n17-settings">${svg('settings',15)}<span>${esc(n17Text('settings'))}</span></button><button class="icon-button" data-act="close"`);
@@ -723,7 +753,7 @@ function v6Action(action,id,v){
 }
 // v0.6 interactivity contract: event delegation handles dynamically rendered views.
 document.addEventListener('input',e=>{if(e.target.id==='v6-inbox-search'){state.v6InboxSearch=e.target.value;v6FilterInbox();}});
-document.addEventListener('change',e=>{const key=e.target.dataset?.v6Pref;if(!key)return;const isCheckbox=e.target.type==='checkbox';const value=isCheckbox?e.target.checked:e.target.value;const old=state.v6Prefs[key];state.v6Prefs[key]=value;if(!persist()){state.v6Prefs[key]=old;if(isCheckbox)e.target.checked=!!old;else e.target.value=old;toast(coreSaveFailed());e.target.focus();return}toast("Preferenca u ruajt")});
+document.addEventListener('change',e=>{const key=e.target.dataset?.v6Pref;if(!key)return;const isCheckbox=e.target.type==='checkbox';const value=isCheckbox?e.target.checked:e.target.value;const old=state.v6Prefs[key];if(!coreMessageFresh(e.target)){if(isCheckbox)e.target.checked=!!old;else e.target.value=old;return}state.v6Prefs[key]=value;if(!persist()){state.v6Prefs[key]=old;if(isCheckbox)e.target.checked=!!old;else e.target.value=old;toast(coreSaveFailed());e.target.focus();return}toast("Preferenca u ruajt")});
 document.addEventListener('submit',e=>{if(e.target.id!=='v6-chat-form')return;e.preventDefault();const id=e.submitter?.dataset.v6ChatId||e.target.querySelector('[data-v6-chat-id]')?.dataset.v6ChatId;const input=e.target.querySelector('#v6-msg-input'),txt=(input?.value||'').trim();if(!id||!txt)return;if(!coreMessageFresh(input))return;const old=state.messages[id];state.messages[id]=[...(old||[]),txt];if(!persist()){if(old===undefined)delete state.messages[id];else state.messages[id]=old;toast(coreSaveFailed());input?.focus();return}openModal('chat',id);const chat=$('#v6-chat-scroll');if(chat)chat.scrollTop=chat.scrollHeight;});
 document.addEventListener('keydown',e=>{if(e.target.id==='v6-story-message'&&e.key==='Enter'){e.preventDefault();document.querySelector('[data-act="v6-story-send"]')?.click()}});
 let v6StoryTimer=null;
@@ -1203,7 +1233,7 @@ v8Action=function(action,id,v){
    const previous=state.joinedCommunities,previousLog=state.activityLog;
    state.joinedCommunities=toggle(previous,id);
    const message=state.joinedCommunities.includes(id)?'U bashkove me '+c.name+"":'U largove nga '+c.name+"";
-   state.activityLog=[{id:Date.now()+Math.random(),text:message,time:'Tani'},...previousLog].slice(0,15);
+   state.activityLog=[{id:Date.now()+Math.random(),text:message,time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
    if(persist()===false){state.joinedCommunities=previous;state.activityLog=previousLog;toast(window.IllyrianI18n?.t('common:storageSaveFailed')||'Not saved. Try again.');return true}
    openModal('v11-community',id);toast(state.joinedCommunities.includes(id)?'Komuniteti u shtua te Profili yt':'U largove nga komuniteti');return true;
  }

@@ -1201,3 +1201,81 @@ test('Notifications reference: live locale keeps the exact focused notification 
  await row.focus();await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
  await expect(row).toBeFocused();
 });
+
+// Three confirmed notification audit defects: snapshot overwrite, count cap and dates.
+test('Notifications corrections: preferences reject a stale tab and retry after reload',async({browser})=>{
+ const ctx=await browser.newContext();const a=await ctx.newPage(),b=await ctx.newPage();
+ try{
+  await openNotifications(a);await a.locator('[data-act="n17-settings"]').click();
+  await openDemo(b,390,844);await b.locator('#screen [data-act="comments"]').first().click();
+  await b.locator('#comment-input').fill('Keep this other-tab comment');await b.locator('#layer [data-act="send-comment"]').click();
+  const raw=await b.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await a.locator('[data-v6-pref="alertActivities"]').click();
+  expect(await a.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+  await expect(a.locator('[data-v6-pref="alertActivities"]')).toBeChecked();
+  await expect(a.locator('[data-v6-pref="alertActivities"]')).toBeFocused();
+  await a.reload();await a.locator('#phone > .head [data-val="notifications"]').click();await a.locator('[data-act="n17-settings"]').click();
+  await a.locator('[data-v6-pref="alertActivities"]').uncheck();
+  const saved=await a.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')));
+  expect(saved.comments.p1).toEqual(['Keep this other-tab comment']);expect(saved.v6Prefs.alertActivities).toBe(false);
+ }finally{await ctx.close()}
+});
+test('Notifications corrections: bell shows the exact count above nine and clears at zero',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({activityLog:[{id:'count',text:'Count fixture',time:'Tani'}]})));
+ const modal=await openNotifications(page);
+ await expect(modal.locator('[data-act="n17-filter"][data-val="all"] b')).toHaveText('10');
+ await expect(page.locator('#phone > .head [data-val="notifications"] .dot')).toHaveText('10');
+ expect(await page.locator('#phone > .head [data-val="notifications"] .dot').evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(1);
+ await modal.locator('[data-act="v6-read-all"]').click();await page.keyboard.press('Escape');
+ await expect(page.locator('#phone > .head [data-val="notifications"] .dot')).toBeHidden();
+});
+for(const [lang,earlier,undated] of [['sq','Më herët','Pa datë'],['en','Earlier','Undated'],['it','In precedenza','Senza data']])test('Notifications corrections: historical and missing dates remain honest '+lang,async({page})=>{
+ await page.clock.install({time:new Date('2026-11-01T12:00:00Z')});
+ await page.clock.setFixedTime(new Date('2026-11-01T12:00:00Z'));
+ await page.addInitScript(lang=>{localStorage.setItem('illyrian_demo_ui_language_v1',lang);localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({activityLog:[{id:'old',text:'Old event',time:'2026-10-01 12:30'},{id:'unknown',text:'Undated event',time:'Tani'}]}))},lang);
+ const modal=await openNotifications(page);const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const old=modal.locator('[data-act="v6-open-alert"][data-id="act_old"]');
+ await expect(old.locator('xpath=ancestor::section/h3')).toHaveText(earlier);
+ await expect(old.locator('small')).toContainText('2026');
+ await expect(modal.locator('[data-act="v6-open-alert"][data-id="act_unknown"]').locator('xpath=ancestor::section/h3')).toHaveText(undated);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+});
+test('Notifications corrections: new activity timestamps survive reload and advance to yesterday',async({page})=>{
+ await page.clock.install({time:new Date('2026-11-01T12:00:00Z')});
+ await page.clock.setFixedTime(new Date('2026-11-01T12:00:00Z'));
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_ui_language_v1','sq'));
+ const modal=await openNotifications(page);await modal.locator('[data-act="v6-open-alert"][data-id="job"]').click();
+ await page.locator('#layer [data-act="apply-job"]').click();
+ const entry=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).activityLog[0]);
+ expect(entry.createdAt).toBe('2026-11-01T12:00:00.000Z');
+ await page.keyboard.press('Escape');const row=modal.locator('[data-act="v6-open-alert"][data-id="act_'+entry.id+'"]');
+ await expect(row.locator('xpath=ancestor::section/h3')).toHaveText('Sot');
+ await page.clock.setFixedTime(new Date('2026-11-02T12:00:00Z'));await page.reload();await page.locator('#phone > .head [data-val="notifications"]').click();
+ await expect(row.locator('xpath=ancestor::section/h3')).toHaveText('Dje');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).activityLog[0].createdAt)).toBe(entry.createdAt);
+});
+test('Notifications corrections: community membership uses the same timestamp contract',async({page})=>{
+ await page.clock.install({time:new Date('2026-11-01T12:00:00Z')});
+ await page.clock.setFixedTime(new Date('2026-11-01T12:00:00Z'));
+ const modal=await openNotifications(page);await modal.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();
+ await page.locator('#layer [data-act="v11-community-toggle"]').click();
+ const entry=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).activityLog[0]);
+ expect(entry.createdAt).toBe('2026-11-01T12:00:00.000Z');
+});
+for(const zone of ['Europe/Rome','America/New_York'])test('Notifications corrections: local calendar groups respect timezone and DST '+zone,async({browser})=>{
+ const ctx=await browser.newContext({timezoneId:zone});const page=await ctx.newPage();
+ try{
+  await page.clock.install({time:new Date('2026-10-25T23:30:00Z')});
+  await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({activityLog:[{id:'timezone',text:'TIMEZONE FIXTURE',createdAt:'2026-10-25T22:30:00Z'},{id:'future',text:'FUTURE FIXTURE',createdAt:'2026-12-01T12:00:00Z'},{id:'bad',text:'INVALID FIXTURE',createdAt:'2026-02-30T12:00:00Z',time:'Tani'}]}))});
+  const modal=await openNotifications(page);
+  await expect(modal.locator('[data-id="act_timezone"]').locator('xpath=ancestor::section/h3')).toHaveText(zone==='Europe/Rome'?'Dje':'Sot');
+  await expect(modal.locator('[data-id="act_future"]').locator('xpath=ancestor::section/h3')).toHaveText('Data të tjera');
+  await expect(modal.locator('[data-id="act_bad"]').locator('xpath=ancestor::section/h3')).toHaveText('Pa datë');
+ }finally{await ctx.close()}
+});
+test('Notifications corrections: a date without a time never invents midnight',async({page})=>{
+ await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({activityLog:[{id:'date-only',text:'DATE ONLY FIXTURE',time:'2026-10-01'}]}))});
+ const modal=await openNotifications(page);
+ await expect(modal.locator('[data-id="act_date-only"] small')).not.toContainText(':');
+ await expect(modal.locator('[data-id="act_date-only"] small')).toContainText('2026');
+});

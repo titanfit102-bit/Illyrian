@@ -9,6 +9,9 @@
 | NF03 | Hap routes origjinale; kthim/Escape/fokus dhe filtër/scroll i ruajtur. Gear → preferencat ekzistuese. |
 | NF04 | Read-all ruan edhe ID historike; follow-back pa dublim. Quota/stale snapshot refuzojnë shkrimin, ruajnë gjendjen dhe lejojnë Retry; aktorët e bllokuar nuk shfaqen. |
 | NF05 | Regresionet përkatëse, syntax/vendor/locale mirrors/scan/diff, GitHub exactSHA/readback/CI dhe Preview; fizik/screenreader/native/pranimi vizual OPEN. |
+| NF06 | Audit 03ed55e → korrigjim i autorizuar 1 nëntor 2026: preferencat refuzojnë core snapshot të vjetruar para mutacionit; kontrolli/fokusi rikthehen, komenti i dritares tjetër ruhet, reload/Retry dhe quota mbeten të mundshme. |
+| NF07 | Zilja shfaq numrin e plotë të palexuar, edhe ≥10, koherent me listën;0 fshihet dhe read-all ruhet pas reload. |
+| NF08 | Aktivitetet e reja shtojnë createdAt ISO UTC pa ndryshuar keys/IDs/time legacy. Sot/Dje/Më herët lexojnë kalendarin lokal; datat e ardhshme te Data të tjera, pa datë të besueshme te Pa datë. Legacy timestamp i plotë lexohet pa migrim/shkrim; sq/en/it,timezone/DST/reload, date të pavlefshme dhe ruajtja e raw history testohen. |
 
 Provat/statusi te CURRENT_STATE; kontrata te blueprint §25. Ruhet header/navbar-i dhe hyrja Home→zilja; pa zgjerim në module të tjera.
 

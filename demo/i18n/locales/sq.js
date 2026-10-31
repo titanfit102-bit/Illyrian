@@ -2,6 +2,9 @@
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.sq={
   "notifications": {
+      "undated": "Pa datë",
+      "dateUnknown": "Data nuk është regjistruar",
+      "otherDates": "Data të tjera",
       "title": "Njoftimet",
       "subtitle": "Qëndro i përditësuar me njerëzit, aktivitetet dhe mundësitë.",
       "settings": "Cilësimet",

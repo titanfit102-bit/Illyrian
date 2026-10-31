@@ -2,6 +2,9 @@
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.en={
   "notifications": {
+      "undated": "Undated",
+      "dateUnknown": "Date not recorded",
+      "otherDates": "Other dates",
       "title": "Notifications",
       "subtitle": "Stay up to date with people, activities and opportunities.",
       "settings": "Settings",
