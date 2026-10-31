@@ -740,3 +740,18 @@ test('Avatar change preserves unsaved premium profile fields',async({page})=>{
  expect(profile).toMatchObject({name:'Test Avatar',p17City:'Elbasan',p17Handle:'test.avatar'});
  expect(profile.photoData).toMatch(/^data:image\/jpeg;base64,/);
 });
+
+test('Saved Reels remain accessible from premium Saved tab after profile redesign',async({page})=>{
+ await page.addInitScript(()=>{
+  const key='illyrian_demo_v09_state',state=JSON.parse(localStorage.getItem(key)||'{}');
+  state.reelSaved=['r2'];localStorage.setItem(key,JSON.stringify(state));
+ });
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('#screen .p17-tabs [data-id="saved"]').click();
+ const reel=page.locator('#screen .p17-tile[data-kind="friendReel"]');
+ await expect(reel).toHaveCount(1);
+ await reel.click();
+ await expect(page.locator('#layer .v4-reel-overlay')).toBeVisible();
+ await expect(page.locator('#layer .v4-reel-counter')).toHaveText('2 / 3');
+});

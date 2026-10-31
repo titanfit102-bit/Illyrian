@@ -2334,7 +2334,11 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   const has=(array,id)=>Array.isArray(array)&&array.some(x=>String(x)===String(id));
   if(tab==="posts")return state.posts.map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,likes:0}));
   if(tab==="reels")return v15Reels.map(r=>({kind:"myreel",id:r.id,src:v15Pic(r),text:r.caption}));
-  if(tab==="saved")return allPosts().filter(p=>has(state.bookmarks,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text}));
+  if(tab==="saved"){
+   const savedPosts=allPosts().filter(p=>has(state.bookmarks,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text}));
+   const savedReels=reels.filter(r=>has(state.reelSaved,r.id)).map(r=>({kind:"friendReel",id:String(reels.indexOf(r)),src:IMAGES[r.photo]||"",text:r.label}));
+   return [...savedPosts,...savedReels];
+  }
   if(tab==="liked"){
    const a=allPosts().filter(p=>has(state.likes,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text}));
    const b=v15Reels.filter(r=>r.liked).map(r=>({kind:"myreel",id:r.id,src:v15Pic(r),text:r.caption}));
