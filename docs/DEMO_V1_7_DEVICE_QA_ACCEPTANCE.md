@@ -101,3 +101,23 @@ Visual member index (original names retained inside ZIP):
 Inventory field `catalogKeys=710` is named by the old capture script but counts unique non-template Albanian text values (`Set`, excluding interpolation), not the full782 locale-key count/19 namespaces verified from current source. Exact-match misses include fixture names, combined labels and dynamic text. Review suspected UI omissions against source/semantics before logging a defect; do not translate UGC or claim global coverage from key parity.
 
 Decisions and negative/intermediate results remain in Git history/security/Phase1/Phase3 and blueprint; no new full snapshot copy. For future material evidence, add sanitized original files to this same archive/index (or approved durable store), naming source/build/run/device/OS/locale/orientation/state, timestamp, outcome/issue, SHA256 and reviewer. Remove credentials/share URLs/private content **before** publication; do not publish native symbols/private manifests or personal incident evidence here. Archives must not be treated as public-user retention policy or proof of media rights. Preserve legal/privacy and release review. Historical screenshot sets outside these87 and future physical/build records remain OPEN; this index does not retroactively archive every past CI artifact.
+
+
+### Notifications reference —31 October2026
+
+Original PNGs from the final local Chromium140/headless-shell1193 run (`Notifications reference: responsive390x844`, sq, Light/Dark, portrait, initial unread fixture list). Captured on31 Oct2026 UTC, reviewed by ChatGPT against the supplied reference. Synthetic bundled profiles only; no real users or credentials. These are browser viewport captures, not physical Android/iPhone/native notification evidence or owner acceptance. Git commit history/readback pins the source; the hashes below identify the exact captured runtime, independent of expiring CI artifacts.
+
+| Capture | Bytes | SHA256 |
+|---|---:|---|
+| [notifications-light.png](archive/qa/notifications-reference-f28ee73d30c5/notifications-light.png) | 186316 | `ae52db8e6021123d5ae7edcc5fccb6290329887216e648fb0d90d8e1b3d790aa` |
+| [notifications-dark.png](archive/qa/notifications-reference-f28ee73d30c5/notifications-dark.png) | 175036 | `b95352c621831e7485b5c2c11eef115705937cbb3cc532a9ca1ebf3d082244f1` |
+
+Captured runtime SHA256 (locale mirrors are byte-identical):
+
+- `demo/ILLYRIAN_DEMO_v1.7.html`: `f91a89e8ca5258a2035509aa071fc490fa80b50723ba84adb1e756e83b676874`
+- `demo/ILLYRIAN_NOTIFICATIONS_V17.css`: `6e1a516a5735aa1880f56c52331cd0b771689ca2dbb4c3ccd6d40ad8d47a9537`
+- `demo/i18n/locales/sq.js`: `7d9788a18f9b5af2a0156e343b2f0d402246a475d30e783702b0fe36466a0d1e`
+- `demo/i18n/locales/en.js`: `72cdf0f646da4f1a61830303d7176d0762aa0f05ee79d42316e6d6eff0b7c880`
+- `demo/i18n/locales/it.js`: `d560f15e4c6a5961581e99fba7c32e40ccca90f53e22b1e29c737cab77133cc5`
+
+Outcome: bounded visual review of both captures; source-matched local functional/layout results are in CURRENT_STATE. Physical devices/TalkBack/VoiceOver/performance and owner visual acceptance remain OPEN.

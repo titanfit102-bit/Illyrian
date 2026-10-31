@@ -1,5 +1,17 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+**Njoftimet — referenca e miratuar,31 tetor2026:** pronari dha screenshot-in dhe autorizoi “bëje”. Brenda modalit ekzistues `notifications`: titull/Cilësimet, filtrat all/people/activities/jobs/system me numërues realë të listës, grupet Sot/Dje/Më herët, avatarë/miniatura lokale, unread rozë, follow-back dhe footer mark-all. Ripërdor `v6ReadAlerts`, `follows`, preferencat dhe routes ekzistuese; ruaj ID-të welcome/meet/job/profile dhe leximet historike. Backend/native push/Quick Reply mbeten vetëm specifikim6.2.
+
+| ID | Pranim / rendi i zbatimit |
+|---|---|
+| NF01 | Test RED → render/CSS i izoluar sipas referencës; Light/Dark,320/360/390/430/landscape/desktop dhe sq/en/it. |
+| NF02 | Kategori/grupe dhe numërues të derivuar, empty, avatarë/miniatura lokale; UGC literal dhe i escaped, pa shkrime gjatë leximit/filtrimit. |
+| NF03 | Hap routes origjinale; kthim/Escape/fokus dhe filtër/scroll i ruajtur. Gear → preferencat ekzistuese. |
+| NF04 | Read-all ruan edhe ID historike; follow-back pa dublim. Quota/stale snapshot refuzojnë shkrimin, ruajnë gjendjen dhe lejojnë Retry; aktorët e bllokuar nuk shfaqen. |
+| NF05 | Regresionet përkatëse, syntax/vendor/locale mirrors/scan/diff, GitHub exactSHA/readback/CI dhe Preview; fizik/screenreader/native/pranimi vizual OPEN. |
+
+Provat/statusi te CURRENT_STATE; kontrata te blueprint §25. Ruhet header/navbar-i dhe hyrja Home→zilja; pa zgjerim në module të tjera.
+
 **Profile — hyrjet e miratuara,31 tetor2026:** pa ig6-entry/il4-entry pas galerisë. Ingranazhi → Privatësia përdor preferencat ekzistuese; Ndihma dhe mbështetja hap tabs reports/appeals të Governance ekzistues, me kthim/fokus te Settings. Profile → Mundësi lexon vetëm listimet `owned===true` nga adapterët Shop/Shop Plus dhe hap origjinalin, pa kopje storage ose menu të plotë Mundësi. Pa listime personale nuk shfaqet seksion menaxhimi; planet personale lexohen nga adapter-i Plans dhe aktivitetet e lidhura ekzistuese ruhen. Settings → Komunitetet e mia hap anëtarësimet; numri Duke ndjekur hap personat dhe bizneset që ndiqen, me numërim koherent dhe rrugët ekzistuese, pa rikthyer blloqe të mëdha. Komunitetet/harta/Zbulo dhe Calendar/Plane & Aktivitete nuk ndryshohen. QA: sq/en/it,Light/Dark,locale live,Tab/Escape/fokus,privatësia ekzistuese,storage i pandryshuar,emrat UGC literalë dhe përjashtimi i listimeve të huaja; rolet reale/privatësia server-side BACKEND.
 
 **Audit i profilit, burimi `524c8de` — korrigjime të autorizuara:** rastet u riprodhuan në browser; kodi i vjetër/provat historike mbeten në Git. Statusi dhe ekzekutimet finale te CURRENT_STATE; kontrata aktive te blueprint. Pa module të reja ose ndryshim dizajni/navbar.

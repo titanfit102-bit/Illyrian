@@ -1060,3 +1060,144 @@ test('Profile corrections: complete profile keeps authored markup-like text, loc
  await page.locator('[data-ily-profile-settings]').click();await page.locator('#layer [data-val="communities"]').click();await expect(page.locator('#layer .modal')).toBeVisible();await page.keyboard.press('Escape');
  for(const tab of ['posts','reels','saved','liked','opportunities']){await page.locator('#p17-tab-'+tab).click();await expect(page.locator('#p17-tab-'+tab)).toHaveAttribute('aria-selected','true')}expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
 });
+
+// Notifications reference: UI-only fixtures reuse the core read/follow stores.
+async function openNotifications(page){
+ await openDemo(page,390,844);
+ await page.locator('#phone > .head [data-val="notifications"]').click();
+ return page.locator('#layer .n17-modal');
+}
+test('Notifications reference: filters, read counters and reload preserve historical IDs',async({page})=>{
+ const modal=await openNotifications(page);
+ await expect(modal).toBeVisible();
+ await expect(modal.locator('[data-act="n17-filter"]')).toHaveCount(5);
+ const total=await modal.locator('.n17-row').count();expect(total).toBeGreaterThan(4);
+ await modal.locator('[data-act="n17-filter"][data-val="jobs"]').click();
+ await expect(modal.locator('.n17-row')).toHaveCount(1);
+ await expect(modal.locator('[data-act="v6-open-alert"]')).toHaveAttribute('data-id','job');
+ await modal.locator('[data-act="v6-read-all"]').click();
+ await expect(modal.locator('[data-act="v6-read-all"]')).toBeDisabled();
+ await page.keyboard.press('Escape');await page.reload();
+ await page.locator('#phone > .head [data-val="notifications"]').click();
+ await expect(modal.locator('.n17-row.new')).toHaveCount(0);
+ await expect(page.locator('#phone > .head [data-val="notifications"] .dot')).toBeHidden();
+});
+test('Notifications reference: follow back, content and settings return to the selected filter',async({page})=>{
+ const modal=await openNotifications(page);
+ await modal.locator('[data-act="n17-filter"][data-val="people"]').click();
+ await modal.locator('[data-act="n17-follow"]').click();
+ await expect(modal.locator('[data-act="n17-follow"]')).toBeDisabled();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).follows.filter(x=>x==='leon').length)).toBe(1);
+ await modal.locator('[data-act="v6-open-alert"][data-id="profile"]').click();
+ await expect(page.locator('#comment-input')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(modal.locator('[data-act="n17-filter"][data-val="people"]')).toHaveAttribute('aria-pressed','true');
+ await expect(modal.locator('[data-act="v6-open-alert"][data-id="profile"]')).toBeFocused();
+ await modal.locator('[data-act="n17-settings"]').click();
+ await expect(page.locator('[data-v6-pref="alertMessages"]')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(modal.locator('[data-act="n17-settings"]')).toBeFocused();
+});
+test('Notifications reference: quota and stale writes do not mark read or follow',async({page})=>{
+ const modal=await openNotifications(page);
+ await page.evaluate(()=>{window.ntSet=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('full','QuotaExceededError');return window.ntSet.call(this,k,v)}});
+ const before=await modal.locator('.n17-row.new').count();
+ await modal.locator('[data-act="v6-read-all"]').click();
+ await expect(modal.locator('.n17-row.new')).toHaveCount(before);
+ await modal.locator('[data-act="n17-follow"]').click();
+ await expect(modal.locator('[data-act="n17-follow"]')).toBeEnabled();
+ await page.evaluate(()=>{Storage.prototype.setItem=window.ntSet;localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({...JSON.parse(localStorage.getItem('illyrian_demo_v09_state')||'{}'),comments:{p1:['OTHER TAB']}}))});
+ await modal.locator('[data-act="v6-read-all"]').click();
+ await expect(modal.locator('.n17-row.new')).toHaveCount(before);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).comments.p1)).toEqual(['OTHER TAB']);
+});
+for(const [lang,title,peopleLabel] of [['sq','Njoftimet','Njerëz'],['en','Notifications','People'],['it','Notifiche','Persone']])test('Notifications reference: localized filters, empty state and literal activity '+lang,async({page})=>{
+ await page.addInitScript(lang=>{localStorage.setItem('illyrian_demo_ui_language_v1',lang);localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({activityLog:[{id:'literal',text:'Kryefaqja DEMO <img onerror=alert(1)>',time:'Tani'}]}))},lang);
+ const modal=await openNotifications(page);
+ await expect(modal.locator('h2')).toHaveText(title);
+ await expect(modal.locator('[data-act="n17-filter"][data-val="people"]')).toContainText(peopleLabel);
+ await modal.locator('[data-act="n17-filter"][data-val="system"]').click();
+ await expect(modal).toContainText('Kryefaqja DEMO <img onerror=alert(1)>');
+ await expect(modal.locator('[data-user-content] img')).toHaveCount(0);
+ await modal.locator('[data-act="n17-filter"][data-val="all"]').click();
+ await expect(modal.locator('img')).not.toHaveCount(0);
+ expect(await modal.locator('img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0))).toBe(true);
+});
+for(const [width,height] of sizes)for(const theme of ['light','dark'])test('Notifications reference: responsive '+width+'x'+height+' '+theme,async({page},testInfo)=>{
+ await page.addInitScript(theme=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({theme,v6ReadAlerts:['legacy-notice']}))},theme);
+ await openDemo(page,width,height);
+ await page.locator('#phone > .head [data-val="notifications"]').click();
+ const modal=page.locator('.n17-modal');await expect(modal).toBeVisible();
+ const bounds=await modal.boundingBox();expect(bounds.width).toBeGreaterThan(300);expect(bounds.height).toBeLessThanOrEqual(height);
+ expect(await modal.evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(1);
+ const list=modal.locator('.n17-list');
+ if(width===390)await modal.screenshot({path:testInfo.outputPath('notifications-'+theme+'.png')});
+ await list.evaluate(el=>{el.scrollTop=el.scrollHeight});
+ await expect(modal.locator('[data-act="v6-read-all"]')).toBeInViewport();
+ await modal.locator('[data-act="v6-read-all"]').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).v6ReadAlerts.includes('legacy-notice'))).toBe(true);
+ for(const el of await modal.locator('button:visible').all()){const r=await el.boundingBox();expect(r.height).toBeGreaterThanOrEqual(43);}
+ await list.evaluate(el=>{el.scrollTop=0});
+ await page.keyboard.press('Escape');await expect(modal).toHaveCount(0);
+ await expect(page.locator('#phone > .head [data-val="notifications"]')).toBeFocused();
+});
+test('Notifications reference: destinations and buttons return without losing filter or scrolling',async({page})=>{
+ const modal=await openNotifications(page);
+ for(const id of ['meet','job','n17-community','n17-change','n17-comment']){
+  await modal.locator('[data-act="v6-open-alert"][data-id="'+id+'"]').click();
+  await expect(page.locator('#layer [data-act="n17-back"]')).toBeVisible();
+  await page.locator('#layer [data-act="n17-back"]').click();
+  await expect(modal.locator('[data-act="v6-open-alert"][data-id="'+id+'"]')).toBeFocused();
+ }
+ await modal.locator('[data-act="n17-settings"]').click();
+ const pref=page.locator('[data-v6-pref="alertActivities"]');await pref.uncheck();
+ await page.locator('#layer .modalhead [data-act="close"]').click();
+ await expect(modal).toBeVisible();
+ await page.keyboard.press('Escape');await page.reload();
+ await page.locator('#phone > .head [data-val="notifications"]').click();
+ await modal.locator('[data-act="n17-settings"]').click();await expect(pref).not.toBeChecked();
+});
+test('Notifications reference: blocked actors are hidden and people category is honestly empty',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({blocked:['arta','leon','besa','dion']})));
+ const modal=await openNotifications(page);await modal.locator('[data-act="n17-filter"][data-val="people"]').click();
+ await expect(modal.locator('.n17-row')).toHaveCount(0);await expect(modal.locator('.n17-empty')).toBeVisible();await expect(modal.locator('[data-act="n17-follow"]')).toHaveCount(0);
+});
+test('Notifications reference: live language preserves filter, focus and core storage',async({page})=>{
+ const modal=await openNotifications(page);await modal.locator('[data-act="n17-filter"][data-val="jobs"]').click();
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ for(const [lang,title] of [['en','Notifications'],['it','Notifiche'],['sq','Njoftimet']]){
+  await page.evaluate(async lang=>{await window.IllyrianI18n.changeLanguage(lang)},lang);
+  await expect(modal.locator('h2')).toHaveText(title);
+  await expect(modal.locator('[data-act="n17-filter"][data-val="jobs"]')).toBeFocused();
+  await expect(modal.locator('[data-act="n17-filter"][data-val="jobs"]')).toHaveAttribute('aria-pressed','true');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ }
+});
+test('Notifications reference: accurate unread counts and AA text on accent buttons',async({page})=>{
+ const modal=await openNotifications(page);
+ const unread=await modal.locator('.n17-row.new').count();
+ await expect(modal.locator('[data-act="n17-filter"][data-val="all"] b')).toHaveText(String(unread));
+ await modal.locator('[data-act="n17-follow"]').click();
+ await expect(modal.locator('[data-act="n17-filter"][data-val="all"] b')).toHaveText(String(unread-1));
+ for(const theme of ['light','dark']){
+  await page.evaluate(theme=>document.querySelector('#phone').classList.toggle('dark',theme==='dark'),theme);
+  const ratio=await modal.locator('[data-act="n17-filter"][data-val="all"]').evaluate(el=>{
+   const css=getComputedStyle(el),rgb=s=>(s.match(/[\d.]+/g)||[]).slice(0,3).map(Number),lum=c=>c.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4}).reduce((v,c,i)=>v+c*[.2126,.7152,.0722][i],0),a=lum(rgb(css.color)),b=lum(rgb(css.backgroundColor));return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+  });expect(ratio).toBeGreaterThanOrEqual(4.5);
+ }
+});
+test('Notifications reference: nested report Escape returns to content before the notification list',async({page})=>{
+ const modal=await openNotifications(page);
+ await modal.locator('[data-act="v6-open-alert"][data-id="profile"]').click();
+ await page.locator('#layer [data-ily-report]').click();
+ await expect(page.locator('#ig6-root')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(page.locator('#ig6-root')).toHaveCount(0);
+ await expect(page.locator('#comment-input')).toBeVisible();
+ await page.keyboard.press('Escape');await expect(modal).toBeVisible();
+});
+test('Notifications reference: live locale keeps the exact focused notification row',async({page})=>{
+ const modal=await openNotifications(page);const row=modal.locator('[data-act="v6-open-alert"][data-id="n17-mention"]');
+ await row.focus();await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
+ await expect(row).toBeFocused();
+});

@@ -1,5 +1,8 @@
 # ILLYRIAN — security register
 
+### Notifications — reference UI,31 October2026
+Local read/follow actions reuse the core store and reject an observed stale snapshot; failed persistence rolls both fields back and leaves the action available for retry. Mark-all preserves unknown historical IDs. Notification fixtures exclude blocked actors; literal activity text and person names are escaped/UGC-marked and never translated. Local bundled images only, no new network service/permission/token/store. Existing preference meanings remain unchanged. SEC-02/04 stay PARTIAL, SEC-07 UNKNOWN; bounded runtime evidence is recorded in CURRENT_STATE, not a native/security certification.
+
 ### Profile — media/Highlights,31 tetor2026
 Ndryshimi i miratuar ruan DEMO lokale: preview/Ruaj-Anulo për avatar/cover, object URL cleanup/decode epoch, kufij MIME/6MB/32M pixels dhe output bounded. `keep()` refuzon snapshot core të vjetruar dhe rikthen profilin pas quota; arkivi i Highlights ndahet me referenca dhe nuk fshin Story origjinale/legacy snapshots. Plans ekspozon vetëm projection/open lokal, jo autorizim server-side. PF01–PF08 shtojnë markerët UGC në option/cover, draft transaksional për reset cover/renditje, reader për ruajtjet ekzistuese dhe Save pa shkrim për vlera të pandryshuara; raw stores/legacy fields ruhen. SEC-02/04 mbeten PARTIAL, SEC-07 UNKNOWN; prova konkrete te CURRENT_STATE. Pa auth/shërbim/upload/GPS të ri ose pretendim sigurie reale.
 
