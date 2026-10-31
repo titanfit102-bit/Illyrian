@@ -278,7 +278,7 @@ test('Home Opportunities links Tregu and Shërbime to Shop - 390x844',async({pag
  await expect(page.locator('#phone > .head')).toHaveJSProperty('inert',true);
  await shop.locator('[data-ils="back"]').click();
  await expect(shop).toHaveCount(0);
- await expect(page.locator('#navbar [data-val="home"]')).toBeFocused();
+ await expect(toggle).toBeFocused();
  await toggle.click();
  await panel.locator('[data-ily-op-category="Shërbime"]').click();
  await expect(shop).toBeVisible();

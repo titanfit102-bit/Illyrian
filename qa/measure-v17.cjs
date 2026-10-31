@@ -70,7 +70,7 @@ async function scroll(page,name,selector){
    await action(page,'community','#screen [data-act="v11-community-open"]');await page.keyboard.press('Escape');
    await page.locator('.head [data-act="tab"][data-val="events"]').click();
    await action(page,'plans','[data-ilp-entry]');await page.keyboard.press('Escape');
-   await page.locator(home).click();await action(page,'shop','[data-ilshop-open]');
+   await page.locator('#navbar [data-val="explore"]').click();await action(page,'shop','[data-ilshop-open]');
    await action(page,'shop.plus','#illyrian-shop-layer [data-isp-open]');await page.keyboard.press('Escape');await page.keyboard.press('Escape');
    await action(page,'inbox','#navbar [data-act="modal"][data-val="inbox"]');
    await action(page,'chat.stock','#v6-inbox-list [data-act="v6-openchat"][data-id="leon"]');
