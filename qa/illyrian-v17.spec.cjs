@@ -789,3 +789,25 @@ test('Saved Reels remain accessible from premium Saved tab after profile redesig
  await expect(page.locator('#layer .v4-reel-overlay')).toBeVisible();
  await expect(page.locator('#layer .v4-reel-counter')).toHaveText('2 / 3');
 });
+
+test('Profile photo examples fill an empty profile without writing personal data',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await expect(page.locator('.p17-cover')).toHaveAttribute('style',/sample-cover.webp/);
+ await expect(page.locator('.p17-gallery .p17-tile[data-kind="sample"]')).toHaveCount(6);
+ await expect(page.locator('.p17-sample-highlight')).toHaveCount(6);
+ for(const lang of ['sq','en','it']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  for(const image of await page.locator('.p17-gallery img,.p17-highlights img').all())await expect.poll(()=>image.evaluate(x=>x.complete&&x.naturalWidth>0)).toBe(true);
+ }
+ await page.locator('.p17-gallery .p17-tile').first().click();
+ await expect(page.locator('#layer .p17-viewer-photo')).toHaveAttribute('src',/sample-coast.webp/);
+ await page.keyboard.press('Escape');
+ await page.locator('.p17-sample-highlight[data-id="coffee"]').click();
+ await expect(page.locator('#layer .p17-viewer-photo')).toHaveAttribute('src',/sample-coffee.webp/);
+ await page.keyboard.press('Escape');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('.p17-profile').screenshot({path:'qa-results/visual/profile-filled-photos.png'});
+});

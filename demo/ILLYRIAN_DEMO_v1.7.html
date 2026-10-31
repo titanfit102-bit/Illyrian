@@ -2315,7 +2315,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  const safePhoto=x=>typeof x==="string"&&x.length<=290000&&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(x);
  const owner=()=>state.profile||{};
  const hList=()=>Array.isArray(owner().p17Highlights)?owner().p17Highlights.filter(h=>h&&typeof h.id==="string"&&typeof h.title==="string"&&Array.isArray(h.items)).slice(0,6):[];
- const coverSrc=()=>safePhoto(owner().p17Cover)?owner().p17Cover:"./assets/profiles/illyrian-cover.svg";
+ const coverSrc=()=>safePhoto(owner().p17Cover)?owner().p17Cover:"./assets/profiles/sample-cover.webp";
  const e=x=>esc(clean(x,2000));
  const media=x=>{const value=String(x||"");return /^\.\/assets\/profiles\/[a-z0-9_-]+\.(?:webp|svg)$/.test(value)||value.length<1000000&&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value)?esc(value):"";};
  const icon=(name,size=21)=>{
@@ -2330,8 +2330,19 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   return true;
  };
  const photoOf=record=>v5PhotoSrc(record);
+ const samplePhotos=[
+  {id:"coast",src:"./assets/profiles/sample-coast.webp",text:"Ksamil"},
+  {id:"coffee",src:"./assets/profiles/sample-coffee.webp",text:"Kafe"},
+  {id:"mountains",src:"./assets/profiles/sample-mountains.webp",text:"Alpet shqiptare"},
+  {id:"cover",src:"./assets/profiles/sample-cover.webp",text:"Berat"},
+  {id:"portrait",src:"./assets/profiles/owner.webp",text:"Momente"},
+  {id:"summer",src:"./assets/profiles/sample-coast.webp",text:"Verë"}
+ ];
+ const sampleCard=(item,highlight=false)=>highlight?'<button type="button" class="p17-hl p17-sample-highlight" data-p17-action="sample-view" data-id="'+item.id+'" data-user-content><span class="p17-hl-round"><img src="'+media(item.src)+'" alt="" loading="lazy"/></span><span>'+e(item.text)+'</span></button>':galleryCard({...item,kind:"sample"});
+
  function galleryData(tab){
   const has=(array,id)=>Array.isArray(array)&&array.some(x=>String(x)===String(id));
+  if(tab==="posts"&&!state.posts.length)return samplePhotos.map(x=>({...x,kind:"sample"}));
   if(tab==="posts")return state.posts.map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,sponsored:p.commerceSponsored===true}));
   if(tab==="reels")return v15Reels.map(r=>({kind:"myreel",id:r.id,src:v15Pic(r),text:r.caption}));
   if(tab==="saved"){
@@ -2350,18 +2361,19 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  const galleryCard=item=>{
   const sponsored=item.sponsored?'<span data-i18n-direct data-ily-commerce-sponsored class="p17-sponsored">'+esc(window.IllyrianI18n?.t('commerce:sponsored')||'Sponsorizuar')+'</span>':'';
   const pict=item.src?'<img src="'+media(item.src)+'" loading="lazy" alt="'+e(item.text||t("openPost"))+'"/>':'<div class="p17-tile-text">'+e(item.text||t("emptyImage"))+'</div>';
-  return '<button type="button" class="p17-tile" data-user-content data-p17-action="open-media" data-id="'+e(item.id)+'" data-kind="'+e(item.kind)+'" aria-label="'+e(item.text||t("openPost"))+'">'+pict+sponsored+(item.kind!=="post"?'<span class="p17-tile-kind">'+icon("play",16)+'</span>':'')+'</button>';
+  return '<button type="button" class="p17-tile" data-user-content data-p17-action="open-media" data-id="'+e(item.id)+'" data-kind="'+e(item.kind)+'" aria-label="'+e(item.text||t("openPost"))+'">'+pict+sponsored+(item.kind!=="post"&&item.kind!=="sample"?'<span class="p17-tile-kind">'+icon("play",16)+'</span>':'')+'</button>';
  };
  const highlights=()=>{
   const entries=hList();
+  const examples=entries.length||Object.prototype.hasOwnProperty.call(owner(),"p17Highlights")?"":samplePhotos.map(x=>sampleCard(x,true)).join("");
   const add='<button type="button" class="p17-hl p17-hl-add" data-p17-action="highlight-editor" aria-label="'+e(t("newHighlight"))+'"><span class="p17-hl-round p17-hl-plus">'+icon("plus",27)+'</span><span>'+e(t("highlight"))+'</span></button>';
-  return '<div class="p17-highlights" aria-label="'+e(t("collections"))+'">'+add+entries.map(h=>{
+  return '<div class="p17-highlights" aria-label="'+e(t("collections"))+'">'+add+examples+entries.map(h=>{
     const first=h.items[0];
     const src=first?(safePhoto(first.photo)?first.photo:(IMAGES[first.sample]||"")):"";
     return '<button type="button" class="p17-hl" data-user-content data-p17-action="highlight-view" data-id="'+e(h.id)+'"><span class="p17-hl-round">'+(src?'<img src="'+media(src)+'" alt="" loading="lazy"/>':icon("camera",21))+'</span><span>'+e(h.title)+'</span></button>';
   }).join("")+'</div>';
  };
- const stats=()=>'<div class="p17-stats"><div><b>'+state.posts.length+'</b><small>'+t("posts")+'</small></div><div title="'+e(t("noFollowers"))+'"><b>0</b><small>'+t("followers")+'</small></div><div><b>'+state.follows.length+'</b><small>'+t("following")+'</small></div></div>';
+ const stats=()=>'<div class="p17-stats"><div><b>'+(state.posts.length||samplePhotos.length)+'</b><small>'+t("posts")+'</small></div><div title="'+e(t("noFollowers"))+'"><b>0</b><small>'+t("followers")+'</small></div><div><b>'+state.follows.length+'</b><small>'+t("following")+'</small></div></div>';
  const tabs=[["posts","grid"],["reels","play"],["saved","save"],["liked","heart"],["opportunities","activity"]];
  function opportunityCards(){
   const all=events.filter(ev=>Array.isArray(state.requests)&&state.requests.includes(ev.id)||Array.isArray(state.acceptedPlans)&&state.acceptedPlans.includes(ev.id));
@@ -2390,6 +2402,10 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   return drawer(h.title, '<div class="p17-viewer">'+(it?'<img class="p17-viewer-photo" src="'+media(safePhoto(it.photo)?it.photo:IMAGES[it.sample]||"")+'" alt="'+e(it.caption||h.title)+'"/><p>'+e(it.caption||"")+'</p><div class="p17-view-arrows"><button data-p17-action="highlight-prev">'+e(t("previous"))+'</button><span>'+(idx+1)+' / '+items.length+'</span><button data-p17-action="highlight-next">'+e(t("next"))+'</button></div>':'<div class="p17-empty"><p>'+e(t("emptyHighlights"))+'</p></div>')+'<button class="p17-modal-primary" data-p17-action="highlight-editor" data-id="'+e(h.id)+'">'+e(t("add"))+'</button></div>');
  }
  modalContent=function(){
+  if(state.modal?.type==="p17-sample"){
+   const item=samplePhotos.find(x=>x.id===state.modal.id);
+   return drawer(item?item.text:t("notFound"),item?'<div class="p17-viewer"><img class="p17-viewer-photo" src="'+media(item.src)+'" alt="'+e(item.text)+'"/></div>':'');
+  }
   if(state.modal?.type==="p17-highlight-editor")return highlightEditor();
   if(state.modal?.type==="p17-highlight-view")return highlightViewer();
   if(state.modal?.type==="p17-post"){
@@ -2461,10 +2477,12 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  }
  function handleAction(action,b){
   const id=b.dataset.id||"";
+  if(action==="sample-view"){if(samplePhotos.some(x=>x.id===id))openModal("p17-sample",id);return;}
   if(action==="open-edit"){openModal("edit");return;}
   if(action==="section"){if(!tabs.some(([tab])=>tab===id))return;section=id;render({scroll:true});document.getElementById("p17-tab-"+id)?.focus({preventScroll:true});return;}
   if(action==="open-media"){
    const kind=b.dataset.kind;
+   if(kind==="sample"){if(samplePhotos.some(x=>x.id===id))openModal("p17-sample",id);return}
    if(kind==="post"){openModal("p17-post",id);return}
    if(kind==="myreel"){v8Action("v15-view",id,"reel");return}
    if(kind==="friendReel"){state.modal=null;state.reelOpen=true;state.reelIndex=Math.max(0,Number(id)||0);render({scroll:true});return}
