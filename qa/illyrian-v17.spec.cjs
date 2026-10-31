@@ -854,3 +854,54 @@ for(const lang of ['sq','en','it'])test('Profile omits management and privacy bl
  await page.locator('#navbar [data-val="profile"]').click();await expect(page.locator('#screen #ig6-entry,#screen #il4-entry')).toHaveCount(0);
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
 });
+
+for(const [lang,support,reports,appeals] of [
+ ['sq','Ndihma dhe mbështetja','Raportimet e mia','Apelimet e mia'],
+ ['en','Help and support','My reports','My appeals'],
+ ['it','Aiuto e assistenza','Le mie segnalazioni','I miei ricorsi']
+])for(const mode of ['light','dark'])test('Profile Settings routes to existing reports and appeals '+lang+' '+mode,async({page})=>{
+ await page.emulateMedia({colorScheme:mode});await openDemo(page,320,568);
+ await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+ const before=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage)));
+ await page.locator('#navbar [data-val="profile"]').click();
+ const gear=page.locator('[data-ily-profile-settings]');await gear.click();
+ // Existing privacy preferences stay at the same Settings destination.
+ await page.locator('#layer [data-val="privacy"]').click();
+ await expect(page.locator('#layer [data-v6-pref="privateProfile"]')).toBeVisible();
+ await page.locator('#layer [data-act="v6-settings-home"]').click();
+ const entry=page.locator('#layer [data-val="support"]');await expect(entry).toContainText(support);await entry.click();
+ for(const [tab,label] of [['reports',reports],['appeals',appeals]]){
+  const opener=page.locator('#layer [data-ily-support-tab="'+tab+'"]');await expect(opener).toHaveText(label+'›');await opener.click();
+  await expect(page.locator('#ig6-root [data-ig6="tab:'+tab+'"]').first()).toHaveAttribute('aria-current','page');
+  await expect(page.locator('#layer')).toHaveJSProperty('inert',true);
+  const controls=page.locator('#ig6-root button:visible');await controls.last().focus();await page.keyboard.press('Tab');await expect(controls.first()).toBeFocused();
+  await page.keyboard.press('Escape');await expect(page.locator('#ig6-root')).toHaveCount(0);await expect(opener).toBeFocused();
+  await expect(page.locator('#layer .modal')).toBeVisible();await expect(page.locator('#layer')).toHaveJSProperty('inert',false);
+ }
+ const nextLang=lang==='sq'?'en':'sq';await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),nextLang);
+ await expect(page.locator('#layer [data-ily-support-tab="reports"]')).toContainText(nextLang==='sq'?'Raportimet e mia':'My reports');
+ await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+ await page.keyboard.press('Escape');await expect(gear).toBeFocused();
+ await expect(page.locator('#screen #ig6-entry,#screen #il4-entry')).toHaveCount(0);
+ expect(await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage)))).toEqual(before);
+});
+
+for(const lang of ['sq','en','it'])test('Profile Opportunities shows only owned Shop listings and opens the original catalog '+lang,async({page})=>{
+ await openDemo(page,390,844);
+ await page.evaluate(()=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[
+  {id:'own-profile-link',name:'My <b>offer</b>',kind:'Produkte',store:'My store',city:'Tiranë',price:5,owned:true},
+  {id:'other-profile-link',name:'Another owner offer',kind:'Produkte',store:'Another store',city:'Tiranë',price:8}
+ ]})));
+ await page.reload();await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+ const before=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage)));
+ await page.locator('#navbar [data-val="profile"]').click();await page.locator('#p17-tab-opportunities').click();
+ const link=page.locator('[data-p17-action="open-listing"]');await expect(link).toHaveCount(1);await expect(link).toContainText('My <b>offer</b>');await expect(link.locator('strong b')).toHaveCount(0);
+ await link.click();await expect(page.locator('#illyrian-shop-layer [data-ils="edit"]')).toBeVisible();
+ await page.keyboard.press('Escape');await expect(link).toBeFocused();
+ expect(await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage)))).toEqual(before);
+ await page.evaluate(()=>localStorage.setItem('illyrian_demo_v17_shop',JSON.stringify({listings:[]})));
+ await link.click();await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);await expect(page.locator('#toast-area')).toContainText(/Përmbajtja nuk gjendet|Content not found|Contenuto non trovato/);
+ await page.reload();
+ await page.locator('#navbar [data-val="profile"]').click();await page.locator('#p17-tab-opportunities').click();
+ await expect(page.locator('[data-p17-action="open-listing"]')).toHaveCount(0);
+});

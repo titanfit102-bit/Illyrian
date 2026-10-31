@@ -1,6 +1,6 @@
 # ILLYRIAN — MASTER_HANDOFF
 
-**Vendim i pronarit,31 tetor2026 — profil pa blloqe QA poshtë:** hiq nga Profile kartat “Besimi dhe menaxhimi” dhe “Privatësia, komunitetet dhe vendet”. Ruaj panelet/hyrjet në Zbulo dhe rrjedhat ekzistuese të raportimit, moderimit, bizneseve dhe privatësisë; nuk fshihen funksione ose të dhëna.
+**Vendim i pronarit,31 tetor2026 — profil pa blloqe QA poshtë:** hiq nga Profile kartat “Besimi dhe menaxhimi” dhe “Privatësia, komunitetet dhe vendet”. Ruaj panelet/hyrjet në Zbulo dhe rrjedhat ekzistuese. Pronari miratoi organizimin: ingranazhi → Privatësia; ingranazhi → Ndihma dhe mbështetja → raportime/apelime; Profile → Mundësi → vetëm listime personale ekzistuese, me hapje te Shop/Shop Plus origjinal. Komunitetet/harta mbeten te Zbulo; planet te Kalendari/Plane & Aktivitete. Pa karta të mëdha poshtë profilit, panele paralele ose fshirje të dhënash. `owned` lokal shërben vetëm për prezantimin DEMO, jo autorizim real; rolet/akseset reale mbeten server-side sipas kontratave ekzistuese.
 
 **Vendim i pronarit,31 tetor2026 — Settings në Profile:** në profil, zëvendëso ikonën e Njoftimeve në header me ingranazhin e Cilësimeve; hiq hyrjen e dyfishtë pranë Ndrysho profilin. Njoftimet mbeten në Home. Ky autorizim zëvendëson kufirin e vjetër të header-it vetëm për këtë vendosje; funksionet, navbar-i dhe të dhënat ruhen.
 

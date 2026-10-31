@@ -177,6 +177,12 @@ window.ILLYRIAN_LOCALES.sq={
     "photo": "Shto fotografi"
   },
   "settings": {
+    "supportTitle": "Ndihma dhe mbështetja",
+    "supportSub": "Raportimet dhe apelimet e mia",
+    "supportLocal": "Shiko raportimet dhe apelimet e ruajtura në këtë pajisje. Nuk kontaktohet suport real.",
+    "myReports": "Raportimet e mia",
+    "myAppeals": "Apelimet e mia",
+    "myListings": "Biznesi dhe shpalljet e mia",
     "resetSocialButton": "Rivendos vetëm të dhënat sociale",
     "resetSocialTitle": "Rivendos të dhënat sociale",
     "resetSocialWarning": "Ky veprim rivendos vetëm profilin, postimet, komentet, mesazhet dhe preferencat e modulit social në këtë shfletues. Nuk fshin Shop, Shop Plus, Plans, Connections apo gjuhën e zgjedhur.",

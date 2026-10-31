@@ -415,7 +415,7 @@
   refreshIdentityBadges();
   document.addEventListener('click',e=>{
    const report=e.target.closest('[data-ily-report]'),center=e.target.closest('[data-ily-report-center]');
-   if(report||center){const ref=report?{source:report.dataset.reportSource,kind:report.dataset.reportKind,id:report.dataset.reportId}:null;if(report&&!validRef(ref))return;e.preventDefault();e.stopImmediatePropagation();open(report||center);reportContext=ref;reportTarget=report?bounded(report.dataset.reportLabel,80):'';if(reportTarget.length<4)reportTarget=(ref?.kind+' '+ref?.id).slice(0,80);state.tab='reports';render();return}
+   if(report||center){const ref=report?{source:report.dataset.reportSource,kind:report.dataset.reportKind,id:report.dataset.reportId}:null;if(report&&!validRef(ref))return;e.preventDefault();e.stopImmediatePropagation();open(report||center);reportContext=ref;reportTarget=report?bounded(report.dataset.reportLabel,80):'';if(reportTarget.length<4)reportTarget=(ref?.kind+' '+ref?.id).slice(0,80);state.tab=!report&&center?.dataset.ilySupportTab==='appeals'?'appeals':'reports';render();return}
    const badge=e.target.closest('[data-ily-identity-badge]');if(badge){e.preventDefault();e.stopImmediatePropagation();const note=badge.parentElement.querySelector('[data-ily-identity-note]');if(note){note.hidden=!note.hidden;badge.setAttribute('aria-expanded',String(!note.hidden))}return}
    const guide=e.target.closest('[data-ily-identity-guide]');if(guide){e.preventDefault();e.stopImmediatePropagation();window.IllyrianGovernance.openTrust(guide);return}
    const manage=e.target.closest('[data-business-manage]');if(manage){e.preventDefault();window.IllyrianGovernance.openBusiness(manage.dataset.source,manage.dataset.store);return}

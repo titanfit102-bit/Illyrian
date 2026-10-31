@@ -1,6 +1,6 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
-**Profile — kriter vendosjeje,31 tetor2026:** pas galerisë nuk shfaqen ig6-entry ose il4-entry. Governance entry vetëm në Zbulo; Privacy/Map entry në Zbulo dhe Plans(states), jo Profile. Testo rikthimin Profile→Zbulo→panele→Profile në sq/en/it pa ndryshim storage; mos krijo hyrje/panele paralele.
+**Profile — hyrjet e miratuara,31 tetor2026:** pa ig6-entry/il4-entry pas galerisë. Ingranazhi → Privatësia përdor preferencat ekzistuese; Ndihma dhe mbështetja hap tabs reports/appeals të Governance ekzistues, me kthim/fokus te Settings. Profile → Mundësi lexon vetëm listimet `owned===true` nga adapterët Shop/Shop Plus dhe hap origjinalin, pa kopje storage ose menu të plotë Mundësi. Pa listime personale nuk shfaqet seksion menaxhimi; planet e lidhura ekzistuese ruhen. Komunitetet/harta/Zbulo dhe Calendar/Plane & Aktivitete nuk ndryshohen. QA: sq/en/it,Light/Dark,locale live,Tab/Escape/fokus,privatësia ekzistuese,storage i pandryshuar,emrat UGC literalë dhe përjashtimi i listimeve të huaja; rolet reale/privatësia server-side BACKEND.
 
 **Vendosja e Settings — 31 tetor2026:** Profile→header→Cilësimet ekzistuese; pa ikonë Njoftimesh të dukshme në këtë faqe dhe pa ingranazh të dyfishtë pranë redaktimit. Home→Njoftimet ekzistuese. Pranim: sq/en/it, hapje/Escape/fokus dhe rikthim te Home pa ndryshim storage ose unread.
 

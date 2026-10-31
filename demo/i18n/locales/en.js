@@ -177,6 +177,12 @@ window.ILLYRIAN_LOCALES.en={
     "photo": "Add photo"
   },
   "settings": {
+    "supportTitle": "Help and support",
+    "supportSub": "My reports and appeals",
+    "supportLocal": "View reports and appeals saved on this device. No real support service is contacted.",
+    "myReports": "My reports",
+    "myAppeals": "My appeals",
+    "myListings": "My business and listings",
     "resetSocialButton": "Reset social data only",
     "resetSocialTitle": "Reset social data",
     "resetSocialWarning": "This resets only the profile, posts, comments, messages and social-module preferences in this browser. Shop, Shop Plus, Plans, Connections and your chosen language are not deleted.",

@@ -177,6 +177,12 @@ window.ILLYRIAN_LOCALES.it={
     "photo": "Aggiungi foto"
   },
   "settings": {
+    "supportTitle": "Aiuto e assistenza",
+    "supportSub": "Le mie segnalazioni e i miei ricorsi",
+    "supportLocal": "Visualizza segnalazioni e ricorsi salvati su questo dispositivo. Nessun servizio di assistenza reale viene contattato.",
+    "myReports": "Le mie segnalazioni",
+    "myAppeals": "I miei ricorsi",
+    "myListings": "La mia attività e i miei annunci",
     "resetSocialButton": "Reimposta solo i dati social",
     "resetSocialTitle": "Reimposta i dati social",
     "resetSocialWarning": "Questa azione reimposta solo profilo, post, commenti, messaggi e preferenze del modulo social in questo browser. Shop, Shop Plus, Plans, Connections e la lingua scelta non vengono eliminati.",

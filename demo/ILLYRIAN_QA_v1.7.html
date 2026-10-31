@@ -278,7 +278,7 @@
     let restored=false;
     try{
       await nav(d,'profile');
-      await tap(d,'#screen [data-act="modal"][data-val="settings"]','Cilësimet');
+      await tap(d,'#phone > .head [data-ily-profile-settings]','Cilësimet');
       // v0.6 settings use a two-level flow: Settings -> Pamja dhe ngjyrat.
       await tap(d,'#layer [data-act="v6-settings-section"][data-val="theme"]','Pamja dhe ngjyrat');
       for(const mode of ['light','dark','auto']){
