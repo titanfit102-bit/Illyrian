@@ -34,7 +34,8 @@ for(const [width,height] of [[390,844],[844,390]]){
  });
  test('Mobile touch emulation - Shop Plus needs and create controls - '+width+'x'+height,async({page})=>{
   await enterDemo(page,width,height);
-  await page.locator('[data-ilshop-open]').first().tap();
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().tap();
   await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().tap();
   const root=page.locator('#isp-root');

@@ -711,13 +711,47 @@ test('Profile language switch while editing preserves unsaved input and camera c
  await page.locator('#screen .p17-edit').click();
  await page.locator('#edit-name').fill('Lira Draft');
  await page.locator('#edit-bio').fill('My own words stay intact');
+ await page.locator('#p17-city').fill('Elbasan draft');
+ await page.locator('#p17-tags').fill('Ruaj, DEMO Studio');
  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
  await expect(page.locator('#edit-name')).toHaveValue('Lira Draft');
  await expect(page.locator('#edit-bio')).toHaveValue('My own words stay intact');
+ await expect(page.locator('#p17-city')).toHaveValue('Elbasan draft');
+ await expect(page.locator('#p17-tags')).toHaveValue('Ruaj, DEMO Studio');
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
  await page.locator('#layer [data-p17-action="profile-save"]').click();
  await expect(page.locator('#screen .p17-person-name')).toContainText('Lira Draft');
+ await expect(page.locator('#screen .p17-tags span')).toHaveText(['Ruaj','DEMO Studio']);
+ await expect(page.locator('#screen .p17-location')).toContainText('Elbasan draft');
+});
+
+for(const [width,height] of [[320,568],[360,780],[390,844],[430,932],[844,390],[932,430],[1280,800]])for(const theme of ['light','dark'])test('Profile phase 1 layout, keyboard and navigation '+width+'x'+height+' '+theme,async({page})=>{
+ await page.emulateMedia({colorScheme:theme,reducedMotion:'reduce'});
+ await openDemo(page,width,height);
+ await page.locator('#navbar [data-val="profile"]').click();
+ const nav=await page.locator('#navbar').evaluate(el=>({html:el.innerHTML,rect:JSON.stringify(el.getBoundingClientRect())}));
+ const profile=page.locator('#screen > .p17-profile');
+ const dataBefore=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ for(const lang of ['sq','en','it']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(profile).toBeVisible();
+  expect(await profile.locator('.p17-cover').evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(142);
+  for(const selector of ['.p17-cover-change','.p17-avatar-camera','.p17-edit','.p17-settings','.p17-person-name [data-ily-identity-badge]']){
+   const r=await profile.locator(selector).boundingBox();expect(r.width).toBeGreaterThanOrEqual(44);expect(r.height).toBeGreaterThanOrEqual(44);
+  }
+  const geometry=await profile.evaluate(el=>({left:el.getBoundingClientRect().left,right:el.getBoundingClientRect().right,children:[...el.querySelectorAll('.p17-person-top,.p17-identity,.p17-tabs')].map(x=>({left:x.getBoundingClientRect().left,right:x.getBoundingClientRect().right,overflow:x.scrollWidth>x.clientWidth+1}))}));
+  for(const child of geometry.children){expect(child.left).toBeGreaterThanOrEqual(geometry.left);expect(child.right).toBeLessThanOrEqual(geometry.right+1);expect(child.overflow).toBe(false)}
+ }
+ const posts=profile.locator('[role="tab"][data-id="posts"]');await posts.focus();await page.keyboard.press('ArrowRight');
+ await expect(profile.locator('[role="tab"][data-id="reels"]')).toBeFocused();
+ await expect(profile.locator('[role="tab"][data-id="reels"]')).toHaveAttribute('aria-selected','true');
+ await page.keyboard.press('Home');await expect(posts).toBeFocused();
+ const panel=profile.locator('[role="tabpanel"]');await expect(panel).toHaveAttribute('aria-labelledby',await posts.getAttribute('id'));
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(dataBefore);
+ expect(await page.locator('#navbar').evaluate(el=>JSON.stringify(el.getBoundingClientRect()))).toBe(nav.rect);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.screenshot({animations:'disabled',path:'qa-results/visual/profile-phase1-'+width+'x'+height+'-'+theme+'.png'});
 });
 
 test('Avatar change preserves unsaved premium profile fields',async({page})=>{

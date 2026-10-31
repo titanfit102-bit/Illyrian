@@ -56,7 +56,7 @@ test('Identity phase 4: narrow mobile disclosures fit and sponsorship never gran
  await page.setViewportSize({width:320,height:568});await ready(page);
  const badge=page.locator('#screen [data-ily-identity-badge]').first();await badge.click();const dimensions=await badge.locator('..').locator('[data-ily-identity-note]').evaluate(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right}});expect(dimensions.left).toBeGreaterThanOrEqual(0);expect(dimensions.right).toBeLessThanOrEqual(320);
  const sponsored=await commercePost(page,{sponsored:true});await expect(sponsored.locator('[data-ily-commerce-sponsored]')).toBeVisible();await expect(sponsored.locator('[data-ily-identity-badge]')).toHaveCount(0);expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts[0].verified)).toBe(false);
- await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();await expect(page.locator('#ig6-identity-guide')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('identity:paidSeparate')));await expect(page.locator('#ig6-identity-guide button,input,select')).toHaveCount(0);
+ await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();await expect(page.locator('#ig6-identity-guide')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('identity:paidSeparate')));await expect(page.locator('#ig6-identity-guide').locator('button,input,select')).toHaveCount(0);
 });
 test('Identity phase 4: guide activation without pointer focus restores its source after locale repaint',async({page})=>{
  await page.setViewportSize({width:320,height:568});await ready(page);
@@ -1700,8 +1700,12 @@ test('audit F03 corrupted local creator and Plans records do not crash on reopen
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.reload({waitUntil:'load'});
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
- await expect(page.locator('#screen [data-act="v15-view"][data-val="reel"]')).toHaveCount(1);
- await expect(page.locator('#screen [data-act="v15-view"][data-val="story"]')).toHaveCount(1);
+ await page.locator('#screen .p17-tabs [data-id="reels"]').click();
+ await expect(page.locator('#screen .p17-tile[data-kind="myreel"]')).toHaveCount(1);
+ await page.locator('#navbar [data-val="home"]').click();
+ await page.locator('#screen > .stories .story-btn').first().click();
+ await expect(page.locator('#layer .v16-viewer')).toBeVisible();
+ await page.keyboard.press('Escape');
  await page.locator('.head [data-act="tab"][data-val="events"]').click();
  await page.locator('[data-ilp-entry]').first().click();
  await expect(page.locator('#ilp-root h3[data-user-content]')).toContainText('Mbyll demo plan');
@@ -1721,14 +1725,16 @@ test('audit F02 Reel and Story author caption remains unchanged on locale switch
  })));
  await page.reload({waitUntil:'load'});
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
- await page.locator('#screen [data-act="v15-view"][data-val="reel"]').first().click();
+ await page.locator('#screen .p17-tabs [data-id="reels"]').click();
+ await page.locator('#screen .p17-tile[data-kind="myreel"]').first().click();
  for(const lang of ['sq','en','it']){
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await expect(page.locator('#layer .v16-viewer .v16-content > p[data-user-content]')).toHaveText('Mbyll');
  }
  await page.keyboard.press('Escape');
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
- await page.locator('#screen [data-act="v15-view"][data-val="story"]').first().click();
+ await page.locator('#navbar [data-val="home"]').click();
+ await page.locator('#screen > .stories .story-btn').first().click();
  for(const lang of ['it','en','sq']){
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await expect(page.locator('#layer .v16-viewer .v16-content > p[data-user-content]')).toHaveText('Mbyll');
@@ -3047,7 +3053,7 @@ for(const kind of ['story','reel']){
  test('Commerce phase 2 '+kind+' links product and returns with reply draft',async({page})=>{
   await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
   await commercePost(page,{listing:'shopPlus|listing|k1'});
-  await page.locator('[data-act="v15-open"][data-val="'+kind+'"]').first().click();
+  if(kind==='story')await page.locator('#screen > .stories .story-btn').first().click();else await page.locator('[data-act="v15-open"][data-val="'+kind+'"]').first().click();
   await page.locator('#v15-caption').fill('Mbyll commerce '+kind);
   await page.locator('#v15-plan').selectOption('e2');
   await page.locator('#ily-commerce-media-listing').selectOption('shopPlus|listing|k1');
@@ -3228,7 +3234,7 @@ async function s53Photo(page,color='blue',width=80,height=40){
 async function s53Open(page,kind){
  if(kind==='post'){await page.locator('#screen .compose-prompt').click();return ['#v5-file','.v5-compose-preview img']}
  if(kind==='avatar'){await page.locator('#navbar [data-val="profile"]').click();await page.locator('[data-act="modal"][data-val="edit"]').first().click();return ['#v12-photo-file','.v12-avatar-large']}
- await page.locator('[data-act="v15-open"][data-val="'+kind+'"]').first().click();return ['#v15-file','.v15-preview img'];
+ if(kind==='story')await page.locator('#screen > .stories .story-btn').first().click();else await page.locator('[data-act="v15-open"][data-val="'+kind+'"]').first().click();return ['#v15-file','.v15-preview img'];
 }
 async function s53Blue(page,selector){return page.locator(selector).evaluate(img=>{if(!img.complete||!img.naturalWidth)return false;const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(img,0,0,1,1);const p=x.getImageData(0,0,1,1).data;return p[2]>200&&p[0]<30})}
 async function s53HoldFirst(page){await page.evaluate(()=>{

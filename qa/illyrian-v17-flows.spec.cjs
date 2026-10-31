@@ -31,6 +31,7 @@ for(const [w,h] of sizes){
     await openDemo(page,w,h);
     // Shop and nested Shop Plus; Escape must isolate the topmost dialog.
     await nav(page,'home');
+    await page.locator('#navbar [data-val="explore"]').click();
     await page.locator('[data-ilshop-open]').first().click();
     await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
     await backgroundInert(page);

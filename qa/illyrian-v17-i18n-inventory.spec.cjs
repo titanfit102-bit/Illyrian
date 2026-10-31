@@ -55,7 +55,7 @@ test('List untranslated visible UI labels across main views',async({page})=>{
    await connects.click();await capture('connections');
    await page.locator('#ilc-root button[data-ilc="close"]').click();
  }
- await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
  const shop=page.locator('[data-ilshop-open]').first();
  if(await shop.isVisible()){
    await shop.click();await capture('shop');

@@ -46,7 +46,8 @@ for(const [width,height] of [[320,568],[390,844],[844,390],[1280,800]]){
    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
   }
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
   const opener=page.locator('#illyrian-shop-layer [data-isp-open]').first();
   await opener.focus();
   await expect(opener).toBeFocused();
@@ -87,7 +88,8 @@ for(const [width,height] of [[320,568],[844,390]]){
    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
   }
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   const root=page.locator('#isp-root');
   await expect(root).toBeVisible();
@@ -131,7 +133,8 @@ for(const [width,height] of [[320,568],[844,390]]){
    await page.locator('#v7-auth.visible [data-v7="skip-tour"]').click();
   }
   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
-  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   const root=page.locator('#isp-root');
   await root.locator('[data-isp="create"]').click();
@@ -349,8 +352,8 @@ for(const [width,height] of [[390,844],[844,390]]){
 // Escape-close must return focus to the actual starting control after repaint.
 for(const [width,height] of [[390,844],[844,390]]){
  for(const config of [
-  {name:'rail heading',selector:'#screen .v4-reels-head [data-act="open-reels"][data-id="0"]'},
-  {name:'first thumbnail',selector:'#screen .v4-reels-list .v4-reel-thumb[data-act="open-reels"][data-id="0"]'}
+  {name:'Reels navigation',selector:'#navbar [data-act="open-reels"]'},
+  {name:'Story Reel preview',selector:'#screen > .stories .story-reel-preview[data-id="0"]'}
  ]){
   test('Reels Feed opener focus distinguishes heading and first thumbnail - '+config.name+' '+width+'x'+height,async({page})=>{
    await page.setViewportSize({width,height});
@@ -445,7 +448,8 @@ for(const [width,height] of [[390,844],[844,390]]){
   });
   expect(scaled).toBeGreaterThanOrEqual(30);
 
-  await page.locator('[data-ilshop-open]').first().click();
+  await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
   await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
   await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
   const root=page.locator('#isp-root');

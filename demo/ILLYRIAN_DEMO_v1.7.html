@@ -2332,15 +2332,15 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  const photoOf=record=>v5PhotoSrc(record);
  function galleryData(tab){
   const has=(array,id)=>Array.isArray(array)&&array.some(x=>String(x)===String(id));
-  if(tab==="posts")return state.posts.map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,likes:0}));
+  if(tab==="posts")return state.posts.map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,sponsored:p.commerceSponsored===true}));
   if(tab==="reels")return v15Reels.map(r=>({kind:"myreel",id:r.id,src:v15Pic(r),text:r.caption}));
   if(tab==="saved"){
-   const savedPosts=allPosts().filter(p=>has(state.bookmarks,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text}));
+   const savedPosts=allPosts().filter(p=>has(state.bookmarks,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,sponsored:p.commerceSponsored===true}));
    const savedReels=reels.filter(r=>has(state.reelSaved,r.id)).map(r=>({kind:"friendReel",id:String(reels.indexOf(r)),src:IMAGES[r.photo]||"",text:r.label}));
    return [...savedPosts,...savedReels];
   }
   if(tab==="liked"){
-   const a=allPosts().filter(p=>has(state.likes,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text}));
+   const a=allPosts().filter(p=>has(state.likes,p.id)).map(p=>({kind:"post",id:String(p.id),src:photoOf(p),text:p.text,sponsored:p.commerceSponsored===true}));
    const b=v15Reels.filter(r=>r.liked).map(r=>({kind:"myreel",id:r.id,src:v15Pic(r),text:r.caption}));
    const c=reels.filter(r=>has(state.reelLikes,r.id)).map((r,i)=>({kind:"friendReel",id:String(reels.indexOf(r)),src:IMAGES[r.photo]||"",text:r.label}));
    return [...a,...b,...c];
@@ -2348,8 +2348,9 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   return [];
  }
  const galleryCard=item=>{
+  const sponsored=item.sponsored?'<span data-i18n-direct data-ily-commerce-sponsored class="p17-sponsored">'+esc(window.IllyrianI18n?.t('commerce:sponsored')||'Sponsorizuar')+'</span>':'';
   const pict=item.src?'<img src="'+media(item.src)+'" loading="lazy" alt="'+e(item.text||t("openPost"))+'"/>':'<div class="p17-tile-text">'+e(item.text||t("emptyImage"))+'</div>';
-  return '<button type="button" class="p17-tile" data-p17-action="open-media" data-id="'+e(item.id)+'" data-kind="'+e(item.kind)+'" aria-label="'+e(item.text||t("openPost"))+'">'+pict+(item.kind!=="post"?'<span class="p17-tile-kind">'+icon("play",16)+'</span>':'')+'</button>';
+  return '<button type="button" class="p17-tile" data-p17-action="open-media" data-id="'+e(item.id)+'" data-kind="'+e(item.kind)+'" aria-label="'+e(item.text||t("openPost"))+'">'+pict+sponsored+(item.kind!=="post"?'<span class="p17-tile-kind">'+icon("play",16)+'</span>':'')+'</button>';
  };
  const highlights=()=>{
   const entries=hList();
@@ -2374,7 +2375,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
   const cards=galleryData(section);
   const names={posts:"emptyPosts",reels:"emptyReels",saved:"emptySaved",liked:"emptyLiked"};
   const gallery=section==="opportunities"?opportunityCards():cards.length?'<div class="p17-gallery">'+cards.map(galleryCard).join("")+'</div>':'<div class="p17-empty"><div>'+icon(section==="reels"?"play":section==="liked"?"heart":"grid",28)+'</div><p>'+e(t(names[section]))+'</p>'+(section==="posts"?'<button data-act="modal" data-val="compose">'+e(t("createPost"))+'</button>':section==="reels"?'<button data-act="v15-open" data-val="reel">'+e(t("createReel"))+'</button>':'')+'</div>';
-  return '<section class="p17-profile" aria-label="'+e(t("profile"))+'"><div class="p17-cover" style="background-image:linear-gradient(180deg,rgba(8,10,20,.03),rgba(8,10,20,.35)),url(&quot;'+media(coverSrc())+'&quot;)"><label class="p17-cover-change">'+icon("camera",17)+'<span>'+e(t("cover"))+'</span><input id="p17-cover-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="'+e(t("cover"))+'"/></label></div><div class="p17-person-top"><div class="p17-avatar-wrap"><img class="p17-avatar" src="'+media(v12AvatarSrc())+'" alt="'+e(t("profile"))+'"/><button type="button" class="p17-avatar-camera" data-p17-action="open-edit" aria-label="'+e(t("edit"))+'">'+icon("camera",19)+'</button></div>'+stats()+'</div><div class="p17-identity"><div class="p17-person-name"><h2 data-user-content>'+e(p.name||"Profili yt")+'</h2>'+identityBadge()+'</div><p class="p17-location"><span>@'+e(handle)+'</span><span>·</span>'+icon("pin",15)+'<span>'+e(city)+'</span></p><p class="p17-bio" data-user-content>'+e(p.bio||"")+'</p><div class="p17-actions"><button class="p17-edit" data-act="modal" data-val="edit">'+icon("check",18)+' '+e(t("edit"))+'</button><button class="p17-settings" data-act="modal" data-val="settings" aria-label="'+e(t("settings"))+'">'+icon("settings",21)+'</button></div><div class="p17-tags">'+tags.map(s=>'<span>'+e(s)+'</span>').join("")+'</div></div>'+highlights()+'<div class="p17-tabs" role="tablist" aria-label="'+e(t("profile"))+'">'+tabs.map(([id,ic])=>'<button role="tab" aria-selected="'+(section===id)+'" class="'+(section===id?"selected":"")+'" data-p17-action="section" data-id="'+id+'">'+icon(ic,22)+'<span>'+e(t(id))+'</span></button>').join("")+'</div><div class="p17-gallery-panel" role="tabpanel">'+gallery+'</div></section>';
+  return '<section class="p17-profile" aria-label="'+e(t("profile"))+'"><div class="p17-cover" style="background-image:linear-gradient(180deg,rgba(8,10,20,.03),rgba(8,10,20,.35)),url(&quot;'+media(coverSrc())+'&quot;)"><label class="p17-cover-change">'+icon("camera",17)+'<span>'+e(t("cover"))+'</span><input id="p17-cover-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="'+e(t("cover"))+'"/></label></div><div class="p17-person-top"><div class="p17-avatar-wrap"><img class="p17-avatar" src="'+media(v12AvatarSrc())+'" alt="'+e(t("profile"))+'"/><button type="button" class="p17-avatar-camera" data-p17-action="open-edit" aria-label="'+e(t("edit"))+'">'+icon("camera",19)+'</button></div>'+stats()+'</div><div class="p17-identity"><div class="p17-person-name"><h2 data-user-content>'+e(p.name||"Profili yt")+'</h2>'+identityBadge()+'</div><p class="p17-location"><span data-user-content>@'+e(handle)+'</span><span>·</span>'+icon("pin",15)+'<span data-user-content>'+e(city)+'</span></p><p class="p17-bio" data-user-content>'+e(p.bio||"")+'</p><div class="p17-actions"><button class="p17-edit" data-act="modal" data-val="edit">'+icon("check",18)+' '+e(t("edit"))+'</button><button class="p17-settings" data-act="modal" data-val="settings" aria-label="'+e(t("settings"))+'">'+icon("settings",21)+'</button></div><div class="p17-tags" data-user-content>'+tags.map(s=>'<span>'+e(s)+'</span>').join("")+'</div></div>'+highlights()+'<div class="p17-tabs" role="tablist" aria-label="'+e(t("profile"))+'">'+tabs.map(([id,ic])=>'<button type="button" role="tab" id="p17-tab-'+id+'" aria-controls="p17-gallery-panel" tabindex="'+(section===id?'0':'-1')+'" aria-selected="'+(section===id)+'" class="'+(section===id?"selected":"")+'" data-p17-action="section" data-id="'+id+'">'+icon(ic,22)+'<span>'+e(t(id))+'</span></button>').join("")+'</div><div id="p17-gallery-panel" class="p17-gallery-panel" role="tabpanel" aria-labelledby="p17-tab-'+section+'">'+gallery+'</div></section>';
  }
  const previousProfile=profile;
  profile=function(){return renderProfile()};
@@ -2461,7 +2462,7 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
  function handleAction(action,b){
   const id=b.dataset.id||"";
   if(action==="open-edit"){openModal("edit");return;}
-  if(action==="section"){section=id;render({scroll:true});return;}
+  if(action==="section"){if(!tabs.some(([tab])=>tab===id))return;section=id;render({scroll:true});document.getElementById("p17-tab-"+id)?.focus({preventScroll:true});return;}
   if(action==="open-media"){
    const kind=b.dataset.kind;
    if(kind==="post"){openModal("p17-post",id);return}
@@ -2519,7 +2520,23 @@ window.addEventListener('illyrian:commerce:ready',()=>{render({scroll:true});v7R
    if(keep({p17Cover:photo})){render({scroll:true});toast(t("coverSave"))}
   }catch{toast(t("badImage"))}
  },true);
- window.addEventListener("illyrian:language-changed",()=>{if(state.tab!=="profile")return;const active=document.activeElement?.closest?.("[data-ily-identity-badge]");const expanded=active?.getAttribute("aria-expanded")==="true";render({scroll:true});if(active){const next=document.querySelector("#screen .p17-person-name [data-ily-identity-badge]");next?.focus({preventScroll:true});if(expanded)next?.click()}});
+ document.addEventListener("keydown",event=>{
+  const tab=event.target.closest?.(".p17-tabs [role=tab]");if(!tab||!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;
+  event.preventDefault();const index=tabs.findIndex(([id])=>id===tab.dataset.id);
+  const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:(index+(event.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;
+  handleAction("section",{dataset:{id:tabs[next][0]}});
+ });
+ window.addEventListener("illyrian:language-changed",()=>{
+  if(state.tab!=="profile"||state.story||state.reelOpen)return;
+  if(state.modal&&state.modal.type!=="edit"&&state.modal.type!=="p17-highlight-editor")return;
+  const focus=document.activeElement,focusId=focus?.id;
+  const fields=[...document.querySelectorAll('#layer input[id]:not([type=file]),#layer textarea[id],#layer select[id]')].map(el=>({id:el.id,value:el.value}));
+  const active=focus?.closest?.("[data-ily-identity-badge]"),expanded=active?.getAttribute("aria-expanded")==="true";
+  render({scroll:true});
+  fields.forEach(({id,value})=>{const field=document.getElementById(id);if(field)field.value=value});
+  if(focusId)document.getElementById(focusId)?.focus({preventScroll:true});
+  if(active){const next=document.querySelector("#screen .p17-person-name [data-ily-identity-badge]");next?.focus({preventScroll:true});if(expanded)next?.click()}
+ });
 })();
 
 render();

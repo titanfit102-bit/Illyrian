@@ -24,6 +24,7 @@ for(const [w,h] of sizes){
   test('Visual evidence, nine states - '+w+'x'+h,async({page})=>{
     await open(page,w,h);
     await capture(page,w,h,'01-home');
+    await page.locator('#navbar [data-val="explore"]').click();
     await page.locator('[data-ilshop-open]').first().click();
     await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
     await capture(page,w,h,'02-shop');
@@ -82,7 +83,8 @@ for(const [w,h] of [[390,844],[844,390]]){
     type:'jpeg',quality:78,animations:'disabled',caret:'hide',fullPage:false
    });
 
-   await page.locator('[data-ilshop-open]').first().click();
+   await page.locator('#navbar [data-val="explore"]').click();
+    await page.locator('[data-ilshop-open]').first().click();
    await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
    const shopPlus=page.locator('#isp-root');
    await expect(shopPlus.locator('[role="dialog"][aria-modal="true"]')).toBeVisible();
