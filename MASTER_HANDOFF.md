@@ -1,5 +1,7 @@
 # ILLYRIAN — MASTER_HANDOFF
 
+**Vendim i pronarit,31 tetor2026 — profil pa blloqe QA poshtë:** hiq nga Profile kartat “Besimi dhe menaxhimi” dhe “Privatësia, komunitetet dhe vendet”. Ruaj panelet/hyrjet në Zbulo dhe rrjedhat ekzistuese të raportimit, moderimit, bizneseve dhe privatësisë; nuk fshihen funksione ose të dhëna.
+
 **Vendim i pronarit,31 tetor2026 — Settings në Profile:** në profil, zëvendëso ikonën e Njoftimeve në header me ingranazhin e Cilësimeve; hiq hyrjen e dyfishtë pranë Ndrysho profilin. Njoftimet mbeten në Home. Ky autorizim zëvendëson kufirin e vjetër të header-it vetëm për këtë vendosje; funksionet, navbar-i dhe të dhënat ruhen.
 
 **Drejtimi vizual i profilit — 31 tetor 2026:** pronari rikonfirmoi referencën “Profili Illyrian i Artës në Muzg”; shtimi i fotove pa përputhjen e përmasave/pozicionimit nuk e përmbush kërkesën. Ndiq layout-in kompakt të referencës dhe portretet koherente; ruaj navbar-in ekzistues. Profili fillestar Arta është ilustrim i veçantë pa ndryshuar storage-in; personalizimi ka përparësi. Numrat e këtij personazhi janë të ilustruar, jo përdorues/followers ose verifikim real.

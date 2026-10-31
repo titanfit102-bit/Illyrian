@@ -399,7 +399,7 @@
   const screen=document.querySelector('#screen');if(!screen)return;
   // Stable route, not a heading that changes with the interface language.
   const active=document.querySelector('#navbar [data-act="tab"].active')?.dataset.val;
-  const isEligible=active==='explore'||active==='profile';
+  const isEligible=active==='explore';
   const entry=screen.querySelector('#ig6-entry');
   if(!isEligible){entry?.remove();return}
   if(entry)return;

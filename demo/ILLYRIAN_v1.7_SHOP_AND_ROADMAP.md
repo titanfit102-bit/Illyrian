@@ -1,5 +1,7 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+**Profile — kriter vendosjeje,31 tetor2026:** pas galerisë nuk shfaqen ig6-entry ose il4-entry. Governance entry vetëm në Zbulo; Privacy/Map entry në Zbulo dhe Plans(states), jo Profile. Testo rikthimin Profile→Zbulo→panele→Profile në sq/en/it pa ndryshim storage; mos krijo hyrje/panele paralele.
+
 **Vendosja e Settings — 31 tetor2026:** Profile→header→Cilësimet ekzistuese; pa ikonë Njoftimesh të dukshme në këtë faqe dhe pa ingranazh të dyfishtë pranë redaktimit. Home→Njoftimet ekzistuese. Pranim: sq/en/it, hapje/Escape/fokus dhe rikthim te Home pa ndryshim storage ose unread.
 
 **Faza1 — përputhja me referencën, 31 tetor 2026:** cover/avatar/statistika në raportet e fotografisë; emri dhe veprimet bashkë; bio/chips/Highlights/skeda kompakte; galeri3 kolona me foto të qarta dhe metadata ilustruese; Light/Dark. Mbaj target44px me sipërfaqe vizuale më të vogla. Profili i papersonalizuar shfaq personazhin Arta; mos mbishkruaj të dhëna personale ose navbar. Fazat2–5 ruajnë boshllëqet e dokumentuara. Provat te CURRENT_STATE.

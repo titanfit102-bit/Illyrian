@@ -841,3 +841,16 @@ for(const [lang,label] of [['sq','Cilësimet'],['en','Settings'],['it','Impostaz
  await notices.click();await expect(page.locator('#layer .modal')).toBeVisible();await page.keyboard.press('Escape');
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(state);
 });
+
+for(const lang of ['sq','en','it'])test('Profile omits management and privacy blocks while Explore retains their panels '+lang,async({page})=>{
+ await openDemo(page,390,844);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.locator('#navbar [data-val="profile"]').click();
+ await expect(page.locator('#screen .p17-profile')).toBeVisible();
+ await expect(page.locator('#screen #ig6-entry,#screen #il4-entry')).toHaveCount(0);
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#ig6-entry [data-ig6="open"]').click();await expect(page.locator('#ig6-root')).toBeVisible();await page.keyboard.press('Escape');
+ await page.locator('#il4-entry [data-il4-entry]').click();await expect(page.locator('#il4-root')).toBeVisible();await page.keyboard.press('Escape');
+ await page.locator('#navbar [data-val="profile"]').click();await expect(page.locator('#screen #ig6-entry,#screen #il4-entry')).toHaveCount(0);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+});

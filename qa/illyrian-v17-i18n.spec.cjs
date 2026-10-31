@@ -56,7 +56,7 @@ test('Identity phase 4: narrow mobile disclosures fit and sponsorship never gran
  await page.setViewportSize({width:320,height:568});await ready(page);
  const badge=page.locator('#screen [data-ily-identity-badge]').first();await badge.click();const dimensions=await badge.locator('..').locator('[data-ily-identity-note]').evaluate(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right}});expect(dimensions.left).toBeGreaterThanOrEqual(0);expect(dimensions.right).toBeLessThanOrEqual(320);
  const sponsored=await commercePost(page,{sponsored:true});await expect(sponsored.locator('[data-ily-commerce-sponsored]')).toBeVisible();await expect(sponsored.locator('[data-ily-identity-badge]')).toHaveCount(0);expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).posts[0].verified)).toBe(false);
- await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();await expect(page.locator('#ig6-identity-guide')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('identity:paidSeparate')));await expect(page.locator('#ig6-identity-guide').locator('button,input,select')).toHaveCount(0);
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();await expect(page.locator('#ig6-identity-guide')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('identity:paidSeparate')));await expect(page.locator('#ig6-identity-guide').locator('button,input,select')).toHaveCount(0);
 });
 test('Identity phase 4: guide activation without pointer focus restores its source after locale repaint',async({page})=>{
  await page.setViewportSize({width:320,height:568});await ready(page);
@@ -69,7 +69,7 @@ test('Identity phase 4: guide activation without pointer focus restores its sour
 });
 async function businessPanel(page,lang='sq'){
  await ready(page);await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
- await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
  await page.locator('#ig6-entry [data-ig6="open"]').click();
  await page.locator('#ig6-root [data-ig6="tab:work"]').click();
  await expect(page.locator('#ig6-business')).toBeVisible();
@@ -196,7 +196,7 @@ test('Business phase 3: removed business cannot redirect a staff mutation to ano
  await page.locator('#ig6-team-invite button').click();await expect(page.locator('[data-biz-denied]')).toBeVisible();expect(await teamData(page)).not.toHaveProperty('businessTeams');
 });
 test('Business phase 3: old Governance report reports conflict honestly and retains its draft',async({page,context})=>{
- await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();await page.locator('[data-ig6="tab:reports"]').click();
+ await ready(page);await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();await page.locator('[data-ig6="tab:reports"]').click();
  await page.locator('#ig6-report [name="target"]').fill('Unsent report after team update');
  const other=await context.newPage();await businessPanel(other);await other.locator('#ig6-team-public [name="public"]').check();await other.locator('#ig6-team-public button').click();
  const saved=await other.evaluate(k=>localStorage.getItem(k),TEAM_KEY);await page.locator('#ig6-report button').click();
@@ -938,8 +938,9 @@ for(const [locale,messages] of Object.entries({
 test('Privacy rolls back unsaved private follow request and retries successfully',async({page})=>{
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
- await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
  await page.locator('#il4-entry [data-il4-entry]').click();
+ await page.locator('#il4-root [data-il4="tab:profiles"]').click();
  const key='illyrian_demo_v17_privacy_map',before=await page.evaluate(k=>localStorage.getItem(k),key);
  await rejectModuleWrites(page,key);
  await page.locator('#il4-root [data-il4="follow-request"]').click();
@@ -1016,8 +1017,9 @@ for(const [lang,expected] of Object.entries({
  test('Privacy direct semantic labels render in '+lang,async({page})=>{
   await ready(page);
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
-  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+  await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
   await page.locator('#il4-entry [data-il4-entry]').click();
+ await page.locator('#il4-root [data-il4="tab:profiles"]').click();
   await expect(page.locator('#il4-root .il4-head h2')).toHaveText(expected.title);
   await expect(page.locator('#il4-root [data-il4="tab:profiles"]')).toHaveText(expected.profiles);
   await expect(page.locator('#il4-root [data-il4="tab:groups"]')).toHaveText(expected.groups);
@@ -1048,8 +1050,9 @@ test('Privacy open map keeps unsubmitted filters and focus on live language swit
 });
 test('Privacy profile and group user-origin fields remain unchanged through locale switches',async({page})=>{
  await ready(page);
- await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
  await page.locator('#il4-entry [data-il4-entry]').click();
+ await page.locator('#il4-root [data-il4="tab:profiles"]').click();
  await page.locator('#il4-root [data-il4="role:owner"]').click();
  const profile=page.locator('#il4-root .il4-card h4[data-user-content]');
  for(const lang of ['en','it','sq']){
@@ -1095,8 +1098,9 @@ for(const [lang,expectations] of Object.entries({
 test('Direct i18n binding is never overwritten by phrase translation collisions',async({page})=>{
  await ready(page);
  await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));
- await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
  await page.locator('#il4-entry [data-il4-entry]').click();
+ await page.locator('#il4-root [data-il4="tab:profiles"]').click();
  await expect(page.locator('#il4-root [data-il4="tab:profiles"]')).toHaveText('Profili');
  await page.evaluate(()=>{
   const marker=document.createElement('span');
@@ -2371,7 +2375,7 @@ for(const locale of ['sq','en','it']){
   await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_governance',JSON.stringify({cases:[{id:'unknown-phase1',target:'Historical status fixture',reason:'Test reason',status:'Mbyll'}],appeals:[],audits:[],drafts:[]})));
   await ready(page);await page.evaluate(l=>IllyrianI18n.changeLanguage(l),locale);
   const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_governance'));
-  await page.locator('#navbar [data-val="profile"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();
+  await page.locator('#navbar [data-val="explore"]').click();await page.locator('#ig6-entry [data-ig6="open"]').click();
   await page.locator('#ig6-root [data-ig6="tab:reports"]').click();
   const card=page.locator('#ig6-root article').filter({has:page.getByText('Historical status fixture',{exact:true})});
   await expect(card).toContainText('Mbyll');

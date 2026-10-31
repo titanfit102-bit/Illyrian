@@ -176,7 +176,7 @@
   // Locale-independent route identity: never infer the selected tab from
   // a translated heading. This remains stable in sq/en/it and future locales.
   const active=document.querySelector('#navbar [data-act="tab"].active')?.dataset.val;
-  const type=active==='explore'?'map':active==='events'?'states':active==='profile'?'profiles':null;
+  const type=active==='explore'?'map':active==='events'?'states':null;
   const existing=screen.querySelector('#il4-entry');
   if(!type){existing?.remove();return}
   if(existing){existing.dataset.open=type;return}
