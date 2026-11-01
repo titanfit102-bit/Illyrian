@@ -1394,3 +1394,83 @@ test('Nearby GPS: requesting from the GPS button preserves keyboard context whil
  await openDemo(page,390,844);await page.locator('.ily-compose-city').click();await page.locator('[data-act="near-gps"]').click();
  await expect(page.locator('#screen > .filters [data-val="Afër teje"]')).toBeFocused();
 });
+
+// Owner-authorized Home audit corrections: real local-state and UI behavior.
+async function openHomeAudit(page){await page.addInitScript(()=>{if(!localStorage.getItem('illyrian_demo_ui_language_v1'))localStorage.setItem('illyrian_demo_ui_language_v1','sq')});await openDemo(page,390,844)}
+
+for(const action of ['like','save','hide-post'])test('Home audit: stale '+action+' preserves another window comment',async({page,context})=>{
+ await openHomeAudit(page);
+ if(action==='hide-post')await page.locator('#screen [data-act="postmore"][data-id="p1"]').click();
+ const other=await context.newPage();await openDemo(other,390,844);
+ await other.locator('#screen [data-act="comments"][data-id="p1"]').click();await other.locator('#comment-input').fill('Komenti i dritares tjetër');await other.locator('[data-act="send-comment"]').click();
+ const before=await other.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.locator('[data-act="'+action+'"][data-id="p1"]').click();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await expect(page.locator('#toast-area')).toContainText(/ndrysh|changed|cambiat/i);
+});
+
+for(const action of ['like','save','hide-post'])test('Home audit: quota failure rolls back '+action+' and permits retry',async({page})=>{
+ await openHomeAudit(page);
+ await page.evaluate(()=>{const original=Storage.prototype.setItem;window.auditRestoreStorage=()=>Storage.prototype.setItem=original;Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Full','QuotaExceededError');return original.call(this,k,v)}});
+ if(action==='hide-post')await page.locator('#screen [data-act="postmore"][data-id="p1"]').click();
+ const button=page.locator('[data-act="'+action+'"][data-id="p1"]');await button.click();
+ await expect(page.locator('#toast-area')).toContainText(/nuk u ruajt/i);
+ if(action==='hide-post')await expect(page.locator('#layer [data-act="hide-post"]')).toBeVisible();
+ else await expect(button).toHaveAttribute('aria-pressed','false');
+ await page.evaluate(()=>window.auditRestoreStorage());await button.click();
+ const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')));
+ expect(stored[action==='like'?'likes':action==='save'?'bookmarks':'hiddenPosts']).toContain('p1');
+ await page.reload();if(action==='hide-post')await expect(page.locator('#screen [data-act="postmore"][data-id="p1"]')).toHaveCount(0);else await expect(button).toHaveAttribute('aria-pressed','true');
+});
+
+test('Home audit: blocked and muted actors disappear from Stories and Reel navigation',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({blocked:['arta'],muted:['leon']})));
+ await openHomeAudit(page);
+ await expect(page.locator('#screen .stories [data-act="story"]')).toHaveText(['Besa','Dion']);
+ await expect(page.locator('#screen .story-reel-preview')).toHaveCount(1);
+ await page.locator('#screen .stories [data-act="story"][data-val="3"]').click();
+ await page.locator('[data-act="prevStory"]').click();await expect(page.locator('.story-user')).toContainText('Besa');
+ await page.locator('[data-act="nextStory"]').click();await expect(page.locator('.story-user')).toContainText('Dion');
+ await page.keyboard.press('Escape');await page.locator('#navbar [data-act="open-reels"]').click();
+ await expect(page.locator('.v4-reel-footer')).toContainText('Besa');await page.locator('[data-act="reel-next"]').click();await expect(page.locator('.v4-reel-footer')).toContainText('Besa');
+});
+
+test('Home audit: all hidden posts show empty state in For you and Following',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({hiddenPosts:['p1','p2','p3'],follows:['arta','leon','besa']})));
+ await openHomeAudit(page);await expect(page.locator('#screen > .empty')).toBeVisible();
+ await page.locator('[data-feed-key="feedFollowing"]').click();await expect(page.locator('#screen > .empty')).toBeVisible();
+});
+
+for(const action of ['like','save'])test('Home audit: '+action+' retains keyboard focus and announces toggled state',async({page})=>{
+ await openHomeAudit(page);const button=page.locator('#screen [data-act="'+action+'"][data-id="p1"]');
+ await button.focus();await page.keyboard.press('Enter');await expect(button).toBeFocused();await expect(button).toHaveAttribute('aria-pressed','true');
+ await page.keyboard.press('Enter');await expect(button).toBeFocused();await expect(button).toHaveAttribute('aria-pressed','false');
+});
+
+for(const lang of ['sq','en','it'])test('Home audit: historical personal date ages without rewriting storage '+lang,async({page})=>{
+ await page.clock.install({time:new Date('2026-11-01T12:00:00Z')});
+ await page.addInitScript(lang=>{localStorage.setItem('illyrian_demo_ui_language_v1',lang);localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({posts:[{id:'my1792929600000',name:'Owner',ava:'a1',city:'Tiranë',when:'Tani',text:'One week ago',img:null,likes:0,comments:0,share:0}],historicalUnknown:'keep'}))},lang);
+ await openHomeAudit(page);const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const label=page.locator('#screen > .post').first().locator('.post-h .small');await expect(label).not.toContainText(/Tani|Now|Adesso|Ora ·/);
+ await expect(label).toContainText(/25|10|2026/);expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+});
+
+test('Home audit: live language change refreshes personal dates without touching draft',async({page})=>{
+ await page.clock.install({time:new Date('2026-11-01T12:00:00Z')});
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({posts:[{id:'my1793529000000',name:'Owner',ava:'a1',city:'Tiranë',when:'Tani',text:'An hour ago',img:null,likes:0,comments:0,share:0}]})));
+ await openHomeAudit(page);const label=page.locator('#screen > .post .post-time').first();await expect(label).toContainText('orë');
+ await page.locator('.compose-prompt').click();await page.locator('#v5-text').fill('Draft i papërfunduar');
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));await expect(label).toHaveText('1 hour ago');await expect(page.locator('#v5-text')).toHaveValue('Draft i papërfunduar');
+});
+
+test('Home audit: own post is not attributed to a blocked fixture with the same name',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({blocked:['arta','leon','besa','dion'],posts:[{id:'my1792929600000',name:'Arta K.',ava:'a1',city:'Tiranë',when:'Tani',text:'My own content',img:null,likes:0,comments:0,share:0}]})));
+ await openHomeAudit(page);await expect(page.locator('#screen > .post')).toHaveCount(1);await expect(page.locator('#screen > .post')).toContainText('My own content');await expect(page.locator('#screen > .post .post-name[data-act="user-profile"]')).toHaveCount(0);
+});
+
+for(const lang of ['sq','en','it'])test('Home audit: all unavailable Reels have a closable localized empty state '+lang,async({page})=>{
+ await page.addInitScript(lang=>{localStorage.setItem('illyrian_demo_ui_language_v1',lang);localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({blocked:['arta','leon','besa'],muted:['dion']}))},lang);
+ await openHomeAudit(page);await page.locator('#navbar [data-act="open-reels"]').click();
+ await expect(page.locator('#layer .empty')).toHaveText({sq:'Nuk ka Reels të disponueshme.',en:'No Reels are available.',it:'Nessun Reel disponibile.'}[lang]);
+ await page.keyboard.press('Escape');await expect(page.locator('#layer .modal')).toHaveCount(0);await expect(page.locator('#navbar [data-act="open-reels"]')).toBeFocused();
+});

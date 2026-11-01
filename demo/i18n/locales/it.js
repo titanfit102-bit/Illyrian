@@ -288,6 +288,10 @@ window.ILLYRIAN_LOCALES.it={
     "dark": "Scuro"
   },
   "home": {
+    "timeNow": "Ora",
+    "timeMinutes": "{{count}} min fa",
+    "timeHours": "{{count}} ore fa",
+    "reelsUnavailable": "Nessun Reel disponibile.",
     "openCamera": "Apri la fotocamera",
     "activitiesHeader": "Attività ed eventi",
     "changeLocation": "Cambia ↗",

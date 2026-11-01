@@ -267,6 +267,34 @@ function coreMessageFresh(input){try{if(localStorage.getItem(KEY)===coreExpected
 function persist(){try{localStorage.setItem(KEY,JSON.stringify({theme:state.theme,feed:state.feed,v9NearCity:state.v9NearCity,v9RecentQueries:state.v9RecentQueries,v9CommentDrafts:state.v9CommentDrafts,v10PlansView:state.v10PlansView,likes:state.likes,bookmarks:state.bookmarks,follows:state.follows,requests:state.requests,posts:state.posts,comments:state.comments,messages:state.messages,profile:state.profile, intent:state.intent,intentExpiry:state.intentExpiry, joinedCommunities:state.joinedCommunities,applications:state.applications,marketSaved:state.marketSaved,acceptedPlans:state.acceptedPlans,groupMessages:state.groupMessages,blocked:state.blocked,muted:state.muted,alumniOptIn:state.alumniOptIn,activityLog:state.activityLog, hiddenPosts:state.hiddenPosts, reports:state.reports,v8EventStatuses:state.v8EventStatuses,reelLikes:state.reelLikes,reelSaved:state.reelSaved,v5AvatarChoice:state.v5AvatarChoice,v6ReadChats:state.v6ReadChats,v6ReadAlerts:state.v6ReadAlerts,v6Prefs:state.v6Prefs,v6StoryLikes:state.v6StoryLikes}));coreExpectedRaw=localStorage.getItem(KEY);return true}catch{return false}}
 const coreSaveFailed=()=>window.IllyrianI18n?.t('common:storageSaveFailed')||'Ndryshimi nuk u ruajt në këtë pajisje. Provo përsëri.';
 const coreResetText=(key,fallback)=>window.IllyrianI18n?.t('settings:'+key)||fallback;
+// Reuse the observed-snapshot guard; failed local writes never advance the UI.
+function coreArrayToggle(key,id,input,message){
+ if(!coreMessageFresh(input))return false;
+ const previous=state[key],previousLog=state.activityLog;state[key]=toggle(previous,id);
+ if(message)state.activityLog=[{id:Date.now()+Math.random(),text:message,time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
+ if(persist())return true;
+ state[key]=previous;state.activityLog=previousLog;toast(coreSaveFailed());input?.focus();return false;
+}
+function coreActionFocus(action,id){
+ (document.querySelector('#screen [data-act="'+CSS.escape(action)+'"][data-id="'+CSS.escape(String(id))+'"]')||document.querySelector('#screen > .filters [aria-pressed="true"]')||document.querySelector('#navbar [aria-current="page"]'))?.focus({preventScroll:true});
+}
+function postActor(p){return String(p.id).startsWith('my')?null:({'Arta K.':'arta','Leon M.':'leon','Besa H.':'besa','Dion A.':'dion'}[p.name]||null)}
+function homePostVisible(p){const actor=postActor(p);return !state.hiddenPosts.includes(String(p.id))&&(!actor||!state.blocked.includes(actor)&&!state.muted.includes(actor))}
+const postDateFormats=new Map();
+function postTimeLabel(p){
+ // Legacy personal IDs contain a real millisecond creation time; do not backfill raw history.
+ const match=String(p.id).match(/^my(\d{13})$/),created=Number.isFinite(p.createdAt)?p.createdAt:match?Number(match[1]):NaN;
+ if(!Number.isFinite(created)||created<=0||!Number.isFinite(new Date(created).getTime()))return p.when||'';
+ const lang=window.IllyrianI18n?.language||'sq';
+ if(!postDateFormats.has(lang))postDateFormats.set(lang,{relative:new Intl.RelativeTimeFormat(lang,{numeric:'auto'}),date:new Intl.DateTimeFormat(lang,{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})});
+ const formats=postDateFormats.get(lang),age=Date.now()-created;
+ if(age<0||age>=86400000)return formats.date.format(created);
+ if(lang==='sq'){
+  const count=age<3600000?Math.floor(age/60000):Math.floor(age/3600000),key=age<60000?'timeNow':age<3600000?'timeMinutes':'timeHours';
+  return window.IllyrianI18n?.t('home:'+key,{count})||(age<60000?'Tani':count+(age<3600000?' min më parë':' orë më parë'));
+ }
+ return formats.relative.format(age<60000?0:age<3600000?-Math.floor(age/60000):-Math.floor(age/3600000),age<60000?'second':age<3600000?'minute':'hour');
+}
 const allPosts=()=>[...state.posts,...seedPosts];const getPost=id=>allPosts().find(p=>String(p.id)===String(id));const toggle=(arr,id)=>arr.includes(id)?arr.filter(x=>x!==id):[...arr,id];const fmt=n=>n>=1000?(n/1000).toFixed(1).replace('.0','')+'K':String(n);
 function theme(){const auto=window.matchMedia?.('(prefers-color-scheme: dark)').matches||false;$('#phone').classList.toggle('dark',state.theme==='dark'||state.theme==='auto'&&auto)}
 window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener?.('change',theme);
@@ -280,8 +308,8 @@ function pills(labels,chosen,action){if(action==='feed'){
  }return `<div class="filters">${labels.map(s=>`<button class="pill ${chosen===s?'active':''}" data-act="${action}" data-val="${esc(s)}">${esc(s)}</button>`).join('')}</div>`}
 // Existing fixture markers describe a DEMO design, never a real identity check.
 function identityBadge(){const t=(key,fallback)=>window.IllyrianI18n?.t('identity:'+key)||fallback;return `<span class="ily-identity" data-i18n-direct><button type="button" data-ily-identity-badge aria-expanded="false" aria-label="${esc(t('badgeLabel',"Shenjë jo verifikim real"))}" title="${esc(t('badgeLabel',"Shenjë jo verifikim real"))}"><svg data-ily-identity-icon aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 4.5v.5"/></svg></button><span data-ily-identity-note class="ily-identity-note" role="status" hidden>${esc(t('badgeNote','Asnjë identitet apo biznes nuk është verifikuar nga kjo shenjë. Pagesa nuk jep verifikim.'))}</span></span>`;}
-function post(p){const liked=state.likes.includes(p.id),savedPost=state.bookmarks.includes(p.id),add=(state.comments[p.id]||[]).length;return `<article class="post"><div class="post-h">${tinyAvatar(p.ava)}<div style="flex:1"><div class="post-name">${esc(p.name)} ${p.verified?identityBadge():''}</div><div class="small">${esc(p.when)} · ${esc(p.city)}</div></div><button class="icon-button" data-act="postmore" data-id="${esc(p.id)}" aria-label="Më shumë">${svg('more',19)}</button></div><div class="post-copy">${esc(p.text)}</div>${p.img?`<img class="post-photo ${p.img==='cafe'?'cafe':''}" src="${IMAGES[p.img]}" alt="Fotografi e postimit"/>`:''}<div class="post-bottom"><button class="post-action ${liked?'liked':''}" data-act="like" data-id="${esc(p.id)}" aria-label="Pëlqe">${svg('heart',21,liked)} ${fmt(p.likes+Number(liked))}</button><button class="post-action" data-act="comments" data-id="${esc(p.id)}">${svg('comment',21)} ${p.comments+add}</button><button class="post-action" data-act="share" data-id="${esc(p.id)}">${svg('send',19)} ${p.share}</button><button class="post-action ${savedPost?'saved':''}" data-act="save" data-id="${esc(p.id)}" aria-label="Ruaj postimin">${svg('bookmark',20,savedPost)}</button></div></article>`}
-function home(){let posts=allPosts();if(state.feed==='Më të rejat')posts=[...posts].sort((a,b)=>v9PostTime(b)-v9PostTime(a));if(state.feed==='Të ndjekur')posts=posts.filter(p=>p.id.toString().startsWith('my')||state.follows.includes(p.name==='Arta K.'?'arta':p.name==='Leon M.'?'leon':'besa'));if(state.feed==='Afër teje')posts=posts.filter(nearPostAllowed);return `<div class="stories"><button class="story-btn" data-act="modal" data-val="compose"><div class="ring self">${tinyAvatar('a1','avatar')}<span class="story-plus">+</span></div><span class="storyname">Story im</span></button>${[['a2','Arta'],['a3','Leon'],['a4','Besa'],['a5','Dion']].map(([a,n],i)=>!nearStoryAllowed(i+1)?'':`<button class="story-btn" data-act="story" data-val="${i+1}"><div class="ring">${tinyAvatar(a,'avatar')}</div><span class="storyname">${n}</span></button>`).join('')}</div><div class="compose">${tinyAvatar('a1','avatar sm')}<button class="compose-prompt" data-act="modal" data-val="compose">Çfarë po mendon?</button><button class="icon-button red-icon" data-act="modal" data-val="compose" aria-label="Shto fotografi">${svg('image',23)}</button><button type="button" class="icon-button ily-compose-reel" data-act="v15-open" data-val="reel" aria-label="Reel nga foto">${svg('play',21)}</button><button type="button" class="icon-button ily-compose-city" data-act="near-manual" data-val="Afër teje" aria-label="Qyteti manual">${svg('pin',21)}</button></div>${pills(['Për ty','Të ndjekur','Më të rejat','Afër teje'],state.feed,'feed')}${posts.length?posts.map(post).join(''):`<div class="empty">${svg('user',36)}Nuk ka postime në këtë kategori. Provo një tjetër.</div>`}`}
+function post(p){const liked=state.likes.includes(p.id),savedPost=state.bookmarks.includes(p.id),add=(state.comments[p.id]||[]).length;return `<article class="post"><div class="post-h">${tinyAvatar(p.ava)}<div style="flex:1"><div class="post-name">${esc(p.name)} ${p.verified?identityBadge():''}</div><div class="small"><span class="post-time" data-post-id="${esc(p.id)}" data-i18n-direct>${esc(postTimeLabel(p))}</span> · ${esc(p.city)}</div></div><button class="icon-button" data-act="postmore" data-id="${esc(p.id)}" aria-label="Më shumë">${svg('more',19)}</button></div><div class="post-copy">${esc(p.text)}</div>${p.img?`<img class="post-photo ${p.img==='cafe'?'cafe':''}" src="${IMAGES[p.img]}" alt="Fotografi e postimit"/>`:''}<div class="post-bottom"><button class="post-action ${liked?'liked':''}" data-act="like" data-id="${esc(p.id)}" aria-pressed="${liked}" aria-label="Pëlqe">${svg('heart',21,liked)} ${fmt(p.likes+Number(liked))}</button><button class="post-action" data-act="comments" data-id="${esc(p.id)}">${svg('comment',21)} ${p.comments+add}</button><button class="post-action" data-act="share" data-id="${esc(p.id)}">${svg('send',19)} ${p.share}</button><button class="post-action ${savedPost?'saved':''}" data-act="save" data-id="${esc(p.id)}" aria-pressed="${savedPost}" aria-label="Ruaj postimin">${svg('bookmark',20,savedPost)}</button></div></article>`}
+function home(){let posts=allPosts().filter(homePostVisible);if(state.feed==='Më të rejat')posts=[...posts].sort((a,b)=>v9PostTime(b)-v9PostTime(a));if(state.feed==='Të ndjekur')posts=posts.filter(p=>p.id.toString().startsWith('my')||state.follows.includes(postActor(p)));if(state.feed==='Afër teje')posts=posts.filter(nearPostAllowed);return `<div class="stories"><button class="story-btn" data-act="modal" data-val="compose"><div class="ring self">${tinyAvatar('a1','avatar')}<span class="story-plus">+</span></div><span class="storyname">Story im</span></button>${[['a2','Arta'],['a3','Leon'],['a4','Besa'],['a5','Dion']].map(([a,n],i)=>!nearStoryAllowed(i+1)?'':`<button class="story-btn" data-act="story" data-val="${i+1}"><div class="ring">${tinyAvatar(a,'avatar')}</div><span class="storyname">${n}</span></button>`).join('')}</div><div class="compose">${tinyAvatar('a1','avatar sm')}<button class="compose-prompt" data-act="modal" data-val="compose">Çfarë po mendon?</button><button class="icon-button red-icon" data-act="modal" data-val="compose" aria-label="Shto fotografi">${svg('image',23)}</button><button type="button" class="icon-button ily-compose-reel" data-act="v15-open" data-val="reel" aria-label="Reel nga foto">${svg('play',21)}</button><button type="button" class="icon-button ily-compose-city" data-act="near-manual" data-val="Afër teje" aria-label="Qyteti manual">${svg('pin',21)}</button></div>${pills(['Për ty','Të ndjekur','Më të rejat','Afër teje'],state.feed,'feed')}${posts.length?posts.map(post).join(''):`<div class="empty">${svg('user',36)}Nuk ka postime në këtë kategori. Provo një tjetër.</div>`}`}
 function resultItem(r){const following=state.follows.includes(r.id);return `<div class="result">${r.ava?tinyAvatar(r.ava,'avatar lg'):`<div class="result-symbol">${r.emoji||'✦'}</div>`}<div class="result-info"><strong>${esc(r.name)}</strong><p>${esc(r.sub)}</p></div>${r.type==='Punë'?`<button class="button tiny" data-act="detail" data-id="${r.id}">Shiko</button>`:`<button class="button tiny ${following?'soft':''}" data-act="follow" data-id="${r.id}">${following?'✓ Ndjek':'Ndiq'}</button>`}</div>`}
 function explore(){let items=[...people,...businesses,...jobs].filter(p=>(state.category==='Të gjitha'||state.category===p.type)&&(`${p.name} ${p.sub}`).toLocaleLowerCase('sq').includes(state.search.toLocaleLowerCase('sq')));return `<div class="section-header"><h2>Zbulo komunitetin</h2><p>Njerëz, biznese dhe mundësi në një vend.</p></div><label class="searchwrap">${svg('search',19)}<input id="finder" autocomplete="off" placeholder="Kërko njerëz, biznese, punë..." value="${esc(state.search)}"></label>${pills(['Të gjitha','Njerëz','Biznese','Punë'],state.category,'category')}${items.length?items.map(resultItem).join(''):`<div class="empty">${svg('search',36)}Nuk u gjet asnjë rezultat për këtë kërkim.</div>`}<div class="hint">${tag()} &nbsp; Kërkimi përmban vetëm profile dhe biznese shembull.</div>`}
 function eventCard(e){const requested=state.requests.includes(e.id);return `<article class="event-card"><div class="event-art" style="${e.tone==='social'?'background:linear-gradient(130deg,#281023,#97305b,#fc8866)':e.tone==='culture'?'background:linear-gradient(130deg,#2f1e52,#912f72,#ee6a83)':''}"><span class="label">${esc(e.label)}</span><span class="pictogram">${e.emoji}</span></div><div class="event-body"><h3>${esc(e.title)}</h3><div class="event-desc">${esc(e.city)} · ${esc(e.day)}<br>${esc(e.desc)}</div><div class="event-foot"><span class="event-info">${esc(e.members)}</span><button class="button tiny ${requested?'soft':''}" data-act="event" data-id="${e.id}">${requested?'✓ Kërkesë dërguar':'Shiko planin →'}</button></div></div></article>`}
@@ -401,7 +429,7 @@ function v3Action(action,id,v){
  if(action==='story-plan'){state.story=0;state.tab='events';openModal('event',id);return true}
  if(action==='approve-sim'){if(!state.requests.includes(id)){toast('Dërgo fillimisht kërkesën');return true}if(!state.acceptedPlans.includes(id)){state.acceptedPlans.push(id);notice('Kërkesa e aktivitetit u pranua në simulim')}openModal('event',id);return true}
  if(action==='group-send'){const input=$('#group-input');const content=(input?.value||'').trim();if(!content)return true;state.groupMessages[id]=[...(state.groupMessages[id]||[]),content];persist();openModal('group-chat',id);const chat=$('#groupchat');if(chat)chat.scrollTop=chat.scrollHeight;return true}
- if(action==='hide-post'){state.hiddenPosts=toggle(state.hiddenPosts,String(id));notice("Postimi u fsheh nga Feed-i");close();toast('Postimi u fsheh');return true}
+ if(action==='hide-post'){if(coreArrayToggle('hiddenPosts',String(id),document.activeElement,'Postimi u fsheh nga Feed-i')){close();coreActionFocus('postmore',id);toast('Postimi u fsheh')}return true}
  if(action==='report-post'){if(!state.reports.includes(id))state.reports.push(id);notice("Raportim lokal — nuk është dërguar");close();toast("Raportim, jo real");return true}
  return false
 }
@@ -420,11 +448,11 @@ home=function(){const html=v4OldHome();return html.replace('</div><div class="co
 const v4OldResultItem=resultItem;
 resultItem=function(r){if(r.type!=='Njerëz')return v4OldResultItem(r);const following=state.follows.includes(r.id);return `<div class="result">${tinyAvatar(r.ava,'avatar lg')}<div class="result-info"><button class="v4-person-link" data-act="user-profile" data-id="${esc(r.id)}">${esc(r.name)}</button><p>${esc(r.sub)}</p></div><div class="v4-result-actions"><button class="button tiny soft" data-act="user-profile" data-id="${esc(r.id)}">Profil</button><button class="button tiny ${following?'soft':''}" data-act="follow" data-id="${esc(r.id)}">${following?'✓ Ndjek':'Ndiq'}</button></div></div>`};
 const v4OldPost=post;
-post=function(p){const h=v4OldPost(p);if(!h)return '';const id=p.name==='Arta K.'?'arta':p.name==='Leon M.'?'leon':p.name==='Besa H.'?'besa':p.name==='Dion A.'?'dion':null;if(!id)return h;return h.replace(/<div class="post-name">([\s\S]*?)<\/div>/,`<button type="button" class="post-name v4-person-link" data-act="user-profile" data-id="${id}">$1</button>`)};
+post=function(p){const h=v4OldPost(p);if(!h)return '';const id=postActor(p);if(!id)return h;return h.replace(/<div class="post-name">([\s\S]*?)<\/div>/,`<button type="button" class="post-name v4-person-link" data-act="user-profile" data-id="${id}">$1</button>`)};
 const v4OldProfile=profile;
 profile=function(){const html=v4OldProfile();return html.replace('<div class="v3-profile-actions">',`<button class="v4-profile-save" data-act="saved-reels">▶ Reels të ruajtura <span>${state.reelSaved.length} ›</span></button><div class="v3-profile-actions">`)};
-function v4ReelContent(){if(!state.reelOpen)return '';const r=reels[state.reelIndex]||reels[0],liked=state.reelLikes.includes(r.id),isSaved=state.reelSaved.includes(r.id);
-return `<div class="v4-reel-overlay" role="dialog" aria-modal="true" aria-label="Reels "><img class="v4-reel-cover" alt="Pamje fotografike e animuar, jo video reale" src="${IMAGES[r.photo]}"><div class="v4-reel-header"><span>Reels <small style="font-size:10px;opacity:.7;font-weight:500"></small></span><span class="v4-reel-counter">${nearReelScope?nearReelScope.indexOf(state.reelIndex)+1:state.reelIndex+1} / ${nearReelScope?nearReelScope.length:reels.length}</span><button class="icon-button" data-act="reel-close" aria-label="Mbyll">✕</button></div><div class="v4-reel-side"><button class="${liked?'active':''}" data-act="reel-like"><span>${liked?'♥':'♡'}</span>${esc(r.likes)}</button><button data-act="reel-chat" data-id="${r.profileId}"><span>☏</span>Mesazh</button><button class="${isSaved?'active':''}" data-act="reel-save"><span>${isSaved?'▣':'▢'}</span>Ruaj</button><button data-act="reel-share"><span>➤</span>Ndaj</button></div><div class="v4-reel-footer"><button style="background:#0007;margin-bottom:9px;padding:6px 11px" data-act="reel-person" data-id="${r.profileId}">@${esc(r.owner)} · ${esc(r.city)}</button>${window.IllyrianGovernance?.reportButton('social','reel',r.id,r.label)||''}<b>${esc(r.label)}</b><p>${esc(r.caption)}</p><small style="display:block;opacity:.75;font-size:10px;margin:-5px 0 11px">Pamje e animuar · jo video reale</small>${r.plan?`<button data-act="reel-plan" data-id="${r.plan}">Shiko planin e lidhur →</button>`:'<small style="opacity:.8">Pamje e animuar · jo video reale</small>'}</div><div class="v4-reel-controls"><button data-act="reel-prev">← Më parë</button><button data-act="reel-next">Tjetri →</button></div></div>`}
+function v4ReelContent(){if(!state.reelOpen)return '';const ids=reelViewIndices();if(!ids.includes(state.reelIndex))return reelUnavailable();const r=reels[state.reelIndex],liked=state.reelLikes.includes(r.id),isSaved=state.reelSaved.includes(r.id);
+return `<div class="v4-reel-overlay" role="dialog" aria-modal="true" aria-label="Reels "><img class="v4-reel-cover" alt="Pamje fotografike e animuar, jo video reale" src="${IMAGES[r.photo]}"><div class="v4-reel-header"><span>Reels <small style="font-size:10px;opacity:.7;font-weight:500"></small></span><span class="v4-reel-counter">${ids.indexOf(state.reelIndex)+1} / ${ids.length}</span><button class="icon-button" data-act="reel-close" aria-label="Mbyll">✕</button></div><div class="v4-reel-side"><button class="${liked?'active':''}" data-act="reel-like"><span>${liked?'♥':'♡'}</span>${esc(r.likes)}</button><button data-act="reel-chat" data-id="${r.profileId}"><span>☏</span>Mesazh</button><button class="${isSaved?'active':''}" data-act="reel-save"><span>${isSaved?'▣':'▢'}</span>Ruaj</button><button data-act="reel-share"><span>➤</span>Ndaj</button></div><div class="v4-reel-footer"><button style="background:#0007;margin-bottom:9px;padding:6px 11px" data-act="reel-person" data-id="${r.profileId}">@${esc(r.owner)} · ${esc(r.city)}</button>${window.IllyrianGovernance?.reportButton('social','reel',r.id,r.label)||''}<b>${esc(r.label)}</b><p>${esc(r.caption)}</p><small style="display:block;opacity:.75;font-size:10px;margin:-5px 0 11px">Pamje e animuar · jo video reale</small>${r.plan?`<button data-act="reel-plan" data-id="${r.plan}">Shiko planin e lidhur →</button>`:'<small style="opacity:.8">Pamje e animuar · jo video reale</small>'}</div><div class="v4-reel-controls"><button data-act="reel-prev">← Më parë</button><button data-act="reel-next">Tjetri →</button></div></div>`}
 function reelContent(){return v4ReelContent()}
 const v4OldModal=modalContent;
 modalContent=function(){if(!state.modal)return '';const {type,id}=state.modal;
@@ -434,9 +462,9 @@ if(type==='user-profile'){const p=people.find(x=>x.id===id);if(!p)return drawer(
 if(type==='saved-reels')return drawer('Reels të ruajtura',`<p class="small" style="margin:0 0 12px">Përmbajtje e ruajtur lokalisht në këtë shfletues.</p>${reels.filter(r=>state.reelSaved.includes(r.id)).map(r=>`<button class="v4-inbox-item" data-act="open-reels" data-id="${reels.indexOf(r)}"><img src="${IMAGES[r.photo]}" style="width:50px;height:58px;border-radius:9px;object-fit:cover"><div class="v4-inbox-content"><strong>${esc(r.label)}</strong><small>${esc(r.owner)}</small></div><span>▶</span></button>`).join('')||'<div class="empty">Nuk ke ruajtur ende Reels. Hapi nga Kryefaqja.</div>'}`);
 return v4OldModal()};
 function v4Action(action,id,v){
- if(action==='open-reels'){state.reelOpen=true;state.reelIndex=Math.max(0,Math.min(reels.length-1,Number(id)||0));state.modal=null;state.story=0;render({scroll:true});return true}
+ if(action==='open-reels'){const ids=reelViewIndices(),requested=Number(id);state.reelOpen=true;state.reelIndex=id===undefined?ids[0]??-1:ids.includes(requested)?requested:-1;state.modal=null;state.story=0;render({scroll:true});return true}
  if(action==='reel-close'){state.reelOpen=false;render({scroll:true});return true}
- if(action==='reel-next'||action==='reel-prev'){state.reelIndex=(state.reelIndex+(action==='reel-next'?1:-1)+reels.length)%reels.length;render({scroll:true});return true}
+ if(action==='reel-next'||action==='reel-prev'){const ids=reelViewIndices(),index=ids.indexOf(state.reelIndex);state.reelIndex=ids.length?ids[(index+(action==='reel-next'?1:-1)+ids.length)%ids.length]:-1;render({scroll:true});return true}
  if(action==='reel-like'){const r=reels[state.reelIndex];state.reelLikes=toggle(state.reelLikes,r.id);persist();render({scroll:true});return true}
  if(action==='reel-save'){const r=reels[state.reelIndex];state.reelSaved=toggle(state.reelSaved,r.id);persist();render({scroll:true});return true}
  if(action==='reel-share'){toast('Shpërndarja e Reels është vetëm demonstrim');return true}
@@ -532,7 +560,8 @@ function v5Action(action,id,v){
   const communityId=communities.some(c=>c.id===d.communityId)&&state.joinedCommunities.includes(d.communityId)?d.communityId:null;
   if(d.communityId&&!communityId){toast(socialText('membershipRequired','Bashkohu me komunitetin përpara publikimit.'));return true}
   if(!coreMessageFresh($('#v5-text')))return true;
-  const p={...commerceAttributes(d),...(communityId?{communityId}:{}),id:'my'+Date.now(),name:state.profile.name,ava:state.v5AvatarChoice,city:d.city,when:'Tani',text:d.text.trim(),img:d.sample||null,photoData:d.photoData||'',audience:d.audience,plan:d.plan||'',likes:0,comments:0,share:0,verified:false};
+  const createdAt=Date.now();
+  const p={...commerceAttributes(d),...(communityId?{communityId}:{}),id:'my'+createdAt,createdAt,name:state.profile.name,ava:state.v5AvatarChoice,city:d.city,when:'Tani',text:d.text.trim(),img:d.sample||null,photoData:d.photoData||'',audience:d.audience,plan:d.plan||'',likes:0,comments:0,share:0,verified:false};
   state.posts.unshift(p);
   if(!persist()){
    state.posts.shift();
@@ -787,9 +816,9 @@ if(action==='feed'){state.feed=v;render({scroll:true});return}
 if(action==='category'){state.category=v;render({scroll:true});return}
 if(action==='profiletab'){state.profileTab=v==='Të ruajtura'?'saved':'posts';render({scroll:true});return}
 if(action==='eventfilter'){toast('Filtrat e avancuar do të shtohen më vonë');return}
-if(action==='like'){state.likes=toggle(state.likes,id);persist();render({scroll:true});return}
-if(action==='save'){state.bookmarks=toggle(state.bookmarks,id);state.modal=null;persist();render({scroll:true});toast(state.bookmarks.includes(id)?'Postimi u ruajt':'Postimi u hoq nga të ruajturat');return}
-if(action==='follow'){state.follows=toggle(state.follows,id);persist();render({scroll:true});toast(state.follows.includes(id)?'Profili u ndoq':'Ndjekja u hoq');return}
+if(action==='like'){if(coreArrayToggle('likes',id,b)){render({scroll:true});coreActionFocus(action,id)}return}
+if(action==='save'){if(!coreArrayToggle('bookmarks',id,b))return;state.modal=null;render({scroll:true});coreActionFocus(action,id);toast(state.bookmarks.includes(id)?'Postimi u ruajt':'Postimi u hoq nga të ruajturat');return}
+if(action==='follow'){if(!coreArrayToggle('follows',id,b))return;render({scroll:true});coreActionFocus(action,id);toast(state.follows.includes(id)?'Profili u ndoq':'Ndjekja u hoq');return}
 if(action==='comments'){openModal('comments',id);return}
 if(action==='postmore'){openModal('postmenu',id);return}
 if(action==='share'){toast('Shpërndarja është vetëm demonstrim');return}
@@ -889,9 +918,7 @@ const v8OldExplore=explore;
 explore=function(){const html=v8OldExplore();return html.replace('Nuk ka rezultate. Provo një emër ose kategori tjetër.</div>',
  'Nuk gjetëm asnjë rezultat për këtë kërkim.<div style="margin-top:12px"><button class="button soft" data-act="v8-clear-search">Pastro kërkimin</button></div></div>');};
 const v8OldPost=post;
-post=function(p){const pid=p.name==='Arta K.'?'arta':p.name==='Leon M.'?'leon':p.name==='Besa H.'?'besa':p.name==='Dion A.'?'dion':null;
- return pid&&(state.blocked.includes(pid)||state.muted.includes(pid))?'':v8OldPost(p);
-};
+post=function(p){return homePostVisible(p)?v8OldPost(p):''};
 const v8OldModal=modalContent;
 modalContent=function(){const m=state.modal;if(!m)return v8OldModal();
  if(m.type==='v8-lab')return drawer('Skenarët e provës · v0.8',`
@@ -931,7 +958,7 @@ function v8Action(action,id,v){
  if(action==='v8-fail-next'){state.v8FailNextMessage=!state.v8FailNextMessage;openModal('v8-lab');return true}
  if(action==='v8-event-scenario'){const [key,status]=(v||'').split(':');if(!events.some(e=>e.id===key))return true;state.v8EventStatuses[key]=status;persist();openModal('v8-lab');toast("Statusi u vendos");return true}
  if(action==='v8-event-reset'){state.v8EventStatuses={};persist();openModal('v8-lab');toast("Statuset u rivendosën");return true}
- if(action==='v8-toggle-block'||action==='v8-toggle-mute'){if(!people.some(p=>p.id===id))return true;const key=action==='v8-toggle-block'?'blocked':'muted',old=state[key],follows=state.follows;state[key]=toggle(old,id);if(key==='blocked'&&state.blocked.includes(id))state.follows=state.follows.filter(x=>x!==id);if(!persist()){state[key]=old;state.follows=follows;toast(coreSaveFailed());return true}openModal('user-profile',id);toast(window.IllyrianI18n?.t('safety:preferenceSaved')||'DEMO');return true}
+ if(action==='v8-toggle-block'||action==='v8-toggle-mute'){if(!people.some(p=>p.id===id)||!coreMessageFresh(document.activeElement))return true;const key=action==='v8-toggle-block'?'blocked':'muted',old=state[key],follows=state.follows;state[key]=toggle(old,id);if(key==='blocked'&&state.blocked.includes(id))state.follows=state.follows.filter(x=>x!==id);if(!persist()){state[key]=old;state.follows=follows;toast(coreSaveFailed());return true}openModal('user-profile',id);toast(window.IllyrianI18n?.t('safety:preferenceSaved')||'DEMO');return true}
  if(action==='v8-clear-search'){state.search='';state.category='Të gjitha';render({scroll:true});return true}
  if((action==='request'||action==='approve-sim')&&state.v8EventStatuses[id]){toast("Aktiviteti nuk pranon kërkesa");openModal('event',id);return true}
  if(['openchat','v6-openchat','reel-chat','follow','v6-story-send'].includes(action)&&state.blocked.includes(id)){toast("Ky profil është i bllokuar lokalisht");return true}
@@ -979,11 +1006,18 @@ const nearOn=()=>state.tab==='home'&&state.feed==='Afër teje';
 let nearStoryScope=null,nearReelScope=null;
 function nearMatchesCity(city){return window.IllyrianNearby.matches(city,state.v9NearCity)}
 function nearActorAllowed(id){return !state.blocked.includes(id)&&!state.muted.includes(id)}
-function nearPostAllowed(p){const id=p.name==='Arta K.'?'arta':p.name==='Leon M.'?'leon':p.name==='Besa H.'?'besa':p.name==='Dion A.'?'dion':null;return nearMatchesCity(p.city)&&!state.hiddenPosts.includes(String(p.id))&&(!id||nearActorAllowed(id))&&(!p.audience||p.audience==='Publik'||String(p.id).startsWith('my'))}
-function nearStoryAllowed(index){return !nearOn()||nearActorAllowed(['','arta','leon','besa','dion'][index])&&nearMatchesCity(v11PeopleDetails[['','arta','leon','besa','dion'][index]]?.city)}
+function nearPostAllowed(p){return nearMatchesCity(p.city)&&homePostVisible(p)&&(!p.audience||p.audience==='Publik'||String(p.id).startsWith('my'))}
+function nearStoryAllowed(index){return nearActorAllowed(['','arta','leon','besa','dion'][index])&&(!nearOn()||nearMatchesCity(v11PeopleDetails[['','arta','leon','besa','dion'][index]]?.city))}
 function nearStoryIndices(){return [1,2,3,4].filter(nearStoryAllowed)}
-function nearReelAllowed(index){return !nearOn()||nearActorAllowed(reels[index]?.profileId)&&nearMatchesCity(reels[index]?.city)}
-function nearNextStory(current){const ids=nearStoryScope||[1,2,3,4];return ids[ids.indexOf(current)+1]||0}
+function nearReelAllowed(index){return !!reels[index]&&nearActorAllowed(reels[index].profileId)&&(!nearOn()||nearMatchesCity(reels[index].city))}
+function nearNextStory(current){const ids=(nearStoryScope||[1,2,3,4]).filter(i=>nearActorAllowed(['','arta','leon','besa','dion'][i]));return ids[ids.indexOf(current)+1]||0}
+function refreshPostTimes(){
+ document.querySelectorAll('.post-time[data-post-id]').forEach(node=>{const p=getPost(node.dataset.postId);if(p)node.textContent=postTimeLabel(p)});
+}
+document.addEventListener('DOMContentLoaded',refreshPostTimes,{once:true});
+window.addEventListener('illyrian:language-changed',refreshPostTimes);
+function reelViewIndices(){return (nearReelScope||reels.map((_,i)=>i)).filter(i=>nearActorAllowed(reels[i]?.profileId))}
+function reelUnavailable(){return drawer('Reels',`<div class="empty" data-i18n-direct>${esc(window.IllyrianI18n?.t('home:reelsUnavailable')||'Nuk ka Reels të disponueshme.')}</div>`)}
 function nearPanel(){
  const info=window.IllyrianNearby.state(),options=window.IllyrianNearby.cities.map(city=>`<option value="${esc(city)}" ${state.v9NearCity===city?'selected':''}>${esc(city)}</option>`).join('');
  const label=info.status==='ready'?nearText(info.city?'gpsCity':'gpsArea'):info.status==='manual'?nearText('manual'):nearText(info.status);
@@ -1252,7 +1286,7 @@ v8Action=function(action,id,v){
  if(action==='v11-person-tab'){state.v11PersonTab=v==='about'?'about':'posts';openModal('user-profile',id);return true}
  if(action==='v11-person-follow'){
    if(state.blocked.includes(id)){toast("Ky profil është i bllokuar lokalisht");return true}
-   state.follows=toggle(state.follows,id);persist();openModal('user-profile',id);
+   if(!coreArrayToggle('follows',id,document.activeElement))return true;openModal('user-profile',id);
    toast(state.follows.includes(id)?"Tani e ndjek këtë profil":'Ndjekja u hoq');return true;
  }
  return v11PreviousAction(action,id,v);
@@ -1302,7 +1336,7 @@ nav=function(){
   const action=id==='reels'?'open-reels':id==='messages'?'modal':'tab';
   const value=id==='messages'?'inbox':id;
   const avatar=ico==='avatar'?`<span class="v12-profile-ring ${selected?'selected':''}"><img src="${v12AvatarSrc()}" alt="" /></span>`:v12Icon(ico);
-  return `<button type="button" class="nav-btn v12-tab ${selected?'active':''}" data-act="${action}" ${id==='reels'?'data-id="0"':`data-val="${value}"`} aria-label="${label}" ${selected?'aria-current="page"':''}><span class="v12-iconbox">${avatar}${id==='messages'?'<span class="v12-unread-dot" aria-hidden="true"></span>':''}</span><span class="v12-nav-label">${label}</span></button>`;
+  return `<button type="button" class="nav-btn v12-tab ${selected?'active':''}" data-act="${action}" ${id==='reels'?`data-id="${reels.findIndex(r=>nearActorAllowed(r.profileId))}"`:`data-val="${value}"`} aria-label="${label}" ${selected?'aria-current="page"':''}><span class="v12-iconbox">${avatar}${id==='messages'?'<span class="v12-unread-dot" aria-hidden="true"></span>':''}</span><span class="v12-nav-label">${label}</span></button>`;
  }).join('');
 };
 const v12PreviousModalContent=modalContent;
@@ -2767,8 +2801,8 @@ function p17HighlightItems(collection){
   if(action==='feed'&&val==='Afër teje'||action==='near-gps'){state.feed='Afër teje';window.IllyrianNearby.request();return true}
   if(action==='near-manual'){state.feed='Afër teje';window.IllyrianNearby.reset();render({scroll:true});document.getElementById('v9-near-city')?.focus({preventScroll:true});return true}
   if(action==='feed')window.IllyrianNearby.reset();
-  if(action==='story'){if(nearOn()&&!nearStoryAllowed(Number(val)))return true;nearStoryScope=nearOn()?nearStoryIndices():null}
-  if(['nextStory','prevStory'].includes(action)&&nearStoryScope){const index=nearStoryScope.indexOf(state.story),next=action==='nextStory'?nearStoryScope[index+1]:nearStoryScope[Math.max(0,index-1)];state.v6StoryPaused=false;if(!next){close();return true}state.story=next;render({scroll:true});return true}
+  if(action==='story'){if(!nearStoryAllowed(Number(val)))return true;nearStoryScope=nearStoryIndices()}
+  if(['nextStory','prevStory'].includes(action)&&nearStoryScope){const allowed=nearStoryScope.filter(i=>nearActorAllowed(['','arta','leon','besa','dion'][i])),index=allowed.indexOf(state.story),next=action==='nextStory'?allowed[index+1]:allowed[Math.max(0,index-1)];state.v6StoryPaused=false;if(!next){close();return true}state.story=next;render({scroll:true});return true}
   if(action==='near-open-reel'){const index=Number(id);if(!nearOn()||!Number.isInteger(index)||!nearReelAllowed(index))return true;nearReelScope=reels.map((_,i)=>i).filter(nearReelAllowed);return v4Action('open-reels',id,val)}
   if(action==='open-reels')nearReelScope=null;
   if(['reel-next','reel-prev'].includes(action)&&nearReelScope){const index=nearReelScope.indexOf(state.reelIndex),length=nearReelScope.length;if(!length){close();return true}state.reelIndex=nearReelScope[(index+(action==='reel-next'?1:-1)+length)%length];render({scroll:true});return true}

@@ -288,6 +288,10 @@ window.ILLYRIAN_LOCALES.sq={
     "dark": "Dark"
   },
   "home": {
+    "timeNow": "Tani",
+    "timeMinutes": "{{count}} min më parë",
+    "timeHours": "{{count}} orë më parë",
+    "reelsUnavailable": "Nuk ka Reels të disponueshme.",
     "openCamera": "Hap kamerën",
     "activitiesHeader": "Aktivitete dhe Evente",
     "changeLocation": "Ndrysho ↗",

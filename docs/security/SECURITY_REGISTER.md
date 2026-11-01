@@ -1,5 +1,9 @@
 # ILLYRIAN — security register
 
+### Home audit —1 November2026
+Owner-authorized HF01–HF06 reuse the core observed-snapshot guard for Home reaction/save/follow/hide and related profile follow/block entry points. Failed writes restore arrays/activityLog before feedback; stale writes leave the newer raw store untouched. This is bounded conflict detection, not atomic multi-tab storage or a backend transaction. Hidden/block/mute filtering now precedes Home empty-state selection and covers Story/Reel previews and navigation; own my* posts are not mapped to fictional actors by name. Personal dates are escaped/read-only projections; no historical backfill, new permission, service, store or real ACL. SEC-02/04 remain PARTIAL and SEC-07 UNKNOWN. Regression/CI/source evidence belongs to CURRENT_STATE; physical/native/server enforcement remains OPEN.
+
+
 ### Home Nearby — optional foreground location, 1 November2026
 Owner explicitly authorized the Near you filter to request location. One-shot acquisition/permission observation is isolated in the Nearby adapter; no watchPosition, external geocoder, coordinate storage/log/upload or automatic acquisition. Only a matched illustrative city/status is retained temporarily. Manual/leave/hidden/pagehide/revoke invalidates callbacks, including late permission-query results. Existing core city writes retain quota/stale guards; other scoped city stores are untouched. Browser/OS may process location through its own provider; do not claim no personal data or zero recipients. UI rendering escapes content and preserves open drafts; block/mute/hidden/local audience filters apply to Nearby projections. Native/server ACL, publication-location consent, radius/retention and actual device privacy proofs remain OPEN; SEC-02/04 stay PARTIAL, SEC-07 UNKNOWN. Exact source/tests/Preview are recorded in CURRENT_STATE; contracts §13/PV06.
 

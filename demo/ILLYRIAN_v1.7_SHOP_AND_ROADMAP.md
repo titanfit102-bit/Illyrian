@@ -1,5 +1,17 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+**Home — korrigjimet e auditit të miratuara1 nëntor2026:** HF01–HF06 implementohen në DEMO mbi753f590, duke ruajtur UI/keys/IDs/media. Provat aktuale/CI te CURRENT_STATE; mos interpreto një test lokal si pranim fizik ose backend.
+
+| ID | Kriteri i korrigjimit dhe pranimit |
+|---|---|
+| HF01 | Pëlqe/Ruaj/Ndiq/Fshihe dhe hyrjet e profilit përkatës refuzojnë një snapshot core të vjetruar përpara mutacionit; komentet e dritares tjetër mbeten byte-identical. Guard i vrojtuar, jo CAS/transaksion real. |
+| HF02 | Quota/unavailable storage: rollback në memorie, gabim i qartë, modal/veprim i ruajtur për Retry; pa toast suksesi ose humbje pas reload. Fshihe ruan edhe activityLog-in e mëparshëm kur dështon. |
+| HF03 | Hidden/block/mute filtrohen përpara render/empty; Stories dhe miniatura/navigimi Reels shmangin aktorët e përjashtuar. Global Reels nuk kufizohet nga Nearby; bosh nëse s'ka Reel të lejuar. Postimet personale nuk lidhen me fixture nga përputhja e emrit. |
+| HF04 | Për ty/Duke ndjekur/Latest/Afër teje shfaqin empty state kur filtrat nuk lënë postime të dukshme. Nuk mjafton gjatësia e listës para filtrimit. |
+| HF05 | Pëlqe/Ruaj kanë aria-pressed dhe ruajnë fokusin pas toggle; kur postimi fshihet fokusi kthehet te filtri aktiv. Tastierë/sq/en/it dhe regresionet përkatëse; screenreader fizik OPEN. |
+| HF06 | Postimet e reja ruajnë createdAt ms; ID historike my+13 shifra mund të japë datën e saj reale pa backfill. Pa provë kohe ruhet etiketa historike; datat e fixtures mbeten ilustrative. Render/locale live/DOMContentLoaded përditësojnë shfaqjen, pa polling/shkrim ose humbje drafti. sq ka çelësa kohe që nuk varen nga mbështetja RelativeTimeFormat e browser-it. |
+
+
 **Home → Afër teje, 1 nëntor 2026 — miratim i pronarit:** “po këtë dua” hap GPS opsional nga prekja e filtrit dhe zbulim të postimeve/fotove, Stories/Reels të zonës; qyteti manual mbetet pa leje. Ky scope zëvendëson kufirin historik pa GPS vetëm për këtë hyrje, jo për Shop/Plans/Connections/hartën skematike. Pa backend ose pretendim njerëzish realë pranë përdoruesit.
 
 | ID | Kontrata dhe pranimi |
