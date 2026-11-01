@@ -1,5 +1,18 @@
 # ILLYRIAN Demo v1.7 — Faza e zgjerimit dhe ILLYRIAN Shop
 
+**Home → Afër teje, 1 nëntor 2026 — miratim i pronarit:** “po këtë dua” hap GPS opsional nga prekja e filtrit dhe zbulim të postimeve/fotove, Stories/Reels të zonës; qyteti manual mbetet pa leje. Ky scope zëvendëson kufirin historik pa GPS vetëm për këtë hyrje, jo për Shop/Plans/Connections/hartën skematike. Pa backend ose pretendim njerëzish realë pranë përdoruesit.
+
+| ID | Kontrata dhe pranimi |
+|---|---|
+| NG01 | Leje vetëm pas klikimit Afër teje/Përdor vendndodhjen; një getCurrentPosition, pa watchPosition/background/autoprompt në load/reload. HTTPS/localhost; loading/error/denied/timeout/unavailable/imprecise dhe Retry. |
+| NG02 | Manual city dhe pin-i i composer-it punojnë pa GPS. Përdor vetëm v9NearCity ekzistues, ruaj quota/stale/fokus; mos ndrysho qytetin e profilit, Shop, Plans ose Connections nga GPS-i. |
+| NG03 | Postime/foto dhe miniatura Stories/Reels nga i njëjti qytet. Respekto hidden/block/mute dhe dukshmërinë lokale; mbaj krijuesin/Story im. Shikuesit/navigimi/autoplay ripërdorin ID-të origjinale dhe listën e filtruar; navbar Reels mbetet global. |
+| NG04 | Koordinatat konsumohen vetëm për resolver-in lokal dhe nuk ruhen/logohen/dërgohen nga ILLYRIAN. Qyteti GPS vetëm në memorie; manual/leave/hidden/pagehide/revoke anulojnë përdorimin dhe përgjigjet e vonuara. Mos prish draftin në modal gjatë callback-ut. |
+| NG05 | Resolver shembujsh: Milano/Romë/Tiranë/Prishtinë/Berlin, pika reference qytetesh me kufi50km, jo pozicione reale publikimesh/personash ose radius i miratuar për APK. Jashtë tyre: bosh, jo rezultate të rreme. GPS i saktë në pajisje dhe real-data/backend/radius/ranking/sharing-consent OPEN; përmbajtja aktuale është lokale sipas qytetit. |
+| NG06 | sq/en/it, Light/Dark,320/390/landscape, ARIA/fokus, leje/refuzim/revokim/race/reload, mosruajtje koordinatash, Stories/Reels/Feed/Settings dhe CI/Preview exactSHA; screenshot-e të qëndrueshme te indeksi QA. Emulimi nuk provon GPS fizik Android/iPhone. |
+
+Kontrata te blueprint §13; provat/hapi pasues te CURRENT_STATE. Nuk ndryshohen MVP-ja ose teknologjitë/platforma të pamiratuara të aplikacionit real.
+
 **Njoftimet — referenca e miratuar,31 tetor2026:** pronari dha screenshot-in dhe autorizoi “bëje”. Brenda modalit ekzistues `notifications`: titull/Cilësimet, filtrat all/people/activities/jobs/system me numërues realë të listës, grupet Sot/Dje/Më herët, avatarë/miniatura lokale, unread rozë, follow-back dhe footer mark-all. Ripërdor `v6ReadAlerts`, `follows`, preferencat dhe routes ekzistuese; ruaj ID-të welcome/meet/job/profile dhe leximet historike. Backend/native push/Quick Reply mbeten vetëm specifikim6.2.
 
 | ID | Pranim / rendi i zbatimit |

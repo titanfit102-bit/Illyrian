@@ -1279,3 +1279,118 @@ test('Notifications corrections: a date without a time never invents midnight',a
  await expect(modal.locator('[data-id="act_date-only"] small')).not.toContainText(':');
  await expect(modal.locator('[data-id="act_date-only"] small')).toContainText('2026');
 });
+
+// Nearby: optional foreground browser location with local, city-based fixtures.
+test('Nearby GPS: asks only on click and filters posts Stories and Reel previews',async({browser})=>{
+ const ctx=await browser.newContext({geolocation:{latitude:45.4642,longitude:9.19},permissions:['geolocation']});const page=await ctx.newPage();
+ try{
+  await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');window.nearCalls=0;const original=navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);navigator.geolocation.getCurrentPosition=(...args)=>{window.nearCalls++;return original(...args)}});
+  await openDemo(page,390,844);expect(await page.evaluate(()=>window.nearCalls)).toBe(0);
+  await page.locator('#screen > .filters [data-act="feed"][data-val="Afër teje"]').click();
+  await expect(page.locator('#near-status')).toHaveAttribute('data-status','ready');
+  expect(await page.evaluate(()=>window.nearCalls)).toBe(1);
+  await expect(page.locator('#screen > .post')).toHaveCount(1);await expect(page.locator('#screen > .post')).toContainText('Leon M.');
+  await expect(page.locator('#screen .stories [data-act="story"]')).toHaveCount(1);await expect(page.locator('#screen .stories [data-act="story"]')).toHaveAttribute('data-val','2');
+  await expect(page.locator('#screen .stories [data-act="near-open-reel"]')).toHaveCount(1);
+  await page.locator('#screen .stories [data-act="story"]').click();await page.locator('[data-act="nextStory"]').click();await expect(page.locator('.story-overlay')).toHaveCount(0);
+  await page.locator('#screen .stories [data-act="near-open-reel"]').click();await page.locator('[data-act="reel-next"]').click();await expect(page.locator('.v4-reel-counter')).toHaveText('1 / 1');
+  await page.keyboard.press('Escape');
+  const storage=await page.evaluate(()=>Object.fromEntries(Object.keys(localStorage).map(k=>[k,localStorage.getItem(k)])));expect(JSON.stringify(storage)).not.toContain('45.4642');expect(JSON.stringify(storage)).not.toContain('9.19');
+ }finally{await ctx.close()}
+});
+test('Nearby GPS: a pending response cannot override a manual city',async({page})=>{
+ await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok){window.nearSuccess=ok}}})});
+ await openDemo(page,390,844);await page.locator('#screen > .filters [data-act="feed"][data-val="Afër teje"]').click();
+ await expect(page.locator('#near-status')).toHaveAttribute('data-status','loading');
+ await page.locator('#v9-near-city').selectOption('Romë');await page.evaluate(()=>window.nearSuccess({coords:{latitude:45.4642,longitude:9.19,accuracy:10}}));
+ await expect(page.locator('#near-status')).toHaveAttribute('data-status','manual');await expect(page.locator('#screen > .post')).toHaveCount(1);await expect(page.locator('#screen > .post')).toContainText('Besa H.');
+});
+test('Nearby GPS: blocked or muted city content does not leave a blank feed',async({page})=>{
+ await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({blocked:['leon']}))});
+ await openDemo(page,390,844);await page.locator('.ily-compose-city').click();await page.locator('#v9-near-city').selectOption('Milano');
+ await expect(page.locator('#screen > .post')).toHaveCount(0);await expect(page.locator('#screen > .empty')).toBeVisible();await expect(page.locator('#screen .stories [data-act="story"]')).toHaveCount(0);
+});
+for(const [code,status] of [[1,'denied'],[2,'unavailable'],[3,'timeout']])test('Nearby GPS: permission or acquisition failure keeps manual city usable '+status,async({page})=>{
+ await page.addInitScript(code=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');window.geoAttempts=0;Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok,fail){window.geoAttempts++;fail({code})}}})},code);
+ await openDemo(page,390,844);expect(await page.evaluate(()=>window.geoAttempts)).toBe(0);
+ await page.locator('#screen > .filters [data-act="feed"][data-val="Afër teje"]').click();await expect(page.locator('#near-status')).toHaveAttribute('data-status',status);
+ await page.locator('#v9-near-city').selectOption('Romë');await expect(page.locator('#screen > .post')).toContainText('Besa H.');expect(await page.evaluate(()=>window.geoAttempts)).toBe(1);
+});
+test('Nearby GPS: outside sample cities stays empty and global Reels stay global',async({browser})=>{
+ const ctx=await browser.newContext({geolocation:{latitude:42.6589,longitude:13.7044},permissions:['geolocation']});const page=await ctx.newPage();
+ try{
+  await openDemo(page,390,844);await page.locator('#screen > .filters [data-val="Afër teje"]').click();await expect(page.locator('#near-status')).toHaveAttribute('data-status','ready');
+  await expect(page.locator('#screen > .post')).toHaveCount(0);await expect(page.locator('#screen .stories [data-act="story"]')).toHaveCount(0);await expect(page.locator('#screen .stories .story-reel-preview')).toHaveCount(0);await expect(page.locator('#screen > .empty')).toBeVisible();
+  await page.locator('#navbar [data-act="open-reels"]').click();await expect(page.locator('.v4-reel-counter')).toHaveText('1 / 3');await page.keyboard.press('Escape');
+ }finally{await ctx.close()}
+});
+test('Nearby GPS: manual discovery and reload never ask for location',async({page})=>{
+ await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');window.geoAttempts=0;Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(){window.geoAttempts++;throw Error('No automatic GPS')}}})});
+ await openDemo(page,390,844);await page.locator('.ily-compose-city').click();
+ for(const [city,story] of [['Milano','2'],['Romë','3'],['Tiranë','1'],['Berlin','4'],['Prishtinë',null]]){
+  await page.locator('#v9-near-city').selectOption(city);
+  const stories=page.locator('#screen .stories [data-act="story"]');await expect(stories).toHaveCount(story?1:0);if(story)await expect(stories).toHaveAttribute('data-val',story);
+ }
+ await page.reload();await expect(page.locator('#v9-near-city')).toHaveValue('Prishtinë');expect(await page.evaluate(()=>window.geoAttempts)).toBe(0);
+ await page.locator('#screen > .filters [data-val="Për ty"]').click();await expect(page.locator('#screen .stories [data-act="story"]')).toHaveCount(4);
+});
+test('Nearby GPS: revocation clears GPS city and late callbacks after leaving are ignored',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('illyrian_demo_ui_language_v1','sq');localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({v9NearCity:'Romë'}));window.geoAttempts=0;
+  Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok){window.geoAttempts++;window.nearSuccess=ok;ok({coords:{latitude:45.4642,longitude:9.19,accuracy:20}})}}});
+  Object.defineProperty(navigator,'permissions',{configurable:true,value:{query:async()=>({state:'granted',addEventListener(type,fn){window.revokeNear=()=>{this.state='denied';fn()}},removeEventListener(){}})}});
+ });
+ await openDemo(page,390,844);await page.locator('#screen > .filters [data-val="Afër teje"]').click();await expect(page.locator('#near-status')).toHaveAttribute('data-status','ready');
+ await expect.poll(()=>page.evaluate(()=>typeof window.revokeNear)).toBe('function');await page.evaluate(()=>window.revokeNear());
+ await expect(page.locator('#near-status')).toHaveAttribute('data-status','denied');await expect(page.locator('#screen > .post')).toContainText('Besa H.');
+ await page.locator('#screen > .filters [data-val="Për ty"]').click();await page.evaluate(()=>window.nearSuccess({coords:{latitude:45.4642,longitude:9.19,accuracy:20}}));
+ await expect(page.locator('#near-status')).toHaveCount(0);expect(await page.evaluate(()=>window.IllyrianNearby.state())).toEqual({status:'manual',city:null});
+});
+for(const [lang,title] of [['sq','Afër teje'],['en','Near you'],['it','Vicino a te']])test('Nearby GPS: localized panel and transient city do not alter profile '+lang,async({page})=>{
+ await page.addInitScript(lang=>{localStorage.setItem('illyrian_demo_ui_language_v1',lang);localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({profile:{name:'LOCAL OWNER',bio:'literal DEMO'},v9NearCity:'Romë'}));Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok){ok({coords:{latitude:45.4642,longitude:9.19,accuracy:20}})}}})},lang);
+ await openDemo(page,390,844);const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.locator('#screen > .filters [data-val="Afër teje"]').click();await expect(page.locator('.near-panel')).toHaveAttribute('aria-label',title);await expect(page.locator('#near-status')).toContainText('Milano');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ await page.reload();expect(await page.evaluate(()=>window.IllyrianNearby.state())).toEqual({status:'manual',city:null});
+});
+test('Nearby GPS: permission revoked before observation never leaves a GPS city active',async({page})=>{
+ await page.addInitScript(()=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok){ok({coords:{latitude:45.4642,longitude:9.19,accuracy:10}})}}});Object.defineProperty(navigator,'permissions',{configurable:true,value:{query:async()=>({state:'denied',addEventListener(){},removeEventListener(){}})}})});
+ await openDemo(page,390,844);await page.locator('#screen > .filters [data-val="Afër teje"]').click();await expect(page.locator('#near-status')).toHaveAttribute('data-status','denied');
+ expect(await page.evaluate(()=>window.IllyrianNearby.state().city)).toBeNull();
+});
+for(const [coords,status] of [[{latitude:NaN,longitude:9.19,accuracy:10},'unavailable'],[{latitude:45.4642,longitude:9.19,accuracy:100000},'imprecise']])test('Nearby GPS: unusable coordinates have honest fallback '+status,async({page})=>{
+ await page.addInitScript(({coords})=>{Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok){ok({coords})}}})},{coords});
+ await openDemo(page,390,844);await page.locator('#screen > .filters [data-val="Afër teje"]').click();await expect(page.locator('#near-status')).toHaveAttribute('data-status',status);await expect(page.locator('#v9-near-city')).toBeEnabled();
+});
+test('Nearby GPS: unavailable API and bfcache restore never start automatic acquisition',async({page})=>{
+ await page.addInitScript(()=>{Object.defineProperty(navigator,'geolocation',{configurable:true,value:undefined})});
+ await openDemo(page,390,844);await page.locator('#screen > .filters [data-val="Afër teje"]').click();await expect(page.locator('#near-status')).toHaveAttribute('data-status','unsupported');
+ await page.locator('#v9-near-city').selectOption('Romë');await page.evaluate(()=>{dispatchEvent(new Event('pagehide'));dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}))});
+ await expect(page.locator('#near-status')).toHaveAttribute('data-status','manual');await expect(page.locator('#screen > .post')).toContainText('Besa H.');
+});
+test('Nearby GPS: resolving while a composer is open preserves the draft',async({page})=>{
+ await page.addInitScript(()=>{Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok){window.nearSuccess=ok}}})});
+ await openDemo(page,390,844);await page.locator('#screen > .filters [data-val="Afër teje"]').click();await page.locator('.compose-prompt').click();
+ await page.locator('#v5-text').fill('UNCHANGED DRAFT');await page.evaluate(()=>window.nearSuccess({coords:{latitude:45.4642,longitude:9.19,accuracy:10}}));
+ await expect(page.locator('#v5-text')).toHaveValue('UNCHANGED DRAFT');await page.keyboard.press('Escape');await expect(page.locator('#near-status')).toHaveAttribute('data-status','ready');
+});
+for(const [width,height] of [[320,568],[390,844],[844,390]])for(const theme of ['light','dark'])test('Nearby GPS: responsive panel '+width+'x'+height+' '+theme,async({page},testInfo)=>{
+ await page.addInitScript(theme=>{localStorage.setItem('illyrian_demo_ui_language_v1','sq');localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({theme}));Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok){ok({coords:{latitude:45.4642,longitude:9.19,accuracy:10}})}}})},theme);
+ await openDemo(page,width,height);await page.locator('#screen > .filters [data-val="Afër teje"]').click();const panel=page.locator('.near-panel');
+ expect(await panel.evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(1);await expect(panel.locator('[data-act="near-gps"]')).toBeVisible();await expect(panel.locator('#v9-near-city')).toBeVisible();
+ if(width===390)await page.locator('#phone').screenshot({path:testInfo.outputPath('nearby-'+theme+'.png')});
+ await page.locator('#v9-near-city').focus();await page.keyboard.press('Tab');expect(await page.evaluate(()=>document.activeElement!==document.body)).toBe(true);
+});
+test('Nearby GPS: Story autoplay exits the filtered sequence and hidden pages clear the city',async({page})=>{
+ await page.clock.install();await page.addInitScript(()=>{Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(ok){ok({coords:{latitude:45.4642,longitude:9.19,accuracy:10}})}}})});
+ await openDemo(page,390,844);await page.locator('#screen > .filters [data-val="Afër teje"]').click();await page.locator('#screen .stories [data-act="story"]').click();
+ await page.clock.fastForward(8100);await expect(page.locator('.story-overlay')).toHaveCount(0);
+ await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'))});
+ expect(await page.evaluate(()=>window.IllyrianNearby.state())).toEqual({status:'manual',city:null});
+ await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});document.dispatchEvent(new Event('visibilitychange'))});await expect(page.locator('#near-status')).toHaveAttribute('data-status','manual');
+});
+test('Nearby GPS: requesting from the GPS button preserves keyboard context while loading',async({page})=>{
+ await page.addInitScript(()=>{Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(){}}})});
+ await openDemo(page,390,844);await page.locator('.ily-compose-city').click();await page.locator('[data-act="near-gps"]').click();
+ await expect(page.locator('#screen > .filters [data-val="Afër teje"]')).toBeFocused();
+});

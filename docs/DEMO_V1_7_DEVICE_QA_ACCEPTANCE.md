@@ -121,3 +121,23 @@ Captured runtime SHA256 (locale mirrors are byte-identical):
 - `demo/i18n/locales/it.js`: `d560f15e4c6a5961581e99fba7c32e40ccca90f53e22b1e29c737cab77133cc5`
 
 Outcome: bounded visual review of both captures; source-matched local functional/layout results are in CURRENT_STATE. Physical devices/TalkBack/VoiceOver/performance and owner visual acceptance remain OPEN.
+
+
+### Home Nearby —1 November2026
+
+Original local Chromium140/headless-shell1193 PNGs, sq,390×844 portrait, Light/Dark, GPS-ready state using a **synthetic browser position** matched to the Milano reference. Reviewed by ChatGPT for the new panel/filter/Story/Reel presentation; no physical GPS or direct protected-Preview visual claim. Only fictional bundled identities and city name are visible, no precise coordinates or real private content. Source readback/runtime hashes pin these captures; CI artifacts are not their only copy. Local results/status and exact GitHub source are in CURRENT_STATE/Git history.
+
+| Capture / UTC time | Bytes | SHA256 |
+|---|---:|---|
+| [nearby-light.png](archive/qa/nearby-d8844584d3fc/nearby-light.png) / 2026-11-01T13:02:55.450635+00:00 | 138004 | `00f4bafff1e2a6b92267e0d1d706f0dbb441ec44432a1203bfcdb578a44ce60b` |
+| [nearby-dark.png](archive/qa/nearby-d8844584d3fc/nearby-dark.png) / 2026-11-01T13:02:56.122647+00:00 | 138839 | `94ecfa9d606819abd6a9d4967f4faab597621000a0280a2939cb3a0c7a7425d7` |
+
+Captured runtime SHA256 (canonical/served locale mirrors identical):
+
+- `demo/ILLYRIAN_DEMO_v1.7.html`: `32b1d27f65d076b7eeb35ac11b830e87382b83f93dbb50b54a0cbf7db2046cf1`
+- `demo/ILLYRIAN_NEARBY_V17.js`: `6afa7419e16fd7aae88a3ea521273622d13349837e18c3f3cb35c3b141b2f005`
+- `demo/i18n/locales/sq.js`: `837ba1655e8383c4fd9100752535b33c3fad727da00f745a3e3b75b19f1163e5`
+- `demo/i18n/locales/en.js`: `51e541ae553e7667415326a71ddf5882b7c48a02adb1d397a5eed37660ddf429`
+- `demo/i18n/locales/it.js`: `7f9331be1c2995154adf5eb60190cbf2b355154352ecca69e099c1e8d96835dd`
+
+Permission denial/unavailable/timeout/revocation, stale callbacks, manual-city fallback, no coordinate persistence, modal drafts, empty areas and bounded media navigation are browser regressions, not hardware measurements. Real Android/iPhone GPS/permissions, TalkBack/VoiceOver, power/performance and owner acceptance remain OPEN.

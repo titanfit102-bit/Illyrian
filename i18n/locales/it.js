@@ -1,6 +1,25 @@
 /* ILLYRIAN IT UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.it={
+  "nearby": {
+      "title": "Vicino a te",
+      "manual": "Città manuale",
+      "manualCity": "Scegli una città senza GPS",
+      "useGps": "Usa la posizione",
+      "refresh": "Aggiorna la posizione",
+      "loading": "Ricerca della posizione…",
+      "gpsCity": "GPS · vicino alla città",
+      "gpsArea": "GPS · la tua zona",
+      "denied": "Il permesso di posizione è stato negato o revocato. Scegli la città manualmente.",
+      "unavailable": "Posizione non disponibile. Controlla il GPS o scegli una città.",
+      "timeout": "La ricerca ha impiegato troppo tempo. Riprova o scegli una città.",
+      "unsupported": "GPS non disponibile qui. Scegli la città manualmente.",
+      "imprecise": "La posizione è troppo approssimativa. Riprova o scegli una città.",
+      "scope": "Contenuti per città vicina; l’app non salva le coordinate.",
+      "localContent": "I risultati provengono da contenuti locali di esempio.",
+      "empty": "Nessun post in questa zona. Puoi scegliere una città manualmente.",
+      "privacy": "La posizione è richiesta solo quando selezioni Vicino a te o Usa la posizione. La città manuale funziona senza GPS. L’app non pubblica né salva le coordinate."
+  },
   "notifications": {
       "undated": "Senza data",
       "dateUnknown": "Data non registrata",

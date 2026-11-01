@@ -2484,7 +2484,7 @@ for(const lang of ['sq','en','it']){
 }
 test('Phase3 GPS denied unavailable and revoked leaves manual social flows usable',async({page})=>{
  await page.addInitScript(()=>{window.p3GeoCalls=0;Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition(){window.p3GeoCalls++;throw Error('GPS denied')},watchPosition(){window.p3GeoCalls++;throw Error('GPS denied')}}})});
- await ready(page);await page.locator('#screen > .filters [data-act="feed"][data-val="Afër teje"]').click();await page.locator('#v9-near-city').selectOption('Milano');
+ await ready(page);expect(await page.evaluate(()=>window.p3GeoCalls)).toBe(0);await page.locator('#screen > .filters [data-act="feed"][data-val="Afër teje"]').click();expect(await page.evaluate(()=>window.p3GeoCalls)).toBe(1);await page.locator('#v9-near-city').selectOption('Milano');
  await page.reload();await expect(page.locator('#v9-near-city')).toHaveValue('Milano');
  await page.evaluate(()=>Object.defineProperty(navigator,'geolocation',{configurable:true,value:undefined}));
  await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();await expect(page.locator('#layer .modal')).toBeVisible();await page.keyboard.press('Escape');

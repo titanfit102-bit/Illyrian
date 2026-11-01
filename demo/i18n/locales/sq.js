@@ -1,6 +1,25 @@
 /* ILLYRIAN SQ UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.sq={
+  "nearby": {
+      "title": "Afër teje",
+      "manual": "Qyteti manual",
+      "manualCity": "Zgjidh qytetin pa GPS",
+      "useGps": "Përdor vendndodhjen",
+      "refresh": "Përditëso vendndodhjen",
+      "loading": "Po kërkohet vendndodhja…",
+      "gpsCity": "GPS · pranë qytetit",
+      "gpsArea": "GPS · zona jote",
+      "denied": "Leja e vendndodhjes u refuzua ose u hoq. Zgjidh qytetin manualisht.",
+      "unavailable": "Vendndodhja nuk u gjet. Kontrollo GPS-in ose zgjidh qytetin.",
+      "timeout": "Kërkimi zgjati shumë. Provo përsëri ose zgjidh qytetin.",
+      "unsupported": "GPS-i nuk është i disponueshëm këtu. Zgjidh qytetin manualisht.",
+      "imprecise": "Vendndodhja është tepër e përafërt. Provo përsëri ose zgjidh qytetin.",
+      "scope": "Përmbajtje sipas qytetit të afërt; koordinatat nuk ruhen nga aplikacioni.",
+      "localContent": "Rezultatet vijnë nga përmbajtja lokale shembull.",
+      "empty": "Nuk ka postime në këtë zonë. Mund të zgjedhësh një qytet manualisht.",
+      "privacy": "Vendndodhja kërkohet vetëm kur zgjedh Afër teje ose Përdor vendndodhjen. Qyteti manual funksionon pa GPS. Koordinatat nuk publikohen ose ruhen nga aplikacioni."
+  },
   "notifications": {
       "undated": "Pa datë",
       "dateUnknown": "Data nuk është regjistruar",

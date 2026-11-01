@@ -1,6 +1,25 @@
 /* ILLYRIAN EN UI locale (namespaced; not user-authored content) */
 window.ILLYRIAN_LOCALES=window.ILLYRIAN_LOCALES||{};
 window.ILLYRIAN_LOCALES.en={
+  "nearby": {
+      "title": "Near you",
+      "manual": "Manual city",
+      "manualCity": "Choose a city without GPS",
+      "useGps": "Use location",
+      "refresh": "Refresh location",
+      "loading": "Finding your location…",
+      "gpsCity": "GPS · near the city",
+      "gpsArea": "GPS · your area",
+      "denied": "Location permission was denied or revoked. Choose a city manually.",
+      "unavailable": "Location is unavailable. Check GPS or choose a city.",
+      "timeout": "Location took too long. Retry or choose a city.",
+      "unsupported": "GPS is unavailable here. Choose a city manually.",
+      "imprecise": "Location is too approximate. Retry or choose a city.",
+      "scope": "Content by nearby city; the app does not store coordinates.",
+      "localContent": "Results come from local sample content.",
+      "empty": "No posts in this area. You can choose a city manually.",
+      "privacy": "Location is requested only when you select Near you or Use location. Manual city works without GPS. The app does not publish or store coordinates."
+  },
   "notifications": {
       "undated": "Undated",
       "dateUnknown": "Date not recorded",
