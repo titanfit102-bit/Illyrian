@@ -13,22 +13,30 @@ test('List untranslated visible UI labels across main views',async({page})=>{
  await expect(page.locator('html')).toHaveAttribute('lang','sq');
  const snapshots=[];
  async function capture(route){
-  const strings=await page.evaluate(()=>{
-   const root=document.querySelector('#phone'),res=[];
+  const strings=await page.evaluate(view=>{
+   const isShopPlus=view.startsWith('shopPlus');
+   const root=document.querySelector(isShopPlus?'#isp-root':'#phone'),res=[];
+   if(!root)return res;
    const selectors='button,h1,h2,h3,h4,label,input[placeholder],textarea[placeholder],select[aria-label],[role="status"],.v6-nav-copy strong,.v6-nav-copy span';
    const all=root.querySelectorAll(selectors);
    for(const el of all){
     if(el.closest('.post-copy,.post-name,.bubble,.v6-bubble,.ilp-chat,.v16-comment-list,.v4-inbox-content,.v6-inbox-item,.v10-share-preview'))continue;
+    if(isShopPlus&&(el.hasAttribute('data-user-content')||el.closest('[data-user-content]')))continue;
     if(el.getClientRects().length===0)continue;
     const texts=[];
     if(el.hasAttribute('placeholder'))texts.push(el.getAttribute('placeholder'));
     if(el.hasAttribute('aria-label'))texts.push(el.getAttribute('aria-label'));
-    if(['BUTTON','H1','H2','H3','H4','LABEL'].includes(el.tagName)||el.matches('.v6-nav-copy strong,.v6-nav-copy span'))
+    if(isShopPlus&&el.tagName==='LABEL'){
+      const label=el.cloneNode(true);
+      label.querySelectorAll('input,select,textarea,button,[data-user-content]').forEach(child=>child.remove());
+      texts.push(label.textContent);
+    }else if(['BUTTON','H1','H2','H3','H4','LABEL'].includes(el.tagName)||el.matches('.v6-nav-copy strong,.v6-nav-copy span')){
       texts.push(el.innerText);
+    }
     for(let t of texts){t=String(t||'').replace(/\s+/g,' ').trim();if(t&&t.length>=2&&t.length<=210)res.push(t)}
    }
    return [...new Set(res)];
-  });
+  },route);
   snapshots.push({route,strings});
  }
  await capture('home');
@@ -47,20 +55,29 @@ test('List untranslated visible UI labels across main views',async({page})=>{
    await connects.click();await capture('connections');
    await page.locator('#ilc-root button[data-ilc="close"]').click();
  }
- await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await page.locator('#navbar [data-act="tab"][data-val="explore"]').click();
  const shop=page.locator('[data-ilshop-open]').first();
  if(await shop.isVisible()){
    await shop.click();await capture('shop');
    const plus=page.locator('[data-isp-open]').first();
    if(await plus.isVisible()){
-     await plus.click();await capture('shopPlus');await page.keyboard.press('Escape');
+     await plus.click();await capture('shopPlus');
+     await page.locator('#isp-root [data-isp="item:k1"]').click();await capture('shopPlus-item');
+     await page.locator('#isp-root [data-isp="report:k1"]').click();await capture('shopPlus-report');
+     await page.locator('#isp-root [data-isp="tab:moderation"]').click();await capture('shopPlus-moderation');
+     await page.locator('#isp-root [data-isp="tab:needs"]').click();await capture('shopPlus-needs');
+     await page.locator('#isp-root [data-isp="tab:checkout"]').click();await capture('shopPlus-checkout');
+     await page.locator('#isp-root [data-isp="tab:stores"]').click();await capture('shopPlus-stores');
+     await page.locator('#isp-root [data-isp="tab:catalog"]').click();
+     await page.locator('#isp-root [data-isp="create"]').click();await capture('shopPlus-create');
+     await page.keyboard.press('Escape');
    }
    await page.keyboard.press('Escape');
  }
  await page.locator('#navbar [data-act="open-reels"]').click();await capture('reels');
  await page.locator('#layer [data-act="reel-close"]').click();
  await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();await capture('profile');
- const setup=page.locator('#screen [data-act="modal"][data-val="settings"]');
+ const setup=page.locator('#phone > .head [data-ily-profile-settings]');
  if(await setup.isVisible()){
    await setup.click();await capture('settings');
    await page.locator('#layer [data-act="v6-settings-section"][data-val="language"]').click();
@@ -69,14 +86,25 @@ test('List untranslated visible UI labels across main views',async({page})=>{
  }
  const lookup=await page.evaluate(()=>{
    const o=window.ILLYRIAN_LOCALES.sq;
-   return [...new Set(Object.values(o).flatMap(x=>Object.values(x).filter(v=>typeof v==='string'&&!v.includes('{{'))))];
+   return [...new Set(Object.entries(o).flatMap(([ns,entries])=>Object.keys(entries).filter(k=>typeof entries[k]==='string'&&!entries[k].includes('{{')).map(k=>window.IllyrianI18n.t(ns+':'+k,{lng:'sq'}))))];
  });
  const covered=new Set(lookup);
  const unique=[...new Set(snapshots.flatMap(s=>s.strings))];
  const missing=unique.filter(s=>!covered.has(s)&&!/^(\d+|[✦✕⬅→✓✉️🌍]|ILLYRIAN|Home|Reels|Story)/i.test(s));
- const report={date:'2026-10-22',scope:'visible sampled UI only; not all conditional paths',catalogKeys:lookup.length,observedLabels:unique.length,unmatchedLabels:missing.length,routes:snapshots.map(s=>({route:s.route,labels:s.strings.length})),unmatched:missing};
+ const requiredShopPlusViews=['shopPlus','shopPlus-item','shopPlus-report','shopPlus-moderation','shopPlus-needs','shopPlus-checkout','shopPlus-stores','shopPlus-create'];
+ const shopPlusByView=snapshots.filter(s=>s.route.startsWith('shopPlus')).map(s=>({
+  route:s.route,observed:s.strings.length,
+  exactCatalogUnmatched:s.strings.filter(label=>!covered.has(label)&&!/^(?:[0-9]+|ILLYRIAN)/i.test(label))
+ }));
+ const report={date:new Date().toISOString().slice(0,10),
+  scope:'Sampled Albanian UI only; Shop Plus views are scoped to #isp-root with user-origin markup excluded and form label-only capture. Exact-match misses are not proof of untranslated UI.',
+  catalogKeys:lookup.length,observedLabels:unique.length,unmatchedLabels:missing.length,
+  routes:snapshots.map(s=>({route:s.route,labels:s.strings.length})),
+  shopPlusByView,unmatched:missing};
  fs.mkdirSync('qa-results/i18n-inventory',{recursive:true});
  fs.writeFileSync('qa-results/i18n-inventory/visible-ui-sq.json',JSON.stringify(report,null,2));
  console.log('I18N_INVENTORY '+JSON.stringify({catalog:lookup.length,observed:unique.length,unmatched:missing.length,samples:missing.slice(0,85)}));
+ console.log('I18N_SHOP_PLUS_BY_VIEW '+JSON.stringify(shopPlusByView.map(v=>({route:v.route,observed:v.observed,exactUnmatched:v.exactCatalogUnmatched.length,examples:v.exactCatalogUnmatched.slice(0,12)}))));
  expect(snapshots.length).toBeGreaterThanOrEqual(9);
+ expect(shopPlusByView.map(s=>s.route)).toEqual(requiredShopPlusViews);
 });
