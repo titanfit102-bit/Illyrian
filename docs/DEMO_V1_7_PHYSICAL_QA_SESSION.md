@@ -3,14 +3,30 @@
 > **Status fillestar: NOT TESTED.** Kjo fletë është për të mbledhur rezultate reale. Nuk është raport testi i kryer, certifikim i aksesueshmërisë apo autorizim për release.
 > Repository: `titanfit102-bit/Illyrian` · Draft PR #1, target `demo/v1.7-illyrian-shop` · dega e autorizuar `feat/i18n-shop-feedback-20261022`.
 
-### Kandidati më i fundit — Mundësi me 8 hyrje (26 tetor 2026)
+### Kandidati aktual për QA fizike — Home dhe Afër teje (5 nëntor 2026; NOT TESTED)
+
+- **Identiteti:** `feat/i18n-shop-feedback-20261022`, [Draft PR #1](https://github.com/titanfit102-bit/Illyrian/pull/1). HEAD i verifikuar para përditësimit të kësaj flete: `76f15a1219b78e724222abee9839f4f18dc4c7ca` (vetëm dokumentacion mbi kodin/testet `329d88dde9f81a54ed9515407a98c7a98cbd5ade`). Para sesionit rilexo HEAD/Preview: versioni i telefonit duhet të përputhet me degën e autorizuar.
+- **Prova të automatizuara, jo fizike:** [Chromium 538/538 + Linux WebKit 16/16 PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/41315507143) dhe [security PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/41315506904) për source `329d88d`. [Browser CI mbi HEAD dokumentues](https://github.com/titanfit102-bit/Illyrian/actions/runs/41833118055) = SUCCESS me **reuse** të provës së mëparshme, jo ekzekutim i ri browser; [security mbi HEAD](https://github.com/titanfit102-bit/Illyrian/actions/runs/41833118257) = SUCCESS.
+- **Preview për telefon:** [alias-i automatik i degës](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) → `dpl_9mQh28y53vAbhjtUDaikb6uSwgmh`, `READY`, `target:null`, commit `76f15a1` në Vercel (5 nëntor). [URL e pandryshueshme e këtij deployment-i](https://illyrian-demo-c1inlcw5u-un24.vercel.app/). Metadata e deploy-it nuk provon vetë hyrjen/renderin në telefon; mund të kërkohet identifikim i autorizuar në Vercel.
+- **Rrjedhat aktuale:** navbar-i Home/Reels/Mesazhet/Zbulo/Profil; Home ka Për ty/Duke ndjekur/Afër teje. Mundësi ka **7 hyrje**: Biznese, Tregu, Punë, Shërbime, Çfarë kërkon tani?, Plane & Aktivitete, Komunitete. Hyrjet me tetë opsione në checkpoint-et e 26 tetorit më poshtë janë vetëm historike.
+
+**Kontrolli fizik i radhës, pa ndryshime në aplikacion:**
+- [ ] **HF01–HF02:** Pëlqe/Ruaj/Fshihe/Ndiq në një postim fiktiv; verifiko që ndryshimi mbetet pas rifreskimit, pa sukses të rremë ose draft të humbur. Konfliktet mes tab-eve/Quota testohen vetëm në sesion provë; nëse nuk realizohen, shëno NOT TESTED.
+- [ ] **HF03–HF04:** përmbajtja e fshehur/bllokuar/mute të mos shfaqet më në Feed/Stories/Reels; filtrat Për ty/Duke ndjekur/Afër teje të shfaqin gjendje bosh të kuptueshme kur s'ka rezultate; Reels në navbar mbetet global, jo i kufizuar te Nearby.
+- [ ] **HF05–HF06:** kontrollo prekjen, gjendjen Pëlqe/Ruaj, fokusin me tastierë **vetëm kur ka tastierë reale**, dhe datën e postimit personal në sq/en/it pas rifreskimit. Mos deklaro test ekranlexuesi nga prekja e zakonshme.
+- [ ] **Nearby NG01–NG06:** prek Afër teje; konfirmo kërkesën e lejes vetëm pas veprimit, refuzim/Retry, qytetin manual pa GPS, Stories/Reels/postimet e qytetit dhe gjendjen bosh jashtë qyteteve shembull. Pozicionet reale të përdoruesve nuk ekzistojnë në këtë DEMO.
+- [ ] **M01–M18:** provo orientimin, safe areas, shiritat e sistemit/shfletuesit, kamerën/file picker, Settings/Profile, njoftimet, Light/Dark, tekstin e zmadhuar dhe TalkBack/VoiceOver aty ku është e mundur. Përdor formularin dhe matricën ekzistuese poshtë; rezultati mbetet NOT TESTED derisa të regjistrohet sesioni fizik.
+
+**Ndalimi:** pa pranim vizual të pronarit, pa certifikim fizik, pa merge/main/integrim/Production, pa APK/backend ose ndryshim të settings F06. Historia e kandidatëve të mëparshëm mbahet më poshtë vetëm për gjurmueshmëri.
+
+### Kandidat historik — Mundësi me 8 hyrje (26 tetor 2026)
 
 - **Source:** kodi [676a1b8](https://github.com/titanfit102-bit/Illyrian/commit/676a1b8073b995656cea90a1e6a0abd57105e5b6), testet [7b8943](https://github.com/titanfit102-bit/Illyrian/commit/7b8943147fdd7a8189866b9d62257d279d63f531), [security PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40331804826), [browser QA PASS (296 Chromium +16 WebKit)](https://github.com/titanfit102-bit/Illyrian/actions/runs/40331804926). Verifiko CI të fundit përpara sesionit.
 - **Preview:** [alias për telefon](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/); [immutable READY](https://illyrian-demo-3fbexoigq-un24.vercel.app/), deployment `dpl_3qMP5GRzQcdzJNsSmoKe3CbJ4CDE`, source `7b8943`, target Preview null sipas metadata. Shërbimi i aseteve pas auth-wall NOT VERIFIED.
 - **Testi i navigimit:** Hape Mundësi, verifiko 8 butonat dhe skrollin në telefon: Biznese, Tregu, Punë, Shërbime, Çfarë kërkon tani?, Aktivitetet e tua, Plane, Komunitete. Nga Interesi ndrysho zgjedhjen dhe kthehu pa humbje; Aktivitetet hap kërkesat/planet ekzistuese; Plane hap Events; Komunitete hap Explore të filtruar. Kontrollo fokus/Escape/Back, sq/en/it, menunë kur hapet modal Shop/intent, portrait/landscape, OS text zoom. M01–M18 mbeten NOT TESTED.
 - **Home:** Karta e interesit dhe përmbledhja e aktiviteteve, si dhe shortcuts Plane/Komunitete, janë zhvendosur në Mundësi. Stories → composer → Shop → Feed dhe shortcuts e vjetra Biznese/Punë nuk duhet të humbasin. Mos pretendo certifikim real TalkBack/VoiceOver pa sesion fizik.
 
-### Kandidati aktual për testim fizik — Home composer (26 tetor 2026)
+### Kandidat historik — Home composer (26 tetor 2026)
 
 - **Kodi/testet:** [`fc3812b`](https://github.com/titanfit102-bit/Illyrian/commit/fc3812bd7f434087e810378d36b775768e728640): [293/293 Chromium +16/16 Linux WebKit PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40327148783); [security-baseline PASS](https://github.com/titanfit102-bit/Illyrian/actions/runs/40327148842). Kontrollo HEAD në GitHub përpara çdo sesioni.
 - **Preview fiks për telefonin:** [ILLYRIAN Preview i degës](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/). Immutable source [`illyrian-demo-iynt2rl2o-un24.vercel.app`](https://illyrian-demo-iynt2rl2o-un24.vercel.app/), deployment `dpl_Fmew573Akk3jfoqAhLGtKEa6Tgwd`, READY / `target:null` / source `fc3812b` në metadata Vercel. Parity e aseteve HTTP pas auth-wall **NOT VERIFIED**.
@@ -18,7 +34,7 @@
 - **Gjendja reale:** Android/iPhone fizik, TalkBack/VoiceOver dhe M01–M18 mbeten **NOT TESTED**. F06 branch enforcement u shty nga pronari për fazën reale; çdo merge/release kërkon ende miratim të veçantë. CI e automatizuar nuk është certifikim në telefon.
 
 
-### Kontroll shtesë i Home header-it (26 tetor 2026; JO QA fizike)
+### Kontroll historik i Home header-it (26 tetor 2026; JO QA fizike)
 - Për testim manual përdor [Preview-in automatik](https://illyrian-demo-git-feat-i18n-shop-feedback-20261022-un24.vercel.app/) dhe verifiko `ILLYRIAN | Kalendari | Mundësi | Njoftime`. Hap Mundësi dhe testo tetë hyrjet: Biznese → Explore, Tregu → Shop, Punë → Explore, Shërbime → Shop (filtri Shërbime), Çfarë kërkon tani? → modali i interesit, Aktivitetet e tua → planet/kërkesat, Plane → Events, Komunitete → Explore i filtruar. Testo fokusin/Back/Escape, mbylljen e menusë me Njoftimet, ndërrimin e gjuhës sq/en/it, krijimin e postimit nga Feed, portrait/landscape, zoom, tastierën virtuale dhe safe areas. Raporto version/OS/screenshot pa të dhëna personale.
 - Kandidat code/test SHA `785a582`; [CI #40300249782](https://github.com/titanfit102-bit/Illyrian/actions/runs/40300249782) **273/273 Chromium PASS; 16/16 WebKit PASS**; [security #40300249776](https://github.com/titanfit102-bit/Illyrian/actions/runs/40300249776) PASS. Preview immutable https://illyrian-demo-m9nct6u05-un24.vercel.app/ READY, jo Production. **Asnjë sesion fizik nuk është kryer këtu.**
 
@@ -83,7 +99,7 @@ Problemet e gjetura / screenshot-et: ____________
 
 ## 3. Rruga prioritare (rreth 10–15 minuta për sesion, pa garantuar kohë)
 
-- [ ] **P01 / M01–M02 — Hapja dhe orientimi:** hyr si vizitor, kalo turin, vizito tab-et Home/Explore/Events/Profile; ktheje telefonin landscape dhe portrait. Pa ekrane bosh, scroll horizontal të dokumentit apo butona të paarritshëm.
+- [ ] **P01 / M01–M02 — Hapja dhe orientimi:** hyr si vizitor, kalo turin, vizito pesë tab-et Home/Reels/Mesazhet/Zbulo/Profil; ktheje telefonin landscape dhe portrait. Pa ekrane bosh, scroll horizontal të dokumentit apo butona të paarritshëm.
 - [ ] **P02 / M04 — Stories/Reels:** hap Story dhe Reel nga Home; kalo te Story/Reel tjetër, mbylli me **X**. Për Reel, testo edhe kalimin në profil/bisedë dhe **Kthehu te Reel**. Fokusi i tastierës verifikohet vetëm nëse pajisja ka tastierë të lidhur; prekja nuk e certifikon fokusin.
 - [ ] **P03 / M10–M12 — Shop + Shop Plus:** hap Shop → Shop Plus → Kërkoj… → Katalog → Krijo. Ndrysho kategorinë Produkte/Makina/Banesa me qira/Shërbime; shiko që fushat e papërshtatshme zhduken dhe butoni mbyll dialogun. Mos e publiko listimin.
 - [ ] **P04 / M06–M09 — Plans/Connections/Privacy/Governance:** hap dhe mbyll panelet, testo kthimin te tab-i i mëparshëm, ruajtjen e tekstit të draftit dhe gjuhën sq/en/it pa ndryshuar vlerat e futura. Mos dërgo raportime reale.
