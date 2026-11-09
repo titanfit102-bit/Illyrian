@@ -47,7 +47,11 @@
  const setNotice=(key,fallback)=>{state.noticeKey=key;state.noticeFallback=fallback;state.notice=feedback(key,fallback)};
  const clearNotice=()=>{state.notice='';state.noticeKey=null;state.noticeFallback=''};
  const ui=(key,fallback)=>esc(feedback(key,fallback));
- const typeLabel=code=>esc(window.IllyrianI18n?.t('shop:'+({'Të gjitha':'all','Produkte':'products','Makina':'cars','Prona':'properties','Punë':'jobs','Banesa me qira':'rentals','Shërbime':'services'}[code]))||code);
+ const typeKeys={'Të gjitha':'all','Produkte':'products','Makina':'cars','Prona':'properties','Punë':'jobs','Banesa me qira':'rentals','Shërbime':'services'};
+ const typeLabel=code=>{
+  const known=Object.prototype.hasOwnProperty.call(typeKeys,code);
+  return esc(known?(window.IllyrianI18n?.t('shop:'+typeKeys[code])||code):code);
+ };
  const persisted=()=>({items:state.items,needs:state.needs,answers:state.answers,flags:state.flags,sampleOrders:state.sampleOrders});
  let lastSaved=JSON.stringify(persisted()),expectedRaw=initialRaw;
  const rejectStale=()=>{

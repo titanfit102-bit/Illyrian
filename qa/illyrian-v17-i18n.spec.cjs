@@ -3544,3 +3544,31 @@ test('Shop Plus validation and saved notices localize live without draft loss or
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(after);
  }
 });
+
+test('Shop Plus preserves unrecognized buyer request types safely across locale changes',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const expires=new Date(Date.now()+86400000).toISOString();
+  const sample={items:[],answers:[],flags:[],sampleOrders:[],needs:[
+   {id:'custom-code',type:'Lloj <i>i ri</i>',city:'Tiranë',title:'Mbyll unknown type',budget:150,details:'Mbyll safe',expires},
+   {id:'prototype-code',type:'__proto__',city:'Tiranë',title:'Mbyll prototype code',budget:250,details:'Mbyll safe',expires}
+  ]};
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify(sample));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await openShop(page);
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ const cards=page.locator('#isp-root .isp-card');
+ await expect(cards).toHaveCount(2);
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ for(const locale of ['sq','en','it']){
+  await page.evaluate(lang=>window.IllyrianI18n.changeLanguage(lang),locale);
+  await expect(cards.nth(0).locator('p span[data-i18n-direct]').first()).toHaveText('__proto__');
+  await expect(cards.nth(1).locator('p span[data-i18n-direct]').first()).toHaveText('Lloj <i>i ri</i>');
+  await expect(cards.nth(1).locator('i')).toHaveCount(0);
+  await expect(cards.nth(1).locator('h4[data-user-content]')).toHaveText('Mbyll unknown type');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
+ }
+});
