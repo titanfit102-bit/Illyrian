@@ -1188,6 +1188,17 @@ document.head.appendChild(v9Style);
 // Important: UI-only simulation. No real ranking model, moderation, identity or messaging backend.
 state.v10PlansView=['all','mine','accepted'].includes(saved.v10PlansView)?saved.v10PlansView:'all';
 // Home activity summary moved to the existing Mundësi route (v10-my-plans).
+function v10PlanText(key,fallback,options){return window.IllyrianI18n?.t('plans:'+key,options)||fallback}
+function v10SelectedPlans(){return events.filter(e=>state.v10PlansView==='accepted'?state.acceptedPlans.includes(e.id):state.requests.includes(e.id))}
+function v10PlanCount(){
+ const count=v10SelectedPlans().length;
+ return v10PlanText(state.v10PlansView==='accepted'?'acceptedCount':'requestCount',String(count),{count});
+}
+function v10PlanStatusLabel(code){
+ const labels={cancelled:['cardCancelled','I anuluar'],full:['cardFull','I mbushur'],accepted:['cardAccepted','✓ I pranuar'],pending:['cardPending','⏳ Në pritje']};
+ const [key,fallback]=labels[code]||['cardPending','⏳ Në pritje'];
+ return v10PlanText(key,fallback);
+}
 const v10BaseEventPage=eventPage;
 function v10PlanTabLabel(view){
  const translations={all:['notifications:all','Të gjitha'],mine:['plans:myRequests','Kërkesat e mia'],accepted:['plans:approvedPlural','Të pranuara']};
@@ -1198,27 +1209,47 @@ function v10PlanTabLabel(view){
 }
 eventPage=function(){
  const tabs=['all','mine','accepted'];
- const menu=`<div class="v10-event-tabs" role="group" aria-label="Pamja e planeve">${tabs.map(value=>`<button type="button" data-i18n-direct class="${state.v10PlansView===value?'selected':''}" data-act="v10-plans-view" data-val="${value}" aria-pressed="${state.v10PlansView===value}">${esc(v10PlanTabLabel(value))}</button>`).join('')}</div>`;
+ const menu=`<div class="v10-event-tabs" role="group" aria-label="${esc(v10PlanText('tabViewAria','Pamja e planeve'))}">${tabs.map(value=>`<button type="button" data-i18n-direct class="${state.v10PlansView===value?'selected':''}" data-act="v10-plans-view" data-val="${value}" aria-pressed="${state.v10PlansView===value}">${esc(v10PlanTabLabel(value))}</button>`).join('')}</div>`;
  if(state.v10PlansView==='all'){
   let html=v10BaseEventPage();
   return html.replace('<div class="event-hero">',menu+'<div class="event-hero">');
  }
- const mine=events.filter(e=>state.v10PlansView==='accepted'?state.acceptedPlans.includes(e.id):state.requests.includes(e.id));
- const empty=state.v10PlansView==='mine'?'Nuk ke kërkesa pjesëmarrjeje ende.':'Nuk ke plane të pranuara ende.';
- return `${sectionsTitle('Planet e mia','Shiko kërkesat dhe pjesëmarrjen në aktivitetet e demonstrimit.')}${menu}<div class="v10-plans-count">${mine.length} ${mine.length===1?'plan':'plane'} · ${state.v10PlansView==='accepted'?'të pranuara':'me kërkesë'}</div>${mine.length?mine.map(eventCard).join(''):`<div class="v10-empty"><span>${svg('calendar',30)}</span><strong>${empty}</strong><p>Provo një aktivitet, dërgo kërkesë dhe ndiq statusin e saj.</p><button class="button" data-act="v10-plans-view" data-val="all">Zbulo aktivitetet →</button></div>`}${demoNotice()}`;
+ const mine=v10SelectedPlans();
+ const empty=state.v10PlansView==='mine'?v10PlanText('emptyRequests','Nuk ke kërkesa pjesëmarrjeje ende.'):v10PlanText('emptyAccepted','Nuk ke plane të pranuara ende.');
+ return `<div class="section-header"><h2 data-v10-plan-title data-i18n-direct>${esc(v10PlanText('myPlansTitle','Planet e mia'))}</h2><p data-v10-plan-subtitle data-i18n-direct>${esc(v10PlanText('myPlansSubtitle','Shiko kërkesat dhe pjesëmarrjen në aktivitetet e demonstrimit.'))}</p></div>${menu}<div class="v10-plans-count" data-i18n-direct>${esc(v10PlanCount())}</div>${mine.length?mine.map(eventCard).join(''):`<div class="v10-empty"><span>${svg('calendar',30)}</span><strong data-v10-plan-empty-title data-i18n-direct>${esc(empty)}</strong><p data-v10-plan-empty-hint data-i18n-direct>${esc(v10PlanText('emptyHelp','Provo një aktivitet, dërgo kërkesë dhe ndiq statusin e saj.'))}</p><button class="button" data-i18n-direct data-v10-plan-discover data-act="v10-plans-view" data-val="all">${esc(v10PlanText('discoverActivities','Zbulo aktivitetet →'))}</button></div>`}${demoNotice()}`;
 };
 window.addEventListener('illyrian:language-changed',()=>{
  document.querySelectorAll('#screen .v10-event-tabs [data-act="v10-plans-view"]').forEach(button=>{
   button.textContent=v10PlanTabLabel(button.dataset.val);
+ });
+ const tabs=document.querySelector('#screen .v10-event-tabs');
+ if(tabs)tabs.setAttribute('aria-label',v10PlanText('tabViewAria','Pamja e planeve'));
+ const copy=[
+  ['[data-v10-plan-title]',v10PlanText('myPlansTitle','Planet e mia')],
+  ['[data-v10-plan-subtitle]',v10PlanText('myPlansSubtitle','Shiko kërkesat dhe pjesëmarrjen në aktivitetet e demonstrimit.')],
+  ['#screen .v10-plans-count',v10PlanCount()],
+  ['[data-v10-plan-empty-title]',v10PlanText(state.v10PlansView==='mine'?'emptyRequests':'emptyAccepted','Nuk ke plane ende.')],
+  ['[data-v10-plan-empty-hint]',v10PlanText('emptyHelp','Provo një aktivitet, dërgo kërkesë dhe ndiq statusin e saj.')],
+  ['[data-v10-plan-discover]',v10PlanText('discoverActivities','Zbulo aktivitetet →')]
+ ];
+ for(const [selector,label] of copy){
+  const el=document.querySelector('#screen '+selector.replace(/^#screen /,''));
+  if(el&&el.textContent!==label)el.textContent=label;
+ }
+ document.querySelectorAll('#screen [data-v10-plan-status]').forEach(el=>{el.textContent=v10PlanStatusLabel(el.dataset.v10PlanStatus)});
+ document.querySelectorAll('#screen [data-v10-plan-action]').forEach(el=>{
+  const key=el.dataset.v10PlanAction;
+  el.textContent=v10PlanText(key,key==='cardViewAccepted'?'✓ Shiko planin':'✓ Kërkesë dërguar');
  });
 });
 const v10BaseEventCard=eventCard;
 eventCard=function(e){
  const html=v10BaseEventCard(e);
  const status=state.v8EventStatuses[e.id];
- const label=status==='cancelled'?"I anuluar":status==='full'?"I mbushur":state.acceptedPlans.includes(e.id)?"✓ I pranuar":state.requests.includes(e.id)?"⏳ Në pritje":'';
- let decorated=label?html.replace('<div class="event-body">',`<div class="event-body"><span class="v10-plan-status">${label}</span>`):html;
- if(state.acceptedPlans.includes(e.id))decorated=decorated.replace('✓ Kërkesë dërguar','✓ Shiko planin');
+ const code=status==='cancelled'?'cancelled':status==='full'?'full':state.acceptedPlans.includes(e.id)?'accepted':state.requests.includes(e.id)?'pending':'';
+ let decorated=code?html.replace('<div class="event-body">',`<div class="event-body"><span class="v10-plan-status" data-i18n-direct data-v10-plan-status="${code}">${esc(v10PlanStatusLabel(code))}</span>`):html;
+ const action=state.acceptedPlans.includes(e.id)?'cardViewAccepted':state.requests.includes(e.id)?'cardRequestSent':null;
+ if(action)decorated=decorated.replace(state.requests.includes(e.id)?'✓ Kërkesë dërguar':'Shiko planin →',`<span data-i18n-direct data-v10-plan-action="${action}">${esc(v10PlanText(action,action==='cardViewAccepted'?'✓ Shiko planin':'✓ Kërkesë dërguar'))}</span>`);
  return decorated;
 };
 const v10BaseModal=modalContent;

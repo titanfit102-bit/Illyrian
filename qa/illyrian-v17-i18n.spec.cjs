@@ -3387,3 +3387,46 @@ for(const lang of ['sq','en','it'])test('Presentation copy has one About disclos
  await expect(page.locator('[data-demo-disclosure]')).toHaveText('ILLYRIAN · DEMO v1.7');
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
 });
+
+test('Plans v10 selected and empty views localize live without losing tab focus or stored state',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ for(const [view,expected] of [
+  ['mine',{sq:['0 plane · me kërkesë','Nuk ke kërkesa pjesëmarrjeje ende.'],en:['0 plans · requested','You have no participation requests yet.'],it:['0 piani · richiesti','Non hai ancora richieste di partecipazione.']}],
+  ['accepted',{sq:['0 plane · të pranuara','Nuk ke plane të pranuara ende.'],en:['0 accepted plans','You have no accepted plans yet.'],it:['0 piani accettati','Non hai ancora piani accettati.']}]
+ ]){
+  const tab=page.locator('#screen .v10-event-tabs [data-val="'+view+'"]');
+  await tab.click();const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  for(const lang of ['sq','en','it']){
+   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+   await expect(tab).toBeFocused();
+   await expect(page.locator('#screen .v10-plans-count')).toHaveText(expected[lang][0]);
+   await expect(page.locator('#screen [data-v10-plan-empty-title]')).toHaveText(expected[lang][1]);
+   await expect(page.locator('#screen [data-v10-plan-title]')).toHaveText({sq:'Planet e mia',en:'My plans',it:'I miei piani'}[lang]);
+   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+  }
+ }
+});
+test('Plans v10 badges and actions follow live locale; fixture titles and storage remain unchanged',async({page})=>{
+ await page.addInitScript(()=>{const key='illyrian_demo_v09_state';const value=JSON.parse(localStorage.getItem(key)||'{}');value.requests=['e1','e2'];value.acceptedPlans=['e1'];localStorage.setItem(key,JSON.stringify(value))});
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ const mine=page.locator('#screen .v10-event-tabs [data-val="mine"]');await mine.click();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const cases=[
+  ['sq','2 plane · me kërkesë','✓ I pranuar','⏳ Në pritje','✓ Shiko planin','✓ Kërkesë dërguar'],
+  ['en','2 plans · requested','✓ Accepted','⏳ Pending','✓ View plan','✓ Request sent'],
+  ['it','2 piani · richiesti','✓ Accettato','⏳ In attesa','✓ Vedi il piano','✓ Richiesta inviata']
+ ];
+ for(const [lang,count,accepted,pending,view,sent] of cases){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(mine).toBeFocused();
+  await expect(page.locator('#screen .v10-plans-count')).toHaveText(count);
+  await expect(page.locator('#screen [data-v10-plan-status="accepted"]')).toHaveText(accepted);
+  await expect(page.locator('#screen [data-v10-plan-status="pending"]')).toHaveText(pending);
+  await expect(page.locator('#screen [data-v10-plan-action="cardViewAccepted"]')).toHaveText(view);
+  await expect(page.locator('#screen [data-v10-plan-action="cardRequestSent"]')).toHaveText(sent);
+  await expect(page.locator('#screen .event-card h3').first()).toHaveText('Futboll me shqiptarët');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ }
+});
