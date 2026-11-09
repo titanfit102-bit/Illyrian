@@ -428,7 +428,20 @@ function v3Action(action,id,v){
  if(action==='apply-job'){if(!state.applications.includes(id)){state.applications.push(id);notice("Aplikove për një punë")}openModal('job-detail',id);return true}
  if(action==='story-plan'){state.story=0;state.tab='events';openModal('event',id);return true}
  if(action==='approve-sim'){if(!state.requests.includes(id)){toast('Dërgo fillimisht kërkesën');return true}if(!state.acceptedPlans.includes(id)){state.acceptedPlans.push(id);notice('Kërkesa e aktivitetit u pranua në simulim')}openModal('event',id);return true}
- if(action==='group-send'){const input=$('#group-input');const content=(input?.value||'').trim();if(!content)return true;state.groupMessages[id]=[...(state.groupMessages[id]||[]),content];persist();openModal('group-chat',id);const chat=$('#groupchat');if(chat)chat.scrollTop=chat.scrollHeight;return true}
+ if(action==='group-send'){
+ const input=$('#group-input'),content=(input?.value||'').trim();
+ if(!content)return true;
+ if(state.modal?.type!=='group-chat'||state.modal.id!==id||!events.some(e=>e.id===id)||!state.acceptedPlans.includes(id)){toast('Nuk je pjesëmarrës i këtij grupi');return true}
+ if(!coreMessageFresh(input))return true;
+ const previous=state.groupMessages[id];
+ state.groupMessages[id]=[...(previous||[]),content];
+ if(!persist()){
+  if(previous===undefined)delete state.groupMessages[id];else state.groupMessages[id]=previous;
+  toast(coreSaveFailed());input?.focus();return true;
+ }
+ openModal('group-chat',id);const chat=$('#groupchat');if(chat)chat.scrollTop=chat.scrollHeight;
+ return true;
+}
  if(action==='hide-post'){if(coreArrayToggle('hiddenPosts',String(id),document.activeElement,'Postimi u fsheh nga Feed-i')){close();coreActionFocus('postmore',id);toast('Postimi u fsheh')}return true}
  if(action==='report-post'){if(!state.reports.includes(id))state.reports.push(id);notice("Raportim lokal — nuk është dërguar");close();toast("Raportim, jo real");return true}
  return false
@@ -669,6 +682,17 @@ function v6UnreadAlerts(){return v6Notifications().filter(x=>!state.v6ReadAlerts
 function v6RenderBadge(){const badge=document.querySelector('.head [data-val="notifications"] .dot');if(badge){const n=v6UnreadAlerts();badge.textContent=n?String(n):'',badge.style.display=n?'grid':'none'}}
 const v6OldModal=modalContent;
 const v6ThreadSeed=[{id:'leon',avatar:'a3',name:'Leon M.',last:'Përshëndetje! Si po shkon?',time:'12:42'}, {id:'arta',avatar:'a2',name:'Arta K.',last:'Shihemi në event!',time:'Dje'}, {id:'besa',avatar:'a4',name:'Besa H.',last:'Faleminderit për ftesën.',time:'E hënë'}, {id:'dion',avatar:'a5',name:'Dion A.',last:'Shihemi te aktiviteti!',time:'Dje'}];
+function v6MarkChatRead(id,input){
+ if(!people.some(person=>person.id===id))return false;
+ if(state.v6ReadChats.includes(id))return true;
+ if(!coreMessageFresh(input))return false;
+ const previous=state.v6ReadChats;
+ state.v6ReadChats=[...new Set([...previous,id])];
+ if(persist())return true;
+ state.v6ReadChats=previous;
+ toast(coreSaveFailed());input?.focus?.();
+ return false;
+}
 function v6InboxContent(){
  const threads=[...v6ThreadSeed.map(x=>({...x,type:'people',last:(state.messages[x.id]||[]).length?'Ti: '+state.messages[x.id].at(-1):x.last})),...events.filter(e=>state.acceptedPlans.includes(e.id)).map(e=>({id:e.id,emoji:e.emoji,name:'Grupi · '+e.title,last:(state.groupMessages[e.id]||[]).at(-1)||'Biseda e aktivitetit',time:'Grup',type:'groups'}))];
  const unread=threads.filter(x=>x.type==='people'&&!state.v6ReadChats.includes(x.id)).length;
@@ -736,7 +760,7 @@ storyContent=function(){let html=v6OldStory();if(!html||!state.story)return html
 };
 const v6OldProfile=profile;
 profile=function(){let html=v6OldProfile();return state.v6Prefs.privateProfile?html.replace('class="v5-profile-hero"','class="v5-profile-hero"').replace('Hapësira jote personale',"Hapësira jote personale · Privat"):html};
-function v54ChatRows(messages){return messages.map(t=>`<div class="v6-bubble me">${esc(t)}<small>Tani ✓</small></div>`).join('')}
+function v54ChatRows(messages){return messages.map(t=>`<div class="v6-bubble me">${esc(t)}<small>Ruajtur lokalisht</small></div>`).join('')}
 function v6Action(action,id,v){
  if(action==='v54-chat-older'){
   if(state.modal?.type!=='chat'||state.modal.id!==id)return true;
@@ -751,7 +775,7 @@ function v6Action(action,id,v){
  }
 
  if(action==='v6-inbox-filter'){state.v6InboxFilter=v;state.v6InboxSearch='';openModal('inbox');v6FilterInbox();return true}
- if(action==='v6-openchat'){state.v6ReadChats=Array.from(new Set([...state.v6ReadChats,id]));persist();openModal('chat',id);const box=$('#v6-chat-scroll');if(box)box.scrollTop=box.scrollHeight;return true}
+ if(action==='v6-openchat'){if(!v6MarkChatRead(id,document.activeElement))return true;openModal('chat',id);const box=$('#v6-chat-scroll');if(box)box.scrollTop=box.scrollHeight;return true}
  if(action==='v6-back-inbox'){openModal('inbox');return true}
  if(action==='n17-filter'){if(['all','people','activities','jobs','system'].includes(v)){n17Filter=v;openModal('notifications')}return true}
  if(action==='n17-settings'){n17Remember('',true);openModal('v6-settings-alerts');return true}
@@ -783,7 +807,7 @@ function v6Action(action,id,v){
 // v0.6 interactivity contract: event delegation handles dynamically rendered views.
 document.addEventListener('input',e=>{if(e.target.id==='v6-inbox-search'){state.v6InboxSearch=e.target.value;v6FilterInbox();}});
 document.addEventListener('change',e=>{const key=e.target.dataset?.v6Pref;if(!key)return;const isCheckbox=e.target.type==='checkbox';const value=isCheckbox?e.target.checked:e.target.value;const old=state.v6Prefs[key];if(!coreMessageFresh(e.target)){if(isCheckbox)e.target.checked=!!old;else e.target.value=old;return}state.v6Prefs[key]=value;if(!persist()){state.v6Prefs[key]=old;if(isCheckbox)e.target.checked=!!old;else e.target.value=old;toast(coreSaveFailed());e.target.focus();return}toast("Preferenca u ruajt")});
-document.addEventListener('submit',e=>{if(e.target.id!=='v6-chat-form')return;e.preventDefault();const id=e.submitter?.dataset.v6ChatId||e.target.querySelector('[data-v6-chat-id]')?.dataset.v6ChatId;const input=e.target.querySelector('#v6-msg-input'),txt=(input?.value||'').trim();if(!id||!txt)return;if(!coreMessageFresh(input))return;const old=state.messages[id];state.messages[id]=[...(old||[]),txt];if(!persist()){if(old===undefined)delete state.messages[id];else state.messages[id]=old;toast(coreSaveFailed());input?.focus();return}openModal('chat',id);const chat=$('#v6-chat-scroll');if(chat)chat.scrollTop=chat.scrollHeight;});
+document.addEventListener('submit',e=>{if(e.target.id!=='v6-chat-form')return;e.preventDefault();const id=e.submitter?.dataset.v6ChatId||e.target.querySelector('[data-v6-chat-id]')?.dataset.v6ChatId;const input=e.target.querySelector('#v6-msg-input'),txt=(input?.value||'').trim();if(!id||!txt)return;if(state.modal?.type!=='chat'||state.modal.id!==id||!people.some(p=>p.id===id)||state.blocked.includes(id)){toast('Biseda nuk është e disponueshme');return}if(!coreMessageFresh(input))return;const old=state.messages[id];state.messages[id]=[...(old||[]),txt];if(!persist()){if(old===undefined)delete state.messages[id];else state.messages[id]=old;toast(coreSaveFailed());input?.focus();return}openModal('chat',id);const chat=$('#v6-chat-scroll');if(chat)chat.scrollTop=chat.scrollHeight;});
 document.addEventListener('keydown',e=>{if(e.target.id==='v6-story-message'&&e.key==='Enter'){e.preventDefault();document.querySelector('[data-act="v6-story-send"]')?.click()}});
 let v6StoryTimer=null;
 const v6PreviousRender=render;
@@ -823,7 +847,7 @@ if(action==='comments'){openModal('comments',id);return}
 if(action==='postmore'){openModal('postmenu',id);return}
 if(action==='share'){toast('Shpërndarja është vetëm demonstrim');return}
 if(action==='report'){close();toast("Raportim — nuk u dërgua");return}
-if(action==='openchat'){state.v6ReadChats=Array.from(new Set([...state.v6ReadChats,id]));persist();openModal('chat',id);return}
+if(action==='openchat'){if(!v6MarkChatRead(id,document.activeElement))return;openModal('chat',id);return}
 if(action==='event'){openModal('event',id);return}
 if(action==='request'){state.requests=toggle(state.requests,id);if(!state.requests.includes(id))state.acceptedPlans=state.acceptedPlans.filter(x=>x!==id);notice(state.requests.includes(id)?"Kërkesë pjesëmarrjeje për aktivitetin":'Kërkesa e aktivitetit u anulua');close();toast(state.requests.includes(id)?"Kërkesa u shënua lokalisht":'Kërkesa u anulua');return}
 if(action==='detail'){openModal('detail',id);return}
