@@ -1910,6 +1910,61 @@ test('Calendar simulated approval rejects quota and stale writes, then accepts o
  expect(saved.comments.p1).toEqual(['another window']);
 });
 
+test('Calendar scenario lab rolls back quota and stale writes without false status',async({page})=>{
+ await openDemo(page,390,844);
+ const key='illyrian_demo_v09_state';
+ const openLab=async()=>{
+  await page.locator('#navbar [data-val="profile"]').click();
+  await page.locator('#phone > .head [data-ily-profile-settings]').click();
+  await page.locator('#layer [data-act="v8-lab"]').click();
+  await expect(page.locator('#layer [data-act="v8-event-scenario"]')).toHaveCount(2);
+ };
+ await openLab();
+ const scenario=page.locator('#layer [data-act="v8-event-scenario"][data-val="e1:full"]');
+ const original=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__calendarLabSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');return window.__calendarLabSet.call(this,k,v)};
+ });
+ await scenario.click();
+ await expect(scenario).toBeVisible();
+ await expect(scenario).toBeFocused();
+ await expect(page.locator('#toast-area')).toContainText('Ndryshimi nuk u ruajt');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(original);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__calendarLabSet;delete window.__calendarLabSet});
+ await scenario.click();
+ await expect(page.locator('#toast-area')).toContainText('Statusi u vendos');
+ const full=await page.evaluate(k=>localStorage.getItem(k),key);
+ expect(JSON.parse(full).v8EventStatuses.e1).toBe('full');
+ const reset=page.locator('#layer [data-act="v8-event-reset"]');
+ await page.evaluate(()=>{
+  window.__calendarLabSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');return window.__calendarLabSet.call(this,k,v)};
+ });
+ await reset.click();
+ await expect(reset).toBeVisible();
+ await expect(reset).toBeFocused();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(full);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__calendarLabSet;delete window.__calendarLabSet});
+ const newer=await page.evaluate(k=>{
+  const saved=JSON.parse(localStorage.getItem(k));
+  saved.comments={...saved.comments,p1:['saved by another tab']};
+  const raw=JSON.stringify(saved);
+  localStorage.setItem(k,raw);
+  return raw;
+ },key);
+ await reset.click();
+ await expect(reset).toBeFocused();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(newer);
+ await page.reload({waitUntil:'load'});
+ await openLab();
+ await page.locator('#layer [data-act="v8-event-reset"]').click();
+ await expect(page.locator('#toast-area')).toContainText('Statuset u rivendosën');
+ const after=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(after.v8EventStatuses).toEqual({});
+ expect(after.comments.p1).toEqual(['saved by another tab']);
+});
+
 test('Plans integration: switching tabs cannot overwrite another window local data',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#phone > .head [data-ily-op-toggle]').click();

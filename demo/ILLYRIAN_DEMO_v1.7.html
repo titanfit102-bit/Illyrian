@@ -1022,8 +1022,25 @@ function v8Action(action,id,v){
  if(action==='v8-lab'){openModal('v8-lab');return true}
  if(action==='v8-toggle-offline'){state.v8Offline=!state.v8Offline;openModal('v8-lab');toast(state.v8Offline?'Mungesa e lidhjes u simulua':"Lidhja u rikthye");return true}
  if(action==='v8-fail-next'){state.v8FailNextMessage=!state.v8FailNextMessage;openModal('v8-lab');return true}
- if(action==='v8-event-scenario'){const [key,status]=(v||'').split(':');if(!events.some(e=>e.id===key))return true;state.v8EventStatuses[key]=status;persist();openModal('v8-lab');toast("Statusi u vendos");return true}
- if(action==='v8-event-reset'){state.v8EventStatuses={};persist();openModal('v8-lab');toast("Statuset u rivendosën");return true}
+ if(action==='v8-event-scenario'){
+  const [key,status]=(v||'').split(':');
+  if(!events.some(e=>e.id===key)||!['full','cancelled'].includes(status))return true;
+  const input=document.activeElement;
+  if(!coreMessageFresh(input))return true;
+  const previous=state.v8EventStatuses;
+  state.v8EventStatuses={...previous,[key]:status};
+  if(!persist()){state.v8EventStatuses=previous;toast(coreSaveFailed());input?.focus();return true}
+  openModal('v8-lab');toast("Statusi u vendos");return true;
+ }
+ if(action==='v8-event-reset'){
+  const input=document.activeElement;
+  if(!coreMessageFresh(input))return true;
+  const previous=state.v8EventStatuses;
+  if(!Object.keys(previous).length){openModal('v8-lab');return true}
+  state.v8EventStatuses={};
+  if(!persist()){state.v8EventStatuses=previous;toast(coreSaveFailed());input?.focus();return true}
+  openModal('v8-lab');toast("Statuset u rivendosën");return true;
+ }
  if(action==='v8-toggle-block'||action==='v8-toggle-mute'){if(!people.some(p=>p.id===id)||!coreMessageFresh(document.activeElement))return true;const key=action==='v8-toggle-block'?'blocked':'muted',old=state[key],follows=state.follows;state[key]=toggle(old,id);if(key==='blocked'&&state.blocked.includes(id))state.follows=state.follows.filter(x=>x!==id);if(!persist()){state[key]=old;state.follows=follows;toast(coreSaveFailed());return true}openModal('user-profile',id);toast(window.IllyrianI18n?.t('safety:preferenceSaved')||'DEMO');return true}
  if(action==='v8-clear-search'){state.search='';state.category='Të gjitha';render({scroll:true});return true}
  if((action==='request'||action==='approve-sim')&&state.v8EventStatuses[id]){toast("Aktiviteti nuk pranon kërkesa");openModal('event',id);return true}
