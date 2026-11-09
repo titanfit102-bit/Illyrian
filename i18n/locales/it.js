@@ -484,6 +484,7 @@ window.ILLYRIAN_LOCALES.it={
     "connectedOrganizerCommunity": "Comunità che organizza il piano",
     "connectedOrganizerSim": "Organizzatore · simulazione",
     "connectedViewProfile": "Vedi profilo →",
+    "connectedProfileAriaPrefix": "Apri il profilo di ",
     "connectedPeople": "Persone in questo piano",
     "connectedProfiles": "Profili",
     "connectedGroupTitle": "Gruppo dell'attività · simulazione",

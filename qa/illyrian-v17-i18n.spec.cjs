@@ -3492,3 +3492,22 @@ test('Connected Plans cards and event details localize sq/en/it without modifyin
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
  }
 });
+
+test('Plans connected participants keep real profile names and localized accessible labels during language changes',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ await page.locator('#screen .event-card [data-act="event"]').first().click();
+ const detail=page.locator('#layer .v13-detail');
+ const participant=detail.locator('[data-v13-profile-aria][data-id="leon"]');
+ await expect(participant).toBeVisible();
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await participant.focus();
+ const fullName=await page.evaluate(()=>document.querySelector('#layer [data-v13-profile-aria][data-id="leon"]').getAttribute('aria-label').slice('Hap profilin e '.length));
+ for(const [lang,prefix] of [['sq','Hap profilin e '],['en','Open profile: '],['it','Apri il profilo di ']]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(participant).toBeFocused();
+  await expect(participant).toHaveAttribute('aria-label',prefix+fullName);
+  await expect(detail.locator('[data-v13-profile-aria]')).toHaveCount(3);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ }
+});

@@ -484,6 +484,7 @@ window.ILLYRIAN_LOCALES.sq={
     "connectedOrganizerCommunity": "Komuniteti që organizon planin",
     "connectedOrganizerSim": "Organizatori · simulim",
     "connectedViewProfile": "Shiko profilin →",
+    "connectedProfileAriaPrefix": "Hap profilin e ",
     "connectedPeople": "Personat në këtë plan",
     "connectedProfiles": "Profile",
     "connectedGroupTitle": "Grupi i aktivitetit · simulim",

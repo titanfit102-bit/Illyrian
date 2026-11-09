@@ -1539,7 +1539,7 @@ function v13People(id){
  const cfg=v13Links[id];if(!cfg)return '';
  return cfg.people.map(personId=>{
   const person=v13Person(personId);if(!person)return '';
-  return `<button class="v13-person" data-act="v13-person" data-id="${esc(person.id)}" aria-label="Hap profilin e ${esc(person.name)}">${tinyAvatar(person.ava,'v13-avatar')}<span>${esc(person.name.split(' ')[0])}</span></button>`;
+  return `<button class="v13-person" data-act="v13-person" data-id="${esc(person.id)}" data-v13-profile-aria aria-label="${esc(v13Text('connectedProfileAriaPrefix','Hap profilin e ')+person.name)}">${tinyAvatar(person.ava,'v13-avatar')}<span data-user-content>${esc(person.name.split(' ')[0])}</span></button>`;
  }).join('');
 }
 const v13BaseEventCard=eventCard;
@@ -1596,6 +1596,10 @@ window.addEventListener('illyrian:language-changed',()=>{
  document.querySelectorAll('#phone [data-v13-category],#layer [data-v13-category]').forEach(el=>{
   const key=({Sport:'sport',Social:'social','Kulturë':'culture'})[el.dataset.v13Category];
   if(key)el.textContent=v13Text(key,el.dataset.v13Category);
+ });
+ document.querySelectorAll('#phone [data-v13-profile-aria],#layer [data-v13-profile-aria]').forEach(el=>{
+  const person=v13Person(el.dataset.id);
+  if(person)el.setAttribute('aria-label',v13Text('connectedProfileAriaPrefix','Hap profilin e ')+person.name);
  });
 });
 const v13PreviousAction=v8Action;
