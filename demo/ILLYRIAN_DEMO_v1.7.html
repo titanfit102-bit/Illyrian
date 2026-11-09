@@ -428,7 +428,11 @@ function v3Action(action,id,v){
  if(action==='alumni-info'){openModal('alumni');return true}
  if(action==='save-intent'){const sel=$('#intent-choice');const duration=Number($('#intent-duration')?.value||0);state.intent=sel?.value||'Pa zgjedhur';state.intentExpiry=duration?new Date(Date.now()+duration*24*60*60*1000).toISOString():'';notice("Preferenca u përditësua");close();toast('Interesi yt u ruajt vetëm në shfletues');return true}
  if(action==='save-alumni'){state.alumniOptIn=!!$('#alumni-flag')?.checked;notice('Preferenca Alumni u përditësua');close();toast('Preferenca e Alumni u ruajt');return true}
- if(action==='market-save'){state.marketSaved=toggle(state.marketSaved,id);notice('U përditësua lista e ofertave të ruajtura');openModal('market-detail',id);return true}
+ if(action==='market-save'){
+  if(!market.some(m=>m.id===id))return true;
+  if(!coreArrayToggle('marketSaved',id,document.activeElement,'U përditësua lista e ofertave të ruajtura'))return true;
+  openModal('market-detail',id);return true;
+ }
  if(action==='market-contact'){notice("Kërkesë për një shërbim");toast("Kërkesë — nuk u dërgua");return true}
  if(action==='business-contact'){notice('Kontakti me biznesin u simulua');toast("Kontakt — pa mesazh real");return true}
  if(action==='apply-job'){

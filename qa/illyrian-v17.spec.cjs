@@ -2016,6 +2016,47 @@ test('Opportunities job application rolls back quota and stale writes, then retr
  expect(applied.comments.p1).toEqual(['other tab keeps this']);
 });
 
+test('Opportunities sample market save rolls back quota and stale writes with retry',async({page})=>{
+ await openDemo(page,390,844);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="market-detail"][data-id="m1"]').click();
+ const key='illyrian_demo_v09_state',save=page.locator('#layer [data-act="market-save"][data-id="m1"]');
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__marketSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');return window.__marketSet.call(this,k,v)};
+ });
+ await save.click();
+ await expect(save).toBeVisible();
+ await expect(save).toBeFocused();
+ await expect(save).toHaveText('Ruaje ofertën');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__marketSet;delete window.__marketSet});
+ await save.click();
+ await expect(page.locator('#layer [data-act="market-save"][data-id="m1"]')).toContainText('Ruajtur');
+ const saved=await page.evaluate(k=>localStorage.getItem(k),key);
+ expect(JSON.parse(saved).marketSaved).toContain('m1');
+ const newer=await page.evaluate(k=>{
+  const data=JSON.parse(localStorage.getItem(k));data.comments={...data.comments,p1:['independent edit']};
+  const raw=JSON.stringify(data);localStorage.setItem(k,raw);return raw;
+ },key);
+ const remove=page.locator('#layer [data-act="market-save"][data-id="m1"]');
+ await remove.click();
+ await expect(remove).toBeVisible();
+ await expect(remove).toBeFocused();
+ await expect(remove).toContainText('Ruajtur');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(newer);
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="market-detail"][data-id="m1"]').click();
+ await page.locator('#layer [data-act="market-save"][data-id="m1"]').click();
+ await expect(page.locator('#layer [data-act="market-save"][data-id="m1"]')).toHaveText('Ruaje ofertën');
+ const after=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(after.marketSaved).not.toContain('m1');
+ expect(after.comments.p1).toEqual(['independent edit']);
+});
+
 test('Plans integration: switching tabs cannot overwrite another window local data',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#phone > .head [data-ily-op-toggle]').click();
