@@ -1148,10 +1148,19 @@ document.addEventListener('input',e=>{
  }
 });
 document.addEventListener('keydown',e=>{
- if(e.target.id==='finder'&&e.key==='Enter'){
+ if(e.target.id==='finder'&&e.key==='Enter'&&!e.isComposing&&e.keyCode!==229&&e.target.dataset.ilyComposing!=='1'){
   e.preventDefault();
-  const q=state.search.trim();
-  if(q){state.v9RecentQueries=[q,...state.v9RecentQueries.filter(s=>s.toLocaleLowerCase()!==q.toLocaleLowerCase())].slice(0,5);persist();render({scroll:true});$('#finder')?.focus();}
+  const input=e.target,q=state.search.trim();
+  if(!q||!coreMessageFresh(input))return;
+  const previous=state.v9RecentQueries;
+  state.v9RecentQueries=[q,...previous.filter(s=>s.toLocaleLowerCase()!==q.toLocaleLowerCase())].slice(0,5);
+  if(!persist()){
+   state.v9RecentQueries=previous;toast(coreSaveFailed());input.focus();return;
+  }
+  const start=input.selectionStart,end=input.selectionEnd,direction=input.selectionDirection;
+  render({scroll:true});
+  const finder=$('#finder');finder?.focus({preventScroll:true});
+  if(start!==null&&end!==null)try{finder?.setSelectionRange(start,end,direction)}catch{}
  }
 });
 // Supply a clear focus indicator without making the UI feel heavy.
