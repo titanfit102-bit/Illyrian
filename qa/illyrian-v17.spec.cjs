@@ -1711,3 +1711,14 @@ test('Reels audit: saved and liked galleries hide blocked/muted creators without
   await expect(page.locator('#screen .p17-tile[data-kind="friendReel"]')).toHaveCount(3);
  }
 });
+
+
+test('Reels audit: simulated media disclosure appears once for every built-in Reel',async({page})=>{
+ await openDemo(page,390,844);
+ await openReels(page);
+ for(let i=0;i<3;i++){
+  const footer=page.locator('#layer .v4-reel-footer');
+  await expect(footer.locator('small').filter({hasText:'Pamje e animuar · jo video reale'})).toHaveCount(1);
+  if(i<2)await page.locator('#layer [data-act="reel-next"]').click();
+ }
+});
