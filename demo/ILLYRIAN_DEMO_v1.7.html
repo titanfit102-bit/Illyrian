@@ -392,7 +392,7 @@ let found=[];if(['Të gjitha','Njerëz','Biznese','Punë'].includes(state.catego
 if(['Të gjitha','Komunitete'].includes(state.category))found.push(...communities.filter(c=>(communityTitle(c)+' '+c.name+' '+c.city+' '+communityDescription(c)).toLocaleLowerCase('sq').includes(query)).map(communityCard));
 if(['Të gjitha','Tregu'].includes(state.category))found.push(...market.filter(m=>(m.name+' '+m.city+' '+m.category).toLocaleLowerCase('sq').includes(query)).map(marketCard));
 if(['Të gjitha','Alumni'].includes(state.category))found.push(...schools.filter(a=>(a.name+' '+a.sub).toLocaleLowerCase('sq').includes(query)).map(a=>`<article class="directory-card"><div class="directory-symbol">${a.emoji}</div><div class="directory-info"><strong>${safeMark(a.name)}</strong><p>${safeMark(a.sub)}</p><small>Vetëm alumni të rritur · zbulim vullnetar</small></div><button class="button tiny soft" data-act="alumni-info">Shiko</button></article>`));
-return `${sectionsTitle('Zbulo komunitetin','Nga përmbajtja te njerëzit, planet dhe mundësitë.') }<label class="searchwrap">${svg('search',19)}<input id="finder" autocomplete="off" placeholder="Kërko në ILLYRIAN..." value="${safeMark(state.search)}"></label>${pills(cats,state.category,'category')}<div class="directory-status">${found.length} rezultate <span> ${safeMark(state.category)}</span></div>${found.join('')||`<div class="empty">Nuk ka rezultate. Provo një emër ose kategori tjetër.</div>`}${demoNotice()}`}
+return `${sectionsTitle('Zbulo komunitetin','Nga përmbajtja te njerëzit, planet dhe mundësitë.') }<label class="searchwrap">${svg('search',19)}<input id="finder" aria-label="Kërko në ILLYRIAN" autocomplete="off" placeholder="Kërko në ILLYRIAN..." value="${safeMark(state.search)}"></label>${pills(cats,state.category,'category')}<div class="directory-status">${found.length} rezultate <span> ${safeMark(state.category)}</span></div>${found.join('')||`<div class="empty">Nuk ka rezultate. Provo një emër ose kategori tjetër.</div>`}${demoNotice()}`}
 explore=v3Explore;
 function v3EventPage(){const labs=['Të gjitha','Sport','Social','Kulturë'];const list=events.filter(e=>state.eventFilter==='Të gjitha'||e.label===state.eventFilter);return `${sectionsTitle('Plane që na bashkojnë','Jo vetëm pëlqime — takime dhe komunitet në jetën reale.') }<div class="event-hero"><span>✦ IL-028 + IL-030</span><h3>Një postim mund të bëhet një plan.</h3><p>Kërko pjesëmarrje, prit konfirmimin, pastaj bisedo me grupin.</p></div>${pills(labs,state.eventFilter,'eventfilter')}${list.map(eventCard).join('')}${demoNotice()}`}
 eventPage=v3EventPage;
@@ -866,7 +866,25 @@ if(action==='send-comment'){const t=$('#comment-input')?.value.trim();if(!t)retu
 if(action==='reset'){if(!confirm('Të rivendosim të dhënat e demonstrimit? Postimet e provës do të fshihen nga ky shfletues.'))return;localStorage.removeItem(KEY);location.reload();return}
 });
 document.addEventListener('change',e=>{if(e.target.name==='theme'){state.theme=e.target.value;persist();render({scroll:true})}});
-document.addEventListener('input',e=>{if(e.target.id!=='finder')return;const pos=e.target.selectionStart;state.search=e.target.value;const y=$('#screen').scrollTop;$('#screen').innerHTML=explore();$('#screen').scrollTop=y;const input=$('#finder');input.focus();try{input.setSelectionRange(pos,pos)}catch{}});
+// Keep IME composition attached until its final input; preserve selection direction on rerender.
+function updateExploreFinder(source){
+ const screen=$('#screen');if(!source?.isConnected||!screen?.contains(source))return;
+ const start=source.selectionStart,end=source.selectionEnd,direction=source.selectionDirection;
+ state.search=source.value;const y=screen.scrollTop;
+ screen.innerHTML=explore();screen.scrollTop=y;
+ const finder=$('#finder');finder?.focus({preventScroll:true});
+ if(start!==null&&end!==null)try{finder?.setSelectionRange(start,end,direction)}catch{}
+}
+document.addEventListener('compositionstart',e=>{if(e.target.id==='finder')e.target.dataset.ilyComposing='1'});
+document.addEventListener('compositionend',e=>{
+ if(e.target.id!=='finder')return;
+ const source=e.target;
+ setTimeout(()=>{if(!source.isConnected)return;delete source.dataset.ilyComposing;updateExploreFinder(source)},0);
+});
+document.addEventListener('input',e=>{
+ if(e.target.id!=='finder'||e.isComposing||e.target.dataset.ilyComposing==='1')return;
+ updateExploreFinder(e.target);
+});
 document.addEventListener('keydown',e=>{
  if(e.key!=='Enter'||e.target?.id!=='group-input'||e.isComposing||e.keyCode===229||e.shiftKey||e.ctrlKey||e.metaKey||e.altKey)return;
  if(state.modal?.type!=='group-chat')return;
