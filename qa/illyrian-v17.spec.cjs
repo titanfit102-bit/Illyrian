@@ -1682,7 +1682,8 @@ test('Explore audit: Enter confirming IME does not store a recent query',async({
 
 test('Reels audit: saved and liked galleries hide blocked/muted creators without erasing local choices',async({page})=>{
  await page.addInitScript(()=>{
-  localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({
+  // Seed only on first load; do not undo the unblock operation during reload.
+  if(!localStorage.getItem('illyrian_demo_v09_state'))localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({
    blocked:['arta'],muted:['leon'],reelSaved:['r1','r2','r3'],reelLikes:['r1','r2','r3']
   }));
  });
