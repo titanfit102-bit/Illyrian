@@ -1202,6 +1202,35 @@ test('Notifications reference: live locale keeps the exact focused notification 
  await expect(row).toBeFocused();
 });
 
+
+test('Notifications preferences: sq/en/it labels and live focus preserve core state',async({page})=>{
+ const modal=await openNotifications(page);
+ await modal.locator('[data-act="n17-settings"]').click();
+ const pref=page.locator('#layer [data-v6-pref="alertActivities"]');
+ await pref.focus();
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const cases=[
+  ['en','Notifications','Notification preferences','Messages','Activities and groups','Local preference only.','No push notifications are sent.'],
+  ['it','Notifiche','Preferenze di notifica','Messaggi','Attività e gruppi','Solo preferenza locale.','Non vengono inviate notifiche push.'],
+  ['sq','Njoftimet','Preferencat për njoftimet','Mesazhe','Aktivitete dhe grupe','Vetëm cilësim lokal.','Nuk dërgohen njoftime push.']
+ ];
+ for(const [lang,title,heading,messages,activities,note,push] of cases){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#layer .modalhead h2')).toHaveText(title);
+  await expect(page.locator('#layer .v6-setting-card h3')).toHaveText(heading);
+  await expect(page.locator('#layer .v6-pref-row').nth(0)).toContainText(messages);
+  await expect(page.locator('#layer .v6-pref-row').nth(1)).toContainText(activities);
+  await expect(page.locator('#layer .v6-pref-row small').first()).toHaveText(note);
+  await expect(page.locator('#layer .v6-alert-banner')).toContainText(push);
+  await expect(pref).toBeChecked();
+  await expect(pref).toBeFocused();
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ }
+ await page.keyboard.press('Escape');
+ await expect(modal).toBeVisible();
+ await expect(modal.locator('[data-act="n17-settings"]')).toBeFocused();
+});
+
 // Three confirmed notification audit defects: snapshot overwrite, count cap and dates.
 test('Notifications corrections: preferences reject a stale tab and retry after reload',async({browser})=>{
  const ctx=await browser.newContext();const a=await ctx.newPage(),b=await ctx.newPage();
