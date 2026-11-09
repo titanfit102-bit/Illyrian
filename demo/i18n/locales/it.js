@@ -471,6 +471,8 @@ window.ILLYRIAN_LOCALES.it={
     "belowAcceptedError": "La capienza non copre i partecipanti accettati.",
     "eventLimit": "Limite delle attività demo raggiunto.",
     "draftNotice": "Bozza demo. Conferma luogo, data, ora, capienza e condizioni prima di pubblicare.",
+    "togetherSubtitle": "Oltre i Mi piace — incontri e comunità nella vita reale.",
+    "heroHelp": "Chiedi di partecipare, attendi la conferma e poi chatta con il gruppo.",
     "togetherTitle": "Piani che ci uniscono",
     "myRequests": "Le mie richieste",
     "approvedPlural": "Accettate",

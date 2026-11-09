@@ -471,6 +471,8 @@ window.ILLYRIAN_LOCALES.en={
     "belowAcceptedError": "Capacity does not cover accepted participants.",
     "eventLimit": "Demo activity limit reached.",
     "draftNotice": "Demo draft. Confirm location, date, time, capacity and conditions before publishing.",
+    "togetherSubtitle": "Beyond likes — real-world meetups and community.",
+    "heroHelp": "Request to join, wait for confirmation, then chat with the group.",
     "togetherTitle": "Plans that bring us together",
     "myRequests": "My requests",
     "approvedPlural": "Accepted",

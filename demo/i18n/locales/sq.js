@@ -471,6 +471,8 @@ window.ILLYRIAN_LOCALES.sq={
     "belowAcceptedError": "Kapaciteti nuk mbulon pjesëmarrësit e pranuar.",
     "eventLimit": "Kufiri i demonstrimit u arrit.",
     "draftNotice": "Draft demonstrues. Konfirmo vendin, datën, orën, kapacitetin dhe kushtet përpara publikimit.",
+    "togetherSubtitle": "Jo vetëm pëlqime — takime dhe komunitet në jetën reale.",
+    "heroHelp": "Kërko pjesëmarrje, prit konfirmimin, pastaj bisedo me grupin.",
     "togetherTitle": "Plane që na bashkojnë",
     "myRequests": "Kërkesat e mia",
     "approvedPlural": "Të pranuara",

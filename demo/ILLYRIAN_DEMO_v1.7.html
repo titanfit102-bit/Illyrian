@@ -394,7 +394,13 @@ if(['Të gjitha','Tregu'].includes(state.category))found.push(...market.filter(m
 if(['Të gjitha','Alumni'].includes(state.category))found.push(...schools.filter(a=>(a.name+' '+a.sub).toLocaleLowerCase('sq').includes(query)).map(a=>`<article class="directory-card"><div class="directory-symbol">${a.emoji}</div><div class="directory-info"><strong>${safeMark(a.name)}</strong><p>${safeMark(a.sub)}</p><small>Vetëm alumni të rritur · zbulim vullnetar</small></div><button class="button tiny soft" data-act="alumni-info">Shiko</button></article>`));
 return `${sectionsTitle('Zbulo komunitetin','Nga përmbajtja te njerëzit, planet dhe mundësitë.') }<label class="searchwrap">${svg('search',19)}<input id="finder" aria-label="Kërko në ILLYRIAN" autocomplete="off" placeholder="Kërko në ILLYRIAN..." value="${safeMark(state.search)}"></label>${pills(cats,state.category,'category')}<div class="directory-status">${found.length} rezultate <span> ${safeMark(state.category)}</span></div>${found.join('')||`<div class="empty">Nuk ka rezultate. Provo një emër ose kategori tjetër.</div>`}${demoNotice()}`}
 explore=v3Explore;
-function v3EventPage(){const labs=['Të gjitha','Sport','Social','Kulturë'];const list=events.filter(e=>state.eventFilter==='Të gjitha'||e.label===state.eventFilter);return `${sectionsTitle('Plane që na bashkojnë','Jo vetëm pëlqime — takime dhe komunitet në jetën reale.') }<div class="event-hero"><span>✦ IL-028 + IL-030</span><h3>Një postim mund të bëhet një plan.</h3><p>Kërko pjesëmarrje, prit konfirmimin, pastaj bisedo me grupin.</p></div>${pills(labs,state.eventFilter,'eventfilter')}${list.map(eventCard).join('')}${demoNotice()}`}
+function v3EventPage(){
+ const labs=[['Të gjitha','notifications:all'],['Sport','plans:sport'],['Social','plans:social'],['Kulturë','plans:culture']];
+ const label=(key,fallback)=>window.IllyrianI18n?.t(key)||fallback;
+ const list=events.filter(e=>state.eventFilter==='Të gjitha'||e.label===state.eventFilter);
+ const filters=`<div class="filters">${labs.map(([value,key])=>`<button class="pill ${state.eventFilter===value?'active':''}" data-act="eventfilter" data-val="${esc(value)}" data-v10-all-filter="${key}" data-i18n-direct>${esc(label(key,value))}</button>`).join('')}</div>`;
+ return `<div class="section-header"><h2 data-v10-all-copy="togetherTitle" data-i18n-direct>${esc(label('plans:togetherTitle','Plane që na bashkojnë'))}</h2><p data-v10-all-copy="togetherSubtitle" data-i18n-direct>${esc(label('plans:togetherSubtitle','Jo vetëm pëlqime — takime dhe komunitet në jetën reale.'))}</p></div><div class="event-hero"><span>✦ IL-028 + IL-030</span><h3 data-v10-all-copy="postBecomesPlan" data-i18n-direct>${esc(label('plans:postBecomesPlan','Një postim mund të bëhet një plan.'))}</h3><p data-v10-all-copy="heroHelp" data-i18n-direct>${esc(label('plans:heroHelp','Kërko pjesëmarrje, prit konfirmimin, pastaj bisedo me grupin.'))}</p></div>${filters}${list.map(eventCard).join('')}${demoNotice()}`;
+}
 eventPage=v3EventPage;
 function v3Profile(){return `${intentPreview()}<div class="v3-profile-actions"><button data-act="modal" data-val="privacy">🔒 Privatësia</button><button data-act="modal" data-val="myactivity">◷ Aktiviteti im</button><button data-act="modal" data-val="alumni">🎓 Alumni</button></div>${legacyProfile()}`}
 profile=v3Profile;
@@ -1224,6 +1230,13 @@ window.addEventListener('illyrian:language-changed',()=>{
  });
  const tabs=document.querySelector('#screen .v10-event-tabs');
  if(tabs)tabs.setAttribute('aria-label',v10PlanText('tabViewAria','Pamja e planeve'));
+ document.querySelectorAll('#screen [data-v10-all-copy]').forEach(el=>{
+  const key=el.dataset.v10AllCopy;
+  el.textContent=v10PlanText(key,el.textContent);
+ });
+ document.querySelectorAll('#screen [data-v10-all-filter]').forEach(el=>{
+  el.textContent=window.IllyrianI18n?.t(el.dataset.v10AllFilter)||el.dataset.val;
+ });
  const copy=[
   ['[data-v10-plan-title]',v10PlanText('myPlansTitle','Planet e mia')],
   ['[data-v10-plan-subtitle]',v10PlanText('myPlansSubtitle','Shiko kërkesat dhe pjesëmarrjen në aktivitetet e demonstrimit.')],

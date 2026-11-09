@@ -3430,3 +3430,31 @@ test('Plans v10 badges and actions follow live locale; fixture titles and storag
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
  }
 });
+
+test('Plans all tab localizes headings, hero and filter labels live without changing filter domain codes',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ const filter=page.locator('#screen [data-act="eventfilter"][data-val="Sport"]');
+ await filter.focus();
+ const original=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ for(const [lang,heading,subtitle,hero,help,all,sport,social,culture] of [
+  ['sq','Plane që na bashkojnë','Jo vetëm pëlqime — takime dhe komunitet në jetën reale.','Një postim mund të bëhet një plan.','Kërko pjesëmarrje, prit konfirmimin, pastaj bisedo me grupin.','Të gjitha','Sport','Social','Kulturë'],
+  ['en','Plans that bring us together','Beyond likes — real-world meetups and community.','A post can become a plan.','Request to join, wait for confirmation, then chat with the group.','All','Sports','Social','Culture'],
+  ['it','Piani che ci uniscono','Oltre i Mi piace — incontri e comunità nella vita reale.','Un post può diventare un\'attività.','Chiedi di partecipare, attendi la conferma e poi chatta con il gruppo.','Tutte','Sport','Sociale','Cultura']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(filter).toBeFocused();
+  await expect(page.locator('#screen [data-v10-all-copy="togetherTitle"]')).toHaveText(heading);
+  await expect(page.locator('#screen [data-v10-all-copy="togetherSubtitle"]')).toHaveText(subtitle);
+  await expect(page.locator('#screen [data-v10-all-copy="postBecomesPlan"]')).toHaveText(hero);
+  await expect(page.locator('#screen [data-v10-all-copy="heroHelp"]')).toHaveText(help);
+  for(const [code,label] of [['Të gjitha',all],['Sport',sport],['Social',social],['Kulturë',culture]]){
+   const el=page.locator('#screen [data-act="eventfilter"][data-val="'+code+'"]');
+   await expect(el).toHaveText(label);await expect(el).toHaveAttribute('data-val',code);
+  }
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(original);
+ }
+ await filter.click();
+ await expect(page.locator('#screen [data-act="eventfilter"][data-val="Sport"]')).toHaveClass(/active/);
+ await expect(page.locator('#screen .event-card')).toHaveCount(1);
+});
