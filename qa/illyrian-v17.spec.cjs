@@ -1820,3 +1820,33 @@ test('Plans integration: quota failure keeps current tab and retries without a f
  await page.locator('#ily-opportunities-panel [data-ily-op-category="Plane"]').click();
  await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="mine"]')).toHaveAttribute('aria-pressed','true');
 });
+
+
+test('Plans i18n: counted tabs update in sq/en/it without losing filter, focus or core data',async({page})=>{
+ await page.addInitScript(()=>{
+  const key='illyrian_demo_v09_state';
+  localStorage.setItem(key,JSON.stringify({requests:['e2'],acceptedPlans:['e2']}));
+ });
+ await openDemo(page,390,844);
+ await page.locator('#phone > .head [data-ily-op-toggle]').click();
+ await page.locator('#ily-opportunities-panel [data-ily-op-category="Plane"]').click();
+ const selected=page.locator('#screen [data-act="v10-plans-view"][data-val="mine"]');
+ await selected.click();
+ await expect(selected).toHaveAttribute('aria-pressed','true');
+ await expect(selected).toBeFocused();
+ const original=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const labels=[
+  ['sq','Të gjitha','Kërkesat e mia · 1','Të pranuara · 1'],
+  ['en','All','My requests · 1','Accepted · 1'],
+  ['it','Tutte','Le mie richieste · 1','Accettate · 1']
+ ];
+ for(const [lang,all,mine,accepted] of labels){
+  await page.evaluate(code=>window.IllyrianI18n.changeLanguage(code),lang);
+  await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="all"]')).toHaveText(all);
+  await expect(selected).toHaveText(mine);
+  await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="accepted"]')).toHaveText(accepted);
+  await expect(selected).toHaveAttribute('aria-pressed','true');
+  await expect(selected).toBeFocused();
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(original);
+ }
+});
