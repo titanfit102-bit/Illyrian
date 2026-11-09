@@ -1678,3 +1678,36 @@ test('Explore audit: Enter confirming IME does not store a recent query',async({
  await finder.evaluate(el=>el.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true})));
  await expect(finder).toHaveValue('Arta');
 });
+
+
+test('Reels audit: saved and liked galleries hide blocked/muted creators without erasing local choices',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({
+   blocked:['arta'],muted:['leon'],reelSaved:['r1','r2','r3'],reelLikes:['r1','r2','r3']
+  }));
+ });
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="profile"]').click();
+ for(const tab of ['saved','liked']){
+  await page.locator('#screen .p17-tabs [data-id="'+tab+'"]').click();
+  const items=page.locator('#screen .p17-tile[data-kind="friendReel"]');
+  await expect(items).toHaveCount(1);
+  await items.first().click();
+  await expect(page.locator('#layer .v4-reel-footer')).toContainText('Besa');
+  await expect(page.locator('#layer .v4-reel-counter')).toHaveText('1 / 1');
+  await page.keyboard.press('Escape');
+ }
+ const values=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')));
+ expect(values.reelSaved).toEqual(['r1','r2','r3']);
+ expect(values.reelLikes).toEqual(['r1','r2','r3']);
+ await page.evaluate(()=>{
+  const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key));
+  s.blocked=[];s.muted=[];localStorage.setItem(key,JSON.stringify(s));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-val="profile"]').click();
+ for(const tab of ['saved','liked']){
+  await page.locator('#screen .p17-tabs [data-id="'+tab+'"]').click();
+  await expect(page.locator('#screen .p17-tile[data-kind="friendReel"]')).toHaveCount(3);
+ }
+});
