@@ -3501,8 +3501,9 @@ test('Plans connected participants keep real profile names and localized accessi
  const participant=detail.locator('[data-v13-profile-aria][data-id="leon"]');
  await expect(participant).toBeVisible();
  const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await participant.focus();
- const fullName=await page.evaluate(()=>document.querySelector('#layer [data-v13-profile-aria][data-id="leon"]').getAttribute('aria-label').slice('Hap profilin e '.length));
+ const fullName=(await participant.getAttribute('aria-label')).slice('Hap profilin e '.length);
  for(const [lang,prefix] of [['sq','Hap profilin e '],['en','Open profile: '],['it','Apri il profilo di ']]){
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await expect(participant).toBeFocused();
