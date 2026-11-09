@@ -157,7 +157,8 @@
    detail+'<p><span data-user-content>'+esc(p.store)+'</span> · '+esc(p.city)+'</p>'+attributes+
    btn('store:'+p.store,feedback('itemSellerCatalog','Katalogu i dyqanit'),'data-i18n-direct')+
    btn('report:'+p.id,feedback('itemReport','Raporto listimin'),'data-i18n-direct')+
-   (p.owned?btn('edit:'+p.id,feedback('itemEdit','Ndrysho listimin'),'data-i18n-direct'):'')+
+   (p.owned?btn('edit:'+p.id,feedback('itemEdit','Ndrysho listimin'),'data-i18n-direct')+
+    btn('delete-owned:'+p.id,feedback('itemDelete','Fshi listimin'),'data-i18n-direct'):'')+
    '</article><p class="isp-muted" data-i18n-direct>'+ui('itemDisclaimer',"Asnjë pagesë ose kontakt real. Makina dhe banesa nuk rezervohen në këtë pajisje.")+'</p>';
  };
  const storesView=()=>{
@@ -350,6 +351,12 @@
   if(act.startsWith('item:')){state.selected=act.slice(5);state.tab='item';render();return}
   if(act.startsWith('report:')){state.selected=act.slice(7);state.tab='report';render();return}
   if(act.startsWith('edit:')){const id=act.slice(5);if(!state.items.some(p=>p.id===id&&p.owned))return;state.editId=id;state.tab='create';render();return}
+  if(act.startsWith('delete-owned:')){
+   const id=act.slice('delete-owned:'.length);
+   if(!state.items.some(p=>p.id===id&&p.owned)||!window.confirm(feedback('confirmListingDelete','Ta fshijmë këtë listim lokal?')))return;
+   state.items=state.items.filter(p=>p.id!==id);
+   return message('listingRemoved','Listimi u fshi vetëm në këtë pajisje.',()=>{state.selected='';state.editId=null;state.shop='';state.tab='catalog'});
+  }
   if(act==='create'){state.editId=null;state.tab='create';render();return}
   if(act.startsWith('respond:')){state.needIndex=act.slice(8);state.tab='respond';render();return}
   if(act.startsWith('remove-need:')){const id=act.slice(12);state.needs=state.needs.filter(n=>n.id!==id||!n.owned);return message('requestRemoved','Kërkesa u fshi lokalisht.')}

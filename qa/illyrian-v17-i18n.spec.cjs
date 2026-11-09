@@ -3688,3 +3688,113 @@ test('Shop Plus keeps orphan replies until explicit cleanup and frees reply capa
  await page.reload({waitUntil:'load'});
  expect(JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).answers).toEqual(final.answers);
 });
+
+test('Shop Plus explicit own-listing deletion restores capacity, preserves other stores and retries quota',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const items=Array.from({length:30},(_,i)=>({
+   id:'own-list-'+i,owned:true,type:'Produkte',
+   name:i===0?'Personal <i>listing</i>':'Personal listing '+i,
+   store:'Local seller',city:'Tiranë',price:10,quantity:1,details:'Private local sample '+i
+  }));
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify({items,needs:[],answers:[],flags:[],sampleOrders:[]}));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await openShop(page);
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ const shopRaw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'));
+ await page.locator('#isp-root [data-isp="create"]').click();
+ const form=page.locator('#isp-create');
+ await form.locator('input[name="name"]').fill('Fresh local listing');
+ await form.locator('input[name="store"]').fill('Local seller');
+ await form.locator('input[name="price"]').fill('15');
+ await form.locator('button[type="submit"]').click();
+ await expect(page.locator('#isp-root .isp-notice')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:listingsLimit')));
+ await expect(form.locator('input[name="name"]')).toHaveValue('Fresh local listing');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
+ await page.locator('#isp-root [data-isp="tab:catalog"]').click();
+ await page.locator('#isp-root [data-isp="item:own-list-0"]').click();
+ await expect(page.locator('#isp-root .isp-focus h3[data-user-content]')).toHaveText('Personal <i>listing</i>');
+ await expect(page.locator('#isp-root .isp-focus h3 i')).toHaveCount(0);
+ for(const [lang,label] of [['sq','Fshi listimin'],['en','Delete listing'],['it','Elimina annuncio']]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(page.locator('#isp-root [data-isp="delete-owned:own-list-0"]')).toHaveText(label);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
+ }
+ let dialogPromise=page.waitForEvent('dialog');
+ let action=page.locator('#isp-root [data-isp="delete-owned:own-list-0"]').click();
+ let dialog=await dialogPromise;
+ expect(dialog.message()).toBe('Eliminare questo annuncio locale?');
+ await dialog.dismiss();await action;
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
+ await expect(page.locator('#isp-root [data-isp="delete-owned:own-list-0"]')).toBeVisible();
+ await page.evaluate(()=>{
+  const setter=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){
+   if(key==='illyrian_demo_v17_shop_plus')throw new DOMException('Quota','QuotaExceededError');
+   return setter.call(this,key,value);
+  };
+  window.restoreListingSetter=()=>{Storage.prototype.setItem=setter;delete window.restoreListingSetter};
+ });
+ dialogPromise=page.waitForEvent('dialog');
+ action=page.locator('#isp-root [data-isp="delete-owned:own-list-0"]').click();
+ dialog=await dialogPromise;await dialog.accept();await action;
+ await expect(page.locator('#isp-root .isp-notice')).toHaveText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:storageFull')));
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
+ await expect(page.locator('#isp-root [data-isp="delete-owned:own-list-0"]')).toBeVisible();
+ await page.evaluate(()=>window.restoreListingSetter());
+ dialogPromise=page.waitForEvent('dialog');
+ action=page.locator('#isp-root [data-isp="delete-owned:own-list-0"]').click();
+ dialog=await dialogPromise;await dialog.accept();await action;
+ await expect(page.locator('#isp-root [data-isp="delete-owned:own-list-0"]')).toHaveCount(0);
+ await expect(page.locator('#isp-root .isp-notice')).toHaveText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:listingRemoved')));
+ const changed=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(changed.items).toHaveLength(29);
+ expect(changed.items.find(i=>i.id==='own-list-0')).toBeUndefined();
+ expect(changed.items.filter(i=>i.owned)).toHaveLength(29);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop'))).toBe(shopRaw);
+ await page.locator('#isp-root [data-isp="create"]').click();
+ await page.locator('#isp-create input[name="name"]').fill('Fresh local listing');
+ await page.locator('#isp-create input[name="store"]').fill('Local seller');
+ await page.locator('#isp-create input[name="price"]').fill('15');
+ await page.locator('#isp-create button[type="submit"]').click();
+ const final=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(final.items).toHaveLength(30);
+ expect(final.items.filter(i=>i.name==='Fresh local listing')).toHaveLength(1);
+ await page.reload({waitUntil:'load'});
+ expect(JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).items).toEqual(final.items);
+});
+
+test('Shop Plus rejects deleting a personal listing on stale localStorage and never exposes seed deletion',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const items=[{id:'own-stale',owned:true,type:'Produkte',name:'Own stale listing',store:'Local shop',city:'Tiranë',price:20,quantity:3}];
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify({items,needs:[],answers:[],flags:[],sampleOrders:[]}));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await openShop(page);
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="item:k1"]').click();
+ await expect(page.locator('#isp-root [data-isp^="delete-owned:"]')).toHaveCount(0);
+ await page.locator('#isp-root [data-isp="catalog"]').click();
+ await page.locator('#isp-root [data-isp="item:own-stale"]').click();
+ await page.evaluate(()=>{
+  const key='illyrian_demo_v17_shop_plus';
+  const state=JSON.parse(localStorage.getItem(key));
+  state.items.push({id:'other-window',owned:true,type:'Produkte',name:'Other-window listing',store:'Other seller',city:'Durrës',price:30,quantity:2});
+  localStorage.setItem(key,JSON.stringify(state));
+ });
+ const otherRaw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ const dialogPromise=page.waitForEvent('dialog');
+ const action=page.locator('#isp-root [data-isp="delete-owned:own-stale"]').click();
+ const dialog=await dialogPromise;await dialog.accept();await action;
+ await expect(page.locator('#isp-root .isp-notice')).toHaveText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:storageConflict')));
+ await expect(page.locator('#isp-root [data-isp="delete-owned:own-stale"]')).toBeVisible();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(otherRaw);
+ await page.reload({waitUntil:'load'});
+ const persisted=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(persisted.items.map(p=>p.id)).toEqual(['own-stale','other-window']);
+});
