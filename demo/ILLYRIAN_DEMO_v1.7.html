@@ -1189,10 +1189,16 @@ document.head.appendChild(v9Style);
 state.v10PlansView=['all','mine','accepted'].includes(saved.v10PlansView)?saved.v10PlansView:'all';
 // Home activity summary moved to the existing Mundësi route (v10-my-plans).
 const v10BaseEventPage=eventPage;
+function v10PlanTabLabel(view){
+ const translations={all:['notifications:all','Të gjitha'],mine:['plans:myRequests','Kërkesat e mia'],accepted:['plans:approvedPlural','Të pranuara']};
+ const [key,fallback]=translations[view]||translations.all;
+ const label=window.IllyrianI18n?.t(key)||fallback;
+ const count=view==='mine'?state.requests.length:view==='accepted'?state.acceptedPlans.length:0;
+ return label+(count?' · '+count:'');
+}
 eventPage=function(){
- const total=state.requests.length,accepted=state.acceptedPlans.length;
- const tabs=[['all','Të gjitha'],['mine',`Kërkesat e mia${total?` · ${total}`:''}`],['accepted',`Të pranuara${accepted?` · ${accepted}`:''}`]];
- const menu=`<div class="v10-event-tabs" role="group" aria-label="Pamja e planeve">${tabs.map(([value,label])=>`<button type="button" class="${state.v10PlansView===value?'selected':''}" data-act="v10-plans-view" data-val="${value}" aria-pressed="${state.v10PlansView===value}">${esc(label)}</button>`).join('')}</div>`;
+ const tabs=['all','mine','accepted'];
+ const menu=`<div class="v10-event-tabs" role="group" aria-label="Pamja e planeve">${tabs.map(value=>`<button type="button" data-i18n-direct class="${state.v10PlansView===value?'selected':''}" data-act="v10-plans-view" data-val="${value}" aria-pressed="${state.v10PlansView===value}">${esc(v10PlanTabLabel(value))}</button>`).join('')}</div>`;
  if(state.v10PlansView==='all'){
   let html=v10BaseEventPage();
   return html.replace('<div class="event-hero">',menu+'<div class="event-hero">');
@@ -1201,6 +1207,11 @@ eventPage=function(){
  const empty=state.v10PlansView==='mine'?'Nuk ke kërkesa pjesëmarrjeje ende.':'Nuk ke plane të pranuara ende.';
  return `${sectionsTitle('Planet e mia','Shiko kërkesat dhe pjesëmarrjen në aktivitetet e demonstrimit.')}${menu}<div class="v10-plans-count">${mine.length} ${mine.length===1?'plan':'plane'} · ${state.v10PlansView==='accepted'?'të pranuara':'me kërkesë'}</div>${mine.length?mine.map(eventCard).join(''):`<div class="v10-empty"><span>${svg('calendar',30)}</span><strong>${empty}</strong><p>Provo një aktivitet, dërgo kërkesë dhe ndiq statusin e saj.</p><button class="button" data-act="v10-plans-view" data-val="all">Zbulo aktivitetet →</button></div>`}${demoNotice()}`;
 };
+window.addEventListener('illyrian:language-changed',()=>{
+ document.querySelectorAll('#screen .v10-event-tabs [data-act="v10-plans-view"]').forEach(button=>{
+  button.textContent=v10PlanTabLabel(button.dataset.val);
+ });
+});
 const v10BaseEventCard=eventCard;
 eventCard=function(e){
  const html=v10BaseEventCard(e);
