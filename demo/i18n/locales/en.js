@@ -635,6 +635,7 @@ window.ILLYRIAN_LOCALES.en={
     "boardExpires": "Expires:",
     "boardRespond": "Reply as a shop (demo)",
     "boardReply": "Demo reply:",
+    "boardExpiredHeading": "Expired requests",
     "boardRemove": "Delete request",
     "boardEmpty": "No local requests yet. Publish an example.",
     "boardDisclaimer": "Requests are not sent to real sellers and expire automatically.",

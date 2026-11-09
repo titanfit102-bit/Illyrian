@@ -635,6 +635,7 @@ window.ILLYRIAN_LOCALES.it={
     "boardExpires": "Scade:",
     "boardRespond": "Rispondi come negozio (demo)",
     "boardReply": "Risposta demo:",
+    "boardExpiredHeading": "Richieste scadute",
     "boardRemove": "Elimina richiesta",
     "boardEmpty": "Nessuna richiesta locale. Pubblica un esempio.",
     "boardDisclaimer": "Le richieste non vengono inviate a venditori reali e scadono automaticamente.",

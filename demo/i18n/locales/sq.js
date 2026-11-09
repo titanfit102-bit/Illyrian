@@ -635,6 +635,7 @@ window.ILLYRIAN_LOCALES.sq={
     "boardExpires": "Skadon:",
     "boardRespond": "Përgjigju si dyqan (demo)",
     "boardReply": "Përgjigje demo:",
+    "boardExpiredHeading": "Kërkesat e skaduara",
     "boardRemove": "Fshi kërkesën",
     "boardEmpty": "Ende pa kërkesa lokale. Publiko një shembull.",
     "boardDisclaimer": "Kërkesat nuk dërgohen te shitësit e vërtetë dhe skadojnë automatikisht.",

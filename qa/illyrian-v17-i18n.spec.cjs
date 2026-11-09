@@ -3572,3 +3572,43 @@ test('Shop Plus preserves unrecognized buyer request types safely across locale 
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
  }
 });
+
+test('Shop Plus expired owned requests remain safely removable and free an occupied slot',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const expiry=new Date(Date.now()-86400000).toISOString();
+  const needs=Array.from({length:25},(_,i)=>({
+   id:'old-need-'+i,owned:true,type:'Produkte',city:'Tiranë',
+   title:i===0?'Expired <i>request</i>':'Expired request '+i,
+   budget:100,details:'Archived local request',expires:expiry
+  }));
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify({items:[],needs,answers:[],flags:[],sampleOrders:[]}));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await openShop(page);
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ await expect(page.locator('#isp-root .isp-expired .isp-card')).toHaveCount(25);
+ await expect(page.locator('#isp-root .isp-expired [data-user-content]').last()).toHaveText('Expired <i>request</i>');
+ await expect(page.locator('#isp-root .isp-expired i')).toHaveCount(0);
+ await expect(page.locator('#isp-root [data-isp^="respond:old-need-"]')).toHaveCount(0);
+ for(const [language,heading] of [['sq','Kërkesat e skaduara'],['en','Expired requests'],['it','Richieste scadute']]){
+  await page.evaluate(lang=>window.IllyrianI18n.changeLanguage(lang),language);
+  await expect(page.locator('#isp-root .isp-expired h4')).toHaveText(heading);
+  await expect(page.locator('#isp-root .isp-expired .isp-card')).toHaveCount(25);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(raw);
+ }
+ await page.locator('#isp-root [data-isp="remove-need:old-need-0"]').click();
+ const afterRemoval=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(afterRemoval.needs).toHaveLength(24);
+ expect(afterRemoval.needs.some(n=>n.id==='old-need-0')).toBe(false);
+ await page.locator('#isp-need input[name="title"]').fill('New request after expiration');
+ await page.locator('#isp-need input[name="budget"]').fill('99');
+ await page.locator('#isp-need button[type="submit"]').click();
+ const final=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(final.needs).toHaveLength(25);
+ expect(final.needs.filter(n=>n.title==='New request after expiration')).toHaveLength(1);
+ await expect(page.locator('#isp-root .isp-card').filter({hasText:'New request after expiration'})).toHaveCount(1);
+});
