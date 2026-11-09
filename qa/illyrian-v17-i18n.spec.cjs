@@ -3463,10 +3463,12 @@ test('Connected Plans cards and event details localize sq/en/it without modifyin
  await ready(page);
  await page.locator('.head [data-act="tab"][data-val="events"]').click();
  const card=page.locator('#screen .event-card').first();
- const label=card.locator('[data-v13-copy="fromCommunity"]');
+ const label=card.locator('[data-v13-copy="fromCommunity"]'),open=card.locator('[data-act="event"]');
  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await open.focus();
  for(const [lang,from] of [['sq','Nga komuniteti'],['en','From the community'],['it','Dalla comunità']]){
-  await label.focus();await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(open).toBeFocused();
   await expect(label).toHaveText(from);
   await expect(card.locator('h3')).toHaveText('Futboll me shqiptarët');
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
