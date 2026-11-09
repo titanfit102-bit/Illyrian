@@ -36,20 +36,23 @@
   flags:filterList(saved.flags,40),sampleOrders:filterList(saved.sampleOrders,20),
   tab:'catalog',open:false,query:'',type:'Të gjitha',city:'Të gjitha',min:'',max:'',stockOnly:false,
   yearMin:'',maxKm:'',areaMin:'',sort:'relevance',selected:'k1',shop:'',
-  needIndex:null,editId:null,notice:''
+  needIndex:null,editId:null,notice:'',noticeKey:null,noticeFallback:''
  };
  let overlay=null,previous=null,inertBefore=[],trigger=null;
  const all=()=>[...state.items,...SEED];
  const numeric=(v,fallback=0)=>Number.isFinite(+v)?Number(v):fallback;
  const money=v=>new Intl.NumberFormat(window.IllyrianI18n?.language||'it',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(numeric(v));
  const feedback=(key,fallback)=>window.IllyrianI18n?.t('shopPlus:'+key)||fallback;
+ // Keep semantic UI notice identity to retranslate on language change without persisting it.
+ const setNotice=(key,fallback)=>{state.noticeKey=key;state.noticeFallback=fallback;state.notice=feedback(key,fallback)};
+ const clearNotice=()=>{state.notice='';state.noticeKey=null;state.noticeFallback=''};
  const ui=(key,fallback)=>esc(feedback(key,fallback));
  const typeLabel=code=>esc(window.IllyrianI18n?.t('shop:'+({'Të gjitha':'all','Produkte':'products','Makina':'cars','Prona':'properties','Punë':'jobs','Banesa me qira':'rentals','Shërbime':'services'}[code]))||code);
  const persisted=()=>({items:state.items,needs:state.needs,answers:state.answers,flags:state.flags,sampleOrders:state.sampleOrders});
  let lastSaved=JSON.stringify(persisted()),expectedRaw=initialRaw;
  const rejectStale=()=>{
   Object.assign(state,JSON.parse(lastSaved));
-  state.notice=feedback('storageConflict','Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.');
+  setNotice('storageConflict','Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.');
   return false;
  };
  const save=()=>{try{
@@ -60,7 +63,7 @@
    localStorage.setItem(KEY,next);expectedRaw=next;lastSaved=next;return true;
   }catch{
    Object.assign(state,JSON.parse(lastSaved));
-   state.notice=feedback('storageFull','Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.');
+   setNotice('storageFull','Nuk u ruajt në këtë pajisje. Provo të heqësh listime të vjetra.');
    return false;
   }};
  const btn=(act,text,extra='')=>'<button type="button" data-isp="'+esc(act)+'" '+extra+'>'+esc(text)+'</button>';
@@ -277,7 +280,7 @@
  const open=()=>{
   if(state.open)return;
   previous=document.activeElement;
-  state.open=true;state.notice='';
+  state.open=true;clearNotice();
   const phone=document.querySelector('#phone');if(!phone)return;
   overlay=document.createElement('div');overlay.id='isp-root';phone.appendChild(overlay);
   inertBefore=modalBackground().filter(el=>el!==overlay).map(el=>({el,was:el.inert}));
@@ -299,7 +302,7 @@
  };
  // Keep draft fields mounted when a validation rule rejects a submission.
  const validationError=(form,key,fallback,field)=>{
-  state.notice=feedback(key,fallback);
+  setNotice(key,fallback);
   showStorageError();
   const notice=overlay?.querySelector('.isp-notice');
   if(notice){notice.id='isp-validation-feedback';notice.setAttribute('role','alert')}
@@ -317,16 +320,16 @@
    control.focus();
   }
  };
- const message=(m,onSaved)=>{
+ const message=(key,fallback,onSaved)=>{
   if(!save()){showStorageError();return false}
-  onSaved?.();state.notice=m;render();return true
+  onSaved?.();setNotice(key,fallback);render();return true
  };
  const action=act=>{
   if(act==='close')return close();
-  if(act.startsWith('tab:')){state.tab=act.slice(4);state.shop='';state.notice='';render();return}
-  if(act.startsWith('type:')){state.type=act.slice(5);state.notice='';render();return}
+  if(act.startsWith('tab:')){state.tab=act.slice(4);state.shop='';clearNotice();render();return}
+  if(act.startsWith('type:')){state.type=act.slice(5);clearNotice();render();return}
   if(act==='clear-filters'){state.query='';state.type='Të gjitha';state.city='Të gjitha';state.min='';state.max='';state.stockOnly=false;state.yearMin='';state.maxKm='';state.areaMin='';state.sort='relevance';state.shop='';render();return}
-  if(act==='catalog'){state.tab='catalog';state.shop='';state.notice='';render();return}
+  if(act==='catalog'){state.tab='catalog';state.shop='';clearNotice();render();return}
   if(act==='stores'){state.tab='stores';state.shop='';render();return}
   if(act==='needs'){state.tab='needs';render();return}
   if(act==='clear-store'){state.shop='';render();return}
@@ -336,9 +339,9 @@
   if(act.startsWith('edit:')){const id=act.slice(5);if(!state.items.some(p=>p.id===id&&p.owned))return;state.editId=id;state.tab='create';render();return}
   if(act==='create'){state.editId=null;state.tab='create';render();return}
   if(act.startsWith('respond:')){state.needIndex=act.slice(8);state.tab='respond';render();return}
-  if(act.startsWith('remove-need:')){const id=act.slice(12);state.needs=state.needs.filter(n=>n.id!==id||!n.owned);return message(feedback('requestRemoved','Kërkesa u fshi lokalisht.'))}
-  if(act==='sample-order'){const i={id:'D'+Date.now().toString(36),status:'E krijuar në demo'};state.sampleOrders.push(i);state.sampleOrders=state.sampleOrders.slice(-20);return message(feedback('orderSaved','Porosia u regjistrua vetëm në simulim.'))}
-  if(act.startsWith('sample-cancel:')){const id=act.slice(14);const order=state.sampleOrders.find(o=>o.id===id);if(order)order.status='Kërkesë anulimi/kthimi (demo)';return message(feedback('returnSaved','Kërkesa e kthimit u regjistrua; nuk ka rimbursim real.'))}
+  if(act.startsWith('remove-need:')){const id=act.slice(12);state.needs=state.needs.filter(n=>n.id!==id||!n.owned);return message('requestRemoved','Kërkesa u fshi lokalisht.')}
+  if(act==='sample-order'){const i={id:'D'+Date.now().toString(36),status:'E krijuar në demo'};state.sampleOrders.push(i);state.sampleOrders=state.sampleOrders.slice(-20);return message('orderSaved','Porosia u regjistrua vetëm në simulim.')}
+  if(act.startsWith('sample-cancel:')){const id=act.slice(14);const order=state.sampleOrders.find(o=>o.id===id);if(order)order.status='Kërkesë anulimi/kthimi (demo)';return message('returnSaved','Kërkesa e kthimit u regjistrua; nuk ka rimbursim real.')}
  };
  function submit(form){
   const d=new FormData(form),v=k=>String(d.get(k)||'').trim(),num=k=>d.get(k)===null||d.get(k)===''?null:Number(d.get(k));
@@ -349,7 +352,7 @@
    if(!CITIES.includes(v('city'))||!['relevance','lowest','highest','name'].includes(v('sort')))return;
    state.query=v('q').slice(0,90);state.city=v('city');state.min=min===null?'':String(min);state.max=max===null?'':String(max);
    state.sort=v('sort');state.yearMin=year===null?'':String(year);state.maxKm=km===null?'':String(km);state.areaMin=area===null?'':String(area);
-   state.stockOnly=d.get('stock')!==null;state.notice='';render();return;
+   state.stockOnly=d.get('stock')!==null;clearNotice();render();return;
   }
   if(form.id==='isp-create'){
    const kind=v('type'),name=v('name'),store=v('store'),city=v('city'),p=v('type')==='Punë'&&num('price')===null?0:num('price'),q=num('quantity'),year=num('year'),km=num('mileage'),area=num('area');
@@ -364,7 +367,7 @@
     year:kind==='Makina'?year:null,mileage:kind==='Makina'?km:null,area:property(kind)?area:null,rooms:property(kind)?v('rooms').slice(0,30):'',
     period:kind==='Banesa me qira'&&['muaj','javë'].includes(v('period'))?v('period'):'muaj',sku:'',promoted:false};
    if(old)Object.assign(old,item);else state.items.unshift(item);
-   message(feedback('listingSaved','Listimi u ruajt vetëm në pajisjen tënde.'),()=>{state.tab='item';state.selected=item.id;state.editId=null});return;
+   message('listingSaved','Listimi u ruajt vetëm në pajisjen tënde.',()=>{state.tab='item';state.selected=item.id;state.editId=null});return;
   }
   if(form.id==='isp-need'){
    const type=v('type'),city=v('city'),title=v('title'),budget=num('budget'),days=num('days');
@@ -372,18 +375,18 @@
     validationError(form,'requestInvalid','Kontrollo kërkesën, qytetin, buxhetin dhe afatin.','title');return}
    if(state.needs.length>=25){validationError(form,'requestsLimit','Kufiri lokal i kërkesave u arrit.');return}
    state.needs.push({id:'n'+Date.now().toString(36),owned:true,type,city,title,budget,details:v('details').slice(0,240),expires:new Date(Date.now()+days*86400000).toISOString()});
-   message(feedback('requestSaved','Kërkesa u regjistrua vetëm në këtë pajisje.'),()=>{state.tab='needs'});return;
+   message('requestSaved','Kërkesa u regjistrua vetëm në këtë pajisje.',()=>{state.tab='needs'});return;
   }
   if(form.id==='isp-answer'){
    const need=state.needs.find(n=>n.id===state.needIndex),txt=v('text').slice(0,180);
    if(!need||Date.parse(need.expires)<Date.now()||txt.length<5||state.answers.length>=50){validationError(form,'answerInvalid','Kërkesa ose mesazhi nuk është i vlefshëm.','text');return}
-   state.answers.push({needId:need.id,text:txt});message(feedback('answerSaved',"Përgjigjja u ruajt vetëm lokalisht."),()=>{state.tab='needs'});return;
+   state.answers.push({needId:need.id,text:txt});message('answerSaved',"Përgjigjja u ruajt vetëm lokalisht.",()=>{state.tab='needs'});return;
   }
   if(form.id==='isp-report'){
    const allowed=['Informacion i pasaktë','Mashtrim i dyshuar','Listim i dyfishuar','Përmbajtje e papërshtatshme'],reason=v('reason');
    if(!allowed.includes(reason)||state.flags.length>=40){validationError(form,'reportInvalid','Arsyeja e raportimit nuk është e vlefshme ose u arrit kufiri.','reason');return;}
    state.flags.push({id:'f'+Date.now().toString(36)+Math.random().toString(36).slice(2,8),listingId:state.selected,target:all().find(p=>p.id===state.selected)?.name||'Listim',reason,detail:v('detail').slice(0,180)});
-   message(feedback('reportSaved','Raportimi është provë lokale; asnjë moderator nuk u njoftua.'),()=>{state.tab='moderation'});return;
+   message('reportSaved','Raportimi është provë lokale; asnjë moderator nuk u njoftua.',()=>{state.tab='moderation'});return;
   }
  }
  function inject(){
@@ -398,6 +401,7 @@
  function onLocaleChange(){
   inject();
   if(!state.open||!overlay)return;
+  if(state.notice&&state.noticeKey)state.notice=feedback(state.noticeKey,state.noticeFallback);
   const form=overlay.querySelector('form');
   const fields=form?[...form.elements].filter(e=>e.name).map(e=>({name:e.name,value:e.value,checked:e.type==='checkbox'?e.checked:null})):null;
   const active=document.activeElement,focusedName=active?.name,action=active?.dataset?.isp;
@@ -438,7 +442,7 @@
   window.addEventListener('storage',e=>{
    if(e.storageArea!==localStorage||(e.key!==KEY&&e.key!==null))return;
    if(localStorage.getItem(KEY)===expectedRaw)return;
-   state.notice=feedback('storageConflict','Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.');
+   setNotice('storageConflict','Shop Plus u ndryshua në një skedë tjetër. Kopjo tekstin e papërfunduar dhe rifresko faqen para ruajtjes.');
    if(state.open)showStorageError();
   });
   document.addEventListener('keydown',e=>{

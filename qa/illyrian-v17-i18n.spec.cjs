@@ -3512,3 +3512,35 @@ test('Plans connected participants keep real profile names and localized accessi
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
  }
 });
+
+test('Shop Plus validation and saved notices localize live without draft loss or storage writes',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await openShop(page);
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="create"]').click();
+ const form=page.locator('#isp-create'),name=form.locator('input[name="name"]');
+ await name.fill('Mbyll untranslated draft');
+ await form.evaluate(el=>el.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+ const error=page.locator('#isp-root #isp-validation-feedback[role="alert"]');
+ await expect(name).toBeFocused();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ for(const language of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);
+  await expect(error).toHaveText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:listingInvalid')));
+  await expect(name).toHaveValue('Mbyll untranslated draft');
+  await expect(name).toBeFocused();
+  await expect(name).toHaveAttribute('aria-invalid','true');
+  await expect(name).toHaveAttribute('aria-describedby','isp-validation-feedback');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(before);
+ }
+ await page.locator('#isp-root [data-isp="tab:checkout"]').click();
+ await page.locator('#isp-root [data-isp="sample-order"]').click();
+ const after=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ for(const language of ['en','it','sq']){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);
+  await expect(page.locator('#isp-root .isp-notice')).toHaveText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:orderSaved')));
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(after);
+ }
+});
