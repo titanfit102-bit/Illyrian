@@ -1771,3 +1771,52 @@ test('Five-tab integration: Home, Reels, Messages, Explore and Profile preserve 
  await page.locator('#screen .p17-tabs [data-id="saved"]').click();
  await expect(page.locator('#screen .p17-tile[data-kind="friendReel"]')).toHaveCount(1);
 });
+
+
+test('Plans integration: switching tabs cannot overwrite another window local data',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#phone > .head [data-ily-op-toggle]').click();
+ await page.locator('#ily-opportunities-panel [data-ily-op-category="Plane"]').click();
+ await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="all"]')).toHaveAttribute('aria-pressed','true');
+ const newer=await page.evaluate(()=>{
+  const key='illyrian_demo_v09_state',saved=JSON.parse(localStorage.getItem(key)||'{}');
+  saved.v9RecentQueries=['another-tab-update'];saved.comments={...saved.comments,p1:['Other tab comment']};
+  const raw=JSON.stringify(saved);localStorage.setItem(key,raw);return raw;
+ });
+ await page.locator('#screen [data-act="v10-plans-view"][data-val="mine"]').click();
+ await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="all"]')).toHaveAttribute('aria-pressed','true');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(newer);
+ await page.reload({waitUntil:'load'});
+ await page.locator('#phone > .head [data-ily-op-toggle]').click();
+ await page.locator('#ily-opportunities-panel [data-ily-op-category="Plane"]').click();
+ await page.locator('#screen [data-act="v10-plans-view"][data-val="mine"]').click();
+ await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="mine"]')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="mine"]')).toBeFocused();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).v9RecentQueries)).toEqual(['another-tab-update']);
+});
+
+test('Plans integration: quota failure keeps current tab and retries without a false save',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#phone > .head [data-ily-op-toggle]').click();
+ await page.locator('#ily-opportunities-panel [data-ily-op-category="Plane"]').click();
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.evaluate(()=>{
+  window.__plansPreviousWrite=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota exceeded','QuotaExceededError');return window.__plansPreviousWrite.call(this,k,v)};
+ });
+ const mine=page.locator('#screen [data-act="v10-plans-view"][data-val="mine"]');
+ await mine.click();
+ await expect(mine).toHaveAttribute('aria-pressed','false');
+ await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="all"]')).toHaveAttribute('aria-pressed','true');
+ await expect(mine).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__plansPreviousWrite;delete window.__plansPreviousWrite});
+ await mine.click();
+ await expect(mine).toHaveAttribute('aria-pressed','true');
+ await expect(mine).toBeFocused();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).v10PlansView)).toBe('mine');
+ await page.reload({waitUntil:'load'});
+ await page.locator('#phone > .head [data-ily-op-toggle]').click();
+ await page.locator('#ily-opportunities-panel [data-ily-op-category="Plane"]').click();
+ await expect(page.locator('#screen [data-act="v10-plans-view"][data-val="mine"]')).toHaveAttribute('aria-pressed','true');
+});
