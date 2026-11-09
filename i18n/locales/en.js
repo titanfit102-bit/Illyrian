@@ -188,7 +188,7 @@ window.ILLYRIAN_LOCALES.en={
     "replied": "Business reply",
     "accepted": "Invitation accepted"
 },
-  "common": { "homeCalendar": "Calendar", "homeOpportunities": "Opportunities", "homeBusinesses": "Businesses", "homeMarketplace": "Marketplace", "homeJobs": "Jobs", "homeServices": "Services", "homeIntent": "What are you looking for?", "homeActivity": "Your activities", "homePlans": "Plans & Activities", "homeCommunities": "Communities",
+  "common": { "homeCalendar": "Calendar", "homeOpportunities": "Opportunities", "homeBusinesses": "Businesses", "homeMarketplace": "Marketplace", "homeJobs": "Jobs", "homeServices": "Services", "homeIntent": "What are you looking for?", "homeActivity": "Your activities", "homePlans": "Plans & Activities", "homeCommunities": "Communities", "homeShopUnavailable": "Marketplace could not be opened. Try again.",
     "storageSaveFailed": "The change was not saved on this device. Try again.",
     "notificationsShort": "Notifications",
     "close": "Close",

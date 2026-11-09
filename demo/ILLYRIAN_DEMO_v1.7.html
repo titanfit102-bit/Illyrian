@@ -2504,7 +2504,7 @@ let v16SavedOwnReels=()=>[];
    if(category==='Tregu'||category==='Shërbime'){
     // Mundësi owns Shop access; the Home feed has no duplicate Shop entry.
     toggle.focus({preventScroll:true});
-    if(!window.IllyrianShopUI?.openFromOpportunities(category))toast('Shop nuk u hap');
+    if(!window.IllyrianShopUI?.openFromOpportunities(category))toast(window.IllyrianI18n?.t('common:homeShopUnavailable')||'Tregu nuk u hap. Provo përsëri.');
     return;
    }
    state.category=category;

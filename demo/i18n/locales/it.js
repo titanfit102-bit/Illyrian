@@ -188,7 +188,7 @@ window.ILLYRIAN_LOCALES.it={
     "replied": "Risposta aziendale",
     "accepted": "Invito accettato"
 },
-  "common": { "homeCalendar": "Calendario", "homeOpportunities": "Opportunità", "homeBusinesses": "Attività", "homeMarketplace": "Mercato", "homeJobs": "Lavoro", "homeServices": "Servizi", "homeIntent": "Cosa cerchi ora?", "homeActivity": "Le tue attività", "homePlans": "Piani & Attività", "homeCommunities": "Comunità",
+  "common": { "homeCalendar": "Calendario", "homeOpportunities": "Opportunità", "homeBusinesses": "Attività", "homeMarketplace": "Mercato", "homeJobs": "Lavoro", "homeServices": "Servizi", "homeIntent": "Cosa cerchi ora?", "homeActivity": "Le tue attività", "homePlans": "Piani & Attività", "homeCommunities": "Comunità", "homeShopUnavailable": "Impossibile aprire il mercato. Riprova.",
     "storageSaveFailed": "La modifica non è stata salvata su questo dispositivo. Riprova.",
     "notificationsShort": "Notifiche",
     "close": "Chiudi",

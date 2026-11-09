@@ -288,6 +288,37 @@ test('Home Opportunities links Tregu and Shërbime to Shop - 390x844',async({pag
  await expect(shop).toHaveCount(0);
 });
 
+test('Mundësi Shop-unavailable notices stay localized and do not claim success',async({page})=>{
+ await openDemo(page,390,844);
+ const toggle=page.locator('#phone > .head [data-ily-op-toggle]'),panel=page.locator('#ily-opportunities-panel');
+ const original=await page.evaluate(()=>{const api=window.IllyrianShopUI;window.IllyrianShopUI=undefined;return !!api});
+ expect(original).toBe(true);
+ for(const [lang,label] of [
+  ['sq','Tregu nuk u hap. Provo përsëri.'],
+  ['en','Marketplace could not be opened. Try again.'],
+  ['it','Impossibile aprire il mercato. Riprova.']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  for(const category of ['Tregu','Shërbime']){
+   await toggle.click();
+   await panel.locator('[data-ily-op-category="'+category+'"]').click();
+   await expect(page.locator('#toast-area .toast')).toHaveText(label);
+   await expect(panel).toBeHidden();
+   await expect(toggle).toHaveAttribute('aria-expanded','false');
+   await expect(toggle).toBeFocused();
+   await expect(page.locator('#illyrian-shop-layer')).toHaveCount(0);
+   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+  }
+ }
+ await page.reload();
+ await toggle.click();
+ await panel.locator('[data-ily-op-category="Tregu"]').click();
+ await expect(page.locator('#illyrian-shop-layer')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(toggle).toBeFocused();
+});
+
 test('Home header uses semantic sq en it labels - 390x844',async({page})=>{
  await openDemo(page,390,844);
  const head=page.locator('#phone > .head'),panel=head.locator('#ily-opportunities-panel');
