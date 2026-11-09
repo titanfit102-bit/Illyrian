@@ -1967,6 +1967,55 @@ test('Calendar scenario lab rolls back quota and stale writes without false stat
  expect(after.comments.p1).toEqual(['saved by another tab']);
 });
 
+test('Opportunities job application rolls back quota and stale writes, then retries',async({page})=>{
+ await openDemo(page,390,844);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="job-detail"][data-id="j1"]').click();
+ const key='illyrian_demo_v09_state';
+ const apply=page.locator('#layer [data-act="apply-job"][data-id="j1"]');
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__jobWrite=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');return window.__jobWrite.call(this,k,v)};
+ });
+ await apply.click();
+ await expect(page.locator('#toast-area')).toContainText('Ndryshimi nuk u ruajt');
+ await expect(apply).toBeVisible();
+ await expect(apply).toBeFocused();
+ await expect(apply).toContainText('Provo aplikimin');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__jobWrite;delete window.__jobWrite});
+ await apply.click();
+ await expect(page.locator('#layer [data-act="apply-job"][data-id="j1"]')).toContainText('Aplikimi u krye');
+ let applied=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(applied.applications).toContain('j1');
+ expect(applied.activityLog[0].text).toBe('Aplikove për një punë');
+ await page.keyboard.press('Escape');
+ await page.locator('#screen [data-act="job-detail"][data-id="j2"]').click();
+ const stale=await page.evaluate(k=>{
+  const record=JSON.parse(localStorage.getItem(k));
+  record.comments={...record.comments,p1:['other tab keeps this']};
+  const raw=JSON.stringify(record);
+  localStorage.setItem(k,raw);
+  return raw;
+ },key);
+ const second=page.locator('#layer [data-act="apply-job"][data-id="j2"]');
+ await second.click();
+ await expect(second).toBeVisible();
+ await expect(second).toBeFocused();
+ await expect(second).toContainText('Provo aplikimin');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(stale);
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="job-detail"][data-id="j2"]').click();
+ await page.locator('#layer [data-act="apply-job"][data-id="j2"]').click();
+ await expect(page.locator('#layer [data-act="apply-job"][data-id="j2"]')).toContainText('Aplikimi u krye');
+ applied=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(applied.applications).toEqual(['j1','j2']);
+ expect(applied.comments.p1).toEqual(['other tab keeps this']);
+});
+
 test('Plans integration: switching tabs cannot overwrite another window local data',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#phone > .head [data-ily-op-toggle]').click();
