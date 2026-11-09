@@ -1833,6 +1833,83 @@ test('Five-tab integration: Home, Reels, Messages, Explore and Profile preserve 
 });
 
 
+test('Calendar request and cancellation rollback on core quota then retry',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#phone > .head [data-val="events"]').click();
+ await page.locator('#screen [data-act="event"][data-id="e1"]').click();
+ const key='illyrian_demo_v09_state';
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__calendarWrite=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');return window.__calendarWrite.call(this,k,v)};
+ });
+ const request=page.locator('#layer [data-act="request"][data-id="e1"]');
+ await request.click();
+ await expect(page.locator('#toast-area')).toContainText('Ndryshimi nuk u ruajt');
+ await expect(request).toBeVisible();
+ await expect(request).toBeFocused();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__calendarWrite;delete window.__calendarWrite});
+ await request.click();
+ await expect(page.locator('#layer [data-act="approve-sim"][data-id="e1"]')).toBeVisible();
+ const pending=await page.evaluate(k=>localStorage.getItem(k),key);
+ expect(JSON.parse(pending).requests).toContain('e1');
+ await page.evaluate(()=>{
+  window.__calendarWrite=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');return window.__calendarWrite.call(this,k,v)};
+ });
+ const cancel=page.locator('#layer [data-act="request"][data-id="e1"]');
+ await cancel.click();
+ await expect(cancel).toBeVisible();
+ await expect(cancel).toBeFocused();
+ await expect(page.locator('#layer [data-act="approve-sim"][data-id="e1"]')).toBeVisible();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(pending);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__calendarWrite;delete window.__calendarWrite});
+ await cancel.click();
+ await expect(page.locator('#layer [data-act="approve-sim"][data-id="e1"]')).toHaveCount(0);
+ expect(JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key)).requests).not.toContain('e1');
+ await page.reload({waitUntil:'load'});
+ await page.locator('#phone > .head [data-val="events"]').click();
+ await page.locator('#screen [data-act="event"][data-id="e1"]').click();
+ await expect(page.locator('#layer [data-act="request"][data-id="e1"]')).toBeVisible();
+});
+
+test('Calendar simulated approval rejects quota and stale writes, then accepts on retry',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#phone > .head [data-val="events"]').click();
+ await page.locator('#screen [data-act="event"][data-id="e2"]').click();
+ await page.locator('#layer [data-act="request"][data-id="e2"]').click();
+ const key='illyrian_demo_v09_state';
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__calendarWrite=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');return window.__calendarWrite.call(this,k,v)};
+ });
+ const approve=page.locator('#layer [data-act="approve-sim"][data-id="e2"]');
+ await approve.click();
+ await expect(approve).toBeVisible();
+ await expect(approve).toBeFocused();
+ await expect(page.locator('#layer [data-act="group-chat"][data-id="e2"]')).toHaveCount(0);
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__calendarWrite;delete window.__calendarWrite});
+ const newer=await page.evaluate(k=>{
+  const data=JSON.parse(localStorage.getItem(k));data.comments={...data.comments,p1:['another window']};
+  const raw=JSON.stringify(data);localStorage.setItem(k,raw);return raw;
+ },key);
+ await approve.click();
+ await expect(approve).toBeVisible();
+ await expect(approve).toBeFocused();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(newer);
+ await page.reload({waitUntil:'load'});
+ await page.locator('#phone > .head [data-val="events"]').click();
+ await page.locator('#screen [data-act="event"][data-id="e2"]').click();
+ await page.locator('#layer [data-act="approve-sim"][data-id="e2"]').click();
+ await expect(page.locator('#layer [data-act="group-chat"][data-id="e2"]')).toBeVisible();
+ const saved=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(saved.acceptedPlans).toContain('e2');
+ expect(saved.comments.p1).toEqual(['another window']);
+});
+
 test('Plans integration: switching tabs cannot overwrite another window local data',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#phone > .head [data-ily-op-toggle]').click();

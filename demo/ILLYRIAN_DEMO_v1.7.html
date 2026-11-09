@@ -433,7 +433,18 @@ function v3Action(action,id,v){
  if(action==='business-contact'){notice('Kontakti me biznesin u simulua');toast("Kontakt — pa mesazh real");return true}
  if(action==='apply-job'){if(!state.applications.includes(id)){state.applications.push(id);notice("Aplikove për një punë")}openModal('job-detail',id);return true}
  if(action==='story-plan'){state.story=0;state.tab='events';openModal('event',id);return true}
- if(action==='approve-sim'){if(!state.requests.includes(id)){toast('Dërgo fillimisht kërkesën');return true}if(!state.acceptedPlans.includes(id)){state.acceptedPlans.push(id);notice('Kërkesa e aktivitetit u pranua në simulim')}openModal('event',id);return true}
+ if(action==='approve-sim'){
+  if(!events.some(e=>e.id===id)||!state.requests.includes(id)){toast('Dërgo fillimisht kërkesën');return true}
+  const input=document.activeElement;
+  if(!coreMessageFresh(input))return true;
+  if(!state.acceptedPlans.includes(id)){
+   const previousAccepted=state.acceptedPlans,previousLog=state.activityLog;
+   state.acceptedPlans=[...previousAccepted,id];
+   state.activityLog=[{id:Date.now()+Math.random(),text:'Kërkesa e aktivitetit u pranua në simulim',time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
+   if(!persist()){state.acceptedPlans=previousAccepted;state.activityLog=previousLog;toast(coreSaveFailed());input?.focus();return true}
+  }
+  openModal('event',id);return true;
+ }
  if(action==='group-send'){
  const input=$('#group-input'),content=(input?.value||'').trim();
  if(!content)return true;
@@ -1618,9 +1629,16 @@ v8Action=function(action,id,v){
  }
  // Keep the plan visible while submitting or cancelling a local-only request.
  if(action==='request'&&events.some(e=>e.id===id)&&!state.v8EventStatuses[id]){
-  state.requests=toggle(state.requests,id);
-  if(!state.requests.includes(id))state.acceptedPlans=state.acceptedPlans.filter(x=>x!==id);
-  notice(state.requests.includes(id)?"Kërkesë pjesëmarrjeje për aktivitetin":'Kërkesa e aktivitetit u anulua');
+  const input=document.activeElement;
+  if(!coreMessageFresh(input))return true;
+  const previousRequests=state.requests,previousAccepted=state.acceptedPlans,previousLog=state.activityLog;
+  state.requests=toggle(previousRequests,id);
+  if(!state.requests.includes(id))state.acceptedPlans=previousAccepted.filter(x=>x!==id);
+  state.activityLog=[{id:Date.now()+Math.random(),text:state.requests.includes(id)?'Kërkesë pjesëmarrjeje për aktivitetin':'Kërkesa e aktivitetit u anulua',time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
+  if(!persist()){
+   state.requests=previousRequests;state.acceptedPlans=previousAccepted;state.activityLog=previousLog;
+   toast(coreSaveFailed());input?.focus();return true;
+  }
   openModal('event',id);
   toast(state.requests.includes(id)?"Kërkesa është në pritje":"Kërkesa u anulua");
   return true;
