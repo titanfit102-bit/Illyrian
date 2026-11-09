@@ -1474,3 +1474,89 @@ for(const lang of ['sq','en','it'])test('Home audit: all unavailable Reels have 
  await expect(page.locator('#layer .empty')).toHaveText({sq:'Nuk ka Reels të disponueshme.',en:'No Reels are available.',it:'Nessun Reel disponibile.'}[lang]);
  await page.keyboard.press('Escape');await expect(page.locator('#layer .modal')).toHaveCount(0);await expect(page.locator('#navbar [data-act="open-reels"]')).toBeFocused();
 });
+
+
+test('Messages: a stale inbox read does not overwrite another tab or show a false read',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();
+ const row=page.locator('#v6-inbox-list [data-act="v6-openchat"][data-id="leon"]');
+ await expect(row).toHaveAttribute('data-v6-unread','1');
+ const updated=await page.evaluate(()=>{
+  const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key)||'{}');
+  s.v6ReadChats=['dion'];s.v9RecentQueries=['other-tab-update'];
+  const raw=JSON.stringify(s);localStorage.setItem(key,raw);return raw;
+ });
+ await row.click();
+ await expect(row).toBeVisible();
+ await expect(row).toHaveAttribute('data-v6-unread','1');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(updated);
+});
+
+test('Messages: failed read persistence keeps unread state, then retry survives reload',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();
+ const row=page.locator('#v6-inbox-list [data-act="v6-openchat"][data-id="leon"]');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.evaluate(()=>{
+  window.__messageOriginalSetItem=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota exceeded','QuotaExceededError');return window.__messageOriginalSetItem.call(this,k,v)};
+ });
+ await row.click();
+ await expect(row).toHaveAttribute('data-v6-unread','1');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__messageOriginalSetItem;delete window.__messageOriginalSetItem});
+ await row.click();
+ await expect(page.locator('#v6-chat-scroll')).toBeVisible();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).v6ReadChats)).toContain('leon');
+ await page.locator('#layer [data-act="v6-back-inbox"]').click();
+ await expect(page.locator('#v6-inbox-list [data-id="leon"]')).toHaveAttribute('data-v6-unread','0');
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();
+ await expect(page.locator('#v6-inbox-list [data-id="leon"]')).toHaveAttribute('data-v6-unread','0');
+});
+
+test('Messages: group chat rejects stale local data and retains its draft',async({page})=>{
+ await page.addInitScript(()=>{
+  const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key)||'{}');
+  s.acceptedPlans=['e1'];localStorage.setItem(key,JSON.stringify(s));
+ });
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();
+ await page.locator('[data-act="v6-inbox-filter"][data-val="groups"]').click();
+ await page.locator('#v6-inbox-list [data-act="group-chat"][data-id="e1"]').click();
+ const draft=page.locator('#group-input');
+ await draft.fill('Draft that must not overwrite new data');
+ const updated=await page.evaluate(()=>{
+  const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key)||'{}');
+  s.groupMessages={e1:['Changed in another tab']};
+  const raw=JSON.stringify(s);localStorage.setItem(key,raw);return raw;
+ });
+ await page.locator('#layer [data-act="group-send"][data-id="e1"]').click();
+ await expect(draft).toHaveValue('Draft that must not overwrite new data');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(updated);
+});
+
+test('Messages: group chat quota error rolls back and retries without duplicate send',async({page})=>{
+ await page.addInitScript(()=>{
+  const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key)||'{}');
+  s.acceptedPlans=['e1'];localStorage.setItem(key,JSON.stringify(s));
+ });
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();
+ await page.locator('[data-act="v6-inbox-filter"][data-val="groups"]').click();
+ await page.locator('#v6-inbox-list [data-act="group-chat"][data-id="e1"]').click();
+ const draft=page.locator('#group-input');
+ await draft.fill('One local message after retry');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.evaluate(()=>{
+  window.__messageOriginalSetItem=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota exceeded','QuotaExceededError');return window.__messageOriginalSetItem.call(this,k,v)};
+ });
+ await page.locator('#layer [data-act="group-send"][data-id="e1"]').click();
+ await expect(draft).toHaveValue('One local message after retry');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__messageOriginalSetItem;delete window.__messageOriginalSetItem});
+ await page.locator('#layer [data-act="group-send"][data-id="e1"]').click();
+ await expect(page.locator('#groupchat')).toContainText('One local message after retry');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).groupMessages.e1)).toEqual(['One local message after retry']);
+});
