@@ -1835,6 +1835,7 @@ test('Five-tab integration: Home, Reels, Messages, Explore and Profile preserve 
 
 test('Calendar request and cancellation rollback on core quota then retry',async({page})=>{
  await openDemo(page,390,844);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  await page.locator('#phone > .head [data-val="events"]').click();
  await page.locator('#screen [data-act="event"][data-id="e1"]').click();
  const key='illyrian_demo_v09_state';
@@ -1912,6 +1913,7 @@ test('Calendar simulated approval rejects quota and stale writes, then accepts o
 
 test('Calendar scenario lab rolls back quota and stale writes without false status',async({page})=>{
  await openDemo(page,390,844);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
  const key='illyrian_demo_v09_state';
  const openLab=async()=>{
   await page.locator('#navbar [data-val="profile"]').click();
