@@ -214,6 +214,8 @@
   const active=state.needs.filter(n=>Date.parse(n.expires)>Date.now()).slice().reverse();
   // Expired own requests remain in storage until their owner deliberately removes them.
   const expiredOwned=state.needs.filter(n=>n.owned===true&&!(Date.parse(n.expires)>Date.now())).slice().reverse();
+  const needIds=new Set(state.needs.map(n=>n.id));
+  const orphanAnswerCount=state.answers.filter(a=>!needIds.has(a.needId)).length;
   return '<h3 data-i18n-direct>'+ui('boardHeading','“Kërkoj…” — kërkesat e komunitetit')+'</h3><p data-i18n-direct>'+ui('boardIntro','Përdoruesi përshkruan çfarë kërkon; dyqanet përgjigjen vetëm në këtë simulim. Pa kontakt real.')+'</p>'+
    '<form id="isp-need" class="isp-fields">'+
    '<label data-i18n-direct>'+ui('formRequestTitle','Kërkoj')+'<input name="title" minlength="5" maxlength="90" required placeholder="'+ui('formRequestPlaceholder','P.sh. biçikletë për qytet')+'"></label>'+
@@ -230,6 +232,8 @@
    (expiredOwned.length?'<section class="isp-expired"><h4 data-i18n-direct>'+ui('boardExpiredHeading','Kërkesat e skaduara')+'</h4>'+
     expiredOwned.map(n=>'<article class="isp-card"><p data-user-content>'+esc(n.title)+'</p>'+
      btn('remove-need:'+n.id,feedback('boardRemove','Fshi kërkesën'),'data-i18n-direct')+'</article>').join('')+'</section>':'')+
+   (orphanAnswerCount?'<article class="isp-card isp-orphan-answers"><p><span data-i18n-direct>'+ui('boardOrphanAnswers','Përgjigje pa kërkesë:')+'</span> '+orphanAnswerCount+'</p>'+
+    btn('clear-orphan-answers',feedback('boardClearOrphanAnswers','Fshi përgjigjet pa kërkesë'),'data-i18n-direct')+'</article>':'')+
    '<p class="isp-muted" data-i18n-direct>'+ui('boardDisclaimer','Kërkesat nuk dërgohen te shitësit e vërtetë dhe skadojnë automatikisht.')+'</p>';
  };
  const reasonLabel=code=>{const known={'Informacion i pasaktë':'formReasonInaccurate','Mashtrim i dyshuar':'formReasonFraud','Listim i dyfishuar':'formReasonDuplicate','Përmbajtje e papërshtatshme':'formReasonInappropriate'};return Object.prototype.hasOwnProperty.call(known,code)?ui(known[code],code):esc(code);};
@@ -349,6 +353,12 @@
   if(act==='create'){state.editId=null;state.tab='create';render();return}
   if(act.startsWith('respond:')){state.needIndex=act.slice(8);state.tab='respond';render();return}
   if(act.startsWith('remove-need:')){const id=act.slice(12);state.needs=state.needs.filter(n=>n.id!==id||!n.owned);return message('requestRemoved','Kërkesa u fshi lokalisht.')}
+  if(act==='clear-orphan-answers'){
+   const needIds=new Set(state.needs.map(n=>n.id));
+   if(!state.answers.some(a=>!needIds.has(a.needId)))return;
+   state.answers=state.answers.filter(a=>needIds.has(a.needId));
+   return message('orphanAnswersRemoved','Përgjigjet pa kërkesë u fshinë lokalisht.');
+  }
   if(act==='sample-order'){const i={id:'D'+Date.now().toString(36),status:'E krijuar në demo'};state.sampleOrders.push(i);state.sampleOrders=state.sampleOrders.slice(-20);return message('orderSaved','Porosia u regjistrua vetëm në simulim.')}
   if(act.startsWith('sample-cancel:')){const id=act.slice(14);const order=state.sampleOrders.find(o=>o.id===id);if(order)order.status='Kërkesë anulimi/kthimi (demo)';return message('returnSaved','Kërkesa e kthimit u regjistrua; nuk ka rimbursim real.')}
  };

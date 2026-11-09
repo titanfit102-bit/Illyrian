@@ -3612,3 +3612,79 @@ test('Shop Plus expired owned requests remain safely removable and free an occup
  expect(final.needs.filter(n=>n.title==='New request after expiration')).toHaveLength(1);
  await expect(page.locator('#isp-root .isp-card').filter({hasText:'New request after expiration'})).toHaveCount(1);
 });
+
+test('Shop Plus keeps orphan replies until explicit cleanup and frees reply capacity safely',async({page})=>{
+ await ready(page);
+ await page.evaluate(()=>{
+  const expires=new Date(Date.now()+86400000).toISOString();
+  const needs=[
+   {id:'keep-need',owned:true,type:'Produkte',city:'Tiranë',title:'Active buyer request',budget:100,details:'Mbyll',expires},
+   {id:'delete-need',owned:true,type:'Produkte',city:'Tiranë',title:'Remove buyer request',budget:200,details:'Mbyll',expires}
+  ];
+  const answers=[{needId:'keep-need',text:'Keep <b>literal</b> reply'},...Array.from({length:49},(_,i)=>({needId:'delete-need',text:'Old reply '+i}))];
+  localStorage.setItem('illyrian_demo_v17_shop_plus',JSON.stringify({items:[],needs,answers,flags:[],sampleOrders:[]}));
+ });
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+ await openShop(page);
+ await page.locator('#illyrian-shop-layer [data-isp-open]').first().click();
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ const beforeDelete=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(beforeDelete.answers).toHaveLength(50);
+ await expect(page.locator('#isp-root .isp-orphan-answers')).toHaveCount(0);
+ await page.locator('#isp-root [data-isp="remove-need:delete-need"]').click();
+ const afterDelete=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'));
+ const afterDeleteParsed=JSON.parse(afterDelete);
+ expect(afterDeleteParsed.needs.map(n=>n.id)).toEqual(['keep-need']);
+ expect(afterDeleteParsed.answers).toEqual(beforeDelete.answers);
+ await expect(page.locator('#isp-root .isp-orphan-answers')).toContainText('49');
+ await page.locator('#isp-root [data-isp="respond:keep-need"]').click();
+ const reply=page.locator('#isp-answer textarea[name="text"]');
+ await reply.fill('A reply while at capacity');
+ await page.locator('#isp-answer button[type="submit"]').click();
+ await expect(reply).toHaveValue('A reply while at capacity');
+ await expect(reply).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(afterDelete);
+ await page.locator('#isp-root [data-isp="tab:needs"]').click();
+ for(const [language,label,clearLabel] of [
+  ['sq','Përgjigje pa kërkesë:','Fshi përgjigjet pa kërkesë'],
+  ['en','Replies without requests:','Remove replies without requests'],
+  ['it','Risposte senza richieste:','Elimina le risposte senza richieste']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),language);
+  await expect(page.locator('#isp-root .isp-orphan-answers')).toContainText(label);
+  await expect(page.locator('#isp-root .isp-orphan-answers')).toContainText('49');
+  await expect(page.locator('#isp-root [data-isp="clear-orphan-answers"]')).toHaveText(clearLabel);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(afterDelete);
+ }
+ await page.evaluate(()=>{
+  const original=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){
+   if(key==='illyrian_demo_v17_shop_plus')throw new DOMException('Quota','QuotaExceededError');
+   return original.call(this,key,value);
+  };
+  window.restoreOrphanWrite=()=>{Storage.prototype.setItem=original;delete window.restoreOrphanWrite};
+ });
+ await page.locator('#isp-root [data-isp="clear-orphan-answers"]').click();
+ await expect(page.locator('#isp-root .isp-notice')).toContainText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:storageFull')));
+ await expect(page.locator('#isp-root .isp-orphan-answers')).toContainText('49');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).toBe(afterDelete);
+ await page.evaluate(()=>window.restoreOrphanWrite());
+ await page.locator('#isp-root [data-isp="clear-orphan-answers"]').click();
+ await expect(page.locator('#isp-root .isp-orphan-answers')).toHaveCount(0);
+ await expect(page.locator('#isp-root .isp-notice')).toHaveText(await page.evaluate(()=>window.IllyrianI18n.t('shopPlus:orphanAnswersRemoved')));
+ const cleared=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(cleared.answers).toEqual([{needId:'keep-need',text:'Keep <b>literal</b> reply'}]);
+ await page.locator('#isp-root [data-isp="respond:keep-need"]').click();
+ await page.locator('#isp-answer textarea[name="text"]').fill('Now capacity is available');
+ await page.locator('#isp-answer button[type="submit"]').click();
+ const final=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
+ expect(final.answers).toEqual([
+  {needId:'keep-need',text:'Keep <b>literal</b> reply'},
+  {needId:'keep-need',text:'Now capacity is available'}
+ ]);
+ await expect(page.locator('#isp-root .isp-reply [data-user-content]').first()).toHaveText('Keep <b>literal</b> reply');
+ await expect(page.locator('#isp-root .isp-reply b')).toHaveCount(0);
+ await page.reload({waitUntil:'load'});
+ expect(JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus'))).answers).toEqual(final.answers);
+});
