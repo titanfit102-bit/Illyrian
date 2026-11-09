@@ -1723,3 +1723,51 @@ test('Reels audit: simulated media disclosure appears once for every built-in Re
   if(i<2)await page.locator('#layer [data-act="reel-next"]').click();
  }
 });
+
+test('Five-tab integration: Home, Reels, Messages, Explore and Profile preserve local choices',async({page})=>{
+ await openDemo(page,390,844);
+ const nav=page.locator('#navbar .v12-tab');
+ expect(await nav.evaluateAll(items=>items.map(el=>el.dataset.act==='open-reels'?'reels':el.dataset.val))).toEqual(['home','reels','inbox','explore','profile']);
+ const postLike=page.locator('#screen [data-act="like"][data-id="p1"]');
+ await postLike.click();await expect(postLike).toHaveAttribute('aria-pressed','true');
+
+ const reels=await openReels(page);
+ await reels.locator('[data-act="reel-like"]').click();
+ await expect(reels.locator('[data-act="reel-like"]')).toHaveAttribute('aria-pressed','true');
+ await reels.locator('[data-act="reel-save"]').click();
+ await expect(reels.locator('[data-act="reel-save"]')).toHaveAttribute('aria-pressed','true');
+ await reels.locator('[data-act="reel-close"]').click();
+ await expect(reels).toHaveCount(0);
+
+ await page.locator('#navbar [data-act="modal"][data-val="inbox"]').click();
+ const leon=page.locator('#v6-inbox-list [data-act="v6-openchat"][data-id="leon"]');
+ await leon.click();await expect(page.locator('#v6-chat-scroll')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(page.locator('#layer .modal')).toHaveCount(0);
+
+ await page.locator('#navbar [data-val="explore"]').click();
+ await expect(page.locator('#navbar [data-val="explore"]')).toHaveAttribute('aria-current','page');
+ await page.locator('#finder').fill('Besa');
+ await expect(page.locator('#screen [data-act="user-profile"][data-id="besa"]').first()).toBeVisible();
+
+ await page.locator('#navbar [data-val="profile"]').click();
+ await expect(page.locator('#screen > .p17-profile')).toBeVisible();
+ await page.locator('#screen .p17-tabs [data-id="saved"]').click();
+ const saved=page.locator('#screen .p17-tile[data-kind="friendReel"]');
+ await expect(saved).toHaveCount(1);
+ await saved.click();await expect(page.locator('#layer .v4-reel-footer')).toContainText('Arta');
+ await page.keyboard.press('Escape');
+ await page.locator('#navbar [data-val="home"]').click();
+ await expect(page.locator('#screen [data-act="like"][data-id="p1"]')).toHaveAttribute('aria-pressed','true');
+
+ const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')));
+ expect(stored.likes).toContain('p1');
+ expect(stored.reelLikes).toContain('r1');
+ expect(stored.reelSaved).toContain('r1');
+ expect(stored.v6ReadChats).toContain('leon');
+ await page.reload({waitUntil:'load'});
+ await expect(page.locator('#screen [data-act="like"][data-id="p1"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('#navbar [data-val="profile"]').click();
+ await page.locator('#screen .p17-tabs [data-id="saved"]').click();
+ await expect(page.locator('#screen .p17-tile[data-kind="friendReel"]')).toHaveCount(1);
+});
