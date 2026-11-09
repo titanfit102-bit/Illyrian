@@ -586,6 +586,7 @@ window.ILLYRIAN_LOCALES.en={
     "salaryBasis": "/month · indicative",
     "salaryOptional": "Indicative monthly salary € (optional)",
     "listingPrice": "Price (€)",
+    "storageConflict": "Shop data changed in another tab. Copy your draft and reload before saving.",
     "storageFull": "Could not save: local storage is full.",
     "addedCartNotice": "The product was added to the demo cart.",
     "confirmDelete": "Delete this demo listing?",

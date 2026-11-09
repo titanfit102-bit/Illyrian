@@ -3798,3 +3798,70 @@ test('Shop Plus rejects deleting a personal listing on stale localStorage and ne
  const persisted=JSON.parse(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_shop_plus')));
  expect(persisted.items.map(p=>p.id)).toEqual(['own-stale','other-window']);
 });
+
+for(const [lang,notice] of Object.entries({
+ sq:'Të dhënat e Shop ndryshuan në një skedë tjetër. Kopjo draftin dhe rifresko faqen.',
+ en:'Shop data changed in another tab. Copy your draft and reload before saving.',
+ it:"I dati dello Shop sono cambiati in un'altra scheda. Copia la bozza e ricarica prima di salvare."
+})){
+ test('Shop basic blocks stale listing submit and retains unsent draft '+lang,async({browser})=>{
+  const ctx=await browser.newContext(),a=await ctx.newPage(),b=await ctx.newPage(),key='illyrian_demo_v17_shop';
+  try{
+   for(const page of [a,b]){
+    await ready(page);
+    await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+    await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+    await openShop(page);await page.locator('#illyrian-shop-layer [data-ils="sell"]').click();
+   }
+   const primary=a.locator('#ils-sell-form'),stale=b.locator('#ils-sell-form');
+   await primary.locator('[name="name"]').fill('First tab offer');
+   await primary.locator('[name="store"]').fill('First demo seller');
+   await primary.locator('[name="price"]').fill('12');
+   await primary.locator('button[type="submit"]').click();
+   const actual=await a.evaluate(k=>localStorage.getItem(k),key);
+   expect(JSON.parse(actual).listings.map(x=>x.name)).toEqual(['First tab offer']);
+   await stale.locator('[name="name"]').fill('Second tab unsent offer');
+   await stale.locator('[name="store"]').fill('Second demo seller');
+   await stale.locator('[name="price"]').fill('28');
+   await stale.locator('[name="description"]').fill('Draft <b>text</b>');
+   await stale.locator('button[type="submit"]').click();
+   await expect(b.locator('#illyrian-shop-layer .ils-toast[role="status"]')).toHaveText(notice);
+   await expect(stale.locator('[name="name"]')).toHaveValue('Second tab unsent offer');
+   await expect(stale.locator('[name="description"]')).toHaveValue('Draft <b>text</b>');
+   expect(await b.evaluate(k=>localStorage.getItem(k),key)).toBe(actual);
+   await b.reload({waitUntil:'load'});
+   await b.locator('#navbar [data-act="tab"][data-val="home"]').click();
+   await openShop(b);await b.locator('#illyrian-shop-layer [data-ils="sell"]').click();
+   const retry=b.locator('#ils-sell-form');
+   await retry.locator('[name="name"]').fill('Second offer saved');
+   await retry.locator('[name="store"]').fill('Second demo seller');
+   await retry.locator('[name="price"]').fill('28');
+   await retry.locator('button[type="submit"]').click();
+   const saved=JSON.parse(await b.evaluate(k=>localStorage.getItem(k),key));
+   expect(saved.listings.map(x=>x.name)).toEqual(['Second offer saved','First tab offer']);
+  }finally{await ctx.close()}
+ });
+}
+test('Shop basic rejects stale cart edits without false success or overwriting a committed cart',async({browser})=>{
+ const ctx=await browser.newContext(),a=await ctx.newPage(),b=await ctx.newPage(),key='illyrian_demo_v17_shop';
+ try{
+  for(const page of [a,b]){
+   await ready(page);
+   await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+   await page.locator('#navbar [data-act="tab"][data-val="home"]').click();
+   await openShop(page);await page.locator('#illyrian-shop-layer [data-ils="detail"][data-id="p1"]').click();
+  }
+  await a.locator('#illyrian-shop-layer [data-ils="add"]').click();
+  const actual=await a.evaluate(k=>localStorage.getItem(k),key);
+  expect(JSON.parse(actual).cart.p1).toBe(1);
+  await b.locator('#illyrian-shop-layer [data-ils="add"]').click();
+  await expect(b.locator('#illyrian-shop-layer .ils-toast[role="status"]')).toContainText('another tab');
+  await expect(b.locator('#illyrian-shop-layer .ils-cart b')).toHaveText('0');
+  expect(await b.evaluate(k=>localStorage.getItem(k),key)).toBe(actual);
+  await b.reload({waitUntil:'load'});
+  await b.locator('#navbar [data-act="tab"][data-val="home"]').click();
+  await openShop(b);await b.locator('#illyrian-shop-layer [data-ils="detail"][data-id="p1"]').click();
+  await b.locator('#illyrian-shop-layer [data-ils="add"]').click();
+  expect(JSON.parse(await b.evaluate(k=>localStorage.getItem(k),key)).cart.p1).toBe(2);
+ }finally{await ctx.close()}
+});

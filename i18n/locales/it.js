@@ -586,6 +586,7 @@ window.ILLYRIAN_LOCALES.it={
     "salaryBasis": "/mese · indicativa",
     "salaryOptional": "Retribuzione mensile indicativa € (facoltativa)",
     "listingPrice": "Prezzo (€)",
+    "storageConflict": "I dati dello Shop sono cambiati in un'altra scheda. Copia la bozza e ricarica prima di salvare.",
     "storageFull": "Salvataggio non riuscito: lo spazio di archiviazione locale è esaurito.",
     "addedCartNotice": "Il prodotto è stato aggiunto al carrello dimostrativo.",
     "confirmDelete": "Eliminare questo annuncio dimostrativo?",

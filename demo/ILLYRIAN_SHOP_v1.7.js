@@ -20,6 +20,9 @@
   {id:'s2',kind:'Shërbime',name:'Riparim celulari',store:'Phone Lab',city:'Prishtinë',price:20,unit:'nga',emoji:'📱',description:"Çmim orientues; ofruesi konfirmon koston."}
  ];
  function read(){try{const v=JSON.parse(localStorage.getItem(KEY)||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{return {}}}
+ // Detect observed cross-tab changes without changing the separate Shop Plus storage.
+ // Browser localStorage does not provide atomic compare-and-swap.
+ let expectedRaw=null;try{expectedRaw=localStorage.getItem(KEY)}catch{}
  const restored=read();
  const state={open:false,view:'browse',query:'',category:'Të gjitha',city:'Të gjitha',sort:'relevance',store:'',selected:null,discovery:'offers',business:'',
   listings:Array.isArray(restored.listings)?restored.listings.filter(v=>v&&typeof v==='object'&&typeof v.name==='string').slice(0,30):[],
@@ -46,7 +49,14 @@
  window.IllyrianShopDiscovery=Object.freeze({searchText,businessProfile});
  const price=p=>p.kind==='Punë'?(Number(p.price)>0?money(p.price)+' '+clean(shopMessage('salaryBasis','/muaj · orientuese')):clean(shopMessage('salaryUnknown','Paga nuk është deklaruar'))):money(p.price)+(p.kind==='Banesa me qira'?'/muaj':p.unit==='nga'?' nga':'');
  const persistentData=()=>({listings:state.listings,cart:state.cart,orders:state.orders,requests:state.requests});
- const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(persistentData()));return true}catch{notify(shopMessage('storageFull','Nuk u ruajt: hapësira lokale është plot.'));return false}};
+ const persist=()=>{try{
+  if(localStorage.getItem(KEY)!==expectedRaw){
+   notify(shopMessage('storageConflict','Të dhënat e Shop ndryshuan në një skedë tjetër. Kopjo draftin dhe rifresko faqen.'));
+   return false;
+  }
+  const next=JSON.stringify(persistentData());
+  localStorage.setItem(KEY,next);expectedRaw=next;return true;
+ }catch{notify(shopMessage('storageFull','Nuk u ruajt: hapësira lokale është plot.'));return false}};
  // Keep the on-screen and stored Shop state consistent if persistence is denied (quota/private mode).
  const transact=change=>{const before=JSON.stringify(persistentData());change();if(persist())return true;Object.assign(state,JSON.parse(before));return false};
  const byId=id=>all().find(p=>p.id===id);

@@ -586,6 +586,7 @@ window.ILLYRIAN_LOCALES.sq={
     "salaryBasis": "/muaj · orientuese",
     "salaryOptional": "Paga orientuese € (opsionale)",
     "listingPrice": "Çmimi (€)",
+    "storageConflict": "Të dhënat e Shop ndryshuan në një skedë tjetër. Kopjo draftin dhe rifresko faqen.",
     "storageFull": "Nuk u ruajt: hapësira lokale është plot.",
     "addedCartNotice": "Produkti u shtua në shportën demonstrative.",
     "confirmDelete": "Ta fshijmë këtë listim demonstrues?",
