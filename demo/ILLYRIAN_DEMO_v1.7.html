@@ -1222,13 +1222,20 @@ modalContent=function(){
 };
 const v10BaseV8Action=v8Action;
 v8Action=function(action,id,v){
- if(action==='v10-plans-view'){
-  state.v10PlansView=['all','mine','accepted'].includes(v)?v:'all';
-  persist();state.tab='events';state.modal=null;render();return true;
- }
- if(action==='v10-my-plans'){
-  state.v10PlansView=state.requests.length?'mine':'all';
-  persist();state.tab='events';state.modal=null;render();return true;
+ if(action==='v10-plans-view'||action==='v10-my-plans'){
+  const input=document.activeElement;
+  if(!coreMessageFresh(input))return true;
+  const previous=state.v10PlansView;
+  const selected=action==='v10-my-plans'
+   ?(state.requests.length?'mine':'all')
+   :(['all','mine','accepted'].includes(v)?v:'all');
+  if(selected!==previous){
+   state.v10PlansView=selected;
+   if(!persist()){state.v10PlansView=previous;toast(coreSaveFailed());input?.focus();return true}
+  }
+  state.tab='events';state.modal=null;render();
+  document.querySelector('#screen .v10-event-tabs button.selected')?.focus({preventScroll:true});
+  return true;
  }
  if(action==='share'){openModal('v10-share',id);return true;}
  if(action==='v10-copy-post'){
