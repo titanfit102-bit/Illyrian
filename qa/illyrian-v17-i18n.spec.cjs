@@ -3458,3 +3458,35 @@ test('Plans all tab localizes headings, hero and filter labels live without chan
  await expect(page.locator('#screen [data-act="eventfilter"][data-val="Sport"]')).toHaveClass(/active/);
  await expect(page.locator('#screen .event-card')).toHaveCount(1);
 });
+
+test('Connected Plans cards and event details localize sq/en/it without modifying fixtures or focus',async({page})=>{
+ await ready(page);
+ await page.locator('.head [data-act="tab"][data-val="events"]').click();
+ const card=page.locator('#screen .event-card').first();
+ const label=card.locator('[data-v13-copy="fromCommunity"]');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ for(const [lang,from] of [['sq','Nga komuniteti'],['en','From the community'],['it','Dalla comunità']]){
+  await label.focus();await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(label).toHaveText(from);
+  await expect(card.locator('h3')).toHaveText('Futboll me shqiptarët');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ }
+ await card.locator('[data-act="event"]').click();
+ const detail=page.locator('#layer .v13-detail'),community=detail.locator('[data-act="v13-community"]');
+ await expect(detail).toBeVisible();
+ await community.focus();
+ for(const [lang,open,heading,people,profile,category] of [
+  ['sq','Kërkesë e hapur','PËRVOJA ILLYRIAN','Personat në këtë plan','Shiko profilin →','Sport'],
+  ['en','Requests open','ILLYRIAN EXPERIENCE','People in this plan','View profile →','Sports'],
+  ['it','Richieste aperte','ESPERIENZA ILLYRIAN','Persone in questo piano','Vedi profilo →','Sport']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(community).toBeFocused();
+  await expect(detail.locator('[data-v13-status="e1"]')).toHaveText(open);
+  await expect(detail.locator('[data-v13-copy="connectedExperience"]')).toHaveText(heading);
+  await expect(detail.locator('[data-v13-copy="connectedPeople"]')).toHaveText(people);
+  await expect(detail.locator('[data-v13-copy="connectedViewProfile"]')).toHaveText(profile);
+  await expect(detail.locator('[data-v13-category="Sport"]')).toHaveText(category);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ }
+});

@@ -1524,15 +1524,16 @@ const v13Links={
  e2:{community:'c3',organizer:'arta',people:['arta','besa','leon'],category:'Social'},
  e3:{community:'c2',organizer:'besa',people:['besa','dion','arta'],category:'Kulturë'}
 };
+const v13Text=(key,fallback)=>window.IllyrianI18n?.t('plans:'+key)||fallback;
 function v13Person(id){return people.find(p=>p.id===id)}
 function v13Community(id){return communities.find(c=>c.id===id)}
 function v13PlanCommunity(id){return v13Community(v13Links[id]?.community)}
 function v13Status(id){
- if(state.v8EventStatuses[id]==='cancelled')return "Anuluar";
- if(state.v8EventStatuses[id]==='full')return "Pa vende";
- if(state.acceptedPlans.includes(id))return "I pranuar";
- if(state.requests.includes(id))return "Në pritje";
- return "Kërkesë e hapur";
+ if(state.v8EventStatuses[id]==='cancelled')return v13Text('connectedCancelled','Anuluar');
+ if(state.v8EventStatuses[id]==='full')return v13Text('connectedFull','Pa vende');
+ if(state.acceptedPlans.includes(id))return v13Text('connectedAccepted','I pranuar');
+ if(state.requests.includes(id))return v13Text('connectedWaiting','Në pritje');
+ return v13Text('connectedOpen','Kërkesë e hapur');
 }
 function v13People(id){
  const cfg=v13Links[id];if(!cfg)return '';
@@ -1545,7 +1546,7 @@ const v13BaseEventCard=eventCard;
 eventCard=function(e){
  const html=v13BaseEventCard(e),c=v13PlanCommunity(e.id);
  if(!c||!html)return html;
- return html.replace('</article>',`<div class="v13-card-community"><span>${c.emoji} Nga komuniteti</span><button type="button" data-act="v13-community" data-id="${c.id}">${safeMark(communityTitle(c))} →</button></div></article>`);
+ return html.replace('</article>',`<div class="v13-card-community"><span><span aria-hidden="true">${c.emoji}</span> <span data-i18n-direct data-v13-copy="fromCommunity">${esc(v13Text('fromCommunity','Nga komuniteti'))}</span></span><button type="button" data-act="v13-community" data-id="${c.id}">${safeMark(communityTitle(c))} →</button></div></article>`);
 };
 const v13BaseModal=modalContent;
 modalContent=function(){
@@ -1556,11 +1557,11 @@ modalContent=function(){
   if(!e||!cfg||state.v8EventStatuses[e.id])return v13BaseModal();
   const org=v13Person(cfg.organizer),c=v13PlanCommunity(e.id);
   let html=v13BaseModal();
-  const related=`<section class="v13-detail" aria-label="Detajet e komunitetit dhe pjesëmarrësve">
-   <div class="v13-topline"><span class="v13-overline">PËRVOJA ILLYRIAN</span><span class="v13-status">${v13Status(e.id)}</span></div>
-   <button class="v13-related" type="button" data-act="v13-community" data-id="${esc(c.id)}"><span class="v13-related-symbol">${c.emoji}</span><span><strong>${safeMark(communityTitle(c))}</strong><small>Komuniteti që organizon planin</small></span><span>›</span></button>
-   <div class="v13-organizer"><span>Organizatori · simulim</span><button type="button" data-act="v13-person" data-id="${esc(org.id)}">${tinyAvatar(org.ava,'v13-avatar')}<strong>${safeMark(org.name)}</strong><span>Shiko profilin →</span></button></div>
- <div class="v13-attendees"><div class="v13-section-header"><strong>Personat në këtë plan</strong><small>Profile </small></div><div class="v13-peoplerow">${v13People(e.id)}</div><div class="v13-capacity">${esc(e.members)} · ${safeMark(cfg.category)}</div></div>
+  const related=`<section class="v13-detail" aria-label="${esc(v13Text('connectedDetailsAria','Detajet e komunitetit dhe pjesëmarrësve'))}" data-v13-aria="connectedDetailsAria">
+   <div class="v13-topline"><span class="v13-overline" data-i18n-direct data-v13-copy="connectedExperience">${esc(v13Text('connectedExperience','PËRVOJA ILLYRIAN'))}</span><span class="v13-status" data-i18n-direct data-v13-status="${esc(e.id)}">${esc(v13Status(e.id))}</span></div>
+   <button class="v13-related" type="button" data-act="v13-community" data-id="${esc(c.id)}"><span class="v13-related-symbol">${c.emoji}</span><span><strong data-user-content>${safeMark(communityTitle(c))}</strong><small data-i18n-direct data-v13-copy="connectedOrganizerCommunity">${esc(v13Text('connectedOrganizerCommunity','Komuniteti që organizon planin'))}</small></span><span>›</span></button>
+   <div class="v13-organizer"><span data-i18n-direct data-v13-copy="connectedOrganizerSim">${esc(v13Text('connectedOrganizerSim','Organizatori · simulim'))}</span><button type="button" data-act="v13-person" data-id="${esc(org.id)}">${tinyAvatar(org.ava,'v13-avatar')}<strong data-user-content>${safeMark(org.name)}</strong><span data-i18n-direct data-v13-copy="connectedViewProfile">${esc(v13Text('connectedViewProfile','Shiko profilin →'))}</span></button></div>
+ <div class="v13-attendees"><div class="v13-section-header"><strong data-i18n-direct data-v13-copy="connectedPeople">${esc(v13Text('connectedPeople','Personat në këtë plan'))}</strong><small data-i18n-direct data-v13-copy="connectedProfiles">${esc(v13Text('connectedProfiles','Profile'))}</small></div><div class="v13-peoplerow">${v13People(e.id)}</div><div class="v13-capacity">${esc(e.members)} · <span data-i18n-direct data-v13-category="${esc(cfg.category)}">${esc(v13Text(({Sport:'sport',Social:'social','Kulturë':'culture'})[cfg.category]||'sport',cfg.category))}</span></div></div>
   </section>`;
   if(html.includes('<div class="v3-flow">'))return html.replace('<div class="v3-flow">',related+'<div class="v3-flow">');
   return html.replace(/<div class="switch-info">/,related+'<div class="switch-info">');
@@ -1569,7 +1570,7 @@ modalContent=function(){
   const e=events.find(x=>x.id===m.id),c=v13PlanCommunity(m.id);
   if(!e||!c||!state.acceptedPlans.includes(e.id))return v13BaseModal();
   const html=v13BaseModal();
-  const panel=`<div class="v13-group-top"><strong>Grupi i aktivitetit · simulim</strong><div class="v13-group-actions"><button data-act="v13-plan" data-id="${e.id}">Detajet e planit →</button><button data-act="v13-community" data-id="${c.id}">Komuniteti →</button></div><div class="v13-peoplerow">${v13People(e.id)}</div></div>`;
+  const panel=`<div class="v13-group-top"><strong data-i18n-direct data-v13-copy="connectedGroupTitle">${esc(v13Text('connectedGroupTitle','Grupi i aktivitetit · simulim'))}</strong><div class="v13-group-actions"><button data-act="v13-plan" data-id="${esc(e.id)}" data-i18n-direct data-v13-copy="connectedPlanDetails">${esc(v13Text('connectedPlanDetails','Detajet e planit →'))}</button><button data-act="v13-community" data-id="${esc(c.id)}" data-i18n-direct data-v13-copy="connectedCommunity">${esc(v13Text('connectedCommunity','Komuniteti →'))}</button></div><div class="v13-peoplerow">${v13People(e.id)}</div></div>`;
   return html.replace('<div class="group-header">',panel+'<div class="group-header">');
  }
  if(m.type==='v11-community'){
@@ -1577,11 +1578,26 @@ modalContent=function(){
   if(!c)return base;
   const list=events.filter(e=>v13Links[e.id]?.community===c.id);
   if(!list.length)return base;
-  const panel=`<section class="v13-community-plans" aria-label="Aktivitetet e komunitetit"><div class="v13-section-header"><strong>Aktivitetet e komunitetit</strong><small>Kalo nga komuniteti te pjesëmarrja</small></div>${list.map(e=>`<button type="button" data-act="v13-plan" data-id="${e.id}"><span class="v13-plan-symbol">${e.emoji}</span><span><strong>${safeMark(e.title)}</strong><small>${safeMark(e.city)} · ${safeMark(e.day)}</small><em>${v13Status(e.id)}</em></span><b>›</b></button>`).join('')}</section>`;
+  const panel=`<section class="v13-community-plans" aria-label="${esc(v13Text('connectedCommunityActivities','Aktivitetet e komunitetit'))}" data-v13-aria="connectedCommunityActivities"><div class="v13-section-header"><strong data-i18n-direct data-v13-copy="connectedCommunityActivities">${esc(v13Text('connectedCommunityActivities','Aktivitetet e komunitetit'))}</strong><small data-i18n-direct data-v13-copy="connectedCommunityJoin">${esc(v13Text('connectedCommunityJoin','Kalo nga komuniteti te pjesëmarrja'))}</small></div>${list.map(e=>`<button type="button" data-act="v13-plan" data-id="${esc(e.id)}"><span class="v13-plan-symbol">${e.emoji}</span><span><strong data-user-content>${safeMark(e.title)}</strong><small>${safeMark(e.city)} · ${safeMark(e.day)}</small><em data-i18n-direct data-v13-status="${esc(e.id)}">${esc(v13Status(e.id))}</em></span><b>›</b></button>`).join('')}</section>`;
   return base.replace('<p class="v11-disclaimer">',panel+'<p class="v11-disclaimer">');
  }
  return v13BaseModal();
 };
+window.addEventListener('illyrian:language-changed',()=>{
+ document.querySelectorAll('#phone [data-v13-copy],#layer [data-v13-copy]').forEach(el=>{
+  const value=v13Text(el.dataset.v13Copy,el.textContent);
+  if(el.textContent!==value)el.textContent=value;
+ });
+ document.querySelectorAll('#phone [data-v13-status],#layer [data-v13-status]').forEach(el=>{
+  const value=v13Status(el.dataset.v13Status);
+  if(el.textContent!==value)el.textContent=value;
+ });
+ document.querySelectorAll('#phone [data-v13-aria],#layer [data-v13-aria]').forEach(el=>el.setAttribute('aria-label',v13Text(el.dataset.v13Aria,el.getAttribute('aria-label'))));
+ document.querySelectorAll('#phone [data-v13-category],#layer [data-v13-category]').forEach(el=>{
+  const key=({Sport:'sport',Social:'social','Kulturë':'culture'})[el.dataset.v13Category];
+  if(key)el.textContent=v13Text(key,el.dataset.v13Category);
+ });
+});
 const v13PreviousAction=v8Action;
 v8Action=function(action,id,v){
  if(action==='v13-plan'){
