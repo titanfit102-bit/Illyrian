@@ -1560,3 +1560,46 @@ test('Messages: group chat quota error rolls back and retries without duplicate 
  await expect(page.locator('#groupchat')).toContainText('One local message after retry');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).groupMessages.e1)).toEqual(['One local message after retry']);
 });
+
+
+for(const action of ['reel-like','reel-save']){
+ const field=action==='reel-like'?'reelLikes':'reelSaved';
+ test('Reels audit: '+action+' announces state, retains focus and persists across reload',async({page})=>{
+  await openDemo(page,390,844);await openReels(page);
+  let button=page.locator('#layer .v4-reel-overlay [data-act="'+action+'"]');
+  await expect(button).toHaveAttribute('aria-pressed','false');
+  await button.focus();await page.keyboard.press('Enter');
+  await expect(button).toBeFocused();await expect(button).toHaveAttribute('aria-pressed','true');
+  expect(await page.evaluate(field=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state'))[field],field)).toContain('r1');
+  await page.reload({waitUntil:'load'});await openReels(page);
+  button=page.locator('#layer .v4-reel-overlay [data-act="'+action+'"]');
+  await expect(button).toHaveAttribute('aria-pressed','true');
+  await button.focus();await page.keyboard.press('Enter');
+  await expect(button).toBeFocused();await expect(button).toHaveAttribute('aria-pressed','false');
+ });
+ test('Reels audit: '+action+' quota rollback is honest and Retry saves only once',async({page})=>{
+  await openDemo(page,390,844);await openReels(page);
+  const button=page.locator('#layer .v4-reel-overlay [data-act="'+action+'"]');
+  const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await page.evaluate(()=>{
+   window.__reelsOriginalSetItem=Storage.prototype.setItem;
+   Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota exceeded','QuotaExceededError');return window.__reelsOriginalSetItem.call(this,k,v)};
+  });
+  await button.click();await expect(button).toHaveAttribute('aria-pressed','false');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+  await page.evaluate(()=>{Storage.prototype.setItem=window.__reelsOriginalSetItem;delete window.__reelsOriginalSetItem});
+  await button.click();await expect(button).toHaveAttribute('aria-pressed','true');
+  expect(await page.evaluate(field=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state'))[field],field)).toEqual(['r1']);
+ });
+ test('Reels audit: '+action+' rejects stale writes without overwriting newer local data',async({page})=>{
+  await openDemo(page,390,844);await openReels(page);
+  const button=page.locator('#layer .v4-reel-overlay [data-act="'+action+'"]');
+  const raw=await page.evaluate(()=>{
+   const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key)||'{}');
+   s.v9RecentQueries=['newer-tab-data'];const updated=JSON.stringify(s);
+   localStorage.setItem(key,updated);return updated;
+  });
+  await button.click();await expect(button).toHaveAttribute('aria-pressed','false');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ });
+}
