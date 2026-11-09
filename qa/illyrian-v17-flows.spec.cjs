@@ -118,3 +118,31 @@ for(const [w,h] of [[390,844],[844,390],[1280,800]]){
     }
   });
 }
+
+test('Plans local entry and local activity labels follow live sq/en/it without data writes',async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({
+    events:[{id:'qa-localized',title:'Original user plan',kind:'Sport',city:'Romë',place:'Original venue',date:'2099-06-12',time:'13:00',capacity:5,price:0,privacy:'public',conditions:'',cancelled:false}],
+    requests:[],messages:[],attendance:[]
+  })));
+  await openDemo(page,390,844);await nav(page,'events');
+  const entry=page.locator('#screen .ilp-entry');
+  const cards=page.locator('#screen #ilp-created-list');
+  await expect(entry).toBeVisible();await expect(cards).toBeVisible();
+  const original=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+  const opener=entry.locator('[data-ilp-entry]');await opener.focus();
+  for(const [lang,title,description,created,open,view] of [
+    ['sq','Krijo dhe menaxho aktivitete','Plan, kërkesa, kapacitet dhe biseda në grup','Aktivitete të krijuara lokalisht','Hap panelin →','Shiko planin →'],
+    ['en','Create and manage activities','Plans, requests, capacity and group chat','Locally created activities','Open panel →','View plan →'],
+    ['it','Crea e gestisci attività','Piani, richieste, capienza e chat di gruppo','Attività create localmente','Apri il pannello →','Vedi il piano →']
+  ]){
+    await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+    await expect(entry.locator('strong')).toHaveText(title);
+    await expect(entry.locator('p')).toHaveText(description);
+    await expect(opener).toHaveText(open);
+    await expect(cards.locator('h3')).toHaveText(created);
+    await expect(cards.locator('[data-ilp-open="qa-localized"]')).toHaveText(view);
+    await expect(opener).toBeFocused();
+    await expect(cards.locator('[data-user-content]')).toHaveText('Original user plan');
+    expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(original);
+  }
+});

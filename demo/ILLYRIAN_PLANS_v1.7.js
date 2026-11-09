@@ -187,17 +187,29 @@
     const shown=!!screen.querySelector('.v10-event-tabs')||/Plane që na bashkojnë|Planet e mia/i.test(screen.querySelector('h2')?.textContent||'');
     if(!shown)return;
     if(!screen.querySelector('[data-ilp-entry]')){
-      const wrap=document.createElement('div');wrap.className='ilp-entry';wrap.innerHTML="<strong>Krijo dhe menaxho aktivitete</strong><p>Plan, kërkesa, kapacitet dhe biseda në grup</p><button type=\"button\" data-ilp-entry=\"1\">Hap panelin →</button>";
+      const wrap=document.createElement('div');wrap.className='ilp-entry';wrap.innerHTML=`<strong data-i18n-direct>${ui('entryTitle','Krijo dhe menaxho aktivitete')}</strong><p data-i18n-direct>${ui('entryDescription','Plan, kërkesa, kapacitet dhe biseda në grup')}</p><button type="button" data-i18n-direct data-ilp-entry="1">${ui('open','Hap panelin →')}</button>`;
       const first=screen.querySelector('.v10-event-tabs')||screen.firstElementChild;first?.parentElement?.insertBefore(wrap,first);
     }
     let cards=screen.querySelector('#ilp-created-list');
+    const entry=screen.querySelector('.ilp-entry');
+    if(entry){
+      for(const [selector,key,fallback] of [['strong','entryTitle','Krijo dhe menaxho aktivitete'],['p','entryDescription','Plan, kërkesa, kapacitet dhe biseda në grup'],['[data-ilp-entry]','open','Hap panelin →']]){
+        const el=entry.querySelector(selector),label=feedback(key,fallback);
+        if(el&&el.textContent!==label)el.textContent=label;
+      }
+    }
     const visible=state.events.filter(e=>e.id!=='demo-football'&&e.privacy==='public');
     if(!visible.length){cards?.remove();return}
     if(!cards){cards=document.createElement('section');cards.id='ilp-created-list';screen.appendChild(cards)}
-    const markup="<h3>Aktivitete të krijuara lokalisht</h3>"+visible.map(e=>`<article class="ilp-card"><strong data-user-content>${escape(e.title)}</strong><p>${escape(e.city)} · ${escape(e.date)}</p><button type="button" data-ilp-open="${escape(e.id)}">Hap planin →</button></article>`).join('');
-    if(cards.innerHTML!==markup)cards.innerHTML=markup;
+    const markup="<h3 data-i18n-direct>"+ui('createdLocal','Aktivitete të krijuara lokalisht')+"</h3>"+visible.map(e=>`<article class="ilp-card"><strong data-user-content>${escape(e.title)}</strong><p>${escape(e.city)} · ${escape(e.date)}</p><button type="button" data-i18n-direct data-ilp-open="${escape(e.id)}">${ui('viewPlan','Shiko planin →')}</button></article>`).join('');
+    if(cards.innerHTML!==markup){
+      const focused=cards.contains(document.activeElement)?document.activeElement.getAttribute('data-ilp-open'):null;
+      cards.innerHTML=markup;
+      if(focused)[...cards.querySelectorAll('[data-ilp-open]')].find(b=>b.dataset.ilpOpen===focused)?.focus({preventScroll:true});
+    }
   }
   function onLocaleChange(){
+    sync();
     if(!root||!state.open)return;
     // An unchanged locale must never tear down a focused open dialog.
     if(renderedLanguage===window.IllyrianI18n?.language)return;
