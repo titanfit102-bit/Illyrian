@@ -1631,3 +1631,50 @@ test('Explore audit: search rerender preserves both selection endpoints and keyb
  expect(await finder.evaluate(el=>({start:el.selectionStart,end:el.selectionEnd,direction:el.selectionDirection}))).toEqual({start:1,end:3,direction:'backward'});
  await expect(page.locator('#screen [data-act="user-profile"][data-id="leon"]').first()).toBeVisible();
 });
+
+
+test('Explore audit: recent query quota failure preserves input and retries once',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ const finder=page.locator('#finder');await finder.fill('Leon');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.evaluate(()=>{
+  window.__recentOriginalSetItem=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){if(key==='illyrian_demo_v09_state')throw new DOMException('Quota exceeded','QuotaExceededError');return window.__recentOriginalSetItem.call(this,key,value)};
+ });
+ await finder.press('Enter');
+ await expect(finder).toHaveValue('Leon');
+ await expect(finder).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__recentOriginalSetItem;delete window.__recentOriginalSetItem});
+ await finder.press('Enter');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).v9RecentQueries)).toEqual(['Leon']);
+ await page.reload({waitUntil:'load'});await page.locator('#navbar [data-val="explore"]').click();
+ await expect(page.locator('#screen [data-act="v9-query"][data-val="Leon"]')).toBeVisible();
+});
+
+test('Explore audit: stale recent search never overwrites another tab',async({page})=>{
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="explore"]').click();
+ const finder=page.locator('#finder');await finder.fill('Besa');
+ const newer=await page.evaluate(()=>{
+  const key='illyrian_demo_v09_state',s=JSON.parse(localStorage.getItem(key)||'{}');
+  s.v9RecentQueries=['Another tab'];s.bookmarks=['p2'];
+  const raw=JSON.stringify(s);localStorage.setItem(key,raw);return raw;
+ });
+ await finder.press('Enter');
+ await expect(finder).toHaveValue('Besa');await expect(finder).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(newer);
+});
+
+test('Explore audit: Enter confirming IME does not store a recent query',async({page})=>{
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="explore"]').click();
+ const finder=page.locator('#finder');await finder.fill('Arta');
+ const raw=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await finder.evaluate(el=>{
+  el.dispatchEvent(new CompositionEvent('compositionstart',{bubbles:true}));
+  el.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',isComposing:true,bubbles:true,cancelable:true}));
+ });
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
+ await finder.evaluate(el=>el.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true})));
+ await expect(finder).toHaveValue('Arta');
+});
