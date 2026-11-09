@@ -1603,3 +1603,31 @@ for(const action of ['reel-like','reel-save']){
   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(raw);
  });
 }
+
+
+test('Explore audit: composing text does not detach the input before compositionend',async({page})=>{
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="explore"]').click();
+ await page.evaluate(()=>{
+  const input=document.querySelector('#finder');input.focus();
+  window.__finderComposer=input;
+  input.dispatchEvent(new CompositionEvent('compositionstart',{bubbles:true}));
+  input.value='Besa';
+  input.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true,data:'Besa'}));
+ });
+ expect(await page.evaluate(()=>document.querySelector('#finder')===window.__finderComposer)).toBe(true);
+ await page.evaluate(()=>window.__finderComposer.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true})));
+ await expect(page.locator('#finder')).toHaveValue('Besa');
+ await expect(page.locator('#screen [data-act="user-profile"][data-id="besa"]').first()).toBeVisible();
+ await expect(page.locator('#finder')).toBeFocused();
+});
+
+test('Explore audit: search rerender preserves both selection endpoints and keyboard focus',async({page})=>{
+ await openDemo(page,390,844);await page.locator('#navbar [data-val="explore"]').click();
+ const finder=page.locator('#finder');
+ await expect(finder).toHaveAttribute('aria-label','Kërko në ILLYRIAN');
+ await finder.fill('Leon');
+ await finder.evaluate(el=>{el.focus();el.setSelectionRange(1,3,'backward');el.dispatchEvent(new InputEvent('input',{bubbles:true}));});
+ await expect(finder).toBeFocused();
+ expect(await finder.evaluate(el=>({start:el.selectionStart,end:el.selectionEnd,direction:el.selectionDirection}))).toEqual({start:1,end:3,direction:'backward'});
+ await expect(page.locator('#screen [data-act="user-profile"][data-id="leon"]').first()).toBeVisible();
+});
