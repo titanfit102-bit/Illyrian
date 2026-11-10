@@ -1483,6 +1483,57 @@ for(const action of ['like','save','hide-post'])test('Home audit: quota failure 
  await page.reload();if(action==='hide-post')await expect(page.locator('#screen [data-act="postmore"][data-id="p1"]')).toHaveCount(0);else await expect(button).toHaveAttribute('aria-pressed','true');
 });
 
+for(const [action,detail,id,message] of [
+ ['market-contact','market-detail','m1','Kërkesë për një shërbim'],
+ ['business-contact','business-detail','b1','Kontakti me biznesin u simulua']
+])test('Mundësi simulated '+action+' keeps the log intact on quota and stale writes',async({page})=>{
+ await openDemo(page,390,844);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#navbar [data-val="explore"]').click();
+ const open=async()=>{
+  await page.locator('#screen [data-act="'+detail+'"][data-id="'+id+'"]').click();
+  await expect(page.locator('#layer [data-act="'+action+'"][data-id="'+id+'"]')).toBeVisible();
+ };
+ await open();
+ const button=page.locator('#layer [data-act="'+action+'"][data-id="'+id+'"]'),key='illyrian_demo_v09_state';
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__contactSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){
+   if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');
+   return window.__contactSet.call(this,k,v);
+  };
+ });
+ await button.click();
+ await expect(page.locator('#toast-area')).toContainText(/nuk u ruajt/i);
+ await expect(button).toBeVisible();
+ await expect(button).toBeFocused();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__contactSet;delete window.__contactSet});
+ const updated=await page.evaluate(k=>{
+  const saved=JSON.parse(localStorage.getItem(k)||'{}');
+  saved.comments={...saved.comments,p1:['Simulated contact from other tab']};
+  const raw=JSON.stringify(saved);
+  localStorage.setItem(k,raw);
+  return raw;
+ },key);
+ await button.click();
+ await expect(button).toBeVisible();
+ await expect(button).toBeFocused();
+ await expect(page.locator('#toast-area')).toContainText(/ndrysh|changed|cambiat/i);
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(updated);
+ await page.reload({waitUntil:'load'});
+ await open();
+ await button.click();
+ const stored=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(stored.comments.p1).toEqual(['Simulated contact from other tab']);
+ expect(stored.activityLog.filter(x=>x.text===message)).toHaveLength(1);
+ await expect(button).toBeVisible();
+ await page.reload({waitUntil:'load'});
+ const restored=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(restored.activityLog.filter(x=>x.text===message)).toHaveLength(1);
+});
+
 test('Feed post report preserves modal on quota and stale storage, then saves locally',async({page})=>{
  await openHomeAudit(page);
  const key='illyrian_demo_v09_state';

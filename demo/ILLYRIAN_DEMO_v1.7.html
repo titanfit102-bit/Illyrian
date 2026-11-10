@@ -458,8 +458,16 @@ function v3Action(action,id,v){
   if(!coreArrayToggle('marketSaved',id,document.activeElement,'U përditësua lista e ofertave të ruajtura'))return true;
   openModal('market-detail',id);return true;
  }
- if(action==='market-contact'){notice("Kërkesë për një shërbim");toast("Kërkesë — nuk u dërgua");return true}
- if(action==='business-contact'){notice('Kontakti me biznesin u simulua');toast("Kontakt — pa mesazh real");return true}
+ if(action==='market-contact'||action==='business-contact'){
+  const isMarket=action==='market-contact';
+  if(!(isMarket?market:businesses).some(x=>x.id===id))return true;
+  const input=document.activeElement;
+  if(!coreMessageFresh(input))return true;
+  const previousLog=state.activityLog;
+  state.activityLog=[{id:Date.now()+Math.random(),text:isMarket?'Kërkesë për një shërbim':'Kontakti me biznesin u simulua',time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
+  if(!persist()){state.activityLog=previousLog;toast(coreSaveFailed());input?.focus();return true}
+  toast(isMarket?'Kërkesë — nuk u dërgua':'Kontakt — pa mesazh real');return true;
+ }
  if(action==='apply-job'){
   if(!jobs.some(j=>j.id===id))return true;
   if(state.applications.includes(id)){openModal('job-detail',id);return true}
