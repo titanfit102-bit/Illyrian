@@ -427,6 +427,8 @@ window.ILLYRIAN_LOCALES.en={
     "write": "Write a message..."
   },
   "plans": {
+    "linkedStoryKicker": "PLAN SUMMARY",
+    "linkedReelKicker": "FROM REEL TO PARTICIPATION",
     "linkedOpenAriaPrefix": "Open plan ",
     "linkedBackPrefix": "Back to ",
     "linkedSourcePost": "Feed post",

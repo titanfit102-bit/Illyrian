@@ -1812,7 +1812,7 @@ storyContent=function(){
  const e=events.find(x=>x.id===eid);
  if(!e)return html;
  // Reuse the existing contextual slot, retaining a single action within the Story.
- const card=`<div class="story-to-plan v14-story-context"><span>PËRMBLEDHJE E PLANIT</span><button data-act="v14-plan" data-id="${e.id}" data-val="story">${e.emoji} ${esc(e.title)} →</button><small>${esc(e.city)} · ${esc(e.day)}</small></div>`;
+ const card=`<div class="story-to-plan v14-story-context"><span data-i18n-direct>${esc(v14Copy("linkedStoryKicker","PËRMBLEDHJE E PLANIT"))}</span><button type="button" data-act="v14-plan" data-id="${e.id}" data-val="story" data-i18n-direct aria-label="${esc(v14OpenAria(e))}">${e.emoji} ${esc(e.title)} →</button><small>${esc(e.city)} · ${esc(e.day)}</small></div>`;
  if(html.includes('<div class="story-to-plan">'))return html.replace(/<div class="story-to-plan">[\s\S]*?<\/div>/,card);
  return html.replace('<div class="story-arrows">',card+'<div class="story-arrows">');
 };
@@ -1826,7 +1826,7 @@ reelContent=function(){
  const e=events.find(x=>x.id===eid);
  if(!e)return html;
  const legacy=`<button data-act="reel-plan" data-id="${eid}">Shiko planin e lidhur →</button>`;
- const replacement=`<div class="v14-reel-context"><span>NGA REEL TE PJESËMARRJA</span><button type="button" data-act="v14-plan" data-id="${eid}" data-val="reel">${e.emoji} ${esc(e.title)} →</button><small>${esc(e.city)} · ${esc(e.day)}</small></div>`;
+ const replacement=`<div class="v14-reel-context"><span data-i18n-direct>${esc(v14Copy("linkedReelKicker","NGA REEL TE PJESËMARRJA"))}</span><button type="button" data-act="v14-plan" data-id="${eid}" data-val="reel" data-i18n-direct aria-label="${esc(v14OpenAria(e))}">${e.emoji} ${esc(e.title)} →</button><small>${esc(e.city)} · ${esc(e.day)}</small></div>`;
  return html.includes(legacy)?html.replace(legacy,replacement):html;
 };
 const v14ModalOriginal=modalContent;
@@ -1887,6 +1887,18 @@ window.addEventListener('illyrian:language-changed',()=>{
   const kicker=panel.querySelector('.v14-link-kicker');
   if(kicker)kicker.textContent=v14Copy('linkedPostKicker','NGA POSTIMI TE PLANI');
  });
+ for(const [kind,kickerKey,fallback] of [
+  ['story','linkedStoryKicker','PËRMBLEDHJE E PLANIT'],
+  ['reel','linkedReelKicker','NGA REEL TE PJESËMARRJA']
+ ]){
+  const panel=document.querySelector('#layer .v14-'+kind+'-context');
+  if(!panel)continue;
+  const button=panel.querySelector('[data-act="v14-plan"][data-val="'+kind+'"]');
+  const event=events.find(e=>e.id===button?.dataset.id);
+  if(event)button.setAttribute('aria-label',v14OpenAria(event));
+  const heading=panel.querySelector('span');
+  if(heading)heading.textContent=v14Copy(kickerKey,fallback);
+ }
  if(state.modal?.type!=='event'||!v14Origin||v14Origin.plan!==state.modal.id)return;
  const panel=document.querySelector('#layer .v14-source-panel'),button=panel?.querySelector('[data-act="v14-back"]');
  if(!panel||!button)return;

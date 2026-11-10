@@ -427,6 +427,8 @@ window.ILLYRIAN_LOCALES.sq={
     "write": "Shkruaj mesazh..."
   },
   "plans": {
+    "linkedStoryKicker": "PËRMBLEDHJE E PLANIT",
+    "linkedReelKicker": "NGA REEL TE PJESËMARRJA",
     "linkedOpenAriaPrefix": "Hap planin ",
     "linkedBackPrefix": "Kthehu te ",
     "linkedSourcePost": "Postim në Feed",

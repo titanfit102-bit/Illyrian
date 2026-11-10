@@ -661,6 +661,46 @@ test('Person profile live language change preserves focus, read-only core and bl
  await expect(page.locator('#layer .v11-noitems')).toHaveText('Postimet janë të fshehura sepse e ke bllokuar këtë profil.');
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(blocked);
 });
+for(const [kind,kickerSq,kickerEn,kickerIt] of [
+ ['story','PËRMBLEDHJE E PLANIT','PLAN SUMMARY','RIEPILOGO DEL PIANO'],
+ ['reel','NGA REEL TE PJESËMARRJA','FROM REEL TO PARTICIPATION','DAL REEL ALLA PARTECIPAZIONE']
+]){
+ test('Linked '+kind+' plan heading and accessible target follow live sq-en-it without core writes',async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('illyrian_demo_ui_language_v1','sq'));
+  await openDemo(page,390,844);
+  if(kind==='story'){
+   await page.locator('#screen .stories [data-act="story"][data-val="3"]').click();
+  }else{
+   const overlay=await openReels(page);
+   await overlay.locator('[data-act="reel-next"]').click();
+  }
+  const panel=page.locator('#layer .v14-'+kind+'-context');
+  const button=panel.locator('[data-act="v14-plan"][data-val="'+kind+'"]');
+  await expect(button).toBeVisible();
+  const originalAria=await button.getAttribute('aria-label');
+  expect(originalAria).toMatch(/^Hap planin .+/);
+  const title=originalAria.slice('Hap planin '.length);
+  const originalCore=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+  await button.focus();
+  for(const [locale,kicker,ariaPrefix] of [
+   ['sq',kickerSq,'Hap planin '],
+   ['en',kickerEn,'Open plan '],
+   ['it',kickerIt,'Apri il piano '],
+   ['sq',kickerSq,'Hap planin ']
+  ]){
+   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),locale);
+   await expect(button).toHaveAttribute('aria-label',ariaPrefix+title);
+   await expect(panel.locator('span').first()).toHaveText(kicker);
+   await expect(button).toBeFocused();
+   expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(originalCore);
+  }
+  await button.click();
+  const back=page.locator('#layer .v14-source-panel [data-act="v14-back"]');
+  await expect(back).toHaveAttribute('aria-label',kind==='story'?'Kthehu te Story':'Kthehu te Reel');
+  await back.click();
+  await expect(page.locator('#layer .v14-'+kind+'-context')).toBeVisible();
+ });
+}
 test('Linked Feed plan and back labels follow sq-en-it with stable focus and core data',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('illyrian_demo_ui_language_v1','sq'));
  await openDemo(page,390,844);

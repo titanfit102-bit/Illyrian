@@ -427,6 +427,8 @@ window.ILLYRIAN_LOCALES.it={
     "write": "Scrivi un messaggio..."
   },
   "plans": {
+    "linkedStoryKicker": "RIEPILOGO DEL PIANO",
+    "linkedReelKicker": "DAL REEL ALLA PARTECIPAZIONE",
     "linkedOpenAriaPrefix": "Apri il piano ",
     "linkedBackPrefix": "Torna a ",
     "linkedSourcePost": "Post nel feed",
