@@ -426,7 +426,21 @@ function v3Action(action,id,v){
  if(action==='join-community'){state.joinedCommunities=toggle(state.joinedCommunities,id);notice(state.joinedCommunities.includes(id)?"U bashkove me komunitetin":"Dole nga komuniteti");render({scroll:true});toast('Komuniteti u përditësua');return true}
  if(action==='business-detail'||action==='market-detail'||action==='job-detail'||action==='group-chat'){openModal(action,id);return true}
  if(action==='alumni-info'){openModal('alumni');return true}
- if(action==='save-intent'){const sel=$('#intent-choice');const duration=Number($('#intent-duration')?.value||0);state.intent=sel?.value||'Pa zgjedhur';state.intentExpiry=duration?new Date(Date.now()+duration*24*60*60*1000).toISOString():'';notice("Preferenca u përditësua");close();toast('Interesi yt u ruajt vetëm në shfletues');return true}
+ if(action==='save-intent'){
+  const input=document.activeElement,sel=$('#intent-choice'),durationField=$('#intent-duration');
+  const intent=sel?.value||'Pa zgjedhur',duration=Number(durationField?.value||0);
+  if(![0,1,3,7].includes(duration)){toast('Zgjidh një afat të vlefshëm');durationField?.focus();return true}
+  if(!coreMessageFresh(input))return true;
+  const previousIntent=state.intent,previousExpiry=state.intentExpiry,previousLog=state.activityLog;
+  state.intent=intent;
+  state.intentExpiry=duration?new Date(Date.now()+duration*24*60*60*1000).toISOString():'';
+  state.activityLog=[{id:Date.now()+Math.random(),text:'Preferenca u përditësua',time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
+  if(!persist()){
+   state.intent=previousIntent;state.intentExpiry=previousExpiry;state.activityLog=previousLog;
+   toast(coreSaveFailed());input?.focus();return true;
+  }
+  close();toast('Interesi yt u ruajt vetëm në shfletues');return true;
+ }
  if(action==='save-alumni'){state.alumniOptIn=!!$('#alumni-flag')?.checked;notice('Preferenca Alumni u përditësua');close();toast('Preferenca e Alumni u ruajt');return true}
  if(action==='market-save'){
   if(!market.some(m=>m.id===id))return true;

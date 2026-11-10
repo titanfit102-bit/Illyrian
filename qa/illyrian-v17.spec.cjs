@@ -2057,6 +2057,64 @@ test('Opportunities sample market save rolls back quota and stale writes with re
  expect(after.comments.p1).toEqual(['independent edit']);
 });
 
+test('Opportunities interest preference keeps draft on quota and stale writes then retries',async({page})=>{
+ await openDemo(page,390,844);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ const openIntent=async()=>{
+  await page.locator('#phone > .head [data-ily-op-toggle]').click();
+  await page.locator('#ily-opportunities-panel [data-ily-op-category="Interesi"]').click();
+  await expect(page.locator('#layer #intent-choice')).toBeVisible();
+ };
+ await openIntent();
+ const key='illyrian_demo_v09_state';
+ const choice=page.locator('#layer #intent-choice');
+ const duration=page.locator('#layer #intent-duration');
+ const save=page.locator('#layer [data-act="save-intent"]');
+ await choice.selectOption({label:'Punë dhe bashkëpunim'});
+ await duration.selectOption('3');
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__intentSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');return window.__intentSet.call(this,k,v)};
+ });
+ await save.click();
+ await expect(page.locator('#toast-area')).toContainText('Ndryshimi nuk u ruajt');
+ await expect(save).toBeVisible();
+ await expect(save).toBeFocused();
+ await expect(choice).toHaveValue('Punë dhe bashkëpunim');
+ await expect(duration).toHaveValue('3');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__intentSet;delete window.__intentSet});
+ const newer=await page.evaluate(k=>{
+  const data=JSON.parse(localStorage.getItem(k)||'{}');
+  data.comments={...data.comments,p1:['other-tab intent check']};
+  const raw=JSON.stringify(data);
+  localStorage.setItem(k,raw);
+  return raw;
+ },key);
+ await save.click();
+ await expect(save).toBeVisible();
+ await expect(save).toBeFocused();
+ await expect(choice).toHaveValue('Punë dhe bashkëpunim');
+ await expect(duration).toHaveValue('3');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(newer);
+ await page.reload({waitUntil:'load'});
+ await openIntent();
+ await page.locator('#layer #intent-choice').selectOption({label:'Punë dhe bashkëpunim'});
+ await page.locator('#layer #intent-duration').selectOption('3');
+ const beforeSave=Date.now();
+ await page.locator('#layer [data-act="save-intent"]').click();
+ await expect(page.locator('#layer #intent-choice')).toHaveCount(0);
+ const saved=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(saved.intent).toBe('Punë dhe bashkëpunim');
+ expect(new Date(saved.intentExpiry).getTime()).toBeGreaterThanOrEqual(beforeSave+3*86400000-5000);
+ expect(new Date(saved.intentExpiry).getTime()).toBeLessThanOrEqual(Date.now()+3*86400000+5000);
+ expect(saved.activityLog.filter(x=>x.text==='Preferenca u përditësua')).toHaveLength(1);
+ expect(saved.comments.p1).toEqual(['other-tab intent check']);
+ await openIntent();
+ await expect(page.locator('#layer #intent-choice')).toHaveValue('Punë dhe bashkëpunim');
+});
+
 test('Plans integration: switching tabs cannot overwrite another window local data',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#phone > .head [data-ily-op-toggle]').click();
