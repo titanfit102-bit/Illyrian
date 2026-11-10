@@ -441,7 +441,18 @@ function v3Action(action,id,v){
   }
   close();toast('Interesi yt u ruajt vetëm në shfletues');return true;
  }
- if(action==='save-alumni'){state.alumniOptIn=!!$('#alumni-flag')?.checked;notice('Preferenca Alumni u përditësua');close();toast('Preferenca e Alumni u ruajt');return true}
+ if(action==='save-alumni'){
+  const input=document.activeElement,flag=$('#alumni-flag');
+  if(!flag||!coreMessageFresh(input))return true;
+  const previous=state.alumniOptIn,previousLog=state.activityLog;
+  state.alumniOptIn=flag.checked;
+  state.activityLog=[{id:Date.now()+Math.random(),text:'Preferenca Alumni u përditësua',time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
+  if(!persist()){
+   state.alumniOptIn=previous;state.activityLog=previousLog;
+   toast(coreSaveFailed());input?.focus();return true;
+  }
+  close();toast('Preferenca e Alumni u ruajt');return true;
+ }
  if(action==='market-save'){
   if(!market.some(m=>m.id===id))return true;
   if(!coreArrayToggle('marketSaved',id,document.activeElement,'U përditësua lista e ofertave të ruajtura'))return true;
