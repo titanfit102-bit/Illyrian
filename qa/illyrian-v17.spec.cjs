@@ -2156,6 +2156,28 @@ test('Messages: group chat quota error rolls back and retries without duplicate 
 });
 
 
+test('Reels like and save screen-reader labels follow active language without focus or core writes',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_ui_language_v1','sq'));
+ await openDemo(page,390,844);
+ const overlay=await openReels(page);
+ const like=overlay.locator('[data-act="reel-like"]'),save=overlay.locator('[data-act="reel-save"]');
+ const core=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await like.focus();
+ for(const [lang,likeLabel,saveLabel] of [
+  ['sq','Pëlqe Reel','Ruaj Reel'],
+  ['en','Like Reel','Save Reel'],
+  ['it','Metti Mi piace al Reel','Salva Reel'],
+  ['sq','Pëlqe Reel','Ruaj Reel']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(like).toHaveAttribute('aria-label',likeLabel);
+  await expect(save).toHaveAttribute('aria-label',saveLabel);
+  await expect(like).toBeFocused();
+  await expect(like).toHaveAttribute('aria-pressed','false');
+  await expect(save).toHaveAttribute('aria-pressed','false');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(core);
+ }
+});
 for(const action of ['reel-like','reel-save']){
  const field=action==='reel-like'?'reelLikes':'reelSaved';
  test('Reels audit: '+action+' announces state, retains focus and persists across reload',async({page})=>{

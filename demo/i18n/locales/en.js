@@ -391,6 +391,8 @@ window.ILLYRIAN_LOCALES.en={
     "communityDisclaimer": "Membership and posts are local demo data. No communication with other users."
   },
   "reels": {
+    "likeAria": "Like Reel",
+    "saveAria": "Save Reel",
     "createPlus": "＋ Create Reel",
     "comment": "Comment on Reel",
     "commentIcon": "♧ Comment",

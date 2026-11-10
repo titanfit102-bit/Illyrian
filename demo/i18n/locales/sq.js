@@ -391,6 +391,8 @@ window.ILLYRIAN_LOCALES.sq={
     "communityDisclaimer": "Anëtarësimi dhe postimet janë të dhëna lokale demonstrimi. Nuk ka komunikim me përdorues të tjerë."
   },
   "reels": {
+    "likeAria": "Pëlqe Reel",
+    "saveAria": "Ruaj Reel",
     "createPlus": "＋ Krijo Reel",
     "comment": "Komento Reel",
     "commentIcon": "♧ Komento",

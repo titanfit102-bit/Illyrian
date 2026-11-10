@@ -391,6 +391,8 @@ window.ILLYRIAN_LOCALES.it={
     "communityDisclaimer": "Iscrizioni e post sono dati locali dimostrativi. Nessuna comunicazione con altri utenti."
   },
   "reels": {
+    "likeAria": "Metti Mi piace al Reel",
+    "saveAria": "Salva Reel",
     "createPlus": "＋ Crea Reel",
     "comment": "Commenta il Reel",
     "commentIcon": "♧ Commenta",
