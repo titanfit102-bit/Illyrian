@@ -1314,7 +1314,20 @@ test('Notifications corrections: new activity timestamps survive reload and adva
  await expect(row.locator('xpath=ancestor::section/h3')).toHaveText('Dje');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).activityLog[0].createdAt)).toBe(entry.createdAt);
 });
-test('Notifications corrections: community membership uses the same timestamp contract',async({page})=>{
+test('Community join and leave retain keyboard focus after the modal rerenders',async({page})=>{
+  const notifications=await openNotifications(page);
+  await notifications.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();
+  const toggle=page.locator('#layer [data-act="v11-community-toggle"]');
+  const id=await toggle.getAttribute('data-id');
+  expect(id).toBeTruthy();
+  const saved=()=>page.evaluate(communityId=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).joinedCommunities.includes(communityId),id);
+  await toggle.focus();await page.keyboard.press('Enter');
+  await expect(toggle).toBeFocused();expect(await saved()).toBe(true);
+  await page.keyboard.press('Enter');
+  await expect(toggle).toBeFocused();expect(await saved()).toBe(false);
+  await page.reload({waitUntil:'load'});expect(await saved()).toBe(false);
+ });
+ test('Notifications corrections: community membership uses the same timestamp contract',async({page})=>{
  await page.clock.install({time:new Date('2026-11-01T12:00:00Z')});
  await page.clock.setFixedTime(new Date('2026-11-01T12:00:00Z'));
  const modal=await openNotifications(page);await modal.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();
