@@ -622,6 +622,48 @@ test('Person follow keeps focus and correctly announces persisted on-off state',
  const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).follows);
  expect(stored).toContain('arta');
 });
+for(const [lang,hidden] of [
+ ['sq','Postimet janë të fshehura sepse e ke bllokuar këtë profil.'],
+ ['en','Posts are hidden because you blocked this profile.'],
+ ['it','I post sono nascosti perché hai bloccato questo profilo.']
+])test('Blocked profile hides seeded posts, retains unblock and focus - '+lang,async({page})=>{
+ await page.addInitScript(locale=>{
+   localStorage.setItem('illyrian_demo_ui_language_v1',locale);
+   localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({blocked:['arta']}));
+ },lang);
+ await openDemo(page,390,844);
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="user-profile"][data-id="arta"]').first().click();
+ const posts=page.locator('#layer .v11-person-post');
+ const unblock=page.locator('#layer [data-act="v8-toggle-block"][data-id="arta"]');
+ await expect(posts).toHaveCount(0);
+ await expect(page.locator('#layer .v11-noitems')).toHaveText(hidden);
+ await expect(unblock).toBeVisible();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ await unblock.focus();await page.keyboard.press('Enter');
+ await expect(unblock).toBeFocused();
+ await expect(posts).toHaveCount(1);
+ await page.keyboard.press('Space');
+ await expect(unblock).toBeFocused();
+ await expect(posts).toHaveCount(0);
+ await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="user-profile"][data-id="arta"]').first().click();
+ await expect(posts).toHaveCount(0);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).blocked)).toContain('arta');
+});
+test('Muted profile remains viewable; mute action retains keyboard focus',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({muted:['arta']})));
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="user-profile"][data-id="arta"]').first().click();
+ await expect(page.locator('#layer .v11-person-post')).toHaveCount(1);
+ const mute=page.locator('#layer [data-act="v8-toggle-mute"][data-id="arta"]');
+ await mute.focus();await page.keyboard.press('Enter');
+ await expect(mute).toBeFocused();
+ await expect(page.locator('#layer .v11-person-post')).toHaveCount(1);
+});
 test('Friend profile portraits, photo covers and biographies are consistent',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#navbar [data-val="explore"]').click();

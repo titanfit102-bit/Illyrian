@@ -99,6 +99,7 @@ window.ILLYRIAN_LOCALES.sq={
     "mute": "Hesht postimet në Feed · DEMO",
     "unmute": "Shfaq sërish postimet në Feed · DEMO",
     "preferenceSaved": "Preferenca u ruajt vetëm në këtë pajisje.",
+    "blockedProfilePosts": "Postimet janë të fshehura sepse e ke bllokuar këtë profil.",
     "reason0": "Informacion i pasaktë",
     "reason1": "Mashtrim i dyshuar",
     "reason2": "Spam / kontakt i padëshiruar",

@@ -99,6 +99,7 @@ window.ILLYRIAN_LOCALES.it={
     "mute": "Silenzia i post nel Feed · DEMO",
     "unmute": "Mostra di nuovo i post nel Feed · DEMO",
     "preferenceSaved": "Preferenza salvata solo su questo dispositivo.",
+    "blockedProfilePosts": "I post sono nascosti perché hai bloccato questo profilo.",
     "reason0": "Informazioni inesatte",
     "reason1": "Sospetta frode",
     "reason2": "Spam / contatti indesiderati",

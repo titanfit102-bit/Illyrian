@@ -99,6 +99,7 @@ window.ILLYRIAN_LOCALES.en={
     "mute": "Mute Feed posts · DEMO",
     "unmute": "Show Feed posts again · DEMO",
     "preferenceSaved": "Preference saved only on this device.",
+    "blockedProfilePosts": "Posts are hidden because you blocked this profile.",
     "reason0": "Inaccurate information",
     "reason1": "Suspected fraud",
     "reason2": "Spam / unwanted contact",
