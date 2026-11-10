@@ -326,6 +326,7 @@ window.ILLYRIAN_LOCALES.sq={
     "more": "Më shumë"
   },
   "discover": {
+    "searchAria": "Kërko në ILLYRIAN",
     "searchIllyrian": "Kërko në ILLYRIAN...",
     "communities": "Komunitete",
     "market": "Tregu",

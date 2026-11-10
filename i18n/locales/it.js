@@ -326,6 +326,7 @@ window.ILLYRIAN_LOCALES.it={
     "more": "Altro"
   },
   "discover": {
+    "searchAria": "Cerca su ILLYRIAN",
     "searchIllyrian": "Cerca su ILLYRIAN...",
     "communities": "Comunità",
     "market": "Mercato",

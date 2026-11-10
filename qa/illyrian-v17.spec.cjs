@@ -661,6 +661,27 @@ test('Person profile live language change preserves focus, read-only core and bl
  await expect(page.locator('#layer .v11-noitems')).toHaveText('Postimet janë të fshehura sepse e ke bllokuar këtë profil.');
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(blocked);
 });
+test('Discover search accessible name follows sq-en-it while keeping focus and the typed query',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_ui_language_v1','sq'));
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ const finder=page.locator('#finder');
+ await finder.fill('Arta');
+ await finder.focus();
+ const original=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ for(const [lang,label] of [
+  ['sq','Kërko në ILLYRIAN'],
+  ['en','Search ILLYRIAN'],
+  ['it','Cerca su ILLYRIAN'],
+  ['sq','Kërko në ILLYRIAN']
+ ]){
+  await page.evaluate(next=>window.IllyrianI18n.changeLanguage(next),lang);
+  await expect(finder).toHaveAttribute('aria-label',label);
+  await expect(finder).toBeFocused();
+  await expect(finder).toHaveValue('Arta');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(original);
+ }
+});
 test('Person profile tabs retain keyboard focus and active state without writing core storage',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#navbar [data-val="explore"]').click();

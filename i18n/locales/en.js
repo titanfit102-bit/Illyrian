@@ -326,6 +326,7 @@ window.ILLYRIAN_LOCALES.en={
     "more": "More"
   },
   "discover": {
+    "searchAria": "Search ILLYRIAN",
     "searchIllyrian": "Search ILLYRIAN...",
     "communities": "Communities",
     "market": "Marketplace",
