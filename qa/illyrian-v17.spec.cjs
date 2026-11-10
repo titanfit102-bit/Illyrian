@@ -1534,6 +1534,59 @@ for(const [action,detail,id,message] of [
  expect(restored.activityLog.filter(x=>x.text===message)).toHaveLength(1);
 });
 
+test('Story like preserves unsent reply and does not claim a failed local save',async({page})=>{
+ await openHomeAudit(page);
+ const key='illyrian_demo_v09_state';
+ const openStory=async()=>{
+  await page.locator('#screen .stories [data-act="story"][data-val="1"]').click();
+  await expect(page.locator('#layer [data-act="v6-story-like"][data-id="arta"]')).toBeVisible();
+ };
+ await openStory();
+ const like=page.locator('#layer [data-act="v6-story-like"][data-id="arta"]');
+ const reply=page.locator('#v6-story-message');
+ await reply.fill('Përgjigjja ime pa dërguar');
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__storyLikeSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){
+   if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');
+   return window.__storyLikeSet.call(this,k,v);
+  };
+ });
+ await like.click();
+ await expect(page.locator('#toast-area')).toContainText(/nuk u ruajt/i);
+ await expect(like).toBeVisible();
+ await expect(like).toBeFocused();
+ await expect(like).not.toHaveClass(/liked/);
+ await expect(reply).toHaveValue('Përgjigjja ime pa dërguar');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__storyLikeSet;delete window.__storyLikeSet});
+ const newer=await page.evaluate(k=>{
+  const s=JSON.parse(localStorage.getItem(k)||'{}');
+  s.comments={...s.comments,p1:['other tab story check']};
+  const raw=JSON.stringify(s);
+  localStorage.setItem(k,raw);
+  return raw;
+ },key);
+ await like.click();
+ await expect(page.locator('#toast-area')).toContainText(/ndrysh|changed|cambiat/i);
+ await expect(reply).toHaveValue('Përgjigjja ime pa dërguar');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(newer);
+ await page.reload({waitUntil:'load'});
+ await openStory();
+ await reply.fill('Përgjigjja ime pa dërguar');
+ await like.click();
+ await expect(like).toHaveClass(/liked/);
+ await expect(like).toBeFocused();
+ await expect(reply).toHaveValue('Përgjigjja ime pa dërguar');
+ const saved=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(saved.v6StoryLikes).toContain('arta');
+ expect(saved.comments.p1).toEqual(['other tab story check']);
+ await page.reload({waitUntil:'load'});
+ await openStory();
+ await expect(like).toHaveClass(/liked/);
+});
+
 test('Feed post report preserves modal on quota and stale storage, then saves locally',async({page})=>{
  await openHomeAudit(page);
  const key='illyrian_demo_v09_state';

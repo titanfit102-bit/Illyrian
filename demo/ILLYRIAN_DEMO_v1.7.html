@@ -884,7 +884,15 @@ function v6Action(action,id,v){
  if(action==='v6-settings-home'){openModal('settings');return true}
  if(action==='v6-reset-confirm'){openModal('v6-reset-confirm');return true}
  if(action==='v6-reset-now'){try{localStorage.setItem(KEY,'{}');location.reload()}catch{toast(coreSaveFailed())}return true}
- if(action==='v6-story-like'){state.v6StoryLikes=toggle(state.v6StoryLikes,id);persist();render({scroll:true});return true}
+ if(action==='v6-story-like'){
+  if(!state.story||!people.some(x=>x.id===id))return true;
+  const input=document.activeElement,reply=$('#v6-story-message')?.value||'';
+  if(!coreArrayToggle('v6StoryLikes',id,input))return true;
+  render({scroll:true});
+  const field=$('#v6-story-message');if(field)field.value=reply;
+  $('#layer [data-act="v6-story-like"]')?.focus({preventScroll:true});
+  return true;
+ }
  if(action==='v6-story-pause'){state.v6StoryPaused=!state.v6StoryPaused;render({scroll:true});return true}
  if(action==='v6-story-send'){const input=$('#v6-story-message');const t=(input?.value||'').trim();if(!t){toast('Shkruaj përgjigjen');return true}if(!people.some(x=>x.id===id))return true;if(!coreMessageFresh(input))return true;const old=state.messages[id],read=state.v6ReadChats;state.messages[id]=[...(old||[]),'↪ Story: '+t];state.v6ReadChats=Array.from(new Set([...read,id]));if(!persist()){if(old===undefined)delete state.messages[id];else state.messages[id]=old;state.v6ReadChats=read;toast(coreSaveFailed());input?.focus();return true}openModal('chat',id);toast("Përgjigjja u shtua vetëm në bisedën");return true}
  return false;
