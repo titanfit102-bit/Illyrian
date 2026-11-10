@@ -1330,6 +1330,22 @@ for(const [locale,joined,left] of [
  await expect(page.locator('#toast-area')).toHaveText(left);
  await expect(toggle).toBeFocused();
 });
+test('Community modal tabs retain keyboard focus and announce active state after rerender',async({page})=>{
+ const alerts=await openNotifications(page);
+ await alerts.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();
+ const overview=page.locator('#layer [data-act="v11-community-tab"][data-val="overview"]');
+ const posts=page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]');
+ await expect(overview).toHaveAttribute('aria-pressed','true');
+ await expect(posts).toHaveAttribute('aria-pressed','false');
+ await posts.focus();await page.keyboard.press('Enter');
+ await expect(posts).toBeFocused();
+ await expect(posts).toHaveAttribute('aria-pressed','true');
+ await expect(overview).toHaveAttribute('aria-pressed','false');
+ await overview.focus();await page.keyboard.press('Space');
+ await expect(overview).toBeFocused();
+ await expect(overview).toHaveAttribute('aria-pressed','true');
+ await expect(posts).toHaveAttribute('aria-pressed','false');
+});
 test('Community join and leave retain keyboard focus after the modal rerenders',async({page})=>{
   const notifications=await openNotifications(page);
   await notifications.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();
