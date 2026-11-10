@@ -2299,6 +2299,8 @@ test('Explore audit: composing text does not detach the input before composition
 });
 
 test('Explore audit: search rerender preserves both selection endpoints and keyboard focus',async({page})=>{
+ // This test asserts the Albanian aria-label; pin its locale instead of relying on the runner's English default.
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_ui_language_v1','sq'));
  await openDemo(page,390,844);await page.locator('#navbar [data-val="explore"]').click();
  const finder=page.locator('#finder');
  await expect(finder).toHaveAttribute('aria-label','Kërko në ILLYRIAN');
