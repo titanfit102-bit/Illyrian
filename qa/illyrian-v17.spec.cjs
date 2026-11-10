@@ -1523,6 +1523,7 @@ for(const [action,detail,id,message] of [
  await expect(page.locator('#toast-area')).toContainText(/ndrysh|changed|cambiat/i);
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(updated);
  await page.reload({waitUntil:'load'});
+ await page.locator('#navbar [data-val="explore"]').click();
  await open();
  await button.click();
  const stored=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
