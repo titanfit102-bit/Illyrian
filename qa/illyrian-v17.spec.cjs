@@ -1597,6 +1597,9 @@ test('Story reply feedback localizes in sq/en/it without a false send or core mu
  await openHomeAudit(page);
  await page.locator('#screen .stories [data-act="story"][data-val="1"]').click();
  const reply=page.locator('#v6-story-message'),send=page.locator('#layer [data-act="v6-story-send"]'),toast=page.locator('#toast-area');
+ await expect(toast).toHaveAttribute('role','status');
+ await expect(toast).toHaveAttribute('aria-live','polite');
+ await expect(toast).toHaveAttribute('aria-atomic','true');
  const key='illyrian_demo_v09_state';
  const before=await page.evaluate(k=>localStorage.getItem(k),key);
  for(const [lang,empty] of [['sq','Shkruaj përgjigjen'],['en','Write a reply'],['it','Scrivi una risposta']]){
