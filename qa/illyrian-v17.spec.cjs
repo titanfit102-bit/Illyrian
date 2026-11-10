@@ -653,6 +653,22 @@ for(const [lang,hidden] of [
  await expect(posts).toHaveCount(0);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).blocked)).toContain('arta');
 });
+for(const [lang,muteLabel,unmuteLabel] of [
+ ['sq','Hesht postimet në Feed','Shfaq sërish postimet në Feed'],
+ ['en','Mute Feed posts','Show Feed posts again'],
+ ['it','Silenzia i post nel Feed','Mostra di nuovo i post nel Feed']
+])test('Person mute labels omit the redundant DEMO badge - '+lang,async({page})=>{
+ await page.addInitScript(locale=>localStorage.setItem('illyrian_demo_ui_language_v1',locale),lang);
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="user-profile"][data-id="arta"]').first().click();
+ const mute=page.locator('#layer [data-act="v8-toggle-mute"][data-id="arta"]');
+ await expect(mute).toHaveText(muteLabel);
+ await mute.focus();await page.keyboard.press('Enter');
+ await expect(mute).toBeFocused();await expect(mute).toHaveText(unmuteLabel);
+ await page.keyboard.press('Enter');
+ await expect(mute).toBeFocused();await expect(mute).toHaveText(muteLabel);
+});
 test('Muted profile remains viewable; mute action retains keyboard focus',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({muted:['arta']})));
  await openDemo(page,390,844);
