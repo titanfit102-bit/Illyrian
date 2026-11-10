@@ -1539,19 +1539,23 @@ test('Story pause and resume keep an unsent reply without writing core storage',
  await openHomeAudit(page);
  await page.locator('#screen .stories [data-act="story"][data-val="1"]').click();
  const reply=page.locator('#v6-story-message'),toggle=page.locator('#layer [data-act="v6-story-pause"]');
+ const progress=page.locator('#layer .v6-story-progress');
  await expect(toggle).toBeVisible();
  await reply.fill('Ky tekst nuk duhet të humbasë');
- const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
- await toggle.click();
+ // Typing automatically pauses the timer before the user clicks the control.
  await expect(toggle).toContainText('Vazhdo');
- await expect(toggle).toBeFocused();
- await expect(reply).toHaveValue('Ky tekst nuk duhet të humbasë');
- await expect(page.locator('#layer .v6-story-progress')).toHaveClass(/paused/);
+ await expect(progress.locator('span.current > i')).toHaveCSS('animation-play-state','paused');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
  await toggle.click();
  await expect(toggle).toContainText('Ndalo');
  await expect(toggle).toBeFocused();
  await expect(reply).toHaveValue('Ky tekst nuk duhet të humbasë');
- await expect(page.locator('#layer .v6-story-progress')).not.toHaveClass(/paused/);
+ await expect(progress).not.toHaveClass(/paused/);
+ await toggle.click();
+ await expect(toggle).toContainText('Vazhdo');
+ await expect(toggle).toBeFocused();
+ await expect(reply).toHaveValue('Ky tekst nuk duhet të humbasë');
+ await expect(progress).toHaveClass(/paused/);
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
 });
 
