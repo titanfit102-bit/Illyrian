@@ -591,6 +591,37 @@ test('Photorealistic seeded profiles use distinct bundled portraits across Stori
  await expect(page.locator('#screen .p17-avatar')).toBeVisible();
 });
 
+for(const [lang,postsText,aboutText,followingText,followText,blockText,unblockText,commentsText,altText] of [["sq","Postimet (1)","Rreth meje","✓ Duke ndjekur","＋ Ndiq profilin","⊘ Blloko profilin","✓ Zhblloko profilin","Komente →","Foto e postimit"],["en","Posts (1)","About","✓ Following","＋ Follow profile","⊘ Block profile","✓ Unblock profile","Comments →","Post photo"],["it","Post (1)","Informazioni","✓ Segui già","＋ Segui il profilo","⊘ Blocca il profilo","✓ Sblocca il profilo","Commenti →","Foto del post"]])test('Person profile modal uses direct locale UI and retains actions - '+lang,async({page})=>{
+ await page.addInitScript(locale=>localStorage.setItem('illyrian_demo_ui_language_v1',locale),lang);
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="user-profile"][data-id="arta"]').first().click();
+ const posts=page.locator('#layer [data-act="v11-person-tab"][data-val="posts"]');
+ const about=page.locator('#layer [data-act="v11-person-tab"][data-val="about"]');
+ const follow=page.locator('#layer [data-act="v11-person-follow"][data-id="arta"]');
+ const block=page.locator('#layer [data-act="v8-toggle-block"][data-id="arta"]');
+ await expect(posts).toHaveText(postsText);
+ await expect(about).toHaveText(aboutText);
+ await expect(follow).toHaveText(followingText);
+ await expect(block).toHaveText(blockText);
+ await expect(page.locator('#layer [data-act="comments"]')).toHaveText(commentsText);
+ await expect(page.locator('#layer .v11-post-photo')).toHaveAttribute('alt',altText);
+ const original=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await about.focus();await page.keyboard.press('Enter');
+ await expect(about).toBeFocused();
+ await posts.focus();await page.keyboard.press('Enter');
+ await expect(posts).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(original);
+ await follow.focus();await page.keyboard.press('Enter');
+ await expect(follow).toBeFocused();await expect(follow).toHaveText(followText);
+ await block.focus();await page.keyboard.press('Enter');
+ await expect(block).toBeFocused();await expect(block).toHaveText(unblockText);
+ await expect(posts).toHaveText(postsText.replace('(1)','(0)'));
+ await expect(page.locator('#layer .v11-person-post')).toHaveCount(0);
+ await page.keyboard.press('Space');
+ await expect(block).toBeFocused();await expect(block).toHaveText(blockText);
+ await expect(page.locator('#layer .v11-person-post')).toHaveCount(1);
+});
 test('Person profile tabs retain keyboard focus and active state without writing core storage',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#navbar [data-val="explore"]').click();
