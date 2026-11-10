@@ -591,6 +591,37 @@ test('Photorealistic seeded profiles use distinct bundled portraits across Stori
  await expect(page.locator('#screen .p17-avatar')).toBeVisible();
 });
 
+test('Person profile tabs retain keyboard focus and active state without writing core storage',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="user-profile"][data-id="arta"]').first().click();
+ const posts=page.locator('#layer [data-act="v11-person-tab"][data-val="posts"]');
+ const about=page.locator('#layer [data-act="v11-person-tab"][data-val="about"]');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await expect(posts).toHaveAttribute('aria-pressed','true');
+ await expect(about).toHaveAttribute('aria-pressed','false');
+ await about.focus();await page.keyboard.press('Enter');
+ await expect(about).toBeFocused();await expect(about).toHaveAttribute('aria-pressed','true');
+ await expect(posts).toHaveAttribute('aria-pressed','false');
+ await posts.focus();await page.keyboard.press('Space');
+ await expect(posts).toBeFocused();await expect(posts).toHaveAttribute('aria-pressed','true');
+ await expect(about).toHaveAttribute('aria-pressed','false');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+});
+test('Person follow keeps focus and correctly announces persisted on-off state',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="user-profile"][data-id="arta"]').first().click();
+ const follow=page.locator('#layer [data-act="v11-person-follow"][data-id="arta"]');
+ await expect(follow).toHaveAttribute('aria-pressed','true');
+ await follow.focus();await page.keyboard.press('Enter');
+ await expect(follow).toBeFocused();await expect(follow).toHaveAttribute('aria-pressed','false');
+ await page.keyboard.press('Enter');
+ await expect(follow).toBeFocused();await expect(follow).toHaveAttribute('aria-pressed','true');
+ await page.reload({waitUntil:'load'});
+ const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).follows);
+ expect(stored).toContain('arta');
+});
 test('Friend profile portraits, photo covers and biographies are consistent',async({page})=>{
  await openDemo(page,390,844);
  await page.locator('#navbar [data-val="explore"]').click();
