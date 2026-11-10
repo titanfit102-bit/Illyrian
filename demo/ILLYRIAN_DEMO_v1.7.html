@@ -361,7 +361,7 @@ function socialText(key,fallback){return window.IllyrianI18n?.t('discover:'+key)
 function communityTitle(c){return c.id==='c4'?socialText('educationTitle',c.name):c.name}
 function communityDescription(c){return c.id==='c4'?socialText('educationDescription',c.desc):c.desc}
 state.communityQuery='';
-function communityPosts(id){const seedLinks={p1:'c2',p2:'c1',p3:'c3'};return allPosts().filter(p=>!state.hiddenPosts.includes(String(p.id))&&(p.communityId===id||seedLinks[p.id]===id))}
+function communityPosts(id){const seedLinks={p1:'c2',p2:'c1',p3:'c3'};return allPosts().filter(p=>homePostVisible(p)&&(p.communityId===id||seedLinks[p.id]===id))}
 function communityActivities(c){
  let stored;try{stored=JSON.parse(localStorage.getItem('illyrian_demo_v17_plans')||'{}')}catch{stored={}}
  const plans=Array.isArray(stored?.events)?stored.events.filter(e=>e&&e.communityId===c.id&&e.privacy==='public'&&!e.cancelled&&typeof e.id==='string'&&typeof e.title==='string').slice(0,24):[];

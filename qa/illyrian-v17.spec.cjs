@@ -1330,6 +1330,34 @@ for(const [locale,joined,left] of [
  await expect(page.locator('#toast-area')).toHaveText(left);
  await expect(toggle).toBeFocused();
 });
+test('Community discussion posts keep seeded fixtures visible before block or mute',async({page})=>{
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="v11-community-open"][data-id="c2"]').first().click();
+ await page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]').click();
+ await expect(page.locator('#layer .post [data-act="postmore"][data-id="p1"]')).toHaveCount(1);
+ await page.locator('#layer [data-act="close"]').click();
+ await page.locator('#screen [data-act="v11-community-open"][data-id="c1"]').first().click();
+ await page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]').click();
+ await expect(page.locator('#layer .post [data-act="postmore"][data-id="p2"]')).toHaveCount(1);
+});
+test('Community discussion posts hide blocked and muted actors but keep own same-name post',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({
+   blocked:['arta'],muted:['leon'],posts:[{id:'my1792929600000',name:'Arta K.',ava:'a1',city:'Tiranë',when:'Tani',text:'Own community post',img:null,communityId:'c2',likes:0,comments:0,share:0}]
+ })));
+ await openDemo(page,390,844);
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="v11-community-open"][data-id="c2"]').first().click();
+ await page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]').click();
+ await expect(page.locator('#layer .post [data-act="postmore"][data-id="p1"]')).toHaveCount(0);
+ await expect(page.locator('#layer .post [data-act="postmore"][data-id="my1792929600000"]')).toHaveCount(1);
+ await page.locator('#layer [data-act="close"]').click();
+ await page.locator('#screen [data-act="v11-community-open"][data-id="c1"]').first().click();
+ await page.locator('#layer [data-act="v11-community-tab"][data-val="posts"]').click();
+ await expect(page.locator('#layer .post [data-act="postmore"][data-id="p2"]')).toHaveCount(0);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+});
 test('Community modal tabs retain keyboard focus and announce active state after rerender',async({page})=>{
  const alerts=await openNotifications(page);
  await alerts.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();
