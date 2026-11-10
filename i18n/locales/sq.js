@@ -359,7 +359,7 @@ window.ILLYRIAN_LOCALES.sq={
     "educationLearning": "Mësim",
     "educationStudents": "Studentë",
     "educationAlumni": "Alumni",
-    "communityDemoLabel": "KOMUNITET · VETËM DEMO",
+    "communityHeaderLabel": "KOMUNITET",
     "communityJoinedLeave": "✓ Anëtar · Dil nga komuniteti",
     "communityJoinButton": "＋ Bashkohu në komunitet",
     "communityJoinSaved": "Komuniteti u shtua te Profili yt",

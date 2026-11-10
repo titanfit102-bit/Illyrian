@@ -359,7 +359,7 @@ window.ILLYRIAN_LOCALES.it={
     "educationLearning": "Studio",
     "educationStudents": "Studenti",
     "educationAlumni": "Alumni",
-    "communityDemoLabel": "COMUNITÀ · SOLO DEMO",
+    "communityHeaderLabel": "COMUNITÀ",
     "communityJoinedLeave": "✓ Membro · Esci dalla comunità",
     "communityJoinButton": "＋ Unisciti alla comunità",
     "communityJoinSaved": "Comunità aggiunta al tuo profilo",

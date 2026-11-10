@@ -1389,6 +1389,16 @@ test('Community discussion posts hide blocked and muted actors but keep own same
  await expect(page.locator('#layer .post [data-act="postmore"][data-id="p2"]')).toHaveCount(0);
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
 });
+for(const [locale,label] of [['sq','KOMUNITET'],['en','COMMUNITY'],['it','COMUNITÀ']])test('Community hero uses localized category label, not a demo badge - '+locale,async({page})=>{
+ await page.addInitScript(lang=>localStorage.setItem('illyrian_demo_ui_language_v1',lang),locale);
+ await openDemo(page,390,844);
+ await page.locator('#navbar [data-val="explore"]').click();
+ await page.locator('#screen [data-act="v11-community-open"][data-id="c2"]').first().click();
+ const labelNode=page.locator('#layer .v11-community-hero small');
+ await expect(labelNode).toHaveText(label);
+ await expect(labelNode).not.toContainText(/demo/i);
+ await expect(page.locator('#layer .v11-disclaimer')).toBeVisible();
+});
 test('Community modal tabs retain keyboard focus and announce active state after rerender',async({page})=>{
  const alerts=await openNotifications(page);
  await alerts.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();
