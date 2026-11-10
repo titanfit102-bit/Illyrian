@@ -1314,6 +1314,22 @@ test('Notifications corrections: new activity timestamps survive reload and adva
  await expect(row.locator('xpath=ancestor::section/h3')).toHaveText('Dje');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).activityLog[0].createdAt)).toBe(entry.createdAt);
 });
+for(const [locale,joined,left] of [
+ ['sq','Komuniteti u shtua te Profili yt','U largove nga komuniteti'],
+ ['en','Community added to your profile','You left the community'],
+ ['it','Comunità aggiunta al tuo profilo','Hai lasciato la comunità']
+])test('Community membership saved feedback uses current locale - '+locale,async({page})=>{
+ await page.addInitScript(lang=>localStorage.setItem('illyrian_demo_ui_language_v1',lang),locale);
+ const alerts=await openNotifications(page);
+ await alerts.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();
+ const toggle=page.locator('#layer [data-act="v11-community-toggle"]');
+ await toggle.click();
+ await expect(page.locator('#toast-area')).toHaveText(joined);
+ await expect(toggle).toBeFocused();
+ await toggle.click();
+ await expect(page.locator('#toast-area')).toHaveText(left);
+ await expect(toggle).toBeFocused();
+});
 test('Community join and leave retain keyboard focus after the modal rerenders',async({page})=>{
   const notifications=await openNotifications(page);
   await notifications.locator('[data-act="v6-open-alert"][data-id="n17-community"]').click();

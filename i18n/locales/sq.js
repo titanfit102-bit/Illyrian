@@ -362,6 +362,8 @@ window.ILLYRIAN_LOCALES.sq={
     "communityDemoLabel": "KOMUNITET · VETËM DEMO",
     "communityJoinedLeave": "✓ Anëtar · Dil nga komuniteti",
     "communityJoinButton": "＋ Bashkohu në komunitet",
+    "communityJoinSaved": "Komuniteti u shtua te Profili yt",
+    "communityLeaveSaved": "U largove nga komuniteti",
     "communitySectionsAria": "Seksionet e komunitetit",
     "communityAboutTab": "Rreth komunitetit",
     "communityPostsTab": "Postime dhe diskutime",

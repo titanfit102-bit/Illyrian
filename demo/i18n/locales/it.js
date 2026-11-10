@@ -362,6 +362,8 @@ window.ILLYRIAN_LOCALES.it={
     "communityDemoLabel": "COMUNITÀ · SOLO DEMO",
     "communityJoinedLeave": "✓ Membro · Esci dalla comunità",
     "communityJoinButton": "＋ Unisciti alla comunità",
+    "communityJoinSaved": "Comunità aggiunta al tuo profilo",
+    "communityLeaveSaved": "Hai lasciato la comunità",
     "communitySectionsAria": "Sezioni della comunità",
     "communityAboutTab": "Informazioni",
     "communityPostsTab": "Post e discussioni",

@@ -1505,7 +1505,7 @@ v8Action=function(action,id,v){
    const message=state.joinedCommunities.includes(id)?'U bashkove me '+c.name+"":'U largove nga '+c.name+"";
    state.activityLog=[{id:Date.now()+Math.random(),text:message,time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
    if(persist()===false){state.joinedCommunities=previous;state.activityLog=previousLog;toast(window.IllyrianI18n?.t('common:storageSaveFailed')||'Not saved. Try again.');return true}
-   openModal('v11-community',id);document.querySelector('#layer [data-act="v11-community-toggle"]')?.focus({preventScroll:true});toast(state.joinedCommunities.includes(id)?'Komuniteti u shtua te Profili yt':'U largove nga komuniteti');return true;
+   openModal('v11-community',id);document.querySelector('#layer [data-act="v11-community-toggle"]')?.focus({preventScroll:true});toast(state.joinedCommunities.includes(id)?socialText('communityJoinSaved','Komuniteti u shtua te Profili yt'):socialText('communityLeaveSaved','U largove nga komuniteti'));return true;
  }
  if(action==='v11-community-event'){state.tab='events';openModal('event',id);return true}
  if(action==='v11-profile-open'){state.v11PersonTab='posts';openModal('user-profile',id);return true}
