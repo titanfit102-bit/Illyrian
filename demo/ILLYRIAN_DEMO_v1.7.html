@@ -1786,6 +1786,10 @@ document.head.appendChild(v13Css);
 // This is UI-only. Existing event requests, moderation, and community state remain unchanged.
 const v14Relations={post:{p3:'e2'},story:{3:'e2'},reel:{r2:'e2',r3:'e2'}};
 let v14Origin=null;
+function v14Copy(key,fallback){const path='plans:'+key,value=window.IllyrianI18n?.t(path);return typeof value==='string'&&value&&value!==path?value:fallback}
+function v14SourceLabel(kind){const entries={post:['linkedSourcePost','Postim në Feed'],story:['linkedSourceStory','Story'],reel:['linkedSourceReel','Reel']};const [key,defaultText]=entries[kind]||['linkedSourceOther','Përmbajtja'];return v14Copy(key,defaultText)}
+function v14OpenAria(e){return v14Copy('linkedOpenAriaPrefix','Hap planin ')+e.title}
+function v14BackLabel(){return v14Copy('linkedBackPrefix','Kthehu te ')+v14SourceLabel(v14Origin?.kind)}
 const v14PostOriginal=post;
 post=function(p){
  let html=v14PostOriginal(p);
@@ -1796,7 +1800,7 @@ post=function(p){
  // Replace the stale legacy football illustration for a coffee event; do not duplicate cards.
  const originalCard=/<div class="post-context">[\s\S]*?<\/div><button[^>]*>[^<]*<\/button><\/div>/;
  html=html.replace(originalCard,'');
- const link=`<div class="v14-post-context"><span class="v14-link-kicker">NGA POSTIMI TE PLANI</span><div class="v14-post-connection"><div class="v14-plan-emoji">${e.emoji}</div><div class="v14-plan-details"><strong>${esc(e.title)}</strong><small>${esc(e.city)} · ${esc(e.day)}</small><span>${esc(v13Status(e.id))}</span></div><button type="button" data-act="v14-plan" data-id="${e.id}" data-val="post" aria-label="Hap planin ${esc(e.title)}">Shiko →</button></div></div>`;
+ const link=`<div class="v14-post-context"><span class="v14-link-kicker" data-i18n-direct>${esc(v14Copy("linkedPostKicker","NGA POSTIMI TE PLANI"))}</span><div class="v14-post-connection"><div class="v14-plan-emoji">${e.emoji}</div><div class="v14-plan-details"><strong>${esc(e.title)}</strong><small>${esc(e.city)} · ${esc(e.day)}</small><span>${esc(v13Status(e.id))}</span></div><button type="button" data-act="v14-plan" data-id="${e.id}" data-val="post" data-i18n-direct aria-label="${esc(v14OpenAria(e))}">${esc(v14Copy("linkedViewAction","Shiko →"))}</button></div></div>`;
  return html.replace('</article>',link+'</article>');
 };
 const v14StoryOriginal=storyContent;
@@ -1829,8 +1833,8 @@ const v14ModalOriginal=modalContent;
 modalContent=function(){
  const html=v14ModalOriginal();
  if(!html||state.modal?.type!=='event'||!v14Origin||v14Origin.plan!==state.modal.id)return html;
- const message={post:'Postim në Feed',story:'Story',reel:'Reel'}[v14Origin.kind]||'Përmbajtja';
- const contextual=`<div class="v14-source-panel"><span>ERDHE NGA ${esc(message.toUpperCase())} </span><button type="button" data-act="v14-back" aria-label="Kthehu te ${esc(message)}">← Kthehu te ${esc(message)}</button></div>`;
+ const message=v14SourceLabel(v14Origin.kind),back=v14BackLabel();
+ const contextual=`<div class="v14-source-panel"><span data-i18n-direct>${esc(v14Copy('linkedFromPrefix','ERDHE NGA ')+message.toUpperCase())}</span><button type="button" data-act="v14-back" data-i18n-direct aria-label="${esc(back)}">← ${esc(back)}</button></div>`;
  return html.replace('<div class="modalhead">',contextual+'<div class="modalhead">');
 };
 const v14ActionPrevious=v8Action;
@@ -1872,6 +1876,25 @@ post=function(p){
  const html=v14LinkedPost(p);
  return p.id==='p3'&&html?html.replace('<article class="post"','<article data-v14-post="p3" class="post"'):html;
 };
+// Keep linked-plan UI labels synchronized without rerendering forms, drafts or focus.
+window.addEventListener('illyrian:language-changed',()=>{
+ document.querySelectorAll('#screen .v14-post-context').forEach(panel=>{
+  const button=panel.querySelector('[data-act="v14-plan"][data-val="post"]');
+  if(!button)return;
+  const event=events.find(e=>e.id===button.dataset.id);
+  if(event)button.setAttribute('aria-label',v14OpenAria(event));
+  button.textContent=v14Copy('linkedViewAction','Shiko →');
+  const kicker=panel.querySelector('.v14-link-kicker');
+  if(kicker)kicker.textContent=v14Copy('linkedPostKicker','NGA POSTIMI TE PLANI');
+ });
+ if(state.modal?.type!=='event'||!v14Origin||v14Origin.plan!==state.modal.id)return;
+ const panel=document.querySelector('#layer .v14-source-panel'),button=panel?.querySelector('[data-act="v14-back"]');
+ if(!panel||!button)return;
+ const label=v14BackLabel(),source=v14SourceLabel(v14Origin.kind);
+ button.setAttribute('aria-label',label);button.textContent='← '+label;
+ const heading=panel.querySelector('span');
+ if(heading)heading.textContent=v14Copy('linkedFromPrefix','ERDHE NGA ')+source.toUpperCase();
+});
 const v14Style=document.createElement('style');
 v14Style.textContent=`
 .v14-post-context{border-top:1px solid var(--border);padding:12px 0 2px;margin-top:5px}

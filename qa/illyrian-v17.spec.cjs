@@ -661,6 +661,46 @@ test('Person profile live language change preserves focus, read-only core and bl
  await expect(page.locator('#layer .v11-noitems')).toHaveText('Postimet janë të fshehura sepse e ke bllokuar këtë profil.');
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(blocked);
 });
+test('Linked Feed plan and back labels follow sq-en-it with stable focus and core data',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('illyrian_demo_ui_language_v1','sq'));
+ await openDemo(page,390,844);
+ const link=page.locator('#screen [data-act="v14-plan"][data-val="post"]').first();
+ await expect(link).toBeVisible();
+ const title=await page.locator('#screen .v14-post-connection .v14-plan-details strong').first().textContent();
+ const core=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await link.focus();
+ for(const [l,prefix,kicker,action] of [
+  ['sq','Hap planin ','NGA POSTIMI TE PLANI','Shiko →'],
+  ['en','Open plan ','FROM POST TO PLAN','View →'],
+  ['it','Apri il piano ','DAL POST AL PIANO','Apri →']
+ ]){
+  await page.evaluate(lang=>window.IllyrianI18n.changeLanguage(lang),l);
+  await expect(link).toHaveAttribute('aria-label',prefix+title);
+  await expect(link).toBeFocused();
+  await expect(link).toHaveText(action);
+  await expect(page.locator('#screen .v14-link-kicker').first()).toHaveText(kicker);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(core);
+ }
+ await link.click();
+ const back=page.locator('#layer .v14-source-panel [data-act="v14-back"]');
+ await expect(back).toBeVisible();
+ await back.focus();
+ const modalCore=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ for(const [lang,label,from] of [
+  ['it','Torna a Post nel feed','DA POST NEL FEED'],
+  ['en','Back to Feed post','FROM FEED POST'],
+  ['sq','Kthehu te Postim në Feed','ERDHE NGA POSTIM NË FEED']
+ ]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(back).toBeFocused();
+  await expect(back).toHaveAttribute('aria-label',label);
+  await expect(back).toHaveText('← '+label);
+  await expect(page.locator('#layer .v14-source-panel > span')).toHaveText(from);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(modalCore);
+ }
+ await back.click();
+ await expect(page.locator('#screen [data-act="v14-plan"][data-val="post"]').first()).toBeVisible();
+});
 test('Discover search accessible name follows sq-en-it while keeping focus and the typed query',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('illyrian_demo_ui_language_v1','sq'));
  await openDemo(page,390,844);

@@ -427,6 +427,15 @@ window.ILLYRIAN_LOCALES.sq={
     "write": "Shkruaj mesazh..."
   },
   "plans": {
+    "linkedOpenAriaPrefix": "Hap planin ",
+    "linkedBackPrefix": "Kthehu te ",
+    "linkedSourcePost": "Postim në Feed",
+    "linkedSourceStory": "Story",
+    "linkedSourceReel": "Reel",
+    "linkedSourceOther": "Përmbajtja",
+    "linkedFromPrefix": "ERDHE NGA ",
+    "linkedPostKicker": "NGA POSTIMI TE PLANI",
+    "linkedViewAction": "Shiko →",
     "statusClosed": "I mbyllur",
     "statusFull": "Plot",
     "statusActive": "Aktiv",

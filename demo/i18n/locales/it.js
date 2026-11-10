@@ -427,6 +427,15 @@ window.ILLYRIAN_LOCALES.it={
     "write": "Scrivi un messaggio..."
   },
   "plans": {
+    "linkedOpenAriaPrefix": "Apri il piano ",
+    "linkedBackPrefix": "Torna a ",
+    "linkedSourcePost": "Post nel feed",
+    "linkedSourceStory": "Storia",
+    "linkedSourceReel": "Reel",
+    "linkedSourceOther": "Contenuto",
+    "linkedFromPrefix": "DA ",
+    "linkedPostKicker": "DAL POST AL PIANO",
+    "linkedViewAction": "Apri →",
     "statusClosed": "Chiuso",
     "statusFull": "Completo",
     "statusActive": "Attivo",
