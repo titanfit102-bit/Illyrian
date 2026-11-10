@@ -1535,6 +1535,26 @@ for(const [action,detail,id,message] of [
  expect(restored.activityLog.filter(x=>x.text===message)).toHaveLength(1);
 });
 
+test('Story pause and resume keep an unsent reply without writing core storage',async({page})=>{
+ await openHomeAudit(page);
+ await page.locator('#screen .stories [data-act="story"][data-val="1"]').click();
+ const reply=page.locator('#v6-story-message'),toggle=page.locator('#layer [data-act="v6-story-pause"]');
+ await expect(toggle).toBeVisible();
+ await reply.fill('Ky tekst nuk duhet të humbasë');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ await toggle.click();
+ await expect(toggle).toContainText('Vazhdo');
+ await expect(toggle).toBeFocused();
+ await expect(reply).toHaveValue('Ky tekst nuk duhet të humbasë');
+ await expect(page.locator('#layer .v6-story-progress')).toHaveClass(/paused/);
+ await toggle.click();
+ await expect(toggle).toContainText('Ndalo');
+ await expect(toggle).toBeFocused();
+ await expect(reply).toHaveValue('Ky tekst nuk duhet të humbasë');
+ await expect(page.locator('#layer .v6-story-progress')).not.toHaveClass(/paused/);
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+});
+
 test('Story like preserves unsent reply and does not claim a failed local save',async({page})=>{
  await openHomeAudit(page);
  const key='illyrian_demo_v09_state';
