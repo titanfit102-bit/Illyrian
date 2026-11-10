@@ -840,7 +840,8 @@ storyContent=function(){let html=v6OldStory();if(!html||!state.story)return html
  const i=state.story;const person=['','arta','leon','besa','dion'][i];const liked=state.v6StoryLikes.includes(person);
  const progress=`<div class="v6-story-progress ${state.v6StoryPaused?'paused':''}">${(nearStoryScope||[1,2,3,4]).map(j=>`<span class="${j<i?'finished':j===i?'current':''}"><i></i></span>`).join('')}</div>`;
  html=html.replace(/<div class="story-progress">[\s\S]*?<\/div>/,progress);
- html=html.replace('<div class="story-arrows">',`<div class="v6-storybar"><input id="v6-story-message" aria-label="Përgjigju Story" maxlength="180" placeholder="Përgjigju Story..."><button data-act="v6-story-send" data-id="${person}" aria-label="Dërgo përgjigjen">➤</button><button class="${liked?'liked':''}" data-act="v6-story-like" data-id="${person}" aria-label="Pëlqe Story" aria-pressed="${liked}">${liked?'♥':'♡'}</button></div><div class="v6-story-actions"><button data-act="v6-story-pause">${state.v6StoryPaused?'▶ Vazhdo':'Ⅱ Ndalo'}</button><span style="font-size:10px;color:#fff9">Story </span></div><div class="story-arrows">`);
+ const storyUI=(key,fallback)=>esc(window.IllyrianI18n?.t('reels:'+key)||fallback);
+ html=html.replace('<div class="story-arrows">',`<div class="v6-storybar"><input id="v6-story-message" aria-label="${storyUI('storyReplyLabel','Përgjigju Story')}" maxlength="180" placeholder="${storyUI('reply','Përgjigju Story...')}"><button data-act="v6-story-send" data-id="${person}" aria-label="${storyUI('storySend','Dërgo përgjigjen')}">➤</button><button class="${liked?'liked':''}" data-act="v6-story-like" data-id="${person}" aria-label="${storyUI('storyLike','Pëlqe Story')}" aria-pressed="${liked}">${liked?'♥':'♡'}</button></div><div class="v6-story-actions"><button data-act="v6-story-pause">${state.v6StoryPaused?storyUI('storyResume','▶ Vazhdo'):storyUI('storyPause','Ⅱ Ndalo')}</button><span style="font-size:10px;color:#fff9">Story </span></div><div class="story-arrows">`);
  return html;
 };
 const v6OldProfile=profile;
@@ -2134,7 +2135,7 @@ let v16SavedOwnReels=()=>[];
     state.v6StoryPaused=true;
     progressSeed();
     const control=document.querySelector('[data-act="v6-story-pause"]');
-    if(control){control.textContent='▶ Vazhdo';window.IllyrianI18n?.translate(control);}
+    if(control){control.textContent=window.IllyrianI18n?.t('reels:storyResume')||'▶ Vazhdo';window.IllyrianI18n?.translate(control);}
   });
   function ownViewer(){
     const m=state.modal,item=ownFind(m.kind,m.id);

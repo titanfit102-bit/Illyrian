@@ -1559,6 +1559,40 @@ test('Story pause and resume keep an unsent reply without writing core storage',
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
 });
 
+test('Story controls localize live in sq/en/it with preserved reply and core state',async({page})=>{
+ await openHomeAudit(page);
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('sq'));
+ await page.locator('#screen .stories [data-act="story"][data-val="1"]').click();
+ const reply=page.locator('#v6-story-message'),like=page.locator('#layer [data-act="v6-story-like"][data-id="arta"]'),toggle=page.locator('#layer [data-act="v6-story-pause"]');
+ await reply.fill('Draft që nuk përkthehet');
+ await expect(toggle).toContainText('Vazhdo');
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+ const cases=[
+  ['sq','Përgjigju Story','Përgjigju Story...','Dërgo përgjigjen','Pëlqe Story','Vazhdo'],
+  ['en','Reply to Story','Reply to Story...','Send reply','Like Story','Resume'],
+  ['it','Rispondi alla storia','Rispondi alla storia...','Invia risposta','Metti Mi piace alla storia','Riprendi']
+ ];
+ for(const [lang,label,placeholder,send,liked,resume] of cases){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await expect(reply).toHaveAttribute('aria-label',label);
+  await expect(reply).toHaveAttribute('placeholder',placeholder);
+  await expect(page.locator('#layer [data-act="v6-story-send"]')).toHaveAttribute('aria-label',send);
+  await expect(like).toHaveAttribute('aria-label',liked);
+  await expect(like).toHaveAttribute('aria-pressed','false');
+  await expect(toggle).toContainText(resume);
+  await expect(reply).toHaveValue('Draft që nuk përkthehet');
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+ }
+ await toggle.click();
+ await expect(toggle).toContainText('Pausa');
+ await page.evaluate(()=>window.IllyrianI18n.changeLanguage('en'));
+ await expect(toggle).toContainText('Pause');
+ await toggle.click();
+ await expect(toggle).toContainText('Resume');
+ await expect(reply).toHaveValue('Draft që nuk përkthehet');
+ expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
+});
+
 test('Story like preserves unsent reply and does not claim a failed local save',async({page})=>{
  await openHomeAudit(page);
  const key='illyrian_demo_v09_state';

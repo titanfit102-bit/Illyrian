@@ -383,7 +383,12 @@ window.ILLYRIAN_LOCALES.sq={
     "demo": "Reels · DEMO",
     "next": "Tjetri →",
     "previous": "← Më parë",
-    "reply": "Përgjigju Story..."
+    "reply": "Përgjigju Story...",
+    "storyReplyLabel": "Përgjigju Story",
+    "storySend": "Dërgo përgjigjen",
+    "storyLike": "Pëlqe Story",
+    "storyPause": "Ⅱ Ndalo",
+    "storyResume": "▶ Vazhdo"
   },
   "messages": {
     "older": "Ngarko mesazhet më të vjetra",

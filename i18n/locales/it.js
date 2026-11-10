@@ -383,7 +383,12 @@ window.ILLYRIAN_LOCALES.it={
     "demo": "Reels · DEMO",
     "next": "Successivo →",
     "previous": "← Precedente",
-    "reply": "Rispondi alla storia..."
+    "reply": "Rispondi alla storia...",
+    "storyReplyLabel": "Rispondi alla storia",
+    "storySend": "Invia risposta",
+    "storyLike": "Metti Mi piace alla storia",
+    "storyPause": "Ⅱ Pausa",
+    "storyResume": "▶ Riprendi"
   },
   "messages": {
     "older": "Carica messaggi precedenti",
