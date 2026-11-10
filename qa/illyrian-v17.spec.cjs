@@ -1483,6 +1483,54 @@ for(const action of ['like','save','hide-post'])test('Home audit: quota failure 
  await page.reload();if(action==='hide-post')await expect(page.locator('#screen [data-act="postmore"][data-id="p1"]')).toHaveCount(0);else await expect(button).toHaveAttribute('aria-pressed','true');
 });
 
+test('Feed post report preserves modal on quota and stale storage, then saves locally',async({page})=>{
+ await openHomeAudit(page);
+ const key='illyrian_demo_v09_state';
+ const openReport=async()=>{
+  await page.locator('#screen [data-act="postmore"][data-id="p1"]').click();
+  await expect(page.locator('#layer [data-act="report-post"][data-id="p1"]')).toBeVisible();
+ };
+ await openReport();
+ const report=page.locator('#layer [data-act="report-post"][data-id="p1"]');
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__reportSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){
+   if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');
+   return window.__reportSet.call(this,k,v);
+  };
+ });
+ await report.click();
+ await expect(page.locator('#toast-area')).toContainText('Ndryshimi nuk u ruajt');
+ await expect(report).toBeVisible();
+ await expect(report).toBeFocused();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__reportSet;delete window.__reportSet});
+ const newer=await page.evaluate(k=>{
+  const data=JSON.parse(localStorage.getItem(k)||'{}');
+  data.comments={...data.comments,p1:['other tab report check']};
+  const raw=JSON.stringify(data);
+  localStorage.setItem(k,raw);
+  return raw;
+ },key);
+ await report.click();
+ await expect(report).toBeVisible();
+ await expect(report).toBeFocused();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(newer);
+ await page.reload({waitUntil:'load'});
+ await openReport();
+ await report.click();
+ await expect(report).toHaveCount(0);
+ await expect(page.locator('#toast-area')).toContainText('Raportim, jo real');
+ const saved=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(saved.reports).toContain('p1');
+ expect(saved.activityLog.filter(x=>x.text==='Raportim lokal — nuk është dërguar')).toHaveLength(1);
+ expect(saved.comments.p1).toEqual(['other tab report check']);
+ await page.reload({waitUntil:'load'});
+ const reloaded=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(reloaded.reports).toContain('p1');
+});
+
 test('Home audit: blocked and muted actors disappear from Stories and Reel navigation',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v09_state',JSON.stringify({blocked:['arta'],muted:['leon']})));
  await openHomeAudit(page);

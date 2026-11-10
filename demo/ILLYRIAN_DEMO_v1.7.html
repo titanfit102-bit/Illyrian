@@ -502,7 +502,18 @@ function v3Action(action,id,v){
  return true;
 }
  if(action==='hide-post'){if(coreArrayToggle('hiddenPosts',String(id),document.activeElement,'Postimi u fsheh nga Feed-i')){close();coreActionFocus('postmore',id);toast('Postimi u fsheh')}return true}
- if(action==='report-post'){if(!state.reports.includes(id))state.reports.push(id);notice("Raportim lokal — nuk është dërguar");close();toast("Raportim, jo real");return true}
+ if(action==='report-post'){
+  const input=document.activeElement;
+  if(!coreMessageFresh(input))return true;
+  const previousReports=state.reports,previousLog=state.activityLog;
+  if(!previousReports.includes(id))state.reports=[...previousReports,id];
+  state.activityLog=[{id:Date.now()+Math.random(),text:'Raportim lokal — nuk është dërguar',time:'Tani',createdAt:new Date().toISOString()},...previousLog].slice(0,15);
+  if(!persist()){
+   state.reports=previousReports;state.activityLog=previousLog;
+   toast(coreSaveFailed());input?.focus();return true;
+  }
+  close();toast('Raportim, jo real');return true;
+ }
  return false
 }
 
