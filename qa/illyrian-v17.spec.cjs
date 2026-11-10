@@ -1615,6 +1615,53 @@ test('Story reply feedback localizes in sq/en/it without a false send or core mu
  expect(saved.messages.arta).toContain('↪ Story: Përgjigjja ime e ruajtur lokalisht');
 });
 
+test('Story send keeps unsent reply and another tab data intact on quota and stale writes',async({page})=>{
+ await openHomeAudit(page);
+ const key='illyrian_demo_v09_state',draft='Përgjigje e papërfunduar nga Story';
+ const openStory=async()=>{
+  await page.locator('#screen .stories [data-act="story"][data-val="1"]').click();
+  await expect(page.locator('#v6-story-message')).toBeVisible();
+ };
+ await openStory();
+ const reply=page.locator('#v6-story-message'),send=page.locator('#layer [data-act="v6-story-send"]');
+ await reply.fill(draft);
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(()=>{
+  window.__storySendOriginal=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){
+   if(k==='illyrian_demo_v09_state')throw new DOMException('Quota','QuotaExceededError');
+   return window.__storySendOriginal.call(this,k,v);
+  };
+ });
+ await send.click();
+ await expect(page.locator('#toast-area')).toContainText(/nuk u ruajt/i);
+ await expect(reply).toHaveValue(draft);
+ await expect(reply).toBeFocused();
+ await expect(send).toBeVisible();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__storySendOriginal;delete window.__storySendOriginal});
+ const newer=await page.evaluate(k=>{
+  const data=JSON.parse(localStorage.getItem(k)||'{}');
+  data.comments={...data.comments,p1:['other tab story send check']};
+  const raw=JSON.stringify(data);localStorage.setItem(k,raw);return raw;
+ },key);
+ await send.click();
+ await expect(page.locator('#toast-area')).toContainText(/ndrysh|changed|cambiat/i);
+ await expect(reply).toHaveValue(draft);
+ await expect(reply).toBeFocused();
+ await expect(send).toBeVisible();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(newer);
+ await page.reload({waitUntil:'load'});
+ await openStory();
+ await reply.fill(draft);
+ await send.click();
+ await expect(page.locator('#layer #v6-chat-scroll')).toBeVisible();
+ await expect(page.locator('#toast-area')).toContainText('Përgjigjja u ruajt vetëm në bisedë në këtë pajisje');
+ const saved=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(saved.comments.p1).toEqual(['other tab story send check']);
+ expect(saved.messages.arta.filter(text=>text==='↪ Story: '+draft)).toHaveLength(1);
+});
+
 test('Story like preserves unsent reply and does not claim a failed local save',async({page})=>{
  await openHomeAudit(page);
  const key='illyrian_demo_v09_state';
