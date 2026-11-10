@@ -1519,6 +1519,31 @@ v8Action=function(action,id,v){
 };
 const v11PreviousV4Action=v4Action;
 v4Action=function(action,id,v){if(action==='user-profile'){state.v11PersonTab='posts';openModal('user-profile',id);return true}return v11PreviousV4Action(action,id,v)};
+// Refresh only static UI labels in the open person profile; preserve focus, scroll and user text.
+window.addEventListener('illyrian:language-changed',()=>{
+ if(state.modal?.type!=='user-profile')return;
+ const person=people.find(p=>p.id===state.modal.id),layer=document.querySelector('#layer');
+ if(!person||!layer)return;
+ const blocked=state.blocked.includes(person.id),followed=state.follows.includes(person.id)&&!blocked;
+ const count=blocked?0:seedPosts.filter(post=>post.name===person.name).length;
+ const set=(selector,key,fallback)=>{
+  const node=layer.querySelector(selector);
+  if(node)node.textContent=socialText(key,fallback);
+ };
+ set('[data-act="v11-person-follow"]',blocked?'personBlocked':followed?'personFollowing':'personFollow',blocked?'Profil i bllokuar':followed?'✓ Duke ndjekur':'＋ Ndiq profilin');
+ set('[data-act="v6-openchat"]','personMessage','✉ Mesazh');
+ set('[data-act="v11-person-tab"][data-val="about"]','personAbout','Rreth meje');
+ set('[data-act="v8-toggle-block"]',blocked?'personUnblock':'personBlock',blocked?'✓ Zhblloko profilin':'⊘ Blloko profilin');
+ set('.v11-disclaimer','personLocalDisclaimer','Ndjekja, bllokimi dhe mesazhet funksionojnë vetëm lokalisht. Shenjat dhe informacionet e profilit nuk përbëjnë verifikim real.');
+ const tabs=layer.querySelector('.v11-modal-tabs');
+ if(tabs)tabs.setAttribute('aria-label',socialText('personSections','Seksionet e profilit'));
+ const posts=layer.querySelector('[data-act="v11-person-tab"][data-val="posts"]');
+ if(posts)posts.textContent=socialText('personPosts','Postimet')+' ('+count+')';
+ const empty=layer.querySelector('.v11-noitems');
+ if(empty)empty.textContent=blocked?(window.IllyrianI18n?.t('safety:blockedProfilePosts')||'Postimet janë të fshehura sepse e ke bllokuar këtë profil.'):socialText('personNoPosts','Nuk ka ende postime për këtë profil.');
+ layer.querySelectorAll('.v11-person-post [data-act="comments"]').forEach(node=>{node.textContent=socialText('personComments','Komente →')});
+ layer.querySelectorAll('.v11-post-photo').forEach(img=>img.setAttribute('alt',socialText('personPostPhotoAlt','Foto e postimit')));
+});
 const v11Style=document.createElement('style');
 v11Style.textContent=`
  .v11-community-card .directory-info{min-width:0}.v11-titlelink{font:inherit;font-weight:800;font-size:13px;color:var(--ink,#191019);background:transparent;border:0;cursor:pointer;text-align:left;padding:0}
