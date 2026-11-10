@@ -1568,6 +1568,7 @@ test('Story like preserves unsent reply and does not claim a failed local save',
  };
  await openStory();
  const like=page.locator('#layer [data-act="v6-story-like"][data-id="arta"]');
+ await expect(like).toHaveAttribute('aria-pressed','false');
  const reply=page.locator('#v6-story-message');
  await reply.fill('Përgjigjja ime pa dërguar');
  const before=await page.evaluate(k=>localStorage.getItem(k),key);
@@ -1583,6 +1584,7 @@ test('Story like preserves unsent reply and does not claim a failed local save',
  await expect(like).toBeVisible();
  await expect(like).toBeFocused();
  await expect(like).not.toHaveClass(/liked/);
+ await expect(like).toHaveAttribute('aria-pressed','false');
  await expect(reply).toHaveValue('Përgjigjja ime pa dërguar');
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
  await page.evaluate(()=>{Storage.prototype.setItem=window.__storyLikeSet;delete window.__storyLikeSet});
@@ -1594,6 +1596,7 @@ test('Story like preserves unsent reply and does not claim a failed local save',
   return raw;
  },key);
  await like.click();
+ await expect(like).toHaveAttribute('aria-pressed','false');
  await expect(page.locator('#toast-area')).toContainText(/ndrysh|changed|cambiat/i);
  await expect(reply).toHaveValue('Përgjigjja ime pa dërguar');
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(newer);
@@ -1602,6 +1605,7 @@ test('Story like preserves unsent reply and does not claim a failed local save',
  await reply.fill('Përgjigjja ime pa dërguar');
  await like.click();
  await expect(like).toHaveClass(/liked/);
+ await expect(like).toHaveAttribute('aria-pressed','true');
  await expect(like).toBeFocused();
  await expect(reply).toHaveValue('Përgjigjja ime pa dërguar');
  const saved=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
@@ -1610,6 +1614,10 @@ test('Story like preserves unsent reply and does not claim a failed local save',
  await page.reload({waitUntil:'load'});
  await openStory();
  await expect(like).toHaveClass(/liked/);
+ await expect(like).toHaveAttribute('aria-pressed','true');
+ await like.click();
+ await expect(like).toHaveAttribute('aria-pressed','false');
+ await expect(like).toBeFocused();
 });
 
 test('Feed post report preserves modal on quota and stale storage, then saves locally',async({page})=>{
