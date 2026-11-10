@@ -903,7 +903,7 @@ function v6Action(action,id,v){
   $('#layer [data-act="v6-story-pause"]')?.focus({preventScroll:true});
   return true;
  }
- if(action==='v6-story-send'){const input=$('#v6-story-message');const t=(input?.value||'').trim();if(!t){toast('Shkruaj përgjigjen');return true}if(!people.some(x=>x.id===id))return true;if(!coreMessageFresh(input))return true;const old=state.messages[id],read=state.v6ReadChats;state.messages[id]=[...(old||[]),'↪ Story: '+t];state.v6ReadChats=Array.from(new Set([...read,id]));if(!persist()){if(old===undefined)delete state.messages[id];else state.messages[id]=old;state.v6ReadChats=read;toast(coreSaveFailed());input?.focus();return true}openModal('chat',id);toast("Përgjigjja u shtua vetëm në bisedën");return true}
+ if(action==='v6-story-send'){const input=$('#v6-story-message');const t=(input?.value||'').trim();if(!t){toast(window.IllyrianI18n?.t('reels:storyEmptyReply')||'Shkruaj përgjigjen');return true}if(!people.some(x=>x.id===id))return true;if(!coreMessageFresh(input))return true;const old=state.messages[id],read=state.v6ReadChats;state.messages[id]=[...(old||[]),'↪ Story: '+t];state.v6ReadChats=Array.from(new Set([...read,id]));if(!persist()){if(old===undefined)delete state.messages[id];else state.messages[id]=old;state.v6ReadChats=read;toast(coreSaveFailed());input?.focus();return true}openModal('chat',id);toast(window.IllyrianI18n?.t("reels:storyReplySaved")||"Përgjigjja u shtua vetëm në bisedën");return true}
  return false;
 }
 // v0.6 interactivity contract: event delegation handles dynamically rendered views.

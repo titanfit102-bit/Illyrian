@@ -388,7 +388,9 @@ window.ILLYRIAN_LOCALES.it={
     "storySend": "Invia risposta",
     "storyLike": "Metti Mi piace alla storia",
     "storyPause": "Ⅱ Pausa",
-    "storyResume": "▶ Riprendi"
+    "storyResume": "▶ Riprendi",
+    "storyEmptyReply": "Scrivi una risposta",
+    "storyReplySaved": "Risposta salvata solo nella conversazione su questo dispositivo"
   },
   "messages": {
     "older": "Carica messaggi precedenti",

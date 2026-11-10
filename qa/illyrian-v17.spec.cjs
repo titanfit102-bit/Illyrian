@@ -1593,6 +1593,28 @@ test('Story controls localize live in sq/en/it with preserved reply and core sta
  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(before);
 });
 
+test('Story reply feedback localizes in sq/en/it without a false send or core mutation',async({page})=>{
+ await openHomeAudit(page);
+ await page.locator('#screen .stories [data-act="story"][data-val="1"]').click();
+ const reply=page.locator('#v6-story-message'),send=page.locator('#layer [data-act="v6-story-send"]'),toast=page.locator('#toast-area');
+ const key='illyrian_demo_v09_state';
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ for(const [lang,empty] of [['sq','Shkruaj përgjigjen'],['en','Write a reply'],['it','Scrivi una risposta']]){
+  await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
+  await send.click();
+  await expect(toast).toContainText(empty);
+  await expect(reply).toBeVisible();
+  await expect(reply).toHaveValue('');
+  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ }
+ await reply.fill('Përgjigjja ime e ruajtur lokalisht');
+ await send.click();
+ await expect(toast).toContainText('Risposta salvata solo nella conversazione su questo dispositivo');
+ await expect(page.locator('#layer #v6-chat-scroll')).toBeVisible();
+ const saved=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),key));
+ expect(saved.messages.arta).toContain('↪ Story: Përgjigjja ime e ruajtur lokalisht');
+});
+
 test('Story like preserves unsent reply and does not claim a failed local save',async({page})=>{
  await openHomeAudit(page);
  const key='illyrian_demo_v09_state';

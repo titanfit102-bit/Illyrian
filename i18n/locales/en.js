@@ -388,7 +388,9 @@ window.ILLYRIAN_LOCALES.en={
     "storySend": "Send reply",
     "storyLike": "Like Story",
     "storyPause": "Ⅱ Pause",
-    "storyResume": "▶ Resume"
+    "storyResume": "▶ Resume",
+    "storyEmptyReply": "Write a reply",
+    "storyReplySaved": "Reply saved only in the conversation on this device"
   },
   "messages": {
     "older": "Load older messages",

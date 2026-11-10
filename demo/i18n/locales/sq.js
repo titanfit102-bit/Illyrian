@@ -388,7 +388,9 @@ window.ILLYRIAN_LOCALES.sq={
     "storySend": "Dërgo përgjigjen",
     "storyLike": "Pëlqe Story",
     "storyPause": "Ⅱ Ndalo",
-    "storyResume": "▶ Vazhdo"
+    "storyResume": "▶ Vazhdo",
+    "storyEmptyReply": "Shkruaj përgjigjen",
+    "storyReplySaved": "Përgjigjja u ruajt vetëm në bisedë në këtë pajisje"
   },
   "messages": {
     "older": "Ngarko mesazhet më të vjetra",
