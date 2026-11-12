@@ -37,6 +37,42 @@ for(const [lang,ordinary,declared,example] of [
   }
  });
 }
+test('AUD-06 dynamic locale registers new UI phrase sources and preserves UGC on switches',async({page})=>{
+ await ready(page);
+ const original=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>key!=='illyrian_demo_ui_language_v1')));
+ const result=await page.evaluate(()=>{
+  const api=window.IllyrianI18n;
+  const added=api.addLanguage('fr',{home:{like:'Aimer'}});
+  const accepted=api.changeLanguage('fr');
+  const translated=api.t('home:like');
+  const lookup=api.lookupKey('Aimer');
+  const ui=document.createElement('span'),ugc=document.createElement('span');
+  ui.dataset.audit06='ui';ui.textContent='Aimer';
+  ugc.dataset.audit06='ugc';ugc.setAttribute('data-user-content','');ugc.textContent='Aimer';
+  document.querySelector('#screen').append(ui,ugc);
+  api.translate(ui);api.translate(ugc);
+  const french=[ui.textContent,ugc.textContent];
+  api.changeLanguage('en');
+  api.translate(ui);api.translate(ugc);
+  const english=[ui.textContent,ugc.textContent];
+  const languageAfter=api.language;
+  const supported=api.supportedLanguages;
+  ui.remove();ugc.remove();
+  return {added,accepted,translated,lookup,french,english,languageAfter,supported};
+ });
+ expect(result.added).toBe(true);
+ expect(result.accepted).toBe(true);
+ expect(result.translated).toBe('Aimer');
+ expect(result.lookup).toBe('home:like');
+ expect(result.french).toEqual(['Aimer','Aimer']);
+ expect(result.english).toEqual(['Like','Aimer']);
+ expect(result.languageAfter).toBe('en');
+ expect(result.supported).toContain('fr');
+ expect(await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>key!=='illyrian_demo_ui_language_v1')))).toEqual(original);
+ await page.reload({waitUntil:'load'});
+ expect(await page.evaluate(()=>window.IllyrianI18n.supportedLanguages)).toEqual(['sq','en','it']);
+});
+
 test('Identity phase 4: live locale keeps badge disclosure focus and nested guide return',async({page})=>{
  await ready(page);await page.locator('#navbar [data-act="tab"][data-val="profile"]').click();
  const badge=page.locator('.p17-person-name [data-ily-identity-badge]');await badge.click();await page.evaluate(()=>window.IllyrianI18n.changeLanguage('it'));await expect(badge).toBeFocused();await expect(badge).toHaveAttribute('aria-expanded','true');await expect(badge.locator('..').locator('[data-ily-identity-note]')).toContainText('Nessuna identità');

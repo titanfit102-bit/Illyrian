@@ -67,7 +67,7 @@ const phrases=new Map();
 function reindex(){
  phrases.clear();
  // Dictionaries contain curated UI tokens, not user-provided strings.
- for(const lang of ['sq','en','it']){
+ for(const lang of supported){
   for(const [ns,items] of Object.entries(locales[lang]||{})){
     for(const [label,value] of Object.entries(items)){
       if(typeof value==='string'&&value&&!value.includes('{{')&&!phrases.has(value))
@@ -131,9 +131,12 @@ function change(lang){
 function addLanguage(code,bundles){
  const l=String(code||'').toLowerCase().split('-')[0];
  if(!/^[a-z]{2,3}$/.test(l)||!bundles)return false;
- locales[l]=bundles;resources[l]=bundles;
- for(const [ns,entries] of Object.entries(bundles))engine.addResourceBundle(l,ns,presentationBundle(entries,ns,l),true,true);
+ locales[l]=bundles;
+ resources[l]=Object.fromEntries(Object.entries(bundles).map(([ns,entries])=>[ns,presentationBundle(entries,ns,l)]));
+ for(const [ns,entries] of Object.entries(resources[l]))engine.addResourceBundle(l,ns,entries,true,true);
  if(!supported.includes(l))supported.push(l);
+ // Recognize new-language source tokens when subsequently switching locales.
+ reindex();
  return true;
 }
 global.IllyrianI18n={
