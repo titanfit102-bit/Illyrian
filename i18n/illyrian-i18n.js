@@ -135,6 +135,11 @@ function addLanguage(code,bundles){
  resources[l]=Object.fromEntries(Object.entries(bundles).map(([ns,entries])=>[ns,presentationBundle(entries,ns,l)]));
  for(const [ns,entries] of Object.entries(resources[l]))engine.addResourceBundle(l,ns,entries,true,true);
  if(!supported.includes(l))supported.push(l);
+ // i18next snapshots its supportedLngs during init; keep the resolver in sync.
+ // Updating only the public supported array made changeLanguage() appear to work
+ // while translation fell back to an untranslated key.
+ engine.options.supportedLngs=supported.slice();
+ if(engine.services?.languageUtils?.options)engine.services.languageUtils.options.supportedLngs=supported.slice();
  // Recognize new-language source tokens when subsequently switching locales.
  reindex();
  return true;

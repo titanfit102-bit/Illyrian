@@ -42,6 +42,11 @@ test('AUD-06 dynamic locale registers new UI phrase sources and preserves UGC on
  const original=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>key!=='illyrian_demo_ui_language_v1')));
  const result=await page.evaluate(()=>{
   const api=window.IllyrianI18n;
+  const germanAdded=api.addLanguage('de',{common:{auditHello:'Hallo'}});
+  const germanAccepted=api.changeLanguage('de');
+  const germanTranslation=api.t('common:auditHello');
+  const germanFallback=api.t('home:like');
+  const invalidCode=api.addLanguage('1x',{common:{auditHello:'Nein'}});
   const added=api.addLanguage('fr',{home:{like:'Aimer'}});
   const accepted=api.changeLanguage('fr');
   const translated=api.t('home:like');
@@ -58,8 +63,13 @@ test('AUD-06 dynamic locale registers new UI phrase sources and preserves UGC on
   const languageAfter=api.language;
   const supported=api.supportedLanguages;
   ui.remove();ugc.remove();
-  return {added,accepted,translated,lookup,french,english,languageAfter,supported};
+  return {germanAdded,germanAccepted,germanTranslation,germanFallback,invalidCode,added,accepted,translated,lookup,french,english,languageAfter,supported};
  });
+ expect(result.germanAdded).toBe(true);
+ expect(result.germanAccepted).toBe(true);
+ expect(result.germanTranslation).toBe('Hallo');
+ expect(result.germanFallback).toBe('Like');
+ expect(result.invalidCode).toBe(false);
  expect(result.added).toBe(true);
  expect(result.accepted).toBe(true);
  expect(result.translated).toBe('Aimer');
