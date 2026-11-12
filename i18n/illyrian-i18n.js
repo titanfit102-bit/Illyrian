@@ -139,7 +139,11 @@ function addLanguage(code,bundles){
  // Updating only the public supported array made changeLanguage() appear to work
  // while translation fell back to an untranslated key.
  engine.options.supportedLngs=supported.slice();
- if(engine.services?.languageUtils?.options)engine.services.languageUtils.options.supportedLngs=supported.slice();
+ if(engine.services?.languageUtils){
+  // i18next 25.7.0 caches this list separately from options at construction.
+  engine.services.languageUtils.supportedLngs=supported.slice();
+  engine.services.languageUtils.options.supportedLngs=supported.slice();
+ }
  // Recognize new-language source tokens when subsequently switching locales.
  reindex();
  return true;
