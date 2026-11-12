@@ -190,9 +190,12 @@ test('AUD-01 theme rolls back a quota failure and preserves focus for retry',asy
 async function audit02OpenCreator(page,kind){
  await nav(page,'home');
  if(kind==='story'){
-  // The Story shortcut opens a picker for empty state and a viewer for an existing
-  // Story; use the existing creator directly for this persistence-only test.
-  await page.evaluate(()=>v15Creator('story'));
+  // Reuse the existing delegated v15-open action in this storage regression.
+  // The Home Story shortcut intentionally becomes a viewer after publishing;
+  // never call v15Creator as a page-global (it is scoped to the app script).
+  const trigger=page.locator('#screen .ily-compose-reel[data-act="v15-open"]');
+  await trigger.evaluate(el=>{el.dataset.val='story';});
+  await trigger.click();
  }else await page.locator('#screen .ily-compose-reel[data-act="v15-open"][data-val="reel"]').click();
  await expect(page.locator('#v15-caption')).toBeVisible();
 }
