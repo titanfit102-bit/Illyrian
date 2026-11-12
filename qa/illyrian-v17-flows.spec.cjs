@@ -443,6 +443,51 @@ test('AUD-04 comment quota rejects without clearing draft or duplicating on retr
  expect((await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key))['reel:audit04-reel-a']).toEqual(['Quota AUD-04 comment']);
 });
 
+
+test('AUD-07 post counters render corrupted local values as inert text without storage writes',async({page})=>{
+ const key='illyrian_demo_v09_state';
+ await page.addInitScript(k=>{
+  if(!localStorage.getItem(k))localStorage.setItem(k,JSON.stringify({
+   posts:[{id:'audit07-post',name:'Local QA',ava:'a1',city:'Tiranë',when:'Tani',
+    text:'AUD-07 counter fixture',img:null,
+    likes:'<em data-aud07="likes">invalid</em>',
+    comments:'<em data-aud07="comments">invalid</em>',
+    share:'<em data-aud07="share">invalid</em>',verified:false}]
+  }));
+ },key);
+ await openDemo(page,390,844);
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ const card=page.locator('#screen article.post').filter({hasText:'AUD-07 counter fixture'});
+ await expect(card).toBeVisible();
+ await expect(card.locator('[data-aud07]')).toHaveCount(0);
+ const counts=card.locator('.post-bottom .post-action');
+ await expect(counts.nth(0)).toContainText('0');
+ await expect(counts.nth(1)).toContainText('0');
+ await expect(counts.nth(2)).toContainText('0');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+ await page.reload({waitUntil:'load'});
+ await expect(page.locator('#screen article.post [data-aud07]')).toHaveCount(0);
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+});
+
+test('AUD-07 numeric strings and malformed counter shapes stay bounded without mutation',async({page})=>{
+ const key='illyrian_demo_v09_state';
+ await page.addInitScript(k=>{
+  if(!localStorage.getItem(k))localStorage.setItem(k,JSON.stringify({
+   posts:[{id:'audit07-counters',name:'Local QA',ava:'a1',city:'Romë',when:'Tani',
+    text:'AUD-07 shape fixture',likes:{value:8},comments:['4'],share:'12',verified:false}]
+  }));
+ },key);
+ await openDemo(page,390,844);
+ const original=await page.evaluate(k=>localStorage.getItem(k),key);
+ const card=page.locator('#screen article.post').filter({hasText:'AUD-07 shape fixture'});
+ const counts=card.locator('.post-bottom .post-action');
+ await expect(counts.nth(0)).toContainText('0');
+ await expect(counts.nth(1)).toContainText('0');
+ await expect(counts.nth(2)).toContainText('12');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(original);
+});
+
 test('Plans local entry and local activity labels follow live sq/en/it without data writes',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({
     events:[{id:'qa-localized',title:'Original user plan',kind:'Sport',city:'Romë',place:'Original venue',date:'2099-06-12',time:'13:00',capacity:5,price:0,privacy:'public',conditions:'',cancelled:false}],
