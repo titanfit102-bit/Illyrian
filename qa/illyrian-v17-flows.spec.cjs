@@ -190,16 +190,9 @@ test('AUD-01 theme rolls back a quota failure and preserves focus for retry',asy
 async function audit02OpenCreator(page,kind){
  await nav(page,'home');
  if(kind==='story'){
-  const mine=page.locator('#screen > .stories .story-btn').first();
-  if(await mine.getAttribute('aria-label')==='Story im'){
-   // The current Story shortcut opens the existing item; enter the editor directly for a controlled retry.
-   await page.evaluate(()=>v15Creator('story'));
-  }else{
-   const picker=page.waitForEvent('filechooser');
-   await mine.click();
-   await (await picker).setFiles([]);
-   await page.locator('#v15-file').dispatchEvent('cancel');
-  }
+  // The Story shortcut opens a picker for empty state and a viewer for an existing
+  // Story; use the existing creator directly for this persistence-only test.
+  await page.evaluate(()=>v15Creator('story'));
  }else await page.locator('#screen .ily-compose-reel[data-act="v15-open"][data-val="reel"]').click();
  await expect(page.locator('#v15-caption')).toBeVisible();
 }
@@ -266,7 +259,8 @@ async function audit03OpenPrivacy(page,section='profiles'){
  await page.locator('#il4-entry [data-il4-entry]').click();
  const root=page.locator('#il4-root');
  await expect(root).toBeVisible();
- if(section==='groups')await root.locator('[data-il4="tab:groups"]').click();
+ // Explore enters the schematic map by default, not the profile controls.
+ await root.locator('[data-il4="tab:'+(section==='groups'?'groups':'profiles')+'"]').click();
  return root;
 }
 test('AUD-03 stale follow in second tab cannot erase another tab blocked profile',async({page,context})=>{
