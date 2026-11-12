@@ -411,6 +411,38 @@ for(const separateReels of [false,true]){
   }finally{await other.close()}
  });
 }
+for(const action of ['like','delete']){
+ test('AUD-02 stale own Reel '+action+' refuses to erase another tab media update',async({page,context})=>{
+  const key='illyrian_demo_v15_creator';
+  await audit04SeedReels(page);
+  await openDemo(page,390,844);
+  const other=await context.newPage();
+  try{
+   await openDemo(other,390,844);
+   await audit04OpenReel(page,'audit04-reel-b');
+   await audit04OpenReel(other,'audit04-reel-a');
+   await page.locator('#layer [data-act="v16-like"]').click();
+   const first=await page.evaluate(k=>localStorage.getItem(k),key);
+   expect(JSON.parse(first).reels.find(x=>x.id==='audit04-reel-b').liked).toBe(true);
+   const act=other.locator('#layer [data-act="v16-'+action+'"]');
+   await act.click();
+   expect(await other.evaluate(k=>localStorage.getItem(k),key)).toBe(first);
+   await expect(other.locator('#layer .v16-viewer')).toBeVisible();
+   await expect(act).toBeFocused();
+   await expect(other.locator('#toast-area')).not.toBeEmpty();
+   await other.reload({waitUntil:'load'});
+   await audit04OpenReel(other,'audit04-reel-a');
+   await other.locator('#layer [data-act="v16-'+action+'"]').click();
+   const after=await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+   expect(after.reels.find(x=>x.id==='audit04-reel-b').liked).toBe(true);
+   if(action==='delete')expect(after.reels.some(x=>x.id==='audit04-reel-a')).toBe(false);
+   else expect(after.reels.find(x=>x.id==='audit04-reel-a').liked).toBe(true);
+   await other.reload({waitUntil:'load'});
+   expect((await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key)).reels).toEqual(after.reels);
+  }finally{await other.close();}
+ });
+}
+
 test('AUD-04 comment quota rejects without clearing draft or duplicating on retry',async({page})=>{
  const key='illyrian_demo_v16_comments';
  await audit04SeedReels(page);
