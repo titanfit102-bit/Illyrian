@@ -119,6 +119,73 @@ for(const [w,h] of [[390,844],[844,390],[1280,800]]){
   });
 }
 
+
+test('AUD-01 theme rejects a stale second tab without overwriting newer core likes',async({page,context})=>{
+  await page.emulateMedia({colorScheme:'light'});
+  await openDemo(page,390,844);
+  const other=await context.newPage();
+  try{
+    await other.emulateMedia({colorScheme:'light'});
+    await openDemo(other,390,844);
+    await nav(other,'profile');
+    await other.locator('#phone > .head [data-ily-profile-settings]').click();
+    await other.locator('#layer [data-act="v6-settings-section"][data-val="theme"]').click();
+    const oldMode=await other.locator('#layer input[name="theme"]:checked').inputValue();
+    await page.locator('#screen [data-act="like"][data-id="p1"]').click();
+    const saved=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'));
+    expect(JSON.parse(saved).likes).toContain('p1');
+    const requested=oldMode==='dark'?'light':'dark';
+    const attempted=other.locator('#layer input[name="theme"][value="'+requested+'"]');
+    await attempted.check();
+    expect(await other.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(saved);
+    await expect(other.locator('#layer input[name="theme"][value="'+oldMode+'"]')).toBeChecked();
+    await expect(attempted).toBeFocused();
+    await expect(other.locator('#toast-area')).not.toBeEmpty();
+    await openDemo(other,390,844); // fresh snapshot enables an explicit retry
+    await nav(other,'profile');
+    await other.locator('#phone > .head [data-ily-profile-settings]').click();
+    await other.locator('#layer [data-act="v6-settings-section"][data-val="theme"]').click();
+    await other.locator('#layer input[name="theme"][value="'+requested+'"]').check();
+    const result=await other.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')));
+    expect(result.likes).toContain('p1');
+    expect(result.theme).toBe(requested);
+    await other.reload({waitUntil:'load'});
+    expect(await other.evaluate(()=>JSON.parse(localStorage.getItem('illyrian_demo_v09_state')).theme)).toBe(requested);
+  }finally{await other.close();}
+});
+
+test('AUD-01 theme rolls back a quota failure and preserves focus for retry',async({page})=>{
+  await page.emulateMedia({colorScheme:'light'});
+  await openDemo(page,390,844);
+  await nav(page,'profile');
+  await page.locator('#phone > .head [data-ily-profile-settings]').click();
+  await page.locator('#layer [data-act="v6-settings-section"][data-val="theme"]').click();
+  const key='illyrian_demo_v09_state',before=await page.evaluate(k=>localStorage.getItem(k),key);
+  const previous=await page.locator('#layer input[name="theme"]:checked').inputValue();
+  await page.evaluate(k=>{
+    const set=Storage.prototype.setItem;
+    window.__restoreAudit01Theme=()=>{Storage.prototype.setItem=set};
+    Storage.prototype.setItem=function(name,value){
+      if(name===k)throw new DOMException('Audit synthetic quota','QuotaExceededError');
+      return set.call(this,name,value);
+    };
+  },key);
+  const requested=previous==='dark'?'light':'dark';
+  const choice=page.locator('#layer input[name="theme"][value="'+requested+'"]');
+  try{
+    await choice.check();
+    expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+    await expect(page.locator('#layer input[name="theme"][value="'+previous+'"]')).toBeChecked();
+    await expect(choice).toBeFocused();
+    await expect(page.locator('#toast-area')).not.toBeEmpty();
+    await expect(page.locator('#phone')).not.toHaveClass(/\\bdark\\b/);
+  }finally{await page.evaluate(()=>window.__restoreAudit01Theme?.())}
+  await choice.check();
+  expect(await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).theme,key)).toBe(requested);
+  await page.reload({waitUntil:'load'});
+  expect(await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).theme,key)).toBe(requested);
+});
+
 test('Plans local entry and local activity labels follow live sq/en/it without data writes',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({
     events:[{id:'qa-localized',title:'Original user plan',kind:'Sport',city:'Romë',place:'Original venue',date:'2099-06-12',time:'13:00',capacity:5,price:0,privacy:'public',conditions:'',cancelled:false}],

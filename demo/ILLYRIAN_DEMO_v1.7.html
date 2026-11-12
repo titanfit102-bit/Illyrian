@@ -960,7 +960,21 @@ if(action==='send-message'){const input=$('#msg-input'),t=input?.value.trim();if
 if(action==='send-comment'){const t=$('#comment-input')?.value.trim();if(!t)return;state.comments[id]=[...(state.comments[id]||[]),t];persist();render({scroll:true});return}
 if(action==='reset'){if(!confirm('Të rivendosim të dhënat e demonstrimit? Postimet e provës do të fshihen nga ky shfletues.'))return;localStorage.removeItem(KEY);location.reload();return}
 });
-document.addEventListener('change',e=>{if(e.target.name==='theme'){state.theme=e.target.value;persist();render({scroll:true})}});
+document.addEventListener('change',e=>{
+ if(e.target.name!=='theme')return;
+ const input=e.target,previous=state.theme,next=input.value;
+ // A theme preference must never overwrite a newer core snapshot from another tab.
+ const restore=()=>{
+   const original=document.querySelector('#layer input[name="theme"][value="'+previous+'"]');
+   if(original)original.checked=true;
+   input.focus({preventScroll:true});
+ };
+ if(!coreMessageFresh(input)){restore();return;}
+ state.theme=next;
+ if(!persist()){state.theme=previous;restore();toast(coreSaveFailed());return;}
+ render({scroll:true});
+ document.querySelector('#layer input[name="theme"][value="'+next+'"]')?.focus({preventScroll:true});
+});
 // Keep IME composition attached until its final input; preserve selection direction on rerender.
 function updateExploreFinder(source){
  const screen=$('#screen');if(!source?.isConnected||!screen?.contains(source))return;
