@@ -216,7 +216,12 @@
     // In the read-only list, rewriting the whole dialog would detach its
     // focused close button. Update semantic labels without replacing nodes.
     if(state.view==='list'&&!state.notice){
-      root.querySelector('.ilp-panel')?.setAttribute('aria-label',feedback('title','Aktivitetet dhe organizatori'));
+      const title=feedback('title','Aktivitetet dhe organizatori');
+      root.querySelector('.ilp-panel')?.setAttribute('aria-label',title);
+      const heading=root.querySelector('.ilp-panel header h2');
+      if(heading)heading.textContent=title;
+      const kicker=root.querySelector('.ilp-panel header small');
+      if(kicker)kicker.textContent=feedback('heading','ILLYRIAN · PLANE');
       root.querySelector('.ilp-panel nav')?.setAttribute('aria-label',feedback('role','Roli i demonstrimit'));
       const intro=root.querySelector('.ilp-intro');if(intro)intro.textContent=feedback('listIntro','Kalo midis organizatorit dhe pjesëmarrësit për të provuar të gjithë procesin. Nuk ka persona apo aktivitete reale.');
       const foot=root.querySelector('.ilp-foot');if(foot)foot.textContent=feedback('demoFootnote','PROTOTIP · Asnjë pjesëmarrje, pagesë ose mesazh real.');

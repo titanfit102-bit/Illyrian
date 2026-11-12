@@ -1928,15 +1928,20 @@ test('visual regression: Plans intro and prototype note follow sq/en/it without 
  const root=page.locator('#ilp-root');
  const close=root.locator('header button[data-ilp="close"]');
  await expect(close).toBeFocused();
- for(const [lang,intro,foot] of [
-  ['sq','Kalo midis organizatorit','PROTOTIP'],
-  ['en','Switch between organizer and participant','PROTOTYPE'],
-  ['it','Passa dal ruolo di organizzatore','PROTOTIPO']
+ const before=await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'));
+ for(const [lang,intro,foot,title,kicker] of [
+  ['sq','Kalo midis organizatorit','PROTOTIP','Aktivitetet dhe organizatori','ILLYRIAN · PLANE'],
+  ['en','Switch between organizer and participant','PROTOTYPE','Activities and organizer','ILLYRIAN · PLANS'],
+  ['it','Passa dal ruolo di organizzatore','PROTOTIPO','Attività e organizzatore','ILLYRIAN · PIANI']
  ]){
   await page.evaluate(l=>window.IllyrianI18n.changeLanguage(l),lang);
   await expect(page.locator('html')).toHaveAttribute('lang',lang);
   await expect(root.locator('.ilp-intro')).toContainText(intro);
   await expect(root.locator('.ilp-foot')).toContainText(foot);
+  await expect(root.locator('.ilp-panel header h2')).toHaveText(title);
+  await expect(root.locator('.ilp-panel header small')).toHaveText(kicker);
+  await expect(root.locator('.ilp-panel')).toHaveAttribute('aria-label',title);
+  expect(await page.evaluate(()=>localStorage.getItem('illyrian_demo_v17_plans'))).toBe(before);
   await expect(close).toBeFocused();
  }
  await close.click();
