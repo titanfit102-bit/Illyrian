@@ -147,7 +147,7 @@
     const loaded=[...d.querySelectorAll('script[src]')].map(s=>s.getAttribute('src'));
     check(test,'Të gjashtë skedarët JS janë referuar',required.every(n=>loaded.some(p=>p?.includes('ILLYRIAN_'+n+'_v1.7.js'))),required.length+'/6');
     check(test,'Tre panele të përhershme inicializohen',!!d.getElementById('ilp-root')&&!!d.getElementById('ilc-root')&&!!d.getElementById('il4-root'));
-    await nav(d,'home');
+    await nav(d,'explore');
     await tap(d,'[data-ilshop-open]','butoni Shop');
     check(test,'Shop hapet',!!d.getElementById('illyrian-shop-layer'));
     check(test,'Shop izolon sfondin',!!d.getElementById('screen')?.inert);
@@ -278,7 +278,7 @@
     let restored=false;
     try{
       await nav(d,'profile');
-      await tap(d,'#screen [data-act="modal"][data-val="settings"]','Cilësimet');
+      await tap(d,'#phone > .head [data-ily-profile-settings]','Cilësimet');
       // v0.6 settings use a two-level flow: Settings -> Pamja dhe ngjyrat.
       await tap(d,'#layer [data-act="v6-settings-section"][data-val="theme"]','Pamja dhe ngjyrat');
       for(const mode of ['light','dark','auto']){

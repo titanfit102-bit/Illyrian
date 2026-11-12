@@ -1,0 +1,8 @@
+# Security release gates
+## DEMO integration
+Require successful current-SHA `security-baseline`, `browser-smoke-pull_request`, `webkit-smoke-pull_request`; no unresolved verified critical issue; affected regression tests and honest UNKNOWN status. Require existing source-matched Preview, physical QA and owner signoff under [acceptance matrix](../DEMO_V1_7_DEVICE_QA_ACCEPTANCE.md).
+These are proposed required PR checks. **Administrative enforcement is NOT enabled**; [F06](../F06_REQUIRED_CHECKS_DECISION.md) still requires separate owner approval. A workflow failure signals a blocked candidate; it cannot physically prevent an administrator merging until rules are applied. No bypass/continue-on-error for failed security steps.
+## Real-user/mobile release
+Before M1/M5: approved platform/geography/MVP and threat model; applicable ASVS/MASVS requirement IDs and negative tests; server ownership/membership/block checks; safe media/upload lifecycle; sessions/recovery; privacy retention/export/delete; abuse response; redacted monitoring; backup restore; incident/rollback; device and store-signing evidence. Financial flows need separate provider/commercial approval and webhook/authorization tests. Critical VERIFIED vulnerabilities or critical UNKNOWN controls block release. Moderate exceptions need explicit owner, justification, expiry and compensating controls; never hide a dependency advisory.
+## Scheduling and limits
+PR job runs once per PR update; integration push remains. Weekly schedule executes only after this workflow exists on the default branch; while isolated on the feature branch **scheduled execution is NOT ACTIVE**. No main change is authorized here. Existing browser QA supplies UGC/storage regressions, avoiding a second browser suite.
