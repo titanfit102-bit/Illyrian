@@ -49,7 +49,7 @@ test('AUD-06 dynamic locale registers new UI phrase sources and preserves UGC on
   const ui=document.createElement('span'),ugc=document.createElement('span');
   ui.dataset.audit06='ui';ui.textContent='Aimer';
   ugc.dataset.audit06='ugc';ugc.setAttribute('data-user-content','');ugc.textContent='Aimer';
-  document.querySelector('#screen').append(ui,ugc);
+  document.querySelector('#phone').append(ui,ugc); // persist across screen rerenders on locale change
   api.translate(ui);api.translate(ugc);
   const french=[ui.textContent,ugc.textContent];
   api.changeLanguage('en');
