@@ -186,6 +186,70 @@ test('AUD-01 theme rolls back a quota failure and preserves focus for retry',asy
   expect(await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).theme,key)).toBe(requested);
 });
 
+
+for(const kind of ['story','reel']){
+ test('AUD-02 stale '+kind+' publish keeps first publication and second draft',async({page,context})=>{
+  const key='illyrian_demo_v15_creator',field=kind==='story'?'stories':'reels';
+  await openDemo(page,390,844);
+  const other=await context.newPage();
+  try{
+   await openDemo(other,390,844);
+   for(const tab of [page,other]){
+    await nav(tab,'profile');
+    await tab.locator('#screen [data-act="v15-open"][data-val="'+kind+'"]').first().click();
+    await expect(tab.locator('#v15-caption')).toBeVisible();
+   }
+   await page.locator('#v15-caption').fill('AUD-02 first '+kind);
+   await other.locator('#v15-caption').fill('AUD-02 second '+kind);
+   await page.locator('#layer [data-act="v15-publish"]').click();
+   const first=await page.evaluate(k=>localStorage.getItem(k),key);
+   expect(JSON.parse(first)[field].map(x=>x.caption)).toContain('AUD-02 first '+kind);
+   await other.locator('#layer [data-act="v15-publish"]').click();
+   expect(await other.evaluate(k=>localStorage.getItem(k),key)).toBe(first);
+   await expect(other.locator('#v15-caption')).toHaveValue('AUD-02 second '+kind);
+   await expect(other.locator('#v15-caption')).toBeFocused();
+   await expect(other.locator('#toast-area')).not.toBeEmpty();
+   await other.reload({waitUntil:'load'});
+   await nav(other,'profile');
+   await other.locator('#screen [data-act="v15-open"][data-val="'+kind+'"]').first().click();
+   await other.locator('#v15-caption').fill('AUD-02 second '+kind);
+   await other.locator('#layer [data-act="v15-publish"]').click();
+   const saved=await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+   expect(saved[field].map(x=>x.caption)).toEqual(['AUD-02 second '+kind,'AUD-02 first '+kind]);
+   await other.reload({waitUntil:'load'});
+   expect((await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key))[field].length).toBe(2);
+  }finally{await other.close()}
+ });
+}
+test('AUD-02 quota failure keeps unsent Reel draft and retries once',async({page})=>{
+ const key='illyrian_demo_v15_creator';
+ await openDemo(page,390,844);
+ await nav(page,'profile');
+ await page.locator('#screen [data-act="v15-open"][data-val="reel"]').first().click();
+ await page.locator('#v15-caption').fill('AUD-02 unsent draft');
+ const original=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(k=>{
+  const original=Storage.prototype.setItem;
+  window.__restoreCreatorQuota=()=>{Storage.prototype.setItem=original};
+  Storage.prototype.setItem=function(name,value){
+   if(name===k)throw new DOMException('Synthetic quota','QuotaExceededError');
+   return original.call(this,name,value);
+  };
+ },key);
+ try{
+  await page.locator('#layer [data-act="v15-publish"]').click();
+  await expect(page.locator('#v15-caption')).toHaveValue('AUD-02 unsent draft');
+  await expect(page.locator('#v15-caption')).toBeFocused();
+  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(original);
+  await expect(page.locator('#toast-area')).not.toBeEmpty();
+ }finally{await page.evaluate(()=>window.__restoreCreatorQuota?.())}
+ await page.locator('#layer [data-act="v15-publish"]').click();
+ const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+ expect(saved.reels.map(x=>x.caption)).toEqual(['AUD-02 unsent draft']);
+ await page.reload({waitUntil:'load'});
+ expect((await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key)).reels.length).toBe(1);
+});
+
 test('Plans local entry and local activity labels follow live sq/en/it without data writes',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({
     events:[{id:'qa-localized',title:'Original user plan',kind:'Sport',city:'Romë',place:'Original venue',date:'2099-06-12',time:'13:00',capacity:5,price:0,privacy:'public',conditions:'',cancelled:false}],

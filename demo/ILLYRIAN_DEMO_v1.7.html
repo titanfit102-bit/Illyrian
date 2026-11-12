@@ -1946,8 +1946,12 @@ document.head.appendChild(v14Style);
 // ILLYRIAN v1.5 — approved demo-only Story/Reel creator.
 // Every media item stays in this browser's localStorage; no backend, delivery, or video encoder.
 const V15_STORE='illyrian_demo_v15_creator';
-let v15Saved={};
-try{const v=JSON.parse(localStorage.getItem(V15_STORE)||'{}');v15Saved=v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{}
+let v15Saved={},v15ExpectedRaw;
+try{
+ v15ExpectedRaw=localStorage.getItem(V15_STORE);
+ const v=JSON.parse(v15ExpectedRaw||'{}');
+ v15Saved=v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+}catch{}
 const v15ValidMedia=s=>typeof s==='string'&&s.length<190000&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s);
 const v15SafeMedia=item=>({...commerceAttributes(item),id:String(item.id||'').slice(0,50),caption:String(item.caption||'').slice(0,180),plan:events.some(e=>e.id===item.plan)?item.plan:'',photo:v15ValidMedia(item.photo)?item.photo:'',sample:['a1','a2','a3','a4','a5','arta','cafe'].includes(item.sample)?item.sample:'arta',created:Number(item.created)||0,liked:!!item.liked});
 const v15SafeList=arr=>Array.isArray(arr)?arr.filter(item=>item&&typeof item==='object'&&!Array.isArray(item)&&typeof item.id==='string'&&item.id.length>0).slice(0,6).map(v15SafeMedia):[];
@@ -1955,7 +1959,23 @@ let v15Stories=v15SafeList(v15Saved.stories);
 let v15Reels=v15SafeList(v15Saved.reels);
 let v15Draft={kind:'story',caption:'',plan:'',photo:'',sample:'arta'};
 let v15PlanOrigin=null;
-function v15Store(){try{localStorage.setItem(V15_STORE,JSON.stringify({stories:v15Stories,reels:v15Reels}))}catch{toast('Hapësira e ruajtjes është plot. Provo foto më të vogël.');return false}return true}
+function v15Store(input){
+ try{
+  if(localStorage.getItem(V15_STORE)!==v15ExpectedRaw){
+   toast(window.IllyrianI18n?.t('messages:storageConflict')||'Të dhënat ndryshuan në një dritare tjetër. Rifresko dhe provo sërish.');
+   input?.focus?.({preventScroll:true});
+   return false;
+  }
+  const next=JSON.stringify({stories:v15Stories,reels:v15Reels});
+  localStorage.setItem(V15_STORE,next);
+  v15ExpectedRaw=next;
+  return true;
+ }catch{
+  toast('Hapësira e ruajtjes është plot. Provo foto më të vogël.');
+  input?.focus?.({preventScroll:true});
+  return false;
+ }
+}
 function v15Pic(item){return v15ValidMedia(item.photo)?item.photo:(IMAGES[item.sample]||IMAGES.arta)}
 function v15MiniIcon(name){return v12Icon(name)}
 function v15Creator(kind){
@@ -2035,17 +2055,20 @@ function v15Action(action,id,val){
   const plan=document.querySelector('#v15-plan')?.value||'';
   const item={...commerceAttributes(v15Draft),id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),created:Date.now(),caption,plan:events.some(e=>e.id===plan)?plan:'',photo:v15Draft.photo,sample:v15Draft.sample,liked:false};
   const target=v15Draft.kind==='story'?v15Stories:v15Reels;
+  const backup=target.slice();
   target.unshift(item);if(target.length>6)target.length=6;
-  if(!v15Store()){target.shift();return true}
+  if(!v15Store(document.getElementById('v15-caption'))){target.splice(0,target.length,...backup);return true}
   openModal('v15-view');state.modal={type:'v15-view',kind:v15Draft.kind,id:item.id};render({scroll:true});toast("U shtua në tënde");return true;
  }
  if(action==='v15-view'){state.modal={type:'v15-view',kind:val,id};state.story=0;state.reelOpen=false;render({scroll:true});return true}
  if(action==='v15-delete'){
+  const oldStories=v15Stories,oldReels=v15Reels;
   if(val==='story')v15Stories=v15Stories.filter(x=>x.id!==id);else v15Reels=v15Reels.filter(x=>x.id!==id);
-  v15Store();v15PlanOrigin=null;state.modal=null;render({scroll:true});toast("U fshi vetëm nga ky aplikacion");return true;
+  if(!v15Store(document.activeElement)){v15Stories=oldStories;v15Reels=oldReels;return true;}
+  v15PlanOrigin=null;state.modal=null;render({scroll:true});toast("U fshi vetëm nga ky aplikacion");return true;
  }
  if(action==='v15-like'){
-  const a=(val==='story'?v15Stories:v15Reels);const item=a.find(x=>x.id===id);if(item){item.liked=!item.liked;v15Store();render({scroll:true})}return true;
+  const a=(val==='story'?v15Stories:v15Reels);const item=a.find(x=>x.id===id);if(item){const old=item.liked;item.liked=!old;if(!v15Store(document.activeElement)){item.liked=old;return true;}render({scroll:true})}return true;
  }
  if(action==='v15-plan'){
   const [kind,contentId]=String(val||'').split('|');const list=kind==='story'?v15Stories:v15Reels;
@@ -2321,7 +2344,7 @@ let v16SavedOwnReels=()=>[];
       const item={...commerceAttributes(v15Draft),id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),created:Date.now(),caption,plan:events.some(e=>e.id===plan)?plan:'',photo:v15ValidMedia(v15Draft.photo)?v15Draft.photo:'',sample:v15Draft.sample,liked:false};
       const list=ownList(kind),backup=list.slice();
       list.splice(0,list.length,item,...backup.slice(0,5));
-      if(!v15Store()){list.splice(0,list.length,...backup);return true;}
+      if(!v15Store(document.getElementById('v15-caption'))){list.splice(0,list.length,...backup);return true;}
       viewOwn(kind,item.id);
       toast("U shtua në tënde.");return true;
     }
@@ -2330,7 +2353,7 @@ let v16SavedOwnReels=()=>[];
       if(!['story','reel'].includes(kind)||!list.some(x=>x.id===contentId))return true;
       const backup=list.slice();
       list.splice(0,list.length,...backup.filter(x=>x.id!==contentId));
-      if(!v15Store()){list.splice(0,list.length,...backup);return true;}
+      if(!v15Store(document.activeElement)){list.splice(0,list.length,...backup);return true;}
       const key=kind+':'+contentId;
       const prevSaved=savedOwn.slice();
       savedOwn=savedOwn.filter(x=>x!==key);
@@ -2341,7 +2364,7 @@ let v16SavedOwnReels=()=>[];
       const kind=action==='v16-like'?state.modal?.kind:val,contentId=action==='v16-like'?state.modal?.id:id;
       const item=ownFind(kind,contentId);if(!item)return true;
       const prev=item.liked;item.liked=!prev;
-      if(!v15Store()){item.liked=prev;return true;}
+      if(!v15Store(document.activeElement)){item.liked=prev;return true;}
       render({scroll:true});return true;
     }
     if(action==='v16-close'){closeOwn();return true;}
