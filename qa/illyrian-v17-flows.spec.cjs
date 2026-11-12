@@ -359,6 +359,90 @@ test('AUD-03 quota failure restores privacy block and permits retry',async({page
  expect((await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key)).follow.leon).toBe('blocked');
 });
 
+
+async function audit04SeedReels(page){
+ await page.addInitScript(()=>{
+  const key='illyrian_demo_v15_creator';
+  if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify({
+   stories:[],reels:[
+    {id:'audit04-reel-a',caption:'Fixture Reel A',sample:'arta',created:1730000000001},
+    {id:'audit04-reel-b',caption:'Fixture Reel B',sample:'cafe',created:1730000000002}
+   ]
+  }));
+ });
+}
+async function audit04OpenReel(page,id){
+ await nav(page,'profile');
+ await page.locator('#p17-tab-reels').click();
+ await page.locator('#screen [data-kind="myreel"][data-id="'+id+'"]').click();
+ await expect(page.locator('#layer .v16-viewer')).toBeVisible();
+ await expect(page.locator('#v16-comment')).toBeVisible();
+}
+for(const separateReels of [false,true]){
+ test('AUD-04 stale comments keep the first write on '+(separateReels?'different':'same')+' Reel and draft for retry',async({page,context})=>{
+  const key='illyrian_demo_v16_comments',firstId='audit04-reel-a';
+  const secondId=separateReels?'audit04-reel-b':firstId;
+  await audit04SeedReels(page);
+  await openDemo(page,390,844);
+  const other=await context.newPage();
+  try{
+   await openDemo(other,390,844);
+   await audit04OpenReel(page,firstId);
+   await audit04OpenReel(other,secondId);
+   await page.locator('#v16-comment').fill('First AUD-04 comment');
+   await other.locator('#v16-comment').fill('Second AUD-04 comment');
+   await page.locator('#layer [data-act="v16-send"]').click();
+   const firstRaw=await page.evaluate(k=>localStorage.getItem(k),key);
+   expect(JSON.parse(firstRaw)['reel:'+firstId]).toEqual(['First AUD-04 comment']);
+   await other.locator('#layer [data-act="v16-send"]').click();
+   expect(await other.evaluate(k=>localStorage.getItem(k),key)).toBe(firstRaw);
+   await expect(other.locator('#v16-comment')).toHaveValue('Second AUD-04 comment');
+   await expect(other.locator('#v16-comment')).toBeFocused();
+   await expect(other.locator('#toast-area')).not.toBeEmpty();
+   await other.reload({waitUntil:'load'});
+   await audit04OpenReel(other,secondId);
+   await other.locator('#v16-comment').fill('Second AUD-04 comment');
+   await other.locator('#layer [data-act="v16-send"]').click();
+   const saved=await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+   if(separateReels){
+    expect(saved['reel:'+firstId]).toEqual(['First AUD-04 comment']);
+    expect(saved['reel:'+secondId]).toEqual(['Second AUD-04 comment']);
+   }else expect(saved['reel:'+firstId]).toEqual(['First AUD-04 comment','Second AUD-04 comment']);
+   await other.reload({waitUntil:'load'});
+   const afterReload=await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+   expect(afterReload).toEqual(saved);
+  }finally{await other.close()}
+ });
+}
+test('AUD-04 comment quota rejects without clearing draft or duplicating on retry',async({page})=>{
+ const key='illyrian_demo_v16_comments';
+ await audit04SeedReels(page);
+ await openDemo(page,390,844);
+ await audit04OpenReel(page,'audit04-reel-a');
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.locator('#v16-comment').fill('Quota AUD-04 comment');
+ await page.evaluate(k=>{
+  const native=Storage.prototype.setItem;
+  window.__restoreAudit04=()=>{Storage.prototype.setItem=native};
+  Storage.prototype.setItem=function(name,value){
+   if(name===k)throw new DOMException('AUD-04 synthetic quota','QuotaExceededError');
+   return native.call(this,name,value);
+  };
+ },key);
+ try{
+  await page.locator('#layer [data-act="v16-send"]').click();
+  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+  await expect(page.locator('#v16-comment')).toHaveValue('Quota AUD-04 comment');
+  await expect(page.locator('#v16-comment')).toBeFocused();
+  await expect(page.locator('#toast-area')).not.toBeEmpty();
+ }finally{await page.evaluate(()=>window.__restoreAudit04?.())}
+ await page.locator('#layer [data-act="v16-send"]').click();
+ const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+ expect(saved['reel:audit04-reel-a']).toEqual(['Quota AUD-04 comment']);
+ await page.reload({waitUntil:'load'});
+ expect((await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key))['reel:audit04-reel-a']).toEqual(['Quota AUD-04 comment']);
+});
+
 test('Plans local entry and local activity labels follow live sq/en/it without data writes',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('illyrian_demo_v17_plans',JSON.stringify({
     events:[{id:'qa-localized',title:'Original user plan',kind:'Sport',city:'Romë',place:'Original venue',date:'2099-06-12',time:'13:00',capacity:5,price:0,privacy:'public',conditions:'',cancelled:false}],

@@ -2139,6 +2139,8 @@ let v16SavedOwnReels=()=>[];
   if(!Array.isArray(savedOwn))savedOwn=[];
   savedOwn=savedOwn.filter(x=>typeof x==='string').slice(0,30);
   v16SavedOwnReels=()=>v15Reels.filter(r=>savedOwn.includes('reel:'+r.id));
+  let commentExpectedRaw;
+  try{commentExpectedRaw=localStorage.getItem(commentKey)}catch{}
   let comments=safeRead(commentKey,{});
   if(Array.isArray(comments))comments={};
   const saveValue=(key,val)=>{try{localStorage.setItem(key,JSON.stringify(val));return true;}catch{toast('Nuk ka hapësirë për këtë ndryshim.');return false;}};
@@ -2289,10 +2291,25 @@ let v16SavedOwnReels=()=>[];
   };
   function saveComment(key,inputId){
     const box=document.getElementById(inputId),value=String(box?.value||'').trim().slice(0,100);
-    if(!value){toast('Shkruaj një koment.');return;}
-    const old=commentList(key),next={...comments,[key]:[...old,value].slice(-3)};
-    if(!saveValue(commentKey,next))return;
-    comments=next;render({scroll:true});toast("Komenti u ruajt vetëm në këtë pajisje.");
+    if(!value){toast('Shkruaj një koment.');box?.focus({preventScroll:true});return;}
+    // Reject stale tabs before mutating the shared comment store; keep the unsent draft.
+    try{
+      if(localStorage.getItem(commentKey)!==commentExpectedRaw){
+        toast(window.IllyrianI18n?.t('messages:storageConflict')||'Komentet ndryshuan në një dritare tjetër. Rifresko dhe provo sërish.');
+        box?.focus({preventScroll:true});
+        return;
+      }
+      const old=commentList(key),next={...comments,[key]:[...old,value].slice(-3)};
+      const raw=JSON.stringify(next);
+      localStorage.setItem(commentKey,raw);
+      commentExpectedRaw=raw;
+      comments=next;
+    }catch{
+      toast('Nuk ka hapësirë për këtë ndryshim.');
+      box?.focus({preventScroll:true});
+      return;
+    }
+    render({scroll:true});toast("Komenti u ruajt vetëm në këtë pajisje.");
   }
   function restoreReel(){
     const from=memory.reelReturn;
