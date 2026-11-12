@@ -330,7 +330,7 @@ test('AUD-03 same-person stale follow is rejected after a block',async({page,con
   const raw=await page.evaluate(k=>localStorage.getItem(k),key);
   await b.locator('[data-il4="follow-request"]').click();
   expect(await other.evaluate(k=>localStorage.getItem(k),key)).toBe(raw);
-  await expect(b.locator('[data-il4="block"]')).toBeFocused();
+  await expect(b.locator('[data-il4="follow-request"]')).toBeFocused();
   await expect(b.locator('.il4-notice')).toBeVisible();
  }finally{await other.close()}
 });
