@@ -178,7 +178,7 @@ test('AUD-01 theme rolls back a quota failure and preserves focus for retry',asy
     await expect(page.locator('#layer input[name="theme"][value="'+previous+'"]')).toBeChecked();
     await expect(choice).toBeFocused();
     await expect(page.locator('#toast-area')).not.toBeEmpty();
-    await expect(page.locator('#phone')).not.toHaveClass(/\\bdark\\b/);
+    await expect(page.locator('#phone')).not.toHaveClass(/\bdark\b/);
   }finally{await page.evaluate(()=>window.__restoreAudit01Theme?.())}
   await choice.check();
   expect(await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).theme,key)).toBe(requested);
