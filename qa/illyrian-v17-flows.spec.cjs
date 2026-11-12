@@ -136,12 +136,12 @@ test('AUD-01 theme rejects a stale second tab without overwriting newer core lik
     expect(JSON.parse(saved).likes).toContain('p1');
     const requested=oldMode==='dark'?'light':'dark';
     const attempted=other.locator('#layer input[name="theme"][value="'+requested+'"]');
-    await attempted.check();
+    await attempted.click(); // rejected writes intentionally restore the prior radio state
     expect(await other.evaluate(()=>localStorage.getItem('illyrian_demo_v09_state'))).toBe(saved);
     await expect(other.locator('#layer input[name="theme"][value="'+oldMode+'"]')).toBeChecked();
     await expect(attempted).toBeFocused();
     await expect(other.locator('#toast-area')).not.toBeEmpty();
-    await openDemo(other,390,844); // fresh snapshot enables an explicit retry
+    await other.reload({waitUntil:'load'}); // fresh snapshot enables an explicit retry
     await nav(other,'profile');
     await other.locator('#phone > .head [data-ily-profile-settings]').click();
     await other.locator('#layer [data-act="v6-settings-section"][data-val="theme"]').click();
@@ -173,7 +173,7 @@ test('AUD-01 theme rolls back a quota failure and preserves focus for retry',asy
   const requested=previous==='dark'?'light':'dark';
   const choice=page.locator('#layer input[name="theme"][value="'+requested+'"]');
   try{
-    await choice.check();
+    await choice.click(); // rejected writes intentionally restore the prior radio state
     expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
     await expect(page.locator('#layer input[name="theme"][value="'+previous+'"]')).toBeChecked();
     await expect(choice).toBeFocused();
