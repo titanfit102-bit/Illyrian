@@ -24,6 +24,8 @@
  ];
  const escaped=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const stored=(key)=>{try{const v=JSON.parse(localStorage.getItem(key)||'null');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch{return {}}};
+ let privacyExpectedRaw;
+ try{privacyExpectedRaw=localStorage.getItem(KEY)}catch{}
  const initial=stored(KEY);
  const normalizeStatus=x=>['none','pending','accepted','declined','blocked'].includes(x)?x:'none';
  const safeObject=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
@@ -40,8 +42,24 @@
  const ui=(key,fallback)=>escaped(feedback(key,fallback));
  const persisted=()=>({follow:state.follow,membership:state.membership});
  let lastSaved=JSON.stringify(persisted());
- const save=()=>{try{const next=JSON.stringify(persisted());localStorage.setItem(KEY,next);lastSaved=next;return true}catch{
-  Object.assign(state,JSON.parse(lastSaved));state.notice=feedback('storageFull','Ndryshimi nuk u ruajt; hapësira lokale është plot.');return false}};
+ const save=()=>{
+  try{
+   if(localStorage.getItem(KEY)!==privacyExpectedRaw){
+    Object.assign(state,JSON.parse(lastSaved));
+    state.notice=window.IllyrianI18n?.t('messages:storageConflict')||'Të dhënat ndryshuan në dritare tjetër. Rifresko dhe provo përsëri.';
+    return false;
+   }
+   const next=JSON.stringify(persisted());
+   localStorage.setItem(KEY,next);
+   lastSaved=next;
+   privacyExpectedRaw=next;
+   return true;
+  }catch{
+   Object.assign(state,JSON.parse(lastSaved));
+   state.notice=feedback('storageFull','Ndryshimi nuk u ruajt; hapësira lokale është plot.');
+   return false;
+  }
+ };
  const statusLabel=x=>({none:feedback('statusNone','Pa kërkesë'),pending:feedback('statusPending','Në pritje'),accepted:feedback('statusAccepted','I pranuar'),declined:feedback('statusDeclined','Refuzuar'),blocked:feedback('statusBlocked','I bllokuar')})[x||'none'];
  const note=()=>state.notice?'<p class="il4-notice" role="status">'+escaped(state.notice)+'</p>':'';
  const header=()=>'<header class="il4-head"><div><small>ILLYRIAN · SIGURI & ZBULIM</small><h2 data-i18n-direct>'+ui('title','Privatësia dhe harta')+'</h2></div>'+b('close','✕ Mbyll')+'</header><p class="il4-warning" data-i18n-direct>'+ui('warning','Prototip me identitete dhe vende të sajuara. Rolet dhe lejet janë vetëm simulim lokal; nuk ofrojnë siguri reale.')+'</p>';
@@ -138,7 +156,13 @@
  };
  const open=which=>{if(!root||state.open)return;opener=document.activeElement;inertSnapshot=['#screen','#navbar','.head','.statusbar','.homebar','.island'].map(sel=>document.querySelector('#phone > '+sel)).filter(Boolean).map(el=>({el,was:el.inert}));inertSnapshot.forEach(({el})=>{el.inert=true});state.open=true;state.tab=['profiles','groups','map','states'].includes(which)?which:'profiles';state.notice='';state.role='visitor';state.selected=state.tab==='groups'?'albania-milan':'leon';render()};
  const close=()=>{state.open=false;root.hidden=true;inertSnapshot.forEach(({el,was})=>{if(el.isConnected)el.inert=was});inertSnapshot=[];if(opener?.isConnected)opener.focus()};
- const msg=v=>{state.notice=v;save();render()};
+ const msg=v=>{
+  const action=document.activeElement?.closest?.('[data-il4]')?.dataset.il4;
+  state.notice=v;
+  const saved=save();
+  render();
+  if(!saved&&action)root.querySelector('[data-il4="'+action+'"]')?.focus({preventScroll:true});
+ };
  function act(a){
   if(a==='close')return close();
   if(a.startsWith('tab:')){state.tab=a.slice(4);state.notice='';state.selected=state.tab==='groups'?'albania-milan':'leon';render();return}

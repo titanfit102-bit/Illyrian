@@ -187,6 +187,22 @@ test('AUD-01 theme rolls back a quota failure and preserves focus for retry',asy
 });
 
 
+async function audit02OpenCreator(page,kind){
+ await nav(page,'home');
+ if(kind==='story'){
+  const mine=page.locator('#screen > .stories .story-btn').first();
+  if(await mine.getAttribute('aria-label')==='Story im'){
+   // The current Story shortcut opens the existing item; enter the editor directly for a controlled retry.
+   await page.evaluate(()=>v15Creator('story'));
+  }else{
+   const picker=page.waitForEvent('filechooser');
+   await mine.click();
+   await (await picker).setFiles([]);
+   await page.locator('#v15-file').dispatchEvent('cancel');
+  }
+ }else await page.locator('#screen .ily-compose-reel[data-act="v15-open"][data-val="reel"]').click();
+ await expect(page.locator('#v15-caption')).toBeVisible();
+}
 for(const kind of ['story','reel']){
  test('AUD-02 stale '+kind+' publish keeps first publication and second draft',async({page,context})=>{
   const key='illyrian_demo_v15_creator',field=kind==='story'?'stories':'reels';
@@ -194,11 +210,7 @@ for(const kind of ['story','reel']){
   const other=await context.newPage();
   try{
    await openDemo(other,390,844);
-   for(const tab of [page,other]){
-    await nav(tab,'profile');
-    await tab.locator('#screen [data-act="v15-open"][data-val="'+kind+'"]').first().click();
-    await expect(tab.locator('#v15-caption')).toBeVisible();
-   }
+   for(const tab of [page,other])await audit02OpenCreator(tab,kind);
    await page.locator('#v15-caption').fill('AUD-02 first '+kind);
    await other.locator('#v15-caption').fill('AUD-02 second '+kind);
    await page.locator('#layer [data-act="v15-publish"]').click();
@@ -210,8 +222,7 @@ for(const kind of ['story','reel']){
    await expect(other.locator('#v15-caption')).toBeFocused();
    await expect(other.locator('#toast-area')).not.toBeEmpty();
    await other.reload({waitUntil:'load'});
-   await nav(other,'profile');
-   await other.locator('#screen [data-act="v15-open"][data-val="'+kind+'"]').first().click();
+   await audit02OpenCreator(other,kind);
    await other.locator('#v15-caption').fill('AUD-02 second '+kind);
    await other.locator('#layer [data-act="v15-publish"]').click();
    const saved=await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
@@ -224,8 +235,7 @@ for(const kind of ['story','reel']){
 test('AUD-02 quota failure keeps unsent Reel draft and retries once',async({page})=>{
  const key='illyrian_demo_v15_creator';
  await openDemo(page,390,844);
- await nav(page,'profile');
- await page.locator('#screen [data-act="v15-open"][data-val="reel"]').first().click();
+ await audit02OpenCreator(page,'reel');
  await page.locator('#v15-caption').fill('AUD-02 unsent draft');
  const original=await page.evaluate(k=>localStorage.getItem(k),key);
  await page.evaluate(k=>{
@@ -248,6 +258,105 @@ test('AUD-02 quota failure keeps unsent Reel draft and retries once',async({page
  expect(saved.reels.map(x=>x.caption)).toEqual(['AUD-02 unsent draft']);
  await page.reload({waitUntil:'load'});
  expect((await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key)).reels.length).toBe(1);
+});
+
+
+async function audit03OpenPrivacy(page,section='profiles'){
+ await nav(page,'explore');
+ await page.locator('#il4-entry [data-il4-entry]').click();
+ const root=page.locator('#il4-root');
+ await expect(root).toBeVisible();
+ if(section==='groups')await root.locator('[data-il4="tab:groups"]').click();
+ return root;
+}
+test('AUD-03 stale follow in second tab cannot erase another tab blocked profile',async({page,context})=>{
+ const key='illyrian_demo_v17_privacy_map';
+ await openDemo(page,390,844);
+ const other=await context.newPage();
+ try{
+  await openDemo(other,390,844);
+  const first=await audit03OpenPrivacy(page),second=await audit03OpenPrivacy(other);
+  await second.locator('[data-il4="profile:arta"]').click();
+  await first.locator('[data-il4="block"]').click();
+  const protectedRaw=await page.evaluate(k=>localStorage.getItem(k),key);
+  expect(JSON.parse(protectedRaw).follow.leon).toBe('blocked');
+  await second.locator('[data-il4="follow-request"]').click();
+  expect(await other.evaluate(k=>localStorage.getItem(k),key)).toBe(protectedRaw);
+  await expect(second.locator('.il4-notice')).toBeVisible();
+  await expect(second.locator('[data-il4="follow-request"]')).toBeFocused();
+  await other.reload({waitUntil:'load'});
+  const current=await audit03OpenPrivacy(other);
+  await current.locator('[data-il4="profile:arta"]').click();
+  await current.locator('[data-il4="follow-request"]').click();
+  const saved=await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+  expect(saved.follow.leon).toBe('blocked');
+  expect(saved.follow.arta).toBe('accepted');
+  await other.reload({waitUntil:'load'});
+  expect((await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key)).follow.leon).toBe('blocked');
+ }finally{await other.close();}
+});
+test('AUD-03 stale group membership write cannot erase newer membership',async({page,context})=>{
+ const key='illyrian_demo_v17_privacy_map';
+ await openDemo(page,390,844);
+ const other=await context.newPage();
+ try{
+  await openDemo(other,390,844);
+  const a=await audit03OpenPrivacy(page,'groups'),b=await audit03OpenPrivacy(other,'groups');
+  await b.locator('[data-il4="group:tirana-makers"]').click();
+  await a.locator('[data-il4="group-request"]').click();
+  const protectedRaw=await page.evaluate(k=>localStorage.getItem(k),key);
+  expect(JSON.parse(protectedRaw).membership['albania-milan']).toBe('pending');
+  await b.locator('[data-il4="group-request"]').click();
+  expect(await other.evaluate(k=>localStorage.getItem(k),key)).toBe(protectedRaw);
+  await expect(b.locator('.il4-notice')).toBeVisible();
+  await expect(b.locator('[data-il4="group-request"]')).toBeFocused();
+  await other.reload({waitUntil:'load'});
+  const fresh=await audit03OpenPrivacy(other,'groups');
+  await fresh.locator('[data-il4="group:tirana-makers"]').click();
+  await fresh.locator('[data-il4="group-request"]').click();
+  const persisted=await other.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+  expect(persisted.membership['albania-milan']).toBe('pending');
+  expect(persisted.membership['tirana-makers']).toBe('accepted');
+ }finally{await other.close()}
+});
+test('AUD-03 same-person stale follow is rejected after a block',async({page,context})=>{
+ const key='illyrian_demo_v17_privacy_map';
+ await openDemo(page,390,844);
+ const other=await context.newPage();
+ try{
+  await openDemo(other,390,844);
+  const a=await audit03OpenPrivacy(page),b=await audit03OpenPrivacy(other);
+  await a.locator('[data-il4="block"]').click();
+  const raw=await page.evaluate(k=>localStorage.getItem(k),key);
+  await b.locator('[data-il4="follow-request"]').click();
+  expect(await other.evaluate(k=>localStorage.getItem(k),key)).toBe(raw);
+  await expect(b.locator('[data-il4="block"]')).toBeFocused();
+  await expect(b.locator('.il4-notice')).toBeVisible();
+ }finally{await other.close()}
+});
+test('AUD-03 quota failure restores privacy block and permits retry',async({page})=>{
+ const key='illyrian_demo_v17_privacy_map';
+ await openDemo(page,390,844);
+ const root=await audit03OpenPrivacy(page);
+ const before=await page.evaluate(k=>localStorage.getItem(k),key);
+ await page.evaluate(k=>{
+  const native=Storage.prototype.setItem;
+  window.__audit03Restore=()=>{Storage.prototype.setItem=native};
+  Storage.prototype.setItem=function(name,value){
+   if(name===k)throw new DOMException('Synthetic privacy quota','QuotaExceededError');
+   return native.call(this,name,value);
+  };
+ },key);
+ try{
+  await root.locator('[data-il4="block"]').click();
+  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(before);
+  await expect(root.locator('[data-il4="block"]')).toBeFocused();
+  await expect(root.locator('.il4-notice')).toBeVisible();
+ }finally{await page.evaluate(()=>window.__audit03Restore?.())}
+ await root.locator('[data-il4="block"]').click();
+ expect((await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key)).follow.leon).toBe('blocked');
+ await page.reload({waitUntil:'load'});
+ expect((await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key)).follow.leon).toBe('blocked');
 });
 
 test('Plans local entry and local activity labels follow live sq/en/it without data writes',async({page})=>{
